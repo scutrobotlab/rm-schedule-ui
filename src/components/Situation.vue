@@ -5,7 +5,7 @@ const selectedZone = ref([0])
 <template>
   <v-img
     class="background-image"
-    src="@/assets/background.png"
+    src="@/assets/background.jpg"
   >
   </v-img>
 
