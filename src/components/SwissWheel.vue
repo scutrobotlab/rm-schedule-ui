@@ -4,7 +4,7 @@ import RelationGraph from 'relation-graph-vue3';
 import {usePromotionStore} from "../stores/promotion";
 import {MatchNode} from "../types/schedule";
 import {computed} from "vue";
-import {Group, GroupPlayer} from "../types/group_rank_info";
+import {GroupPlayer} from "../types/group_rank_info";
 
 interface Props {
   zone: 'A' | 'B',
@@ -27,11 +27,16 @@ const options = ref<RGOptions>({
     max_per_width: 300,
     min_per_height: 40
   },
+  backgroundColor: 'transparent',
+  // backgroundColor: '#616161',
+  defaultNodeColor: '#212121',
+  // defaultNodeBorderColor: '#48666e',
+  // defaultNodeBorderWidth: 4,
   defaultNodeShape: 1,
   defaultNodeWidth: 260,
   defaultLineShape: 4,
   defaultJunctionPoint: 'lr',
-  defaultNodeBorderWidth: 0,
+  disableDragNode: true,
 })
 
 function match(orderNumber: number): MatchNode | undefined {
@@ -298,9 +303,11 @@ const jsonData = {
 </script>
 
 <template>
-  <div>
-    <h3 class="mt-2 ml-4 text-disabled">半区 {{ zone }}</h3>
+  <div class="my-graph pa-4">
     <div style="height: calc(100vh - 200px);">
+      <div class="text-center mt-4">
+        <h1 class="font-weight-bold">东部赛区 半区 {{ zone }}</h1>
+      </div>
       <relation-graph ref="graphRef" :options="options">
         <template #node="{node}">
           <div class="pa-2">
@@ -353,6 +360,39 @@ const jsonData = {
   </div>
 </template>
 
-<style scoped lang="sass">
+<style scoped lang="scss">
+::v-deep(.relation-graph) {
+  .rel-map {
+    background: none !important;
 
+    .rel-node-shape-1 {
+      background: rgba(255, 255, 255, 0.2) !important;
+      border-radius: 10px;
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+    }
+  }
+
+  .rel-toolbar {
+    color: #ffffff;
+
+    .c-current-zoom {
+      color: #ffffff;
+    }
+  }
+
+  .rel-node-checked {
+    box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.3);
+  }
+
+  .rel-node {
+    span {
+      white-space: nowrap;
+    }
+  }
+}
+
+.my-graph {
+  background: rgba(0, 0, 0, 0.75);
+}
 </style>
