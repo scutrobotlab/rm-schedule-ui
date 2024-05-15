@@ -2,14 +2,14 @@
 import {RGOptions} from "relation-graph-vue3/types/types/relation-graph-models/types";
 import RelationGraph from 'relation-graph-vue3';
 import {usePromotionStore} from "../stores/promotion";
-import {onMounted} from "vue";
 import {MatchNode} from "../types/schedule";
+import {computed} from "vue";
 
 interface Props {
   zone: 'A' | 'B',
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
 
 const promotionStore = usePromotionStore();
 promotionStore.updateSchedule().then(() => {
@@ -30,8 +30,6 @@ const options = ref<RGOptions>({
   defaultLineShape: 4,
   defaultJunctionPoint: 'lr',
   defaultNodeBorderWidth: 0,
-  defaultLineTextOffset_x: -8,
-  defaultLineTextOffset_y: -1
 })
 
 function match(orderNumber: number): MatchNode | undefined {
@@ -41,6 +39,17 @@ function match(orderNumber: number): MatchNode | undefined {
 function limitText(text: string, limit: number): string {
   return text.length > limit ? text.slice(0, limit) + '...' : text
 }
+
+const zoneIndex = computed(() => {
+  switch (props.zone) {
+    case 'A':
+      return 0
+    case 'B':
+      return 1
+    default:
+      return 0
+  }
+})
 
 const jsonData = {
   rootId: '#1',
@@ -216,29 +225,33 @@ const jsonData = {
 
 <template>
   <div>
+    <h3 class="mt-2 ml-4 text-disabled">半区 {{ zone }}</h3>
     <div style="height: calc(100vh - 200px);">
       <relation-graph ref="graphRef" :options="options">
         <template #node="{node}">
           <div class="pa-2">
             <h2>{{ node.data.title }}</h2>
             <v-spacer class="mt-1"/>
-            <div v-for="(v, i) in node.data.zones[0].matches" :key="i">
+            <div v-for="(v, i) in node.data.zones[zoneIndex].matches" :key="i">
               <div v-if="match(v).redSide.player?.team" class="text-caption">
                 <span style="color: white">
-                {{ limitText(match(v).redSide.player?.team.collegeName, 10) }} -
+                {{ limitText(match(v).redSide.player?.team.collegeName, 9) }} -
                 </span>
                 <span style="color: white">
-                {{ limitText(match(v).blueSide.player?.team.collegeName, 10) }}
+                {{ limitText(match(v).blueSide.player?.team.collegeName, 9) }}
                 </span>
               </div>
               <div v-else>
-                {{ node.data.zones[0].text[i] }}
+                {{ node.data.zones[zoneIndex].text[i] }}
               </div>
             </div>
           </div>
         </template>
       </relation-graph>
     </div>
+    <span class="ml-2 mb-2 text-disabled text-end">
+      华南理工大学 华南虎
+    </span>
   </div>
 </template>
 
