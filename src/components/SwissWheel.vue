@@ -12,10 +12,14 @@ interface Props {
 
 const props = defineProps<Props>()
 
+const loading = ref(true)
+
 const promotionStore = usePromotionStore();
-promotionStore.updateSchedule().then(async () => {
-  await promotionStore.updateGroupRank()
-  await graphRef.value.setJsonData(jsonData)
+const promise1 = promotionStore.updateSchedule()
+const promise2 = promotionStore.updateGroupRank()
+Promise.all([promise1, promise2]).then(() => {
+  graphRef.value.setJsonData(jsonData)
+  loading.value = false
 })
 
 const graphRef = ref<RelationGraph>()
@@ -305,6 +309,7 @@ const jsonData = {
       <div class="text-center mt-4">
         <h1 class="font-weight-bold">东部赛区 半区 {{ zone }}</h1>
       </div>
+      <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
       <relation-graph ref="graphRef" :options="options">
         <template #node="{node}">
           <div class="py-2">
@@ -330,11 +335,11 @@ const jsonData = {
                   class="text-caption"
                 >
                   {{
-                    limitText(forecast(node.data.zones[zoneIndex].forecasts[i].red - 1)[1].itemValue['collegeName'], 9)
+                    limitText(forecast(node.data.zones[zoneIndex].forecasts[i].red - 1)[1].itemValue['collegeName'], 8)
                   }}
                   -
                   {{
-                    limitText(forecast(node.data.zones[zoneIndex].forecasts[i].blue - 1)[1].itemValue['collegeName'], 9)
+                    limitText(forecast(node.data.zones[zoneIndex].forecasts[i].blue - 1)[1].itemValue['collegeName'], 8)
                   }}
                 </div>
                 <div v-else>
