@@ -18,8 +18,8 @@ export interface ZoneNode {
   name: string
   zoneType: string
   groups: Groups
-  groupMatches: GroupMatches
-  knockoutMatches: KnockoutMatches
+  groupMatches: Matches
+  knockoutMatches: Matches
 }
 
 export interface Groups {
@@ -52,11 +52,11 @@ export interface Team {
   collegeName: string
 }
 
-export interface GroupMatches {
-  nodes: GroupMatchNode[]
+export interface Matches {
+  nodes: MatchNode[]
 }
 
-export interface GroupMatchNode {
+export interface MatchNode {
   id: string
   groupId: string
   matchType: string
@@ -110,33 +110,6 @@ export interface RedSide {
   playerId?: string
   player?: Player
   updatedAt: string
-}
-
-export interface KnockoutMatches {
-  nodes: KnockoutMatchNode[]
-}
-
-export interface KnockoutMatchNode {
-  id: string
-  groupId: any
-  matchType: string
-  orderNumber: number
-  planGameCount: number
-  planStartedAt: string
-  result: string
-  slug: string
-  slugName: string
-  status: string
-  winnerPlaceholdName: string
-  loserPlaceholdName: string
-  blueSideId: string
-  blueSideScore: number
-  blueSideWinGameCount: number
-  blueSide: BlueSide
-  redSideId: string
-  redSideScore: number
-  redSideWinGameCount: number
-  redSide: RedSide
 }
 
 export interface LastEvent {
