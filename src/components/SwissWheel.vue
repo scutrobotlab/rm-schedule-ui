@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import {RGOptions} from "relation-graph-vue3/types/types/relation-graph-models/types";
 import RelationGraph from 'relation-graph-vue3';
+import {usePromotionStore} from "../stores/promotion";
 
 interface Props {
   zone: 'A' | 'B',
 }
 
 defineProps<Props>()
+
+const promotionStore = usePromotionStore();
+promotionStore.getSchedule()
 
 const graphRef = ref<RelationGraph>()
 
