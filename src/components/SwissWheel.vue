@@ -304,15 +304,9 @@ const jsonData = {
       <relation-graph ref="graphRef" :options="options">
         <template #node="{node}">
           <div class="pa-2">
-            <v-badge
-              v-if="node.data.round == round + 1"
-              color="blue-darken-4"
-              inline
-              content="实时"
-            >
-              <h2 class="mr-2">{{ node.data.title }}</h2>
-            </v-badge>
-            <h2 v-else class="mr-2">{{ node.data.title }}</h2>
+            <h2 class="mr-2">{{ node.data.title }}
+              <span v-if="node.data.round == round + 1">*</span>
+            </h2>
             <v-spacer class="mt-2"/>
             <div v-for="(v, i) in node.data.zones[zoneIndex].matches" :key="i">
               <div v-if="match(v).redSide.player?.team" class="text-caption">
@@ -349,9 +343,11 @@ const jsonData = {
         </template>
       </relation-graph>
     </div>
-    <span class="ml-2 mb-2 text-disabled text-end">
-      华南理工大学 华南虎
-    </span>
+    <div>
+      <span class="ml-2 mb-2 text-disabled text-end">
+        * 根据官网排名预测
+      </span>
+    </div>
   </div>
 </template>
 
