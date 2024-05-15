@@ -28,7 +28,7 @@ const options = ref<RGOptions>({
     min_per_height: 40
   },
   defaultNodeShape: 1,
-  defaultNodeWidth: 250,
+  defaultNodeWidth: 260,
   defaultLineShape: 4,
   defaultJunctionPoint: 'lr',
   defaultNodeBorderWidth: 0,
@@ -311,11 +311,13 @@ const jsonData = {
             <div v-for="(v, i) in node.data.zones[zoneIndex].matches" :key="i">
               <div v-if="match(v).redSide.player?.team" class="text-caption">
                 <span style="color: white">
-                {{ limitText(match(v).redSide.player?.team.collegeName, 9) }}
+                {{ limitText(match(v).redSide.player?.team.collegeName, 8) }}
+                  {{ match(v).redSideWinGameCount }}
                 </span>
-                -
+                :
                 <span style="color: white">
-                {{ limitText(match(v).blueSide.player?.team.collegeName, 9) }}
+                  {{ match(v).blueSideWinGameCount }}
+                {{ limitText(match(v).blueSide.player?.team.collegeName, 8) }}
                 </span>
               </div>
               <div v-else-if="node.data.round == round + 1">
