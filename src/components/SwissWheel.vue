@@ -304,7 +304,7 @@ const jsonData = {
 
 <template>
   <div class="my-graph pa-4">
-    <div style="height: calc(100vh - 200px);">
+    <div style="height: calc(100vh - 180px);">
       <div class="text-center mt-4">
         <h1 class="font-weight-bold">东部赛区 半区 {{ zone }}</h1>
       </div>
@@ -354,7 +354,7 @@ const jsonData = {
     </div>
     <div>
       <span class="ml-2 mb-2 text-disabled text-end">
-        * 根据官网排名预测
+        * 根据官网排名<b>实时</b>预测
       </span>
     </div>
   </div>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const selectedZone = ref([0])
 </script>
 
 <template>
@@ -9,17 +10,16 @@
   </v-img>
 
   <div class="container">
-
-    <v-container class="content mt-12">
+    <v-container class="content mt-2">
       <v-row>
         <v-col cols="12">
-          <div
-            elevation="4"
-          >
+          <div>
             <v-carousel
               height="100vh - 100px"
+              :disabled="true"
               hide-delimiters
-              show-arrows="hover"
+              :show-arrows="false"
+              v-model="selectedZone"
             >
               <v-carousel-item>
                 <SwissWheel zone="A"></SwissWheel>
@@ -27,7 +27,30 @@
               <v-carousel-item>
                 <SwissWheel zone="B"></SwissWheel>
               </v-carousel-item>
+
             </v-carousel>
+            <v-sheet
+              class="mx-auto text-center"
+            >
+              <v-slide-group
+                v-model="selectedZone"
+                mandatory="force"
+              >
+                <v-slide-group-item
+                  v-for="n in ['A', 'B']"
+                  :key="n"
+                  v-slot="{ isSelected, toggle }"
+                >
+                  <v-btn
+                    :color="isSelected ? 'primary' : undefined"
+                    class="ma-2"
+                    rounded
+                    @click="toggle">
+                    半区 {{ n }}
+                  </v-btn>
+                </v-slide-group-item>
+              </v-slide-group>
+            </v-sheet>
           </div>
         </v-col>
         <v-img
