@@ -28,12 +28,9 @@ const options = ref<RGOptions>({
     min_per_height: 40
   },
   backgroundColor: 'transparent',
-  // backgroundColor: '#616161',
   defaultNodeColor: '#212121',
-  // defaultNodeBorderColor: '#48666e',
-  // defaultNodeBorderWidth: 4,
   defaultNodeShape: 1,
-  defaultNodeWidth: 260,
+  defaultNodeWidth: 250,
   defaultLineShape: 4,
   defaultJunctionPoint: 'lr',
   disableDragNode: true,
@@ -310,7 +307,7 @@ const jsonData = {
       </div>
       <relation-graph ref="graphRef" :options="options">
         <template #node="{node}">
-          <div class="pa-2">
+          <div class="py-2">
             <h2 class="mr-2">{{ node.data.title }}
               <span v-if="node.data.round == round + 1">*</span>
             </h2>
