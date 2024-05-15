@@ -1,4 +1,4 @@
-export interface Data {
+export interface ScheduleData {
   event: Event
   last_event: LastEvent
 }
