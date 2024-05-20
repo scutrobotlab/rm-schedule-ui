@@ -26,18 +26,21 @@ const graphRef = ref<RelationGraph>()
 
 const options = ref<RGOptions>({
   layout: {
-    layoutName: 'tree',
-    from: 'left',
-    max_per_width: 300,
-    min_per_height: 40
+    'layoutName': 'fixed',
+    'layoutClassName': 'seeks-layout-fixed',
+    'defaultJunctionPoint': 'border',
+    'defaultNodeShape': 0,
+    'defaultLineShape': 1
   },
   backgroundColor: 'transparent',
   defaultNodeColor: '#212121',
   defaultNodeShape: 1,
-  defaultNodeWidth: 250,
+  defaultNodeWidth: 200,
   defaultLineShape: 4,
   defaultJunctionPoint: 'lr',
   disableDragNode: true,
+  disableDragCanvas: true,
+  zoomToFitWhenRefresh: true,
 })
 
 function match(orderNumber: number): MatchNode | undefined {
@@ -96,12 +99,18 @@ const round = computed(() => {
   }
 })
 
+const rx = 0;
+const ry = 0;
+const width = 200;
+
 const jsonData = {
   rootId: '#1',
   nodes: [
     {
       id: '#1',
       text: '第一轮 0:0',
+      x: rx,
+      y: ry,
       data: {
         title: '第一轮 0:0',
         round: 1,
@@ -121,6 +130,8 @@ const jsonData = {
     {
       id: '#2',
       text: '第二轮 1:0',
+      x: rx + width + 100,
+      y: ry - 60,
       data: {
         title: '第二轮 1:0',
         round: 2,
@@ -152,6 +163,8 @@ const jsonData = {
     {
       id: '#3',
       text: '第二轮 0:1',
+      x: rx + width + 100,
+      y: ry + 180,
       data: {
         title: '第二轮 0:1',
         round: 2,
@@ -183,6 +196,8 @@ const jsonData = {
     {
       id: '#4',
       text: '第三轮 2:0',
+      x: rx + 2 * width + 200,
+      y: ry - 120,
       data: {
         title: '第三轮 2:0',
         round: 3,
@@ -210,6 +225,8 @@ const jsonData = {
     {
       id: '#5',
       text: '第三轮 1:1',
+      x: rx + 2 * width + 200,
+      y: ry + 25,
       data: {
         title: '第三轮 1:1',
         round: 3,
@@ -241,6 +258,8 @@ const jsonData = {
     {
       id: '#6',
       text: '第三轮 0:2 淘汰',
+      x: rx + 2 * width + 200,
+      y: ry + 260,
       data: {
         title: '第三轮 0:2 淘汰',
         round: 4,
@@ -262,6 +281,8 @@ const jsonData = {
     {
       id: '#7',
       text: '第三轮 3:0 晋级',
+      x: rx + 3 * width + 300,
+      y: ry - 80,
       data: {
         title: '第三轮 3:0 晋级',
         round: 4,
@@ -283,6 +304,8 @@ const jsonData = {
     {
       id: '#8',
       text: '第三轮 2:1 晋级',
+      x: rx + 3 * width + 300,
+      y: ry + 30,
       data: {
         title: '第三轮 2:1 晋级',
         round: 4,
@@ -304,6 +327,8 @@ const jsonData = {
     {
       id: '#9',
       text: '第三轮 1:2 淘汰',
+      x: rx + 3 * width + 300,
+      y: ry + 240,
       data: {
         title: '第三轮 1:2 淘汰',
         round: 4,
@@ -352,29 +377,29 @@ const jsonData = {
               <span v-if="isForecast(node)">*</span>
             </h2>
 
-            <div v-if="node.data.type == 'match'" class="mt-2">
+            <div v-if="node.data.type == 'match'" class="mt-1">
               <div v-for="(v, i) in node.data.zones[zoneIndex].matches" :key="i">
-                <div v-if="match(v).redSide.player?.team" class="text-caption">
-                <span style="color: white">
-                {{ limitText(match(v).redSide.player?.team.collegeName, 8) }}
-                  {{ match(v).redSideWinGameCount }}
-                </span>
-                  <span style="color: white">
-                  {{ match(v).blueSideWinGameCount }}
-                {{ limitText(match(v).blueSide.player?.team.collegeName, 8) }}
-                </span>
+                <div v-if="match(v).redSide.player?.team">
+                  <span>
+                    {{ limitText(match(v).redSide.player?.team.collegeName, 16) }}
+                    {{ match(v).redSideWinGameCount }}
+                  </span>
+                  <br>
+                  <span>
+                    {{ limitText(match(v).blueSide.player?.team.collegeName, 16) }}
+                    {{ match(v).blueSideWinGameCount }}
+                  </span>
                 </div>
                 <div v-else-if="isForecast(node)">
                   <div
                     v-if="forecast(node.data.zones[zoneIndex].forecasts[i].red - 1)[2].itemValue != '0/0/0'"
-                    class="text-caption"
                   >
                     {{
-                      limitText(forecast(node.data.zones[zoneIndex].forecasts[i].red - 1)[1].itemValue['collegeName'], 8)
+                      limitText(forecast(node.data.zones[zoneIndex].forecasts[i].red - 1)[1].itemValue['collegeName'], 16)
                     }}
                     -
                     {{
-                      limitText(forecast(node.data.zones[zoneIndex].forecasts[i].blue - 1)[1].itemValue['collegeName'], 8)
+                      limitText(forecast(node.data.zones[zoneIndex].forecasts[i].blue - 1)[1].itemValue['collegeName'], 16)
                     }}
                   </div>
                   <div v-else>
@@ -415,7 +440,6 @@ const jsonData = {
     background: none !important;
 
     .rel-node-shape-1 {
-      background: rgba(255, 255, 255, 0.2) !important;
       border-radius: 10px;
       backdrop-filter: blur(5px);
       -webkit-backdrop-filter: blur(5px);
