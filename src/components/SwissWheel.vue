@@ -132,10 +132,14 @@ const jsonData = {
         zones: [
           {
             matches: [1, 2, 3, 4, 5, 6, 7, 8],
+            winners: [],
+            losers: [],
             text: ['A1', 'A9', 'A2', 'A10', 'A3', 'A11', 'A4', 'A12', 'A5', 'A13', 'A6', 'A14', 'A7', 'A15', 'A8', 'A16']
           },
           {
             matches: [9, 10, 11, 12, 13, 14, 15, 16],
+            winners: [],
+            losers: [],
             text: ['B1', 'B9', 'B2', 'B10', 'B3', 'B11', 'B4', 'B12', 'B5', 'B13', 'B6', 'B14', 'B7', 'B15', 'B8', 'B16']
           }
         ]
@@ -154,6 +158,8 @@ const jsonData = {
         zones: [
           {
             matches: [17, 18, 19, 20],
+            winners: [1, 2, 3, 4, 5, 6, 7, 8],
+            losers: [],
             text: ['A-1', 'A-2', 'A-3', 'A-4', 'A-5', 'A-6', 'A-7', 'A-8'],
             forecasts: [
               {red: 1, blue: 2},
@@ -164,6 +170,8 @@ const jsonData = {
           },
           {
             matches: [25, 26, 27, 28],
+            winners: [9, 10, 11, 12, 13, 14, 15, 16],
+            losers: [],
             text: ['B-1', 'B-2', 'B-3', 'B-4', 'B-5', 'B-6', 'B-7', 'B-8'],
             forecasts: [
               {red: 1, blue: 2},
@@ -188,6 +196,8 @@ const jsonData = {
         zones: [
           {
             matches: [21, 22, 23, 24],
+            winners: [],
+            losers: [1, 2, 3, 4, 5, 6, 7, 8],
             text: ['A-9', 'A-10', 'A-11', 'A-12', 'A-13', 'A-14', 'A-15', 'A-16'],
             forecasts: [
               {red: 9, blue: 10},
@@ -198,6 +208,8 @@ const jsonData = {
           },
           {
             matches: [29, 30, 31, 32],
+            winners: [],
+            losers: [9, 10, 11, 12, 13, 14, 15, 16],
             text: ['B-9', 'B-10', 'B-11', 'B-12', 'B-13', 'B-14', 'B-15', 'B-16'],
             forecasts: [
               {red: 9, blue: 10},
@@ -222,6 +234,8 @@ const jsonData = {
         zones: [
           {
             matches: [33, 34],
+            winners: [17, 18, 19, 20],
+            losers: [],
             text: ['A-(2)', 'A-(1)', 'A-(4)', 'A-(3)'],
             forecasts: [
               {red: 2, blue: 1},
@@ -230,6 +244,8 @@ const jsonData = {
           },
           {
             matches: [39, 40],
+            winners: [25, 26, 27, 28],
+            losers: [],
             text: ['B-(2)', 'B-(1)', 'B-(4)', 'B-(3)'],
             forecasts: [
               {red: 2, blue: 1},
@@ -252,6 +268,8 @@ const jsonData = {
         zones: [
           {
             matches: [35, 36, 37, 38],
+            winners: [21, 22, 23, 24],
+            losers: [17, 18, 19, 20],
             text: ['A-(6)', 'A-(5)', 'A-(8)', 'A-(7)', 'A-(10)', 'A-(9)', 'A-(12)', 'A-(11)'],
             forecasts: [
               {red: 6, blue: 5},
@@ -262,6 +280,8 @@ const jsonData = {
           },
           {
             matches: [41, 42, 43, 44],
+            winners: [29, 30, 31, 32],
+            losers: [25, 26, 27, 28],
             text: ['B-(6)', 'B-(5)', 'B-(8)', 'B-(7)', 'B-(10)', 'B-(9)', 'B-(12)', 'B-(11)'],
             forecasts: [
               {red: 6, blue: 5},
@@ -504,7 +524,7 @@ const jsonData = {
                 </div>
                 <div v-else class="container2 mb-1">
                   <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
-                    <v-img src="@/assets/school_red.png"/>
+                    <v-img src="@/assets/school_grey.png"/>
                   </v-avatar>
                   <span class="one-line-text">待定 {{ node.data.zones[zoneIndex].text[i] }}</span>
                 </div>
@@ -519,7 +539,7 @@ const jsonData = {
                 </div>
                 <div v-else class="container2 mb-1">
                   <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
-                    <v-img src="@/assets/school_red.png"/>
+                    <v-img src="@/assets/school_grey.png"/>
                   </v-avatar>
                   <span class="one-line-text">待定 {{ node.data.zones[zoneIndex].text[i] }}</span>
                 </div>
