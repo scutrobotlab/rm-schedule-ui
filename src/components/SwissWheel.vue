@@ -2,7 +2,7 @@
 import {RGOptions} from "relation-graph-vue3/types/types/relation-graph-models/types";
 import RelationGraph from 'relation-graph-vue3';
 import {usePromotionStore} from "../stores/promotion";
-import {MatchNode} from "../types/schedule";
+import {MatchNode, Player} from "../types/schedule";
 import {computed} from "vue";
 import {GroupPlayer} from "../types/group_rank_info";
 
@@ -17,8 +17,9 @@ const loading = ref(true)
 const promotionStore = usePromotionStore();
 const promise1 = promotionStore.updateSchedule()
 const promise2 = promotionStore.updateGroupRank()
-Promise.all([promise1, promise2]).then(() => {
-  graphRef.value.setJsonData(jsonData)
+Promise.all([promise1, promise2]).then(async () => {
+  await graphRef.value.setJsonData(jsonData)
+  await graphRef.value.getInstance().zoomToFit()
   loading.value = false
 })
 
@@ -33,9 +34,9 @@ const options = ref<RGOptions>({
     'defaultLineShape': 1
   },
   backgroundColor: 'transparent',
-  defaultNodeColor: '#212121',
+  defaultNodeColor: '#263238',
   defaultNodeShape: 1,
-  defaultNodeWidth: 200,
+  defaultNodeWidth: 240,
   defaultLineShape: 4,
   defaultJunctionPoint: 'lr',
   disableDragNode: true,
@@ -59,18 +60,18 @@ function isForecast(node: any): boolean {
   return node.data.round == round.value + 1
 }
 
-function winner(orderNumber: number): string {
+function winner(orderNumber: number): Player | null {
   const match = promotionStore.getMatchByOrder(orderNumber)
-  if (match.redSideWinGameCount == 2) return match.redSide.player?.team.collegeName || ''
-  if (match.blueSideWinGameCount == 2) return match.blueSide.player?.team.collegeName || ''
-  return ''
+  if (match.redSideWinGameCount == 2) return match.redSide.player
+  if (match.blueSideWinGameCount == 2) return match.blueSide.player
+  return null
 }
 
-function loser(orderNumber: number): string {
+function loser(orderNumber: number): Player | null {
   const match = promotionStore.getMatchByOrder(orderNumber)
-  if (match.redSideWinGameCount == 2) return match.blueSide.player?.team.collegeName || ''
-  if (match.blueSideWinGameCount == 2) return match.redSide.player?.team.collegeName || ''
-  return ''
+  if (match.redSideWinGameCount == 2) return match.blueSide.player
+  if (match.blueSideWinGameCount == 2) return match.redSide.player
+  return null
 }
 
 const zoneIndex = computed(() => {
@@ -133,7 +134,7 @@ const jsonData = {
       id: '#2',
       text: '第二轮 1:0',
       x: rx + width + 100,
-      y: ry - 60,
+      y: ry - 40,
       data: {
         title: '第二轮 1:0',
         round: 2,
@@ -166,7 +167,7 @@ const jsonData = {
       id: '#3',
       text: '第二轮 0:1',
       x: rx + width + 100,
-      y: ry + 180,
+      y: ry + 260,
       data: {
         title: '第二轮 0:1',
         round: 2,
@@ -199,7 +200,7 @@ const jsonData = {
       id: '#4',
       text: '第三轮 2:0',
       x: rx + 2 * width + 200,
-      y: ry - 120,
+      y: ry - 80,
       data: {
         title: '第三轮 2:0',
         round: 3,
@@ -228,7 +229,7 @@ const jsonData = {
       id: '#5',
       text: '第三轮 1:1',
       x: rx + 2 * width + 200,
-      y: ry + 25,
+      y: ry + 90,
       data: {
         title: '第三轮 1:1',
         round: 3,
@@ -261,7 +262,7 @@ const jsonData = {
       id: '#6',
       text: '第三轮 0:2 淘汰',
       x: rx + 2 * width + 200,
-      y: ry + 260,
+      y: ry + 370,
       data: {
         title: '第三轮 0:2 淘汰',
         round: 4,
@@ -284,7 +285,7 @@ const jsonData = {
       id: '#7',
       text: '第三轮 3:0 晋级',
       x: rx + 3 * width + 300,
-      y: ry - 80,
+      y: ry - 50,
       data: {
         title: '第三轮 3:0 晋级',
         round: 4,
@@ -307,7 +308,7 @@ const jsonData = {
       id: '#8',
       text: '第三轮 2:1 晋级',
       x: rx + 3 * width + 300,
-      y: ry + 30,
+      y: ry + 80,
       data: {
         title: '第三轮 2:1 晋级',
         round: 4,
@@ -330,7 +331,7 @@ const jsonData = {
       id: '#9',
       text: '第三轮 1:2 淘汰',
       x: rx + 3 * width + 300,
-      y: ry + 240,
+      y: ry + 310,
       data: {
         title: '第三轮 1:2 淘汰',
         round: 4,
@@ -382,16 +383,33 @@ const jsonData = {
             <div v-if="node.data.type == 'match'" class="mt-1">
               <div v-for="(v, i) in node.data.zones[zoneIndex].matches" :key="i">
                 <div v-if="match(v).redSide.player?.team">
-                  <span>
-                    {{ limitText(match(v).redSide.player?.team.collegeName, 16) }}
-                    {{ match(v).redSideWinGameCount }}
-                  </span>
-                  <br>
-                  <span>
-                    {{ limitText(match(v).blueSide.player?.team.collegeName, 16) }}
-                    {{ match(v).blueSideWinGameCount }}
-                  </span>
+                  <div class="container mt-2">
+                    <div class="left-column ma-1">
+                      <h2 class="px-1">{{ match(v).orderNumber }}</h2>
+                    </div>
+                    <div class="right-column">
+                      <div class="top-row row-content">
+                        <div style="background: #D32F2F">
+                          <h4 class="px-1">{{ match(v).redSideWinGameCount }}</h4>
+                        </div>
+                        <v-avatar class="mx-1" color="white" size="x-small">
+                          <v-img :src="match(v).redSide.player?.team.collegeLogo"/>
+                        </v-avatar>
+                        <span class="one-line-text">{{ match(v).redSide.player?.team.collegeName }}</span>
+                      </div>
+                      <div class="bottom-row row-content">
+                        <div style="background: #1976D2">
+                          <h4 class="px-1">{{ match(v).blueSideWinGameCount }}</h4>
+                        </div>
+                        <v-avatar class="mx-1" color="white" size="x-small">
+                          <v-img :src="match(v).blueSide.player?.team.collegeLogo"/>
+                        </v-avatar>
+                        <span class="one-line-text">{{ match(v).blueSide.player?.team.collegeName }}</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
+
                 <div v-else-if="isForecast(node)">
                   <div
                     v-if="forecast(node.data.zones[zoneIndex].forecasts[i].red - 1)[2].itemValue != '0/0/0'"
@@ -415,21 +433,31 @@ const jsonData = {
             </div>
 
             <div v-else-if="node.data.type == 'eliminate' || node.data.type == 'promote'"
-                 class="mt-2">
+                 class="mt-2 mx-2">
               <div v-for="(v, i) in node.data.zones[zoneIndex].winners" :key="i">
-                {{ winner(v) }}
+                <div v-if="winner(v)" class="container2 mt-1">
+                  <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
+                    <v-img :src="winner(v)?.team.collegeLogo"/>
+                  </v-avatar>
+                  <span class="one-line-text">{{ winner(v)?.team.collegeName }}</span>
+                </div>
               </div>
 
               <div v-for="(v, i) in node.data.zones[zoneIndex].losers" :key="i">
-                {{ loser(v) }}
+                <div v-if="loser(v)" class="container2 mt-1">
+                  <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
+                    <v-img :src="loser(v)?.team.collegeLogo"/>
+                  </v-avatar>
+                  <span class="one-line-text">{{ loser(v)?.team.collegeName }}</span>
+                </div>
               </div>
             </div>
           </div>
         </template>
       </relation-graph>
     </div>
-    <div>
-      <span class="ml-2 mb-2 text-disabled text-end">
+    <div class="text-end">
+      <span class="ml-2 mb-2 text-disabled">
         * 根据官网排名<b>实时</b>预测
       </span>
     </div>
@@ -469,5 +497,46 @@ const jsonData = {
 
 .my-graph {
   background: rgba(0, 0, 0, 0.75);
+}
+
+.container {
+  display: flex;
+  width: 100%; /* 确保容器宽度 */
+}
+
+.left-column {
+  flex: 0 0 10%;
+  display: flex;
+  align-items: center; /* 垂直居中对齐 */
+  justify-content: center;
+}
+
+.right-column {
+  flex: 1; /* 占据剩余的空间 */
+  display: flex;
+  flex-direction: column;
+}
+
+.row-content {
+  display: flex;
+  align-items: center; /* 垂直居中对齐 */
+  justify-content: flex-start; /* 水平左对齐 */
+  width: 90%; /* 确保行内容宽度 */
+}
+
+.one-line-text {
+  white-space: nowrap; /* 禁止换行 */
+  overflow: hidden; /* 隐藏溢出文本 */
+  text-overflow: ellipsis; /* 使用省略号替代溢出文本 */
+  flex: 1; /* 占据剩余空间 */
+  min-width: 0; /* 确保 flex 项目的最小宽度为 0 */
+  text-align: left; /* 确保文本居左对齐 */
+}
+
+.container2 {
+  display: flex;
+  align-items: center; /* 垂直居中对齐 */
+  flex: 1; /* 平分右边列的高度 */
+  justify-content: flex-start; /* 水平左对齐 */
 }
 </style>
