@@ -92,9 +92,9 @@ const zoneIndex = computed(() => {
 
 const round = computed(() => {
   // return 1;
-  return 2;
+  // return 2;
   // return 3;
-  // return 4;
+  return 4;
   switch (props.zone) {
     case 'A':
       if (promotionStore.getMatchByOrder(45).redSide.player) return 4
@@ -225,7 +225,7 @@ const jsonData = {
       id: '#4',
       text: '第三轮 2:0',
       x: rx + 2 * nodeWidth + 200,
-      y: ry - 120,
+      y: ry - 140,
       data: {
         title: '瑞士轮第三轮 2-0',
         titleColor: '#FFFFFF',
@@ -259,7 +259,7 @@ const jsonData = {
       id: '#5',
       text: '第三轮 1:1',
       x: rx + 2 * nodeWidth + 200,
-      y: ry + 110,
+      y: ry + 90,
       data: {
         title: '瑞士轮第三轮 1-1',
         titleColor: '#FFFFFF',
@@ -297,7 +297,7 @@ const jsonData = {
       id: '#6',
       text: '第三轮 0:2 淘汰',
       x: rx + 2 * nodeWidth + 200,
-      y: ry + 485,
+      y: ry + 465,
       data: {
         title: '淘汰 0-2',
         titleColor: '#B0BEC5',
@@ -321,7 +321,7 @@ const jsonData = {
       id: '#7',
       text: '第三轮 3:0 晋级',
       x: rx + 3 * nodeWidth + 300,
-      y: ry - 20,
+      y: ry - 60,
       data: {
         title: '晋级淘汰赛 3-0',
         titleColor: '#FBC02D',
@@ -345,7 +345,7 @@ const jsonData = {
       id: '#8',
       text: '第三轮 2:1 晋级',
       x: rx + 3 * nodeWidth + 300,
-      y: ry + 140,
+      y: ry + 100,
       data: {
         title: '晋级淘汰赛 2-1',
         titleColor: '#FBC02D',
@@ -369,7 +369,7 @@ const jsonData = {
       id: '#9',
       text: '第三轮 1:2 淘汰',
       x: rx + 3 * nodeWidth + 300,
-      y: ry + 440,
+      y: ry + 400,
       data: {
         title: '淘汰 1-2',
         titleColor: '#B0BEC5',
@@ -421,16 +421,17 @@ const jsonData = {
             </p>
 
             <div v-if="node.data.type == 'match'" class="mt-2">
-              <div class="mx-2 mb-3"
+              <div class="mx-2"
                    v-for="(v, i) in node.data.zones[zoneIndex].matches" :key="i">
-                <div v-if="round + 1 >= node.data.round" class="container">
+
+                <div v-if="round + 1 > node.data.round" class="container my-3">
                   <div class="container mt-2">
                     <div class="left-column ma-1">
                       <h2 class="px-1">{{ padNumber(match(v).orderNumber) }}</h2>
                     </div>
 
                     <div class="right-column">
-                      <div v-if="match(v).redSide.player?.team" class="top-row row-content mb-1">
+                      <div class="top-row row-content mb-1">
                         <div style="background: #D32F2F">
                           <h4 class="px-1">{{ match(v).redSideWinGameCount }}</h4>
                         </div>
@@ -439,22 +440,8 @@ const jsonData = {
                         </v-avatar>
                         <span class="one-line-text">{{ match(v).redSide.player?.team.collegeName }}</span>
                       </div>
-                      <div v-else class="top-row row-content mb-1">
-                        <div style="background: #D32F2F">
-                          <h4 class="px-1">{{ match(v).redSideWinGameCount }}</h4>
-                        </div>
-                        <v-avatar class="mx-1" color="white" size="x-small">
-                          <v-img
-                            :src="forecast(node.data.zones[zoneIndex].forecasts[i].red - 1)[1].itemValue['collegeLogo']">
-                          </v-img>
-                        </v-avatar>
-                        <span
-                          class="one-line-text">{{
-                            forecast(node.data.zones[zoneIndex].forecasts[i].red - 1)[1].itemValue['collegeName']
-                          }}</span>
-                      </div>
 
-                      <div v-if="match(v).blueSide.player?.team" class="row-content">
+                      <div class="row-content">
                         <div style="background: #1976D2">
                           <h4 class="px-1">{{ match(v).blueSideWinGameCount }}</h4>
                         </div>
@@ -463,25 +450,38 @@ const jsonData = {
                         </v-avatar>
                         <span class="one-line-text">{{ match(v).blueSide.player?.team.collegeName }}</span>
                       </div>
-                      <div v-else class="row-content">
-                        <div style="background: #1976D2">
+                    </div>
+                  </div>
+                </div>
+
+                <div v-else-if="round + 1 == node.data.round" class="container">
+                  <div class="container ml-2">
+                    <div class="right-column">
+                      <div class="top-row row-content mb-3">
+                        <div style="background: #9E9E9E">
                           <h4 class="px-1"> - </h4>
                         </div>
-                        <v-avatar class="mx-1" color="white" size="x-small">
-                          <v-img
-                            :src="forecast(node.data.zones[zoneIndex].forecasts[i].blue - 1)[1].itemValue['collegeLogo']">
-                          </v-img>
+                        <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
+                          <v-img :src="winner(v)?.team.collegeLogo"/>
                         </v-avatar>
-                        <span
-                          class="one-line-text">{{
-                            forecast(node.data.zones[zoneIndex].forecasts[i].blue - 1)[1].itemValue['collegeName']
-                          }}</span>
+                        <span class="one-line-text">{{ winner(v)?.team.collegeName }}</span>
+                      </div>
+
+                      <div class="row-content mb-3">
+                        <div style="background: #9E9E9E">
+                          <h4 class="px-1"> - </h4>
+                        </div>
+                        <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
+                          <v-img :src="loser(v)?.team.collegeLogo"/>
+                        </v-avatar>
+                        <span class="one-line-text">{{ loser(v)?.team.collegeName }}</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div v-else>
+                <!--纯文字+红蓝R标 A-1-->
+                <div v-else class="container my-3">
                   <div class="container mt-2">
                     <div class="left-column ma-1">
                       <h2 class="px-1">{{ padNumber(match(v).orderNumber) }}</h2>
@@ -514,7 +514,7 @@ const jsonData = {
             </div>
 
             <div v-else-if="node.data.type == 'eliminate' || node.data.type == 'promote'"
-                 class="mt-2 mx-4">
+                 class="my-3 mx-4">
               <div v-for="(v, i) in node.data.zones[zoneIndex].winners" :key="i"
                    class="mb-3">
                 <div v-if="round >= 3 && winner(v)" class="container2 mb-1">
