@@ -52,6 +52,24 @@ function limitText(text: string, limit: number): string {
   return text.length > limit ? text.slice(0, limit) + '...' : text
 }
 
+function isForecast(node: any): boolean {
+  return node.data.round == round.value + 1
+}
+
+function winner(orderNumber: number): string {
+  const match = promotionStore.getMatchByOrder(orderNumber)
+  if (match.redSideWinGameCount == 2) return match.redSide.player?.team.collegeName || ''
+  if (match.blueSideWinGameCount == 2) return match.blueSide.player?.team.collegeName || ''
+  return ''
+}
+
+function loser(orderNumber: number): string {
+  const match = promotionStore.getMatchByOrder(orderNumber)
+  if (match.redSideWinGameCount == 2) return match.blueSide.player?.team.collegeName || ''
+  if (match.blueSideWinGameCount == 2) return match.redSide.player?.team.collegeName || ''
+  return ''
+}
+
 const zoneIndex = computed(() => {
   switch (props.zone) {
     case 'A':
@@ -87,6 +105,7 @@ const jsonData = {
       data: {
         title: '第一轮 0:0',
         round: 1,
+        type: 'match',
         zones: [
           {
             matches: [1, 2, 3, 4, 5, 6, 7, 8],
@@ -105,6 +124,7 @@ const jsonData = {
       data: {
         title: '第二轮 1:0',
         round: 2,
+        type: 'match',
         zones: [
           {
             matches: [17, 18, 19, 20],
@@ -135,6 +155,7 @@ const jsonData = {
       data: {
         title: '第二轮 0:1',
         round: 2,
+        type: 'match',
         zones: [
           {
             matches: [21, 22, 23, 24],
@@ -165,6 +186,7 @@ const jsonData = {
       data: {
         title: '第三轮 2:0',
         round: 3,
+        type: 'match',
         zones: [
           {
             matches: [33, 34],
@@ -191,6 +213,7 @@ const jsonData = {
       data: {
         title: '第三轮 1:1',
         round: 3,
+        type: 'match',
         zones: [
           {
             matches: [35, 36, 37, 38],
@@ -218,16 +241,19 @@ const jsonData = {
     {
       id: '#6',
       text: '第三轮 0:2 淘汰',
-      round: 4,
       data: {
         title: '第三轮 0:2 淘汰',
+        round: 4,
+        type: 'eliminate',
         zones: [
           {
-            matches: [],
+            winners: [],
+            losers: [21, 22, 23, 24],
             text: ['A-(14) - A-(13)', 'A-(16) - A-(15)']
           },
           {
-            matches: [],
+            winners: [],
+            losers: [29, 30, 31, 32],
             text: ['B-(14) - B-(13)', 'B-(16) - B-(15)']
           }
         ]
@@ -239,13 +265,16 @@ const jsonData = {
       data: {
         title: '第三轮 3:0 晋级',
         round: 4,
+        type: 'promote',
         zones: [
           {
-            matches: [],
+            winners: [33, 34],
+            losers: [],
             text: ['T1 T2']
           },
           {
-            matches: [],
+            winners: [39, 40],
+            losers: [],
             text: ['T1 T2']
           }
         ]
@@ -257,13 +286,16 @@ const jsonData = {
       data: {
         title: '第三轮 2:1 晋级',
         round: 4,
+        type: 'promote',
         zones: [
           {
-            matches: [],
+            winners: [35, 36, 37, 38],
+            losers: [33, 34],
             text: ['T3 T4 T5 T6 T7 T8']
           },
           {
-            matches: [],
+            winners: [41, 42, 43, 44],
+            losers: [39, 40],
             text: ['T3 T4 T5 T6 T7 T8']
           }
         ]
@@ -275,13 +307,16 @@ const jsonData = {
       data: {
         title: '第三轮 1:2 淘汰',
         round: 4,
+        type: 'eliminate',
         zones: [
           {
-            matches: [],
+            winners: [],
+            losers: [35, 36, 37, 38],
             text: ['T9 T10 T11 T12']
           },
           {
-            matches: [],
+            winners: [],
+            losers: [41, 42, 43, 44],
             text: ['T9 T10 T11 T12']
           }
         ]
@@ -314,40 +349,52 @@ const jsonData = {
         <template #node="{node}">
           <div class="py-2">
             <h2 class="mr-2">{{ node.data.title }}
-              <span v-if="node.data.round == round + 1">*</span>
+              <span v-if="isForecast(node)">*</span>
             </h2>
-            <v-spacer class="mt-2"/>
-            <div v-for="(v, i) in node.data.zones[zoneIndex].matches" :key="i">
-              <div v-if="match(v).redSide.player?.team" class="text-caption">
+
+            <div v-if="node.data.type == 'match'" class="mt-2">
+              <div v-for="(v, i) in node.data.zones[zoneIndex].matches" :key="i">
+                <div v-if="match(v).redSide.player?.team" class="text-caption">
                 <span style="color: white">
                 {{ limitText(match(v).redSide.player?.team.collegeName, 8) }}
                   {{ match(v).redSideWinGameCount }}
                 </span>
-                :
-                <span style="color: white">
+                  <span style="color: white">
                   {{ match(v).blueSideWinGameCount }}
                 {{ limitText(match(v).blueSide.player?.team.collegeName, 8) }}
                 </span>
-              </div>
-              <div v-else-if="node.data.round == round + 1">
-                <div
-                  v-if="forecast(node.data.zones[zoneIndex].forecasts[i].red - 1)[2].itemValue != '0/0/0'"
-                  class="text-caption"
-                >
-                  {{
-                    limitText(forecast(node.data.zones[zoneIndex].forecasts[i].red - 1)[1].itemValue['collegeName'], 8)
-                  }}
-                  -
-                  {{
-                    limitText(forecast(node.data.zones[zoneIndex].forecasts[i].blue - 1)[1].itemValue['collegeName'], 8)
-                  }}
+                </div>
+                <div v-else-if="isForecast(node)">
+                  <div
+                    v-if="forecast(node.data.zones[zoneIndex].forecasts[i].red - 1)[2].itemValue != '0/0/0'"
+                    class="text-caption"
+                  >
+                    {{
+                      limitText(forecast(node.data.zones[zoneIndex].forecasts[i].red - 1)[1].itemValue['collegeName'], 8)
+                    }}
+                    -
+                    {{
+                      limitText(forecast(node.data.zones[zoneIndex].forecasts[i].blue - 1)[1].itemValue['collegeName'], 8)
+                    }}
+                  </div>
+                  <div v-else>
+                    {{ node.data.zones[zoneIndex].text[i] }}
+                  </div>
                 </div>
                 <div v-else>
                   {{ node.data.zones[zoneIndex].text[i] }}
                 </div>
               </div>
-              <div v-else>
-                {{ node.data.zones[zoneIndex].text[i] }}
+            </div>
+
+            <div v-else-if="node.data.type == 'eliminate' || node.data.type == 'promote'"
+                 class="mt-2">
+              <div v-for="(v, i) in node.data.zones[zoneIndex].winners" :key="i">
+                {{ winner(v) }}
+              </div>
+
+              <div v-for="(v, i) in node.data.zones[zoneIndex].losers" :key="i">
+                {{ loser(v) }}
               </div>
             </div>
           </div>
