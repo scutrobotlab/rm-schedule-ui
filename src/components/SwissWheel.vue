@@ -92,7 +92,7 @@ const zoneIndex = computed(() => {
 
 const round = computed(() => {
   // return 1;
-  // return 2;
+  return 2;
   // return 3;
   // return 4;
   switch (props.zone) {
@@ -345,7 +345,7 @@ const jsonData = {
       id: '#8',
       text: '第三轮 2:1 晋级',
       x: rx + 3 * nodeWidth + 300,
-      y: ry + 120,
+      y: ry + 140,
       data: {
         title: '晋级淘汰赛 2-1',
         titleColor: '#FBC02D',
@@ -369,7 +369,7 @@ const jsonData = {
       id: '#9',
       text: '第三轮 1:2 淘汰',
       x: rx + 3 * nodeWidth + 300,
-      y: ry + 370,
+      y: ry + 440,
       data: {
         title: '淘汰 1-2',
         titleColor: '#B0BEC5',
@@ -414,7 +414,7 @@ const jsonData = {
       <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
       <relation-graph ref="graphRef" :options="options">
         <template #node="{node}">
-          <div class="py-2" :style="'color: ' + node.data.titleColor">
+          <div class="py-2 my-1" :style="'color: ' + node.data.titleColor">
             <p class="mt-1 text-h6" :style="'color: ' + node.data.titleColor">
               <b>{{ node.data.title }}</b>
               <span class="ml-1" v-if="isForecast(node)">*</span>
@@ -515,7 +515,8 @@ const jsonData = {
 
             <div v-else-if="node.data.type == 'eliminate' || node.data.type == 'promote'"
                  class="mt-2 mx-4">
-              <div v-for="(v, i) in node.data.zones[zoneIndex].winners" :key="i">
+              <div v-for="(v, i) in node.data.zones[zoneIndex].winners" :key="i"
+                   class="mb-3">
                 <div v-if="round >= 3 && winner(v)" class="container2 mb-1">
                   <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
                     <v-img :src="winner(v)?.team.collegeLogo"/>
@@ -530,7 +531,8 @@ const jsonData = {
                 </div>
               </div>
 
-              <div v-for="(v, i) in node.data.zones[zoneIndex].losers" :key="i">
+              <div v-for="(v, i) in node.data.zones[zoneIndex].losers" :key="i"
+                   class="mb-3">
                 <div v-if="round >= 3 && loser(v)" class="container2 mb-1">
                   <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
                     <v-img :src="loser(v)?.team.collegeLogo"/>
