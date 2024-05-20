@@ -7,7 +7,7 @@ export interface Schedule {
   data: ScheduleData
 }
 
-export const ZoneId = 498
+export const ZoneId = 499
 export const ZoneIdStr = ZoneId.toString()
 
 export const usePromotionStore = defineStore('promotion', {
