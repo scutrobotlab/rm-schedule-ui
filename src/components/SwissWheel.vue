@@ -90,16 +90,22 @@ const zoneIndex = computed(() => {
 })
 
 const round = computed(() => {
+  // return 1;
+  // return 2;
+  // return 3;
+  // return 4;
   switch (props.zone) {
     case 'A':
       if (promotionStore.getMatchByOrder(45).redSide.player) return 4
       else if (promotionStore.getMatchByOrder(33).redSide.player) return 3
       else if (promotionStore.getMatchByOrder(17).redSide.player) return 2
-      else return 1
+      else if (promotionStore.getMatchByOrder(1).redSide.player) return 1
+      else return 0
     case 'B':
       if (promotionStore.getMatchByOrder(46).redSide.player) return 4
       else if (promotionStore.getMatchByOrder(39).redSide.player) return 3
       else if (promotionStore.getMatchByOrder(25).redSide.player) return 2
+      else if (promotionStore.getMatchByOrder(9).redSide.player) return 1
       else return 1
     default:
       return 0
@@ -126,11 +132,11 @@ const jsonData = {
         zones: [
           {
             matches: [1, 2, 3, 4, 5, 6, 7, 8],
-            text: ['A1 - A9', 'A2 - A10', 'A3 - A11', 'A4 - A12', 'A5 - A13', 'A6 - A14', 'A7 - A15', 'A8 - A16']
+            text: ['A1', 'A9', 'A2', 'A10', 'A3', 'A11', 'A4', 'A12', 'A5', 'A13', 'A6', 'A14', 'A7', 'A15', 'A8', 'A16']
           },
           {
             matches: [9, 10, 11, 12, 13, 14, 15, 16],
-            text: ['B1 - B9', 'B2 - B10', 'B3 - B11', 'B4 - B12', 'B5 - B13', 'B6 - B14', 'B7 - B15', 'B8 - B16']
+            text: ['B1', 'B9', 'B2', 'B10', 'B3', 'B11', 'B4', 'B12', 'B5', 'B13', 'B6', 'B14', 'B7', 'B15', 'B8', 'B16']
           }
         ]
       }
@@ -148,7 +154,7 @@ const jsonData = {
         zones: [
           {
             matches: [17, 18, 19, 20],
-            text: ['A-1 - A-2', 'A-3 - A-4', 'A-5 - A-6', 'A-7 - A-8'],
+            text: ['A-1', 'A-2', 'A-3', 'A-4', 'A-5', 'A-6', 'A-7', 'A-8'],
             forecasts: [
               {red: 1, blue: 2},
               {red: 3, blue: 4},
@@ -158,7 +164,7 @@ const jsonData = {
           },
           {
             matches: [25, 26, 27, 28],
-            text: ['B-1 - B-2', 'B-3 - B-4', 'B-5 - B-6', 'B-7 - B-8'],
+            text: ['B-1', 'B-2', 'B-3', 'B-4', 'B-5', 'B-6', 'B-7', 'B-8'],
             forecasts: [
               {red: 1, blue: 2},
               {red: 3, blue: 4},
@@ -182,7 +188,7 @@ const jsonData = {
         zones: [
           {
             matches: [21, 22, 23, 24],
-            text: ['A-9 - A-10', 'A-11 - A-12', 'A-13 - A-14', 'A-15 - A-16'],
+            text: ['A-9', 'A-10', 'A-11', 'A-12', 'A-13', 'A-14', 'A-15', 'A-16'],
             forecasts: [
               {red: 9, blue: 10},
               {red: 11, blue: 12},
@@ -192,7 +198,7 @@ const jsonData = {
           },
           {
             matches: [29, 30, 31, 32],
-            text: ['B-9 - B-10', 'B-11 - B-12', 'B-13 - B-14', 'B-15 - B-16'],
+            text: ['B-9', 'B-10', 'B-11', 'B-12', 'B-13', 'B-14', 'B-15', 'B-16'],
             forecasts: [
               {red: 9, blue: 10},
               {red: 11, blue: 12},
@@ -216,7 +222,7 @@ const jsonData = {
         zones: [
           {
             matches: [33, 34],
-            text: ['A-(2) - A-(1)', 'A-(4) - A-(3)'],
+            text: ['A-(2)', 'A-(1)', 'A-(4)', 'A-(3)'],
             forecasts: [
               {red: 2, blue: 1},
               {red: 4, blue: 3}
@@ -224,7 +230,7 @@ const jsonData = {
           },
           {
             matches: [39, 40],
-            text: ['B-(2) - B-(1)', 'B-(4) - B-(3)'],
+            text: ['B-(2)', 'B-(1)', 'B-(4)', 'B-(3)'],
             forecasts: [
               {red: 2, blue: 1},
               {red: 4, blue: 3}
@@ -246,7 +252,7 @@ const jsonData = {
         zones: [
           {
             matches: [35, 36, 37, 38],
-            text: ['A-(6) - A-(5)', 'A-(8) - A-(7)', 'A-(10) - A-(9)', 'A-(12) - A-(11)'],
+            text: ['A-(6)', 'A-(5)', 'A-(8)', 'A-(7)', 'A-(10)', 'A-(9)', 'A-(12)', 'A-(11)'],
             forecasts: [
               {red: 6, blue: 5},
               {red: 8, blue: 7},
@@ -256,7 +262,7 @@ const jsonData = {
           },
           {
             matches: [41, 42, 43, 44],
-            text: ['B-(6) - B-(5)', 'B-(8) - B-(7)', 'B-(10) - B-(9)', 'B-(12) - B-(11)'],
+            text: ['B-(6)', 'B-(5)', 'B-(8)', 'B-(7)', 'B-(10)', 'B-(9)', 'B-(12)', 'B-(11)'],
             forecasts: [
               {red: 6, blue: 5},
               {red: 8, blue: 7},
@@ -281,12 +287,12 @@ const jsonData = {
           {
             winners: [],
             losers: [21, 22, 23, 24],
-            text: ['A-(14) - A-(13)', 'A-(16) - A-(15)']
+            text: ['A-(14)', 'A-(13)', 'A-(16)', 'A-(15)']
           },
           {
             winners: [],
             losers: [29, 30, 31, 32],
-            text: ['B-(14) - B-(13)', 'B-(16) - B-(15)']
+            text: ['B-(14)', 'B-(13)', 'B-(16)', 'B-(15)']
           }
         ]
       }
@@ -391,57 +397,97 @@ const jsonData = {
           <div class="py-2" :style="'color: ' + node.data.titleColor">
             <p class="mt-1 text-h6" :style="'color: ' + node.data.titleColor">
               <b>{{ node.data.title }}</b>
-              <span v-if="isForecast(node)">*</span>
+              <span class="ml-1" v-if="isForecast(node)">*</span>
             </p>
 
             <div v-if="node.data.type == 'match'" class="mt-1">
               <div v-for="(v, i) in node.data.zones[zoneIndex].matches" :key="i">
-                <div v-if="match(v).redSide.player?.team">
+                <div v-if="round + 1 >= node.data.round" class="container">
                   <div class="container mt-2">
                     <div class="left-column ma-1">
                       <h2 class="px-1">{{ padNumber(match(v).orderNumber) }}</h2>
                     </div>
+
                     <div class="right-column">
-                      <div class="top-row row-content mb-1">
+                      <div v-if="match(v).redSide.player?.team" class="top-row row-content mb-1">
                         <div style="background: #D32F2F">
                           <h4 class="px-1">{{ match(v).redSideWinGameCount }}</h4>
                         </div>
                         <v-avatar class="mx-1" color="white" size="x-small">
-                          <v-img :src="match(v).redSide.player?.team.collegeLogo"/>
+                          <v-img :src="match(v).redSide.player?.team.collegeLogo"></v-img>
                         </v-avatar>
                         <span class="one-line-text">{{ match(v).redSide.player?.team.collegeName }}</span>
                       </div>
-                      <div class="bottom-row row-content">
+                      <div v-else class="top-row row-content mb-1">
+                        <div style="background: #D32F2F">
+                          <h4 class="px-1">{{ match(v).redSideWinGameCount }}</h4>
+                        </div>
+                        <v-avatar class="mx-1" color="white" size="x-small">
+                          <v-img
+                            :src="forecast(node.data.zones[zoneIndex].forecasts[i].red - 1)[1].itemValue['collegeLogo']">
+                          </v-img>
+                        </v-avatar>
+                        <span
+                          class="one-line-text">{{
+                            forecast(node.data.zones[zoneIndex].forecasts[i].red - 1)[1].itemValue['collegeName']
+                          }}</span>
+                      </div>
+
+                      <div v-if="match(v).blueSide.player?.team" class="row-content">
                         <div style="background: #1976D2">
                           <h4 class="px-1">{{ match(v).blueSideWinGameCount }}</h4>
                         </div>
                         <v-avatar class="mx-1" color="white" size="x-small">
-                          <v-img :src="match(v).blueSide.player?.team.collegeLogo"/>
+                          <v-img :src="match(v).blueSide.player?.team.collegeLogo"></v-img>
                         </v-avatar>
                         <span class="one-line-text">{{ match(v).blueSide.player?.team.collegeName }}</span>
+                      </div>
+                      <div v-else class="row-content">
+                        <div style="background: #1976D2">
+                          <h4 class="px-1"> - </h4>
+                        </div>
+                        <v-avatar class="mx-1" color="white" size="x-small">
+                          <v-img
+                            :src="forecast(node.data.zones[zoneIndex].forecasts[i].blue - 1)[1].itemValue['collegeLogo']">
+                          </v-img>
+                        </v-avatar>
+                        <span
+                          class="one-line-text">{{
+                            forecast(node.data.zones[zoneIndex].forecasts[i].blue - 1)[1].itemValue['collegeName']
+                          }}</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div v-else-if="isForecast(node)">
-                  <div
-                    v-if="forecast(node.data.zones[zoneIndex].forecasts[i].red - 1)[2].itemValue != '0/0/0'"
-                  >
-                    {{
-                      limitText(forecast(node.data.zones[zoneIndex].forecasts[i].red - 1)[1].itemValue['collegeName'], 16)
-                    }}
-                    -
-                    {{
-                      limitText(forecast(node.data.zones[zoneIndex].forecasts[i].blue - 1)[1].itemValue['collegeName'], 16)
-                    }}
-                  </div>
-                  <div v-else>
-                    {{ node.data.zones[zoneIndex].text[i] }}
-                  </div>
-                </div>
                 <div v-else>
-                  {{ node.data.zones[zoneIndex].text[i] }}
+                  <div class="container mt-2">
+                    <div class="left-column ma-1">
+                      <h2 class="px-1">{{ padNumber(match(v).orderNumber) }}</h2>
+                    </div>
+
+                    <div class="right-column">
+                      <div class="top-row row-content mb-1">
+                        <div style="background: #9E9E9E">
+                          <h4 class="px-1"> - </h4>
+                        </div>
+                        <v-avatar class="mx-1" size="x-small">
+                          <v-img src="@/assets/school_red.png"></v-img>
+                        </v-avatar>
+                        <span class="one-line-text">{{ node.data.zones[zoneIndex].text[2 * i] }}</span>
+                      </div>
+
+                      <div class="row-content">
+                        <div style="background: #9E9E9E">
+                          <h4 class="px-1"> - </h4>
+                        </div>
+                        <v-avatar class="mx-1" size="x-small">
+                          <v-img src="@/assets/school_blue.png"></v-img>
+                        </v-avatar>
+                        <span class="one-line-text">{{ node.data.zones[zoneIndex].text[2 * i + 1] }}</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
