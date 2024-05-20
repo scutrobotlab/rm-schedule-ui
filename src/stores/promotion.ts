@@ -7,7 +7,7 @@ export interface Schedule {
   data: ScheduleData
 }
 
-export const ZoneId = 499
+export const ZoneId = 498
 export const ZoneIdStr = ZoneId.toString()
 
 export const usePromotionStore = defineStore('promotion', {
@@ -15,6 +15,11 @@ export const usePromotionStore = defineStore('promotion', {
     schedule: {} as Schedule,
     groupRank: {} as GroupRankInfo,
   }),
+  getters: {
+    currentZone(state) {
+      return state.schedule.data.event.zones.nodes.find((zone: ZoneNode) => zone.id == ZoneIdStr)
+    }
+  },
   actions: {
     async updateSchedule() {
       await axios({
@@ -33,7 +38,7 @@ export const usePromotionStore = defineStore('promotion', {
       })
     },
     getMatchByOrder(orderNumber: number): MatchNode | undefined {
-      const zone = this.schedule.data.event.zones.nodes.find((zone: ZoneNode) => zone.id == ZoneIdStr)
+      const zone = this.currentZone
       let node = zone.groupMatches.nodes.find((match: MatchNode) => match.orderNumber == orderNumber)
       if (node) return node
       node = zone.knockoutMatches.nodes.find((match: MatchNode) => match.orderNumber == orderNumber)
@@ -41,8 +46,7 @@ export const usePromotionStore = defineStore('promotion', {
       return undefined
     },
     getForecastByIndex(zoneIndex: number, index: number): GroupPlayer[] | undefined {
-      const zone = this.groupRank.zones.find((zone: GroupRankInfoZone) => zone.zoneId == ZoneIdStr)
-      return zone.groups[zoneIndex].groupPlayers[index]
+      return this.currentZone.groups[zoneIndex].groupPlayers[index]
     }
   },
 })

@@ -5,6 +5,7 @@ import {usePromotionStore, ZoneIdStr} from "../stores/promotion";
 import {MatchNode, Player, ZoneNode} from "../types/schedule";
 import {computed} from "vue";
 import {GroupPlayer} from "../types/group_rank_info";
+import {ar} from "vuetify/locale";
 
 interface Props {
   zone: 'A' | 'B',
@@ -75,13 +76,40 @@ function loser(orderNumber: number): Player | null {
   return null
 }
 
+function matchRank(player: Player): number {
+  const zone = promotionStore.currentZone
+  for (let i = 0; i < zone.groups.nodes.length; i++) {
+    const group = zone.groups.nodes[i]
+    for (let j = 0; j < group.players.nodes.length; j++) {
+      const p = group.players.nodes[j]
+      if (p.team.id == player.team?.id) {
+        return p.rank
+      }
+    }
+  }
+}
+
+function rankList(arr: number[]): Player[] {
+  let players: Player[] = []
+  for (let i = 0; i < arr.length; i++) {
+    const player = winner(arr[i])
+    if (player) players.push(player)
+    const player2 = loser(arr[i])
+    if (player2) players.push(player2)
+  }
+  players.sort((a, b) => {
+    return matchRank(a) - matchRank(b)
+  })
+  return players
+}
+
 function padNumber(num: number): string {
   return num.toString().padStart(2, '0');
 }
 
 const title = computed(() => {
   if (!promotionStore.schedule.data) return ''
-  const zone = promotionStore.schedule.data.event.zones.nodes.find((zone: ZoneNode) => zone.id == ZoneIdStr)
+  const zone = promotionStore.currentZone
   return `${promotionStore.schedule.data.event.title} ${zone.name} ${props.zone}半区`
 })
 
@@ -98,7 +126,7 @@ const zoneIndex = computed(() => {
 
 const round = computed(() => {
   // return 1;
-  // return 2;
+  return 2;
   // return 3;
   // return 4;
   switch (props.zone) {
@@ -427,7 +455,37 @@ const jsonData = {
             </p>
 
             <div v-if="node.data.type == 'match'" class="mt-2">
-              <div class="mx-2"
+
+              <!--实时预测 动态刷新-->
+              <div v-if="round + 1 == node.data.round">
+                <div class="mx-2"
+                     v-for="(v, i) in rankList(node.data.zones[zoneIndex].matches)" :key="i">
+                  <div class="container ml-2">
+                    <div class="right-column">
+                      <div v-if="v" class="top-row row-content mb-3">
+                        <div style="background: #43A047">
+                          <h4 class="px-1"> {{ padNumber(matchRank(v)) }} </h4>
+                        </div>
+                        <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
+                          <v-img :src="v.team.collegeLogo"/>
+                        </v-avatar>
+                        <span class="one-line-text">{{ v.team.collegeName }}</span>
+                      </div>
+                      <div v-else class="top-row row-content mb-3">
+                        <div style="background: #9E9E9E">
+                          <h4 class="px-1"> - </h4>
+                        </div>
+                        <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
+                          <v-img src="@/assets/school_grey.png"/>
+                        </v-avatar>
+                        <span class="one-line-text">{{ node.data.zones[zoneIndex].text[2 * i] }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mx-2" v-else
                    v-for="(v, i) in node.data.zones[zoneIndex].matches" :key="i">
 
                 <!--已确认的赛程-->
@@ -456,51 +514,6 @@ const jsonData = {
                           <v-img :src="match(v).blueSide.player?.team.collegeLogo"></v-img>
                         </v-avatar>
                         <span class="one-line-text">{{ match(v).blueSide.player?.team.collegeName }}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!--实时预测 动态刷新-->
-                <div v-else-if="round + 1 == node.data.round" class="container">
-                  <div class="container ml-2">
-                    <div class="right-column">
-                      <div v-if="winner(v)" class="top-row row-content mb-3">
-                        <div style="background: #9E9E9E">
-                          <h4 class="px-1"> - </h4>
-                        </div>
-                        <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
-                          <v-img :src="winner(v)?.team.collegeLogo"/>
-                        </v-avatar>
-                        <span class="one-line-text">{{ winner(v)?.team.collegeName }}</span>
-                      </div>
-                      <div v-else class="top-row row-content mb-3">
-                        <div style="background: #9E9E9E">
-                          <h4 class="px-1"> - </h4>
-                        </div>
-                        <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
-                          <v-img src="@/assets/school_grey.png"/>
-                        </v-avatar>
-                        <span class="one-line-text">{{ node.data.zones[zoneIndex].text[2 * i] }}</span>
-                      </div>
-
-                      <div v-if="loser(v)" class="row-content mb-3">
-                        <div style="background: #9E9E9E">
-                          <h4 class="px-1"> - </h4>
-                        </div>
-                        <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
-                          <v-img :src="loser(v)?.team.collegeLogo"/>
-                        </v-avatar>
-                        <span class="one-line-text">{{ loser(v)?.team.collegeName }}</span>
-                      </div>
-                      <div v-else class="row-content mb-3">
-                        <div style="background: #9E9E9E">
-                          <h4 class="px-1"> - </h4>
-                        </div>
-                        <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
-                          <v-img src="@/assets/school_grey.png"/>
-                        </v-avatar>
-                        <span class="one-line-text">{{ node.data.zones[zoneIndex].text[2 * i + 1] }}</span>
                       </div>
                     </div>
                   </div>
