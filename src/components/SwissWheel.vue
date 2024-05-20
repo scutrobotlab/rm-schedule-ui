@@ -25,6 +25,7 @@ Promise.all([promise1, promise2]).then(async () => {
 
 const graphRef = ref<RelationGraph>()
 
+const nodeWidth = 280;
 const options = ref<RGOptions>({
   layout: {
     'layoutName': 'fixed',
@@ -36,7 +37,7 @@ const options = ref<RGOptions>({
   backgroundColor: 'transparent',
   defaultNodeColor: '#263238',
   defaultNodeShape: 1,
-  defaultNodeWidth: 240,
+  defaultNodeWidth: nodeWidth,
   defaultLineShape: 4,
   defaultJunctionPoint: 'lr',
   disableDragNode: true,
@@ -114,7 +115,6 @@ const round = computed(() => {
 
 const rx = 0;
 const ry = 0;
-const width = 200;
 
 const jsonData = {
   rootId: '#1',
@@ -144,8 +144,8 @@ const jsonData = {
     {
       id: '#2',
       text: '第二轮 1:0',
-      x: rx + width + 100,
-      y: ry - 40,
+      x: rx + nodeWidth + 100,
+      y: ry - 80,
       data: {
         title: '瑞士轮第二轮 1-0',
         titleColor: '#FFFFFF',
@@ -178,8 +178,8 @@ const jsonData = {
     {
       id: '#3',
       text: '第二轮 0:1',
-      x: rx + width + 100,
-      y: ry + 260,
+      x: rx + nodeWidth + 100,
+      y: ry + 300,
       data: {
         title: '瑞士轮第二轮 0-1',
         titleColor: '#FFFFFF',
@@ -212,8 +212,8 @@ const jsonData = {
     {
       id: '#4',
       text: '第三轮 2:0',
-      x: rx + 2 * width + 200,
-      y: ry - 100,
+      x: rx + 2 * nodeWidth + 200,
+      y: ry - 120,
       data: {
         title: '瑞士轮第三轮 2-0',
         titleColor: '#FFFFFF',
@@ -242,8 +242,8 @@ const jsonData = {
     {
       id: '#5',
       text: '第三轮 1:1',
-      x: rx + 2 * width + 200,
-      y: ry + 80,
+      x: rx + 2 * nodeWidth + 200,
+      y: ry + 110,
       data: {
         title: '瑞士轮第三轮 1-1',
         titleColor: '#FFFFFF',
@@ -276,8 +276,8 @@ const jsonData = {
     {
       id: '#6',
       text: '第三轮 0:2 淘汰',
-      x: rx + 2 * width + 200,
-      y: ry + 380,
+      x: rx + 2 * nodeWidth + 200,
+      y: ry + 485,
       data: {
         title: '淘汰 0-2',
         titleColor: '#B0BEC5',
@@ -287,12 +287,12 @@ const jsonData = {
           {
             winners: [],
             losers: [21, 22, 23, 24],
-            text: ['A-(14)', 'A-(13)', 'A-(16)', 'A-(15)']
+            text: ['A-(13)', 'A-(14)', 'A-(15)', 'A-(16)']
           },
           {
             winners: [],
             losers: [29, 30, 31, 32],
-            text: ['B-(14)', 'B-(13)', 'B-(16)', 'B-(15)']
+            text: ['B-(13)', 'B-(14)', 'B-(15)', 'B-(16)']
           }
         ]
       }
@@ -300,8 +300,8 @@ const jsonData = {
     {
       id: '#7',
       text: '第三轮 3:0 晋级',
-      x: rx + 3 * width + 300,
-      y: ry - 50,
+      x: rx + 3 * nodeWidth + 300,
+      y: ry - 20,
       data: {
         title: '晋级淘汰赛 3-0',
         titleColor: '#FBC02D',
@@ -311,12 +311,12 @@ const jsonData = {
           {
             winners: [33, 34],
             losers: [],
-            text: ['T1 T2']
+            text: ['T1', 'T2']
           },
           {
             winners: [39, 40],
             losers: [],
-            text: ['T1 T2']
+            text: ['T1', 'T2']
           }
         ]
       }
@@ -324,8 +324,8 @@ const jsonData = {
     {
       id: '#8',
       text: '第三轮 2:1 晋级',
-      x: rx + 3 * width + 300,
-      y: ry + 80,
+      x: rx + 3 * nodeWidth + 300,
+      y: ry + 120,
       data: {
         title: '晋级淘汰赛 2-1',
         titleColor: '#FBC02D',
@@ -335,12 +335,12 @@ const jsonData = {
           {
             winners: [35, 36, 37, 38],
             losers: [33, 34],
-            text: ['T3 T4 T5 T6 T7 T8']
+            text: ['T3', 'T4 ', 'T5', 'T6', 'T7', 'T8']
           },
           {
             winners: [41, 42, 43, 44],
             losers: [39, 40],
-            text: ['T3 T4 T5 T6 T7 T8']
+            text: ['T3', 'T4 ', 'T5', 'T6', 'T7', 'T8']
           }
         ]
       }
@@ -348,8 +348,8 @@ const jsonData = {
     {
       id: '#9',
       text: '第三轮 1:2 淘汰',
-      x: rx + 3 * width + 300,
-      y: ry + 325,
+      x: rx + 3 * nodeWidth + 300,
+      y: ry + 370,
       data: {
         title: '淘汰 1-2',
         titleColor: '#B0BEC5',
@@ -359,12 +359,12 @@ const jsonData = {
           {
             winners: [],
             losers: [35, 36, 37, 38],
-            text: ['T9 T10 T11 T12']
+            text: ['T9', 'T10', 'T11', 'T12']
           },
           {
             winners: [],
             losers: [41, 42, 43, 44],
-            text: ['T9 T10 T11 T12']
+            text: ['T9', 'T10', 'T11', 'T12']
           }
         ]
       }
@@ -389,7 +389,7 @@ const jsonData = {
   <div class="my-graph pa-4">
     <div style="height: calc(100vh - 180px);">
       <div class="text-center mt-4">
-        <h1 class="font-weight-bold">东部赛区 半区 {{ zone }}</h1>
+        <h1 class="font-weight-bold">RoboMaster 2024超级对抗赛 东部赛区 {{ zone }}半区</h1>
       </div>
       <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
       <relation-graph ref="graphRef" :options="options">
@@ -400,8 +400,9 @@ const jsonData = {
               <span class="ml-1" v-if="isForecast(node)">*</span>
             </p>
 
-            <div v-if="node.data.type == 'match'" class="mt-1">
-              <div v-for="(v, i) in node.data.zones[zoneIndex].matches" :key="i">
+            <div v-if="node.data.type == 'match'" class="mt-2">
+              <div class="mx-2 mb-3"
+                   v-for="(v, i) in node.data.zones[zoneIndex].matches" :key="i">
                 <div v-if="round + 1 >= node.data.round" class="container">
                   <div class="container mt-2">
                     <div class="left-column ma-1">
@@ -493,22 +494,34 @@ const jsonData = {
             </div>
 
             <div v-else-if="node.data.type == 'eliminate' || node.data.type == 'promote'"
-                 class="mt-2 mx-2">
+                 class="mt-2 mx-4">
               <div v-for="(v, i) in node.data.zones[zoneIndex].winners" :key="i">
-                <div v-if="winner(v)" class="container2 mb-1">
+                <div v-if="round >= 3 && winner(v)" class="container2 mb-1">
                   <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
                     <v-img :src="winner(v)?.team.collegeLogo"/>
                   </v-avatar>
                   <span class="one-line-text">{{ winner(v)?.team.collegeName }}</span>
                 </div>
+                <div v-else class="container2 mb-1">
+                  <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
+                    <v-img src="@/assets/school_red.png"/>
+                  </v-avatar>
+                  <span class="one-line-text">待定 {{ node.data.zones[zoneIndex].text[i] }}</span>
+                </div>
               </div>
 
               <div v-for="(v, i) in node.data.zones[zoneIndex].losers" :key="i">
-                <div v-if="loser(v)" class="container2 mb-1">
+                <div v-if="round >= 3 && loser(v)" class="container2 mb-1">
                   <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
                     <v-img :src="loser(v)?.team.collegeLogo"/>
                   </v-avatar>
                   <span class="one-line-text">{{ loser(v)?.team.collegeName }}</span>
+                </div>
+                <div v-else class="container2 mb-1">
+                  <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
+                    <v-img src="@/assets/school_red.png"/>
+                  </v-avatar>
+                  <span class="one-line-text">待定 {{ node.data.zones[zoneIndex].text[i] }}</span>
                 </div>
               </div>
             </div>
