@@ -472,7 +472,7 @@ const jsonData = {
             <div v-if="node.data.type == 'match'" class="mt-2">
 
               <!--实时预测 动态刷新-->
-              <div v-if="round + 1 == node.data.round">
+              <div v-if="round + 1 == node.data.round" class="mt-4">
                 <div class="mx-2"
                      v-for="(v, i) in rankList(node.data.zones[zoneIndex].matches)" :key="i">
                   <div class="container ml-2">
@@ -486,14 +486,23 @@ const jsonData = {
                         </v-avatar>
                         <span class="one-line-text">{{ v.team.collegeName }}</span>
                       </div>
-                      <div v-else class="top-row row-content mb-3">
-                        <div style="background: #9E9E9E">
-                          <h4 class="px-1"> - </h4>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mx-2"
+                     v-for="(v, i) in node.data.zones[zoneIndex].text.slice(rankList(node.data.zones[zoneIndex].matches).length)"
+                     :key="i">
+                  <div class="container ml-2">
+                    <div class="right-column">
+                      <div class="top-row row-content mb-3">
+                        <div style="background: #616161">
+                          <h4 class="px-1" style="width: 2.5rem">待定</h4>
                         </div>
                         <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
                           <v-img src="@/assets/school_grey.png"/>
                         </v-avatar>
-                        <span class="one-line-text">{{ node.data.zones[zoneIndex].text[2 * i] }}</span>
+                        <span class="one-line-text">{{ v }}</span>
                       </div>
                     </div>
                   </div>
