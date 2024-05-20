@@ -107,6 +107,21 @@ function padNumber(num: number): string {
   return num.toString().padStart(2, '0');
 }
 
+function convertToOrdinal(number: number): string {
+  const lastDigit = number % 10;
+  const lastTwoDigits = number % 100;
+
+  if (lastDigit === 1 && lastTwoDigits !== 11) {
+    return number + "st";
+  } else if (lastDigit === 2 && lastTwoDigits !== 12) {
+    return number + "nd";
+  } else if (lastDigit === 3 && lastTwoDigits !== 13) {
+    return number + "rd";
+  } else {
+    return number + "th";
+  }
+}
+
 const title = computed(() => {
   if (!promotionStore.schedule.data) return ''
   const zone = promotionStore.currentZone
@@ -464,7 +479,7 @@ const jsonData = {
                     <div class="right-column">
                       <div v-if="v" class="top-row row-content mb-3">
                         <div style="background: #43A047">
-                          <h4 class="px-1"> {{ padNumber(matchRank(v)) }} </h4>
+                          <h4 class="px-1" style="width: 2.5rem"> {{ convertToOrdinal(matchRank(v)) }} </h4>
                         </div>
                         <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
                           <v-img :src="v.team.collegeLogo"/>
@@ -673,5 +688,21 @@ const jsonData = {
   align-items: center; /* 垂直居中对齐 */
   flex: 1; /* 平分右边列的高度 */
   justify-content: flex-start; /* 水平左对齐 */
+}
+
+.colorful {
+  animation: color-change 1s infinite;
+}
+
+@keyframes color-change {
+  0% {
+    background: #43A047;
+  }
+  50% {
+    background: #2E7D32;
+  }
+  100% {
+    background: #43A047;
+  }
 }
 </style>
