@@ -2,7 +2,7 @@
 import {RGOptions} from "relation-graph-vue3/types/types/relation-graph-models/types";
 import RelationGraph from 'relation-graph-vue3';
 import {usePromotionStore} from "../stores/promotion";
-import {MatchNode, Player} from "../types/schedule";
+import {MatchNode, Player, ZoneNode} from "../types/schedule";
 import {computed} from "vue";
 import {GroupPlayer} from "../types/group_rank_info";
 
@@ -78,6 +78,12 @@ function loser(orderNumber: number): Player | null {
 function padNumber(num: number): string {
   return num.toString().padStart(2, '0');
 }
+
+const title = computed(() => {
+  if (!promotionStore.schedule.data) return ''
+  const zone = promotionStore.schedule.data.event.zones.nodes.find((zone: ZoneNode) => zone.id = promotionStore.zoneId.toString())
+  return `${promotionStore.schedule.data.event.title} ${zone.name} ${props.zone}半区`
+})
 
 const zoneIndex = computed(() => {
   switch (props.zone) {
@@ -409,7 +415,7 @@ const jsonData = {
   <div class="my-graph pa-4">
     <div style="height: calc(100vh - 180px);">
       <div class="text-center mt-4">
-        <h1 class="font-weight-bold">RoboMaster 2024超级对抗赛 东部赛区 {{ zone }}半区</h1>
+        <h1 class="font-weight-bold">{{ title }}</h1>
       </div>
       <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
       <relation-graph ref="graphRef" :options="options">
