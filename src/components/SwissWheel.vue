@@ -126,7 +126,7 @@ const zoneIndex = computed(() => {
 
 const round = computed(() => {
   // return 1;
-  return 2;
+  // return 2;
   // return 3;
   // return 4;
   switch (props.zone) {
@@ -335,7 +335,7 @@ const jsonData = {
       data: {
         title: '淘汰 0-2',
         titleColor: '#B0BEC5',
-        round: 4,
+        round: 3,
         type: 'eliminate',
         zones: [
           {
@@ -355,7 +355,7 @@ const jsonData = {
       id: '#7',
       text: '第三轮 3:0 晋级',
       x: rx + 3 * nodeWidth + 300,
-      y: ry - 60,
+      y: ry - 80,
       data: {
         title: '晋级淘汰赛 3-0',
         titleColor: '#FBC02D',
@@ -379,7 +379,7 @@ const jsonData = {
       id: '#8',
       text: '第三轮 2:1 晋级',
       x: rx + 3 * nodeWidth + 300,
-      y: ry + 100,
+      y: ry + 90,
       data: {
         title: '晋级淘汰赛 2-1',
         titleColor: '#FBC02D',
@@ -529,7 +529,7 @@ const jsonData = {
                     <div class="right-column">
                       <div class="top-row row-content mb-1">
                         <div style="background: #9E9E9E">
-                          <h4 class="px-1"> - </h4>
+                          <h4 class="px-1"> 0 </h4>
                         </div>
                         <v-avatar class="mx-1" size="x-small">
                           <v-img src="@/assets/school_red.png"></v-img>
@@ -539,7 +539,7 @@ const jsonData = {
 
                       <div class="row-content">
                         <div style="background: #9E9E9E">
-                          <h4 class="px-1"> - </h4>
+                          <h4 class="px-1"> 0 </h4>
                         </div>
                         <v-avatar class="mx-1" size="x-small">
                           <v-img src="@/assets/school_blue.png"></v-img>
@@ -573,7 +573,7 @@ const jsonData = {
 
               <div v-for="(v, i) in node.data.zones[zoneIndex].losers" :key="i"
                    class="mb-3">
-                <div v-if="round >= 3 && loser(v)" class="container2 mb-1">
+                <div v-if="round + 1 >= node.data.round && loser(v)" class="container2 mb-1">
                   <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
                     <v-img :src="loser(v)?.team.collegeLogo"/>
                   </v-avatar>
