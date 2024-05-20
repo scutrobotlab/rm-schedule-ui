@@ -21,7 +21,6 @@ export const usePromotionStore = defineStore('promotion', {
         method: 'GET',
         url: '/api/schedule',
       }).then((response: AxiosResponse<Schedule>) => {
-        console.log(response.data.data)
         this.schedule = response.data
       })
     },
