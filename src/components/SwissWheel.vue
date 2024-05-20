@@ -87,11 +87,13 @@ const zoneIndex = computed(() => {
 const round = computed(() => {
   switch (props.zone) {
     case 'A':
-      if (promotionStore.getMatchByOrder(33).redSide.player) return 3
+      if (promotionStore.getMatchByOrder(45).redSide.player) return 4
+      else if (promotionStore.getMatchByOrder(33).redSide.player) return 3
       else if (promotionStore.getMatchByOrder(17).redSide.player) return 2
       else return 1
     case 'B':
-      if (promotionStore.getMatchByOrder(39).redSide.player) return 3
+      if (promotionStore.getMatchByOrder(46).redSide.player) return 4
+      else if (promotionStore.getMatchByOrder(39).redSide.player) return 3
       else if (promotionStore.getMatchByOrder(25).redSide.player) return 2
       else return 1
     default:
