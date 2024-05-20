@@ -200,7 +200,7 @@ const jsonData = {
       id: '#4',
       text: '第三轮 2:0',
       x: rx + 2 * width + 200,
-      y: ry - 80,
+      y: ry - 100,
       data: {
         title: '第三轮 2:0',
         round: 3,
@@ -229,7 +229,7 @@ const jsonData = {
       id: '#5',
       text: '第三轮 1:1',
       x: rx + 2 * width + 200,
-      y: ry + 90,
+      y: ry + 80,
       data: {
         title: '第三轮 1:1',
         round: 3,
@@ -262,7 +262,7 @@ const jsonData = {
       id: '#6',
       text: '第三轮 0:2 淘汰',
       x: rx + 2 * width + 200,
-      y: ry + 370,
+      y: ry + 380,
       data: {
         title: '第三轮 0:2 淘汰',
         round: 4,
@@ -388,7 +388,7 @@ const jsonData = {
                       <h2 class="px-1">{{ match(v).orderNumber }}</h2>
                     </div>
                     <div class="right-column">
-                      <div class="top-row row-content">
+                      <div class="top-row row-content mb-1">
                         <div style="background: #D32F2F">
                           <h4 class="px-1">{{ match(v).redSideWinGameCount }}</h4>
                         </div>
@@ -435,7 +435,7 @@ const jsonData = {
             <div v-else-if="node.data.type == 'eliminate' || node.data.type == 'promote'"
                  class="mt-2 mx-2">
               <div v-for="(v, i) in node.data.zones[zoneIndex].winners" :key="i">
-                <div v-if="winner(v)" class="container2 mt-1">
+                <div v-if="winner(v)" class="container2 mb-1">
                   <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
                     <v-img :src="winner(v)?.team.collegeLogo"/>
                   </v-avatar>
@@ -444,7 +444,7 @@ const jsonData = {
               </div>
 
               <div v-for="(v, i) in node.data.zones[zoneIndex].losers" :key="i">
-                <div v-if="loser(v)" class="container2 mt-1">
+                <div v-if="loser(v)" class="container2 mb-1">
                   <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
                     <v-img :src="loser(v)?.team.collegeLogo"/>
                   </v-avatar>
