@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {RGOptions} from "relation-graph-vue3/types/types/relation-graph-models/types";
 import RelationGraph from 'relation-graph-vue3';
-import {usePromotionStore} from "../stores/promotion";
+import {usePromotionStore, ZoneIdStr} from "../stores/promotion";
 import {MatchNode, Player, ZoneNode} from "../types/schedule";
 import {computed} from "vue";
 import {GroupPlayer} from "../types/group_rank_info";
@@ -81,7 +81,7 @@ function padNumber(num: number): string {
 
 const title = computed(() => {
   if (!promotionStore.schedule.data) return ''
-  const zone = promotionStore.schedule.data.event.zones.nodes.find((zone: ZoneNode) => zone.id = promotionStore.zoneId.toString())
+  const zone = promotionStore.schedule.data.event.zones.nodes.find((zone: ZoneNode) => zone.id == ZoneIdStr)
   return `${promotionStore.schedule.data.event.title} ${zone.name} ${props.zone}半区`
 })
 
