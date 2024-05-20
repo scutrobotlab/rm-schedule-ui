@@ -94,7 +94,7 @@ const round = computed(() => {
   // return 1;
   // return 2;
   // return 3;
-  return 4;
+  // return 4;
   switch (props.zone) {
     case 'A':
       if (promotionStore.getMatchByOrder(45).redSide.player) return 4
@@ -424,6 +424,7 @@ const jsonData = {
               <div class="mx-2"
                    v-for="(v, i) in node.data.zones[zoneIndex].matches" :key="i">
 
+                <!--已确认的赛程-->
                 <div v-if="round + 1 > node.data.round" class="container my-3">
                   <div class="container mt-2">
                     <div class="left-column ma-1">
@@ -454,6 +455,7 @@ const jsonData = {
                   </div>
                 </div>
 
+                <!--实时预测 动态刷新-->
                 <div v-else-if="round + 1 == node.data.round" class="container">
                   <div class="container ml-2">
                     <div class="right-column">
@@ -513,6 +515,7 @@ const jsonData = {
               </div>
             </div>
 
+            <!--晋级和淘汰-->
             <div v-else-if="node.data.type == 'eliminate' || node.data.type == 'promote'"
                  class="my-3 mx-4">
               <div v-for="(v, i) in node.data.zones[zoneIndex].winners" :key="i"
@@ -580,7 +583,7 @@ const jsonData = {
   }
 
   .rel-node-checked {
-    box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.3);
   }
 
   .rel-node {
