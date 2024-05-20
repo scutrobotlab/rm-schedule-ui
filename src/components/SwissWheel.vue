@@ -166,7 +166,7 @@ const jsonData = {
             matches: [17, 18, 19, 20],
             winners: [1, 2, 3, 4, 5, 6, 7, 8],
             losers: [],
-            text: ['A-1', 'A-2', 'A-3', 'A-4', 'A-5', 'A-6', 'A-7', 'A-8'],
+            text: ['A组 第一轮 第1名', 'A组 第一轮 第2名', 'A组 第一轮 第3名', 'A组 第一轮 第4名', 'A组 第一轮 第5名', 'A组 第一轮 第6名', 'A组 第一轮 第7名', 'A组 第一轮 第8名'],
             forecasts: [
               {red: 1, blue: 2},
               {red: 3, blue: 4},
@@ -178,7 +178,7 @@ const jsonData = {
             matches: [25, 26, 27, 28],
             winners: [9, 10, 11, 12, 13, 14, 15, 16],
             losers: [],
-            text: ['B-1', 'B-2', 'B-3', 'B-4', 'B-5', 'B-6', 'B-7', 'B-8'],
+            text: ['B组 第一轮 第1名', 'B组 第一轮 第2名', 'B组 第一轮 第3名', 'B组 第一轮 第4名', 'B组 第一轮 第5名', 'B组 第一轮 第6名', 'B组 第一轮 第7名', 'B组 第一轮 第8名'],
             forecasts: [
               {red: 1, blue: 2},
               {red: 3, blue: 4},
@@ -204,7 +204,7 @@ const jsonData = {
             matches: [21, 22, 23, 24],
             winners: [],
             losers: [1, 2, 3, 4, 5, 6, 7, 8],
-            text: ['A-9', 'A-10', 'A-11', 'A-12', 'A-13', 'A-14', 'A-15', 'A-16'],
+            text: ['A组 第一轮 第9名', 'A组 第一轮 第10名', 'A组 第一轮 第11名', 'A组 第一轮 第12名', 'A组 第一轮 第13名', 'A组 第一轮 第14名', 'A组 第一轮 第15名', 'A组 第一轮 第16名'],
             forecasts: [
               {red: 9, blue: 10},
               {red: 11, blue: 12},
@@ -216,7 +216,7 @@ const jsonData = {
             matches: [29, 30, 31, 32],
             winners: [],
             losers: [9, 10, 11, 12, 13, 14, 15, 16],
-            text: ['B-9', 'B-10', 'B-11', 'B-12', 'B-13', 'B-14', 'B-15', 'B-16'],
+            text: ['B组 第一轮 第9名', 'B组 第一轮 第10名', 'B组 第一轮 第11名', 'B组 第一轮 第12名', 'B组 第一轮 第13名', 'B组 第一轮 第14名', 'B组 第一轮 第15名', 'B组 第一轮 第16名'],
             forecasts: [
               {red: 9, blue: 10},
               {red: 11, blue: 12},
@@ -242,7 +242,7 @@ const jsonData = {
             matches: [33, 34],
             winners: [17, 18, 19, 20],
             losers: [],
-            text: ['A-(2)', 'A-(1)', 'A-(4)', 'A-(3)'],
+            text: ['A组 第二轮 第2名', 'A组 第二轮 第1名', 'A组 第二轮 第4名', 'A组 第二轮 第3名'],
             forecasts: [
               {red: 2, blue: 1},
               {red: 4, blue: 3}
@@ -252,7 +252,7 @@ const jsonData = {
             matches: [39, 40],
             winners: [25, 26, 27, 28],
             losers: [],
-            text: ['B-(2)', 'B-(1)', 'B-(4)', 'B-(3)'],
+            text: ['B组 第二轮 第2名', 'B组 第二轮 第1名', 'B组 第二轮 第4名', 'B组 第二轮 第3名'],
             forecasts: [
               {red: 2, blue: 1},
               {red: 4, blue: 3}
@@ -276,7 +276,7 @@ const jsonData = {
             matches: [35, 36, 37, 38],
             winners: [21, 22, 23, 24],
             losers: [17, 18, 19, 20],
-            text: ['A-(6)', 'A-(5)', 'A-(8)', 'A-(7)', 'A-(10)', 'A-(9)', 'A-(12)', 'A-(11)'],
+            text: ['A组 第二轮 第6名', 'A组 第二轮 第5名', 'A组 第二轮 第8名', 'A组 第二轮 第7名', 'A组 第二轮 第10名', 'A组 第二轮 第9名', 'A组 第二轮 第12名', 'A组 第二轮 第11名'],
             forecasts: [
               {red: 6, blue: 5},
               {red: 8, blue: 7},
@@ -288,7 +288,7 @@ const jsonData = {
             matches: [41, 42, 43, 44],
             winners: [29, 30, 31, 32],
             losers: [25, 26, 27, 28],
-            text: ['B-(6)', 'B-(5)', 'B-(8)', 'B-(7)', 'B-(10)', 'B-(9)', 'B-(12)', 'B-(11)'],
+            text: ['B组 第二轮 第6名', 'B组 第二轮 第5名', 'B组 第二轮 第8名', 'B组 第二轮 第7名', 'B组 第二轮 第10名', 'B组 第二轮 第9名', 'B组 第二轮 第12名', 'B组 第二轮 第11名'],
             forecasts: [
               {red: 6, blue: 5},
               {red: 8, blue: 7},
@@ -313,12 +313,12 @@ const jsonData = {
           {
             winners: [],
             losers: [21, 22, 23, 24],
-            text: ['A-(13)', 'A-(14)', 'A-(15)', 'A-(16)']
+            text: ['A组 第13名', 'A组 第14名', 'A组 第15名', 'A组 第16名']
           },
           {
             winners: [],
             losers: [29, 30, 31, 32],
-            text: ['B-(13)', 'B-(14)', 'B-(15)', 'B-(16)']
+            text: ['B组 第13名', 'B组 第14名', 'B组 第15名', 'B组 第16名']
           }
         ]
       }
@@ -337,12 +337,12 @@ const jsonData = {
           {
             winners: [33, 34],
             losers: [],
-            text: ['T1', 'T2']
+            text: ['A组 第1名', 'A组 第2名']
           },
           {
             winners: [39, 40],
             losers: [],
-            text: ['T1', 'T2']
+            text: ['B组 第1名', 'B组 第2名']
           }
         ]
       }
@@ -361,12 +361,12 @@ const jsonData = {
           {
             winners: [35, 36, 37, 38],
             losers: [33, 34],
-            text: ['T3', 'T4 ', 'T5', 'T6', 'T7', 'T8']
+            text: ['A组 第3名', 'A组 第4名', 'A组 第5名', 'A组 第6名', 'A组 第7名', 'A组 第8名']
           },
           {
             winners: [41, 42, 43, 44],
             losers: [39, 40],
-            text: ['T3', 'T4 ', 'T5', 'T6', 'T7', 'T8']
+            text: ['B组 第3名', 'B组 第4名', 'B组 第5名', 'B组 第6名', 'B组 第7名', 'B组 第8名']
           }
         ]
       }
@@ -385,12 +385,12 @@ const jsonData = {
           {
             winners: [],
             losers: [35, 36, 37, 38],
-            text: ['T9', 'T10', 'T11', 'T12']
+            text: ['A组 第9名', 'A组 第10名', 'A组 第11名', 'A组 第12名']
           },
           {
             winners: [],
             losers: [41, 42, 43, 44],
-            text: ['T9', 'T10', 'T11', 'T12']
+            text: ['B组 第9名', 'B组 第10名', 'B组 第11名', 'B组 第12名']
           }
         ]
       }
@@ -465,7 +465,7 @@ const jsonData = {
                 <div v-else-if="round + 1 == node.data.round" class="container">
                   <div class="container ml-2">
                     <div class="right-column">
-                      <div class="top-row row-content mb-3">
+                      <div v-if="winner(v)" class="top-row row-content mb-3">
                         <div style="background: #9E9E9E">
                           <h4 class="px-1"> - </h4>
                         </div>
@@ -474,8 +474,17 @@ const jsonData = {
                         </v-avatar>
                         <span class="one-line-text">{{ winner(v)?.team.collegeName }}</span>
                       </div>
+                      <div v-else class="top-row row-content mb-3">
+                        <div style="background: #9E9E9E">
+                          <h4 class="px-1"> - </h4>
+                        </div>
+                        <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
+                          <v-img src="@/assets/school_grey.png"/>
+                        </v-avatar>
+                        <span class="one-line-text">{{ node.data.zones[zoneIndex].text[2 * i] }}</span>
+                      </div>
 
-                      <div class="row-content mb-3">
+                      <div v-if="loser(v)" class="row-content mb-3">
                         <div style="background: #9E9E9E">
                           <h4 class="px-1"> - </h4>
                         </div>
@@ -483,6 +492,15 @@ const jsonData = {
                           <v-img :src="loser(v)?.team.collegeLogo"/>
                         </v-avatar>
                         <span class="one-line-text">{{ loser(v)?.team.collegeName }}</span>
+                      </div>
+                      <div v-else class="row-content mb-3">
+                        <div style="background: #9E9E9E">
+                          <h4 class="px-1"> - </h4>
+                        </div>
+                        <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
+                          <v-img src="@/assets/school_grey.png"/>
+                        </v-avatar>
+                        <span class="one-line-text">{{ node.data.zones[zoneIndex].text[2 * i + 1] }}</span>
                       </div>
                     </div>
                   </div>
