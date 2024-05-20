@@ -74,6 +74,10 @@ function loser(orderNumber: number): Player | null {
   return null
 }
 
+function padNumber(num: number): string {
+  return num.toString().padStart(2, '0');
+}
+
 const zoneIndex = computed(() => {
   switch (props.zone) {
     case 'A':
@@ -115,7 +119,8 @@ const jsonData = {
       x: rx,
       y: ry,
       data: {
-        title: '第一轮 0:0',
+        title: '瑞士轮第一轮 0-0',
+        titleColor: '#FFFFFF',
         round: 1,
         type: 'match',
         zones: [
@@ -136,7 +141,8 @@ const jsonData = {
       x: rx + width + 100,
       y: ry - 40,
       data: {
-        title: '第二轮 1:0',
+        title: '瑞士轮第二轮 1-0',
+        titleColor: '#FFFFFF',
         round: 2,
         type: 'match',
         zones: [
@@ -169,7 +175,8 @@ const jsonData = {
       x: rx + width + 100,
       y: ry + 260,
       data: {
-        title: '第二轮 0:1',
+        title: '瑞士轮第二轮 0-1',
+        titleColor: '#FFFFFF',
         round: 2,
         type: 'match',
         zones: [
@@ -202,7 +209,8 @@ const jsonData = {
       x: rx + 2 * width + 200,
       y: ry - 100,
       data: {
-        title: '第三轮 2:0',
+        title: '瑞士轮第三轮 2-0',
+        titleColor: '#FFFFFF',
         round: 3,
         type: 'match',
         zones: [
@@ -231,7 +239,8 @@ const jsonData = {
       x: rx + 2 * width + 200,
       y: ry + 80,
       data: {
-        title: '第三轮 1:1',
+        title: '瑞士轮第三轮 1-1',
+        titleColor: '#FFFFFF',
         round: 3,
         type: 'match',
         zones: [
@@ -264,7 +273,8 @@ const jsonData = {
       x: rx + 2 * width + 200,
       y: ry + 380,
       data: {
-        title: '第三轮 0:2 淘汰',
+        title: '淘汰 0-2',
+        titleColor: '#B0BEC5',
         round: 4,
         type: 'eliminate',
         zones: [
@@ -287,7 +297,8 @@ const jsonData = {
       x: rx + 3 * width + 300,
       y: ry - 50,
       data: {
-        title: '第三轮 3:0 晋级',
+        title: '晋级淘汰赛 3-0',
+        titleColor: '#FBC02D',
         round: 4,
         type: 'promote',
         zones: [
@@ -310,7 +321,8 @@ const jsonData = {
       x: rx + 3 * width + 300,
       y: ry + 80,
       data: {
-        title: '第三轮 2:1 晋级',
+        title: '晋级淘汰赛 2-1',
+        titleColor: '#FBC02D',
         round: 4,
         type: 'promote',
         zones: [
@@ -331,9 +343,10 @@ const jsonData = {
       id: '#9',
       text: '第三轮 1:2 淘汰',
       x: rx + 3 * width + 300,
-      y: ry + 310,
+      y: ry + 325,
       data: {
-        title: '第三轮 1:2 淘汰',
+        title: '淘汰 1-2',
+        titleColor: '#B0BEC5',
         round: 4,
         type: 'eliminate',
         zones: [
@@ -375,17 +388,18 @@ const jsonData = {
       <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
       <relation-graph ref="graphRef" :options="options">
         <template #node="{node}">
-          <div class="py-2">
-            <h2 class="mr-2">{{ node.data.title }}
+          <div class="py-2" :style="'color: ' + node.data.titleColor">
+            <p class="mt-1 text-h6" :style="'color: ' + node.data.titleColor">
+              <b>{{ node.data.title }}</b>
               <span v-if="isForecast(node)">*</span>
-            </h2>
+            </p>
 
             <div v-if="node.data.type == 'match'" class="mt-1">
               <div v-for="(v, i) in node.data.zones[zoneIndex].matches" :key="i">
                 <div v-if="match(v).redSide.player?.team">
                   <div class="container mt-2">
                     <div class="left-column ma-1">
-                      <h2 class="px-1">{{ match(v).orderNumber }}</h2>
+                      <h2 class="px-1">{{ padNumber(match(v).orderNumber) }}</h2>
                     </div>
                     <div class="right-column">
                       <div class="top-row row-content mb-1">
