@@ -58,9 +58,6 @@ const selectedZone = ref([0])
               </v-sheet>
             </div>
           </v-col>
-          <v-img
-            src="@/assets/qr-code.png">
-          </v-img>
         </v-row>
       </v-container>
     </div>
@@ -85,13 +82,14 @@ const selectedZone = ref([0])
   background-position: center;
   background-repeat: no-repeat;
   z-index: 1;
+  object-fit: cover; /* 或 contain */
 }
 
 .logo {
   position: absolute;
   bottom: 50px;
   right: 0;
-  width: 8%;
+  width: 100px;
   opacity: 0.5;
   background-size: cover;
   background-position: center;
