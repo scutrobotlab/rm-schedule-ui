@@ -18,10 +18,13 @@ const appStore = useAppStore()
       </v-img>
 
       <v-card-text class="text-center">
-        <h4 class="mt-2">— 研发 —</h4>
+        <h3 class="mt-2">— 研发 —</h3>
         <p>22-24赛季 软件开发组 常霆钰</p>
-        <h4 class="mt-2">— 宣传 —</h4>
+        <p>反馈&建议 + QQ1067088037</p>
+        <h3 class="mt-2">— 宣传 —</h3>
         <p>22-24赛季 宣传运营组 杨卓石</p>
+        <h3 class="mt-2">— 特别鸣谢 —</h3>
+        <p>RoboMaster 组委会</p>
       </v-card-text>
 
       <v-card-actions>
