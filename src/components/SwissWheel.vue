@@ -553,7 +553,7 @@ const jsonData = {
 
                     <div class="right-column">
                       <div class="top-row row-content mb-1">
-                        <div style="background: #9E9E9E">
+                        <div style="background: #616161">
                           <h4 class="px-1"> 0 </h4>
                         </div>
                         <v-avatar class="mx-1" size="x-small">
@@ -563,7 +563,7 @@ const jsonData = {
                       </div>
 
                       <div class="row-content">
-                        <div style="background: #9E9E9E">
+                        <div style="background: #616161">
                           <h4 class="px-1"> 0 </h4>
                         </div>
                         <v-avatar class="mx-1" size="x-small">
