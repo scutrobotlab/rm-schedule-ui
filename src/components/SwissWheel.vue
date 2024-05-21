@@ -494,6 +494,7 @@ const jsonData = {
             <p class="mt-1 text-h6" :style="'color: ' + node.data.titleColor">
               <b>{{ node.data.title }}</b>
               <span class="ml-1" v-if="isForecast(node)">*</span>
+              <span class="ml-1" v-if="round == node.data.round">**</span>
             </p>
 
             <div v-if="node.data.type == 'match'" class="mt-2">
@@ -662,7 +663,8 @@ const jsonData = {
     </div>
     <div class="text-end">
       <span class="ml-2 mb-2 text-disabled">
-        * 根据官网排名<b>实时</b>预测
+        * 根据官网排名 <b>实时</b> 滚榜更新 <br>
+        ** 竞猜数据来自RM王牌预言家
       </span>
     </div>
   </div>
