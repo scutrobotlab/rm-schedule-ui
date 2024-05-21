@@ -462,7 +462,7 @@ const jsonData = {
         <h1 class="font-weight-bold">{{ title }}</h1>
       </div>
       <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
-      <relation-graph ref="graphRef" :options="options">
+      <relation-graph class="draggable" ref="graphRef" :options="options">
         <template #node="{node}">
           <div class="py-2 my-1" :style="'color: ' + node.data.titleColor">
             <p class="mt-1 text-h6" :style="'color: ' + node.data.titleColor">
@@ -714,5 +714,9 @@ const jsonData = {
   100% {
     background: #43A047;
   }
+}
+
+.draggable {
+  touch-action: none; /* 禁止默认的触摸行为 */
 }
 </style>
