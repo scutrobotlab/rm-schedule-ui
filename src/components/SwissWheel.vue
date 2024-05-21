@@ -549,7 +549,7 @@ const jsonData = {
 
                     <div class="right-column">
                       <div class="top-row row-content mb-1">
-                        <div style="background: #D32F2F">
+                        <div class="colorful-red">
                           <h4 class="px-1">{{ match(v).redSideWinGameCount }}</h4>
                         </div>
                         <div v-if="round == node.data.round && promotionStore.getMpMatch(match(v).id)"
@@ -568,7 +568,7 @@ const jsonData = {
                       </div>
 
                       <div class="row-content">
-                        <div style="background: #1976D2">
+                        <div class="colorful-blue">
                           <h4 class="px-1">{{ match(v).blueSideWinGameCount }}</h4>
                         </div>
                         <div v-if="round == node.data.round && promotionStore.getMpMatch(match(v).id)"
@@ -746,19 +746,35 @@ const jsonData = {
   justify-content: flex-start; /* 水平左对齐 */
 }
 
-.colorful {
-  animation: color-change 1s infinite;
+.colorful-red {
+  animation: color-change-red 1.5s infinite;
 }
 
-@keyframes color-change {
+@keyframes color-change-red {
   0% {
-    background: #43A047;
+    background: #C62828;
   }
   50% {
-    background: #2E7D32;
+    background: #F44336;
   }
   100% {
-    background: #43A047;
+    background: #C62828;
+  }
+}
+
+.colorful-blue {
+  animation: color-change-blue 1.5s infinite;
+}
+
+@keyframes color-change-blue {
+  0% {
+    background: #1565C0;
+  }
+  50% {
+    background: #2196F3;
+  }
+  100% {
+    background: #1565C0;
   }
 }
 
