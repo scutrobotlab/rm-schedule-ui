@@ -1,6 +1,6 @@
 <template>
-  <!--  <HelloWorld />-->
   <Situation/>
+  <About/>
 </template>
 
 <script lang="ts" setup>

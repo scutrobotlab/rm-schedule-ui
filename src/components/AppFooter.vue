@@ -1,5 +1,12 @@
 <template>
   <v-footer height="40" app>
+    <v-btn
+      variant="text"
+      @click="appStore.aboutDialog = true"
+      size="small"
+    >
+      关于
+    </v-btn>
     <div
       class="text-caption"
       style="position: absolute; right: 16px;"
@@ -13,6 +20,9 @@
 </template>
 
 <script setup lang="ts">
+import {useAppStore} from "../stores/app";
+
+const appStore = useAppStore()
 </script>
 
 <style scoped lang="sass">
