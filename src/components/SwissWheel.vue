@@ -18,6 +18,7 @@ const promotionStore = usePromotionStore();
 const promise1 = promotionStore.updateSchedule()
 const promise2 = promotionStore.updateGroupRank()
 Promise.all([promise1, promise2]).then(async () => {
+  await updateMpMatch()
   await graphRef.value.setJsonData(jsonData)
   await graphRef.value.getInstance().zoomToFit()
   loading.value = false
@@ -120,6 +121,31 @@ function convertToOrdinal(number: number): string {
     return number + "rd";
   } else {
     return number + "th";
+  }
+}
+
+function generateNumberArray(baseId: number, n: number): number[] {
+  const result: number[] = [];
+  for (let i = 0; i < n; i++) {
+    result.push(baseId + i);
+  }
+  return result;
+}
+
+async function updateMpMatch() {
+  const baseId = Number(promotionStore.currentZone.groupMatches.nodes[0].id)
+  switch (round.value) {
+    case 0:
+      return
+    case 1:
+      await promotionStore.updateMpMatch(generateNumberArray(baseId, 16))
+      return
+    case 2:
+      await promotionStore.updateMpMatch(generateNumberArray(baseId + 16, 16))
+      return
+    case 3:
+      await promotionStore.updateMpMatch(generateNumberArray(baseId + 32, 12))
+      return
   }
 }
 

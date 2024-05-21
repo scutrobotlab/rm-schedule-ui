@@ -3,6 +3,7 @@ import {ScheduleData, MatchNode, ZoneNode} from "../types/schedule";
 import axios, {AxiosResponse} from "axios";
 import {GroupPlayer, GroupRankInfo, GroupRankInfoZone} from "../types/group_rank_info";
 import {MpMatch, MpMatchRoot} from "../types/mp_match";
+import {computed} from "vue";
 
 export interface Schedule {
   data: ScheduleData
@@ -30,7 +31,6 @@ export const usePromotionStore = defineStore('promotion', {
       }).then(async (response: AxiosResponse<Schedule>) => {
         this.schedule = response.data
         const zone: ZoneNode = this.currentZone
-        await this.updateMpMatch(zone.groupMatches.nodes.map((e: MatchNode) => e.id))
       })
     },
     async updateGroupRank() {
@@ -42,7 +42,6 @@ export const usePromotionStore = defineStore('promotion', {
       })
     },
     async updateMpMatch(matchIds: number[]) {
-      console.log(matchIds)
       axios({
         method: 'GET',
         url: '/api/mp/match',
@@ -50,7 +49,6 @@ export const usePromotionStore = defineStore('promotion', {
           match_ids: matchIds.join(',')
         }
       }).then((res: AxiosResponse<MpMatchRoot>) => {
-        console.log(res.data.list)
         this.mpMatches = res.data.list
       })
     },
