@@ -13,7 +13,7 @@ const appStore = useAppStore()
         src="@/assets/banner2.jpg"
         cover
       >
-        <v-card-title><h3>关于 RMSituation</h3></v-card-title>
+        <v-card-title><h3>关于 RM Situation</h3></v-card-title>
         <v-card-subtitle>华南理工大学华南虎战队出品</v-card-subtitle>
       </v-img>
 
