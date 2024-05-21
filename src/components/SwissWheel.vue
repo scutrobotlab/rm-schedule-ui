@@ -637,7 +637,7 @@ const jsonData = {
                   <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
                     <v-img src="@/assets/school_grey.png"/>
                   </v-avatar>
-                  <span class="one-line-text">待定 {{ node.data.zones[zoneIndex].text[i] }}</span>
+                  <span class="one-line-text">待定 {{ node.data.zones[zoneIndex].text[0 + i] }}</span>
                 </div>
               </div>
 
@@ -653,7 +653,8 @@ const jsonData = {
                   <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
                     <v-img src="@/assets/school_grey.png"/>
                   </v-avatar>
-                  <span class="one-line-text">待定 {{ node.data.zones[zoneIndex].text[i] }}</span>
+                  <span class="one-line-text">待定
+                    {{ node.data.zones[zoneIndex].text[node.data.zones[zoneIndex].winners.length + i] }}</span>
                 </div>
               </div>
             </div>
