@@ -5,11 +5,11 @@ const appStore = useAppStore()
 </script>
 
 <template>
-  <v-dialog max-width="480" v-model="appStore.aboutDialog">
+  <v-dialog max-width="480" v-model="appStore.aboutDialog" :scrollable="true">
     <v-card variant="elevated">
       <v-img
         class="text-white py-2"
-        height="260"
+        height="240"
         src="@/assets/banner2.jpg"
         cover
       >
@@ -23,8 +23,12 @@ const appStore = useAppStore()
         <p>反馈&建议 + QQ1067088037</p>
         <h3 class="mt-2">— 宣传 —</h3>
         <p>22-24赛季 宣传运营组 杨卓石</p>
-        <h3 class="mt-2">— 特别鸣谢 —</h3>
+        <h3 class="mt-4">— 特别鸣谢 —</h3>
         <p>RoboMaster 组委会</p>
+
+        <div class="mt-6">
+          <v-img src="@/assets/qr-code2.png"></v-img>
+        </div>
       </v-card-text>
 
       <v-card-actions>
