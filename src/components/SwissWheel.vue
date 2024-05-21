@@ -201,7 +201,7 @@ const jsonData = {
       x: rx,
       y: ry,
       data: {
-        title: '瑞士轮第一轮 0-0',
+        title: '瑞士轮第一轮 0胜0负',
         titleColor: '#FFFFFF',
         round: 1,
         type: 'match',
@@ -227,7 +227,7 @@ const jsonData = {
       x: rx + nodeWidth + 100,
       y: ry - 80,
       data: {
-        title: '瑞士轮第二轮 1-0',
+        title: '瑞士轮第二轮 1胜0负',
         titleColor: '#FFFFFF',
         round: 2,
         type: 'match',
@@ -265,7 +265,7 @@ const jsonData = {
       x: rx + nodeWidth + 100,
       y: ry + 300,
       data: {
-        title: '瑞士轮第二轮 0-1',
+        title: '瑞士轮第二轮 0胜1负',
         titleColor: '#FFFFFF',
         round: 2,
         type: 'match',
@@ -303,7 +303,7 @@ const jsonData = {
       x: rx + 2 * nodeWidth + 200,
       y: ry - 140,
       data: {
-        title: '瑞士轮第三轮 2-0',
+        title: '瑞士轮第三轮 2胜0负',
         titleColor: '#FFFFFF',
         round: 3,
         type: 'match',
@@ -337,7 +337,7 @@ const jsonData = {
       x: rx + 2 * nodeWidth + 200,
       y: ry + 90,
       data: {
-        title: '瑞士轮第三轮 1-1',
+        title: '瑞士轮第三轮 1胜1负',
         titleColor: '#FFFFFF',
         round: 3,
         type: 'match',
@@ -375,7 +375,7 @@ const jsonData = {
       x: rx + 2 * nodeWidth + 200,
       y: ry + 465,
       data: {
-        title: '淘汰 0-2',
+        title: '淘汰 0胜2负',
         titleColor: '#B0BEC5',
         round: 3,
         type: 'eliminate',
@@ -399,7 +399,7 @@ const jsonData = {
       x: rx + 3 * nodeWidth + 300,
       y: ry - 80,
       data: {
-        title: '晋级淘汰赛 3-0',
+        title: '晋级淘汰赛 3胜0负',
         titleColor: '#FBC02D',
         round: 4,
         type: 'promote',
@@ -423,7 +423,7 @@ const jsonData = {
       x: rx + 3 * nodeWidth + 300,
       y: ry + 90,
       data: {
-        title: '晋级淘汰赛 2-1',
+        title: '晋级淘汰赛 2胜1负',
         titleColor: '#FBC02D',
         round: 4,
         type: 'promote',
@@ -447,7 +447,7 @@ const jsonData = {
       x: rx + 3 * nodeWidth + 300,
       y: ry + 400,
       data: {
-        title: '淘汰 1-2',
+        title: '淘汰 1胜2负',
         titleColor: '#B0BEC5',
         round: 4,
         type: 'eliminate',
