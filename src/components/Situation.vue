@@ -51,7 +51,7 @@ const selectedZone = ref([0])
                       class="ma-2"
                       rounded
                       @click="toggle">
-                      半区 {{ n }}
+                      {{ n }}组
                     </v-btn>
                   </v-slide-group-item>
                 </v-slide-group>

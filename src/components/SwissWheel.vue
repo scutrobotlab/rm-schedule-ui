@@ -152,7 +152,7 @@ async function updateMpMatch() {
 const title = computed(() => {
   if (!promotionStore.schedule.data) return ''
   const zone = promotionStore.currentZone
-  return `${promotionStore.schedule.data.event.title} ${zone.name} ${props.zone}半区`
+  return `${promotionStore.schedule.data.event.title} ${zone.name} ${props.zone}组`
 })
 
 const zoneIndex = computed(() => {
