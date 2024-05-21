@@ -26,7 +26,7 @@ Promise.all([promise1, promise2]).then(async () => {
 
 const graphRef = ref<RelationGraph>()
 
-const nodeWidth = 280;
+const nodeWidth = 300;
 const options = ref<RGOptions>({
   layout: {
     'layoutName': 'fixed',
@@ -551,36 +551,38 @@ const jsonData = {
                         <div style="background: #D32F2F">
                           <h4 class="px-1">{{ match(v).redSideWinGameCount }}</h4>
                         </div>
+                        <div v-if="round == node.data.round && promotionStore.getMpMatch(match(v).id)"
+                             class="ml-1 text-caption"
+                             :style="{
+                               width: '2.5rem',
+                               background: `linear-gradient(to right, #EF6C00 ${promotionStore.getMpMatch(match(v).id).redRate * 100}%, transparent ${promotionStore.getMpMatch(match(v).id).redRate * 100 + 20}%)`,
+                               border: '2px solid #EF6C00',
+                             }">
+                          {{ (100 * promotionStore.getMpMatch(match(v).id).redRate).toFixed(1) }}%
+                        </div>
                         <v-avatar class="mx-1" color="white" size="x-small">
                           <v-img :src="match(v).redSide.player?.team.collegeLogo"></v-img>
                         </v-avatar>
                         <span class="one-line-text">{{ match(v).redSide.player?.team.collegeName }}</span>
-                        <div v-if="round == node.data.round && promotionStore.getMpMatch(match(v).id)"
-                             :style="{
-                               width: '3rem',
-                               background: `linear-gradient(to right, #E65100 ${promotionStore.getMpMatch(match(v).id).redRate * 100}%, transparent ${promotionStore.getMpMatch(match(v).id).redRate * 100}%)`,
-                               border: '2px solid #E65100'
-                             }">
-                          {{ (100 * promotionStore.getMpMatch(match(v).id).redRate).toFixed(1) }}%
-                        </div>
                       </div>
 
                       <div class="row-content">
                         <div style="background: #1976D2">
                           <h4 class="px-1">{{ match(v).blueSideWinGameCount }}</h4>
                         </div>
+                        <div v-if="round == node.data.round && promotionStore.getMpMatch(match(v).id)"
+                             class="ml-1 text-caption"
+                             :style="{
+                               width: '2.5rem',
+                               background: `linear-gradient(to right, #00695C ${promotionStore.getMpMatch(match(v).id).blueRate * 100}%, transparent ${promotionStore.getMpMatch(match(v).id).blueRate * 100 + 20}%)`,
+                               border: '2px solid #00695C'
+                             }">
+                          {{ (100 * promotionStore.getMpMatch(match(v).id).blueRate).toFixed(1) }}%
+                        </div>
                         <v-avatar class="mx-1" color="white" size="x-small">
                           <v-img :src="match(v).blueSide.player?.team.collegeLogo"></v-img>
                         </v-avatar>
                         <span class="one-line-text">{{ match(v).blueSide.player?.team.collegeName }}</span>
-                        <div v-if="round == node.data.round && promotionStore.getMpMatch(match(v).id)"
-                             :style="{
-                               width: '3rem',
-                               background: `linear-gradient(to right, #006064 ${promotionStore.getMpMatch(match(v).id).blueRate * 100}%, transparent ${promotionStore.getMpMatch(match(v).id).blueRate * 100}%)`,
-                               border: '2px solid #006064'
-                             }">
-                          {{ (100 * promotionStore.getMpMatch(match(v).id).blueRate).toFixed(1) }}%
-                        </div>
                       </div>
                     </div>
                   </div>
