@@ -1,12 +1,5 @@
 <template>
   <v-footer height="40" app>
-    <v-btn
-      variant="text"
-      @click="appStore.aboutDialog = true"
-      size="small"
-    >
-      关于
-    </v-btn>
     <div
       class="text-caption"
       style="position: absolute; right: 16px;"

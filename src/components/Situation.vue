@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import {useAppStore} from "../stores/app";
+
 const selectedZone = ref([0])
+const appStore = useAppStore()
 </script>
 
 <template>
@@ -34,28 +37,45 @@ const selectedZone = ref([0])
                 </v-carousel-item>
 
               </v-carousel>
-              <v-sheet
-                class="mx-auto text-center"
-              >
-                <v-slide-group
-                  v-model="selectedZone"
-                  mandatory="force"
-                >
-                  <v-slide-group-item
-                    v-for="n in ['A', 'B']"
-                    :key="n"
-                    v-slot="{ isSelected, toggle }"
-                  >
+
+              <div class="mx-auto container2" style="background: rgba(255, 255, 255, 0.2)">
+                <div class="row">
+                  <div class="col">
+                    <v-sheet
+                      class="mx-auto text-center bg-transparent"
+                    >
+                      <v-slide-group
+                        v-model="selectedZone"
+                        mandatory="force"
+                      >
+                        <v-slide-group-item
+                          v-for="n in ['A', 'B']"
+                          :key="n"
+                          v-slot="{ isSelected, toggle }"
+                        >
+                          <v-btn
+                            :color="isSelected ? 'primary' : undefined"
+                            class="ma-2"
+                            rounded
+                            @click="toggle">
+                            {{ n }}组
+                          </v-btn>
+                        </v-slide-group-item>
+                      </v-slide-group>
+                    </v-sheet>
+                  </div>
+                  <div class="col text-right">
                     <v-btn
-                      :color="isSelected ? 'primary' : undefined"
                       class="ma-2"
-                      rounded
-                      @click="toggle">
-                      {{ n }}组
+                      variant="flat"
+                      color="info"
+                      @click="appStore.aboutDialog = true"
+                    >
+                      关于
                     </v-btn>
-                  </v-slide-group-item>
-                </v-slide-group>
-              </v-sheet>
+                  </div>
+                </div>
+              </div>
             </div>
           </v-col>
         </v-row>
@@ -100,5 +120,20 @@ const selectedZone = ref([0])
 .content {
   position: relative;
   z-index: 2;
+}
+
+.container2 {
+  display: flex; /* 使用Flexbox来布局子元素 */
+  flex-wrap: wrap; /* 允许子元素换行 */
+}
+
+.row {
+  display: flex; /* 每行也使用Flexbox布局 */
+  flex-basis: 100%; /* 每行占满容器宽度 */
+}
+
+.col {
+  flex: 1; /* 列占用可用空间 */
+  align-content: center;
 }
 </style>
