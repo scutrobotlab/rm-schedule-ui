@@ -662,6 +662,11 @@ const jsonData = {
       </relation-graph>
     </div>
     <div class="text-end">
+      <v-img
+        class="logo"
+        src="@/assets/logo.png">
+      </v-img>
+
       <span class="ml-2 mb-2 text-disabled">
         * 根据官网排名 <b>实时</b> 滚榜更新 <br>
         ** 竞猜数据来自RM王牌预言家
@@ -780,5 +785,17 @@ const jsonData = {
 
 .draggable {
   touch-action: none; /* 禁止默认的触摸行为 */
+}
+
+.logo {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100px;
+  opacity: 0.5;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 1;
 }
 </style>

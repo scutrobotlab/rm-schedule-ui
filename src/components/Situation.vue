@@ -12,11 +12,6 @@ const appStore = useAppStore()
       src="@/assets/background2.jpg"
       alt=""/>
 
-    <v-img
-      class="logo"
-      src="@/assets/logo.png">
-    </v-img>
-
     <div class="container">
       <v-container class="content mt-2">
         <v-row>
@@ -105,21 +100,9 @@ const appStore = useAppStore()
   object-fit: cover; /* 或 contain */
 }
 
-.logo {
-  position: absolute;
-  bottom: 50px;
-  right: 0;
-  width: 100px;
-  opacity: 0.5;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  z-index: 3;
-}
-
 .content {
   position: relative;
-  z-index: 2;
+  z-index: 3;
 }
 
 .container2 {
