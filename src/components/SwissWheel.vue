@@ -5,7 +5,6 @@ import {usePromotionStore, ZoneIdStr} from "../stores/promotion";
 import {MatchNode, Player, ZoneNode} from "../types/schedule";
 import {computed} from "vue";
 import {GroupPlayer} from "../types/group_rank_info";
-import {ar} from "vuetify/locale";
 
 interface Props {
   zone: 'A' | 'B',
@@ -89,13 +88,15 @@ function matchRank(player: Player): number {
   }
 }
 
-function rankList(arr: number[]): Player[] {
+function rankList(zone: any): Player[] {
   let players: Player[] = []
-  for (let i = 0; i < arr.length; i++) {
-    const player = winner(arr[i])
+  for (let i = 0; i < zone.winners.length; i++) {
+    const player = winner(zone.winners[i])
     if (player) players.push(player)
-    const player2 = loser(arr[i])
-    if (player2) players.push(player2)
+  }
+  for (let i = 0; i < zone.losers.length; i++) {
+    const player = loser(zone.losers[i])
+    if (player) players.push(player)
   }
   players.sort((a, b) => {
     return matchRank(a) - matchRank(b)
@@ -474,7 +475,7 @@ const jsonData = {
               <!--实时预测 动态刷新-->
               <div v-if="round + 1 == node.data.round" class="mt-4">
                 <div class="mx-2"
-                     v-for="(v, i) in rankList(node.data.zones[zoneIndex].matches)" :key="i">
+                     v-for="(v, i) in rankList(node.data.zones[zoneIndex])" :key="i">
                   <div class="container ml-2">
                     <div class="right-column">
                       <div v-if="v" class="top-row row-content mb-3">
@@ -491,7 +492,7 @@ const jsonData = {
                 </div>
 
                 <div class="mx-2"
-                     v-for="(v, i) in node.data.zones[zoneIndex].text.slice(rankList(node.data.zones[zoneIndex].matches).length)"
+                     v-for="(v, i) in node.data.zones[zoneIndex].text.slice(rankList(node.data.zones[zoneIndex]).length)"
                      :key="i">
                   <div class="container ml-2">
                     <div class="right-column">
