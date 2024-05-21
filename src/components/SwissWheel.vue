@@ -529,6 +529,14 @@ const jsonData = {
                           <v-img :src="match(v).redSide.player?.team.collegeLogo"></v-img>
                         </v-avatar>
                         <span class="one-line-text">{{ match(v).redSide.player?.team.collegeName }}</span>
+                        <div v-if="round == node.data.round && promotionStore.getMpMatch(match(v).id)"
+                             :style="{
+                               width: '3rem',
+                               background: `linear-gradient(to right, #E65100 ${promotionStore.getMpMatch(match(v).id).redRate * 100}%, transparent ${promotionStore.getMpMatch(match(v).id).redRate * 100}%)`,
+                               border: '2px solid #E65100'
+                             }">
+                          {{ (100 * promotionStore.getMpMatch(match(v).id).redRate).toFixed(1) }}%
+                        </div>
                       </div>
 
                       <div class="row-content">
@@ -539,6 +547,14 @@ const jsonData = {
                           <v-img :src="match(v).blueSide.player?.team.collegeLogo"></v-img>
                         </v-avatar>
                         <span class="one-line-text">{{ match(v).blueSide.player?.team.collegeName }}</span>
+                        <div v-if="round == node.data.round && promotionStore.getMpMatch(match(v).id)"
+                             :style="{
+                               width: '3rem',
+                               background: `linear-gradient(to right, #006064 ${promotionStore.getMpMatch(match(v).id).blueRate * 100}%, transparent ${promotionStore.getMpMatch(match(v).id).blueRate * 100}%)`,
+                               border: '2px solid #006064'
+                             }">
+                          {{ (100 * promotionStore.getMpMatch(match(v).id).blueRate).toFixed(1) }}%
+                        </div>
                       </div>
                     </div>
                   </div>

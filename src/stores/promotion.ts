@@ -2,6 +2,7 @@ import {defineStore} from 'pinia'
 import {ScheduleData, MatchNode, ZoneNode} from "../types/schedule";
 import axios, {AxiosResponse} from "axios";
 import {GroupPlayer, GroupRankInfo, GroupRankInfoZone} from "../types/group_rank_info";
+import {MpMatch, MpMatchRoot} from "../types/mp_match";
 
 export interface Schedule {
   data: ScheduleData
@@ -14,6 +15,7 @@ export const usePromotionStore = defineStore('promotion', {
   state: () => ({
     schedule: {} as Schedule,
     groupRank: {} as GroupRankInfo,
+    mpMatches: [] as MpMatch[],
   }),
   getters: {
     currentZone(state) {
@@ -25,8 +27,10 @@ export const usePromotionStore = defineStore('promotion', {
       await axios({
         method: 'GET',
         url: '/api/schedule',
-      }).then((response: AxiosResponse<Schedule>) => {
+      }).then(async (response: AxiosResponse<Schedule>) => {
         this.schedule = response.data
+        const zone: ZoneNode = this.currentZone
+        await this.updateMpMatch(zone.groupMatches.nodes.map((e: MatchNode) => e.id))
       })
     },
     async updateGroupRank() {
@@ -35,6 +39,19 @@ export const usePromotionStore = defineStore('promotion', {
         url: '/api/group_rank_info',
       }).then((response: AxiosResponse<any>) => {
         this.groupRank = response.data
+      })
+    },
+    async updateMpMatch(matchIds: number[]) {
+      console.log(matchIds)
+      axios({
+        method: 'GET',
+        url: '/api/mp/match',
+        params: {
+          match_ids: matchIds.join(',')
+        }
+      }).then((res: AxiosResponse<MpMatchRoot>) => {
+        console.log(res.data.list)
+        this.mpMatches = res.data.list
       })
     },
     getMatchByOrder(orderNumber: number): MatchNode | undefined {
@@ -47,7 +64,10 @@ export const usePromotionStore = defineStore('promotion', {
     },
     getForecastByIndex(zoneIndex: number, index: number): GroupPlayer[] | undefined {
       return this.currentZone.groups[zoneIndex].groupPlayers[index]
-    }
+    },
+    getMpMatch(matchId: string): MpMatch {
+      return this.mpMatches.find((match: MpMatch) => match.matchId.toString() == matchId)
+    },
   },
 })
 
