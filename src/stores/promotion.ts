@@ -16,7 +16,7 @@ export const usePromotionStore = defineStore('promotion', {
   state: () => ({
     schedule: {} as Schedule,
     groupRank: {} as GroupRankInfo,
-    mpMatches: [] as MpMatch[],
+    mpMatchMap: new Map<string, MpMatch>(),
   }),
   getters: {
     currentZone(state) {
@@ -49,7 +49,9 @@ export const usePromotionStore = defineStore('promotion', {
           match_ids: matchIds.join(',')
         }
       }).then((res: AxiosResponse<MpMatchRoot>) => {
-        this.mpMatches = res.data.list
+        res.data.list.forEach((match: MpMatch) => {
+          this.mpMatchMap.set(match.matchId.toString(), match)
+        })
       })
     },
     getMatchByOrder(orderNumber: number): MatchNode | undefined {
@@ -64,7 +66,7 @@ export const usePromotionStore = defineStore('promotion', {
       return this.currentZone.groups[zoneIndex].groupPlayers[index]
     },
     getMpMatch(matchId: string): MpMatch {
-      return this.mpMatches.find((match: MpMatch) => match.matchId.toString() == matchId)
+      return this.mpMatchMap.get(matchId) as MpMatch
     },
   },
 })
