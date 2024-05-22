@@ -5,6 +5,7 @@ import {usePromotionStore, ZoneIdStr} from "../stores/promotion";
 import {MatchNode, Player, ZoneNode} from "../types/schedule";
 import {computed} from "vue";
 import {GroupPlayer} from "../types/group_rank_info";
+import {fi} from "vuetify/locale";
 
 interface Props {
   zone: 'A' | 'B',
@@ -160,6 +161,15 @@ async function updateMpMatch() {
   }
 }
 
+const fingersCount = ref(0);
+const updateFingersCount = (event: TouchEvent) => {
+  fingersCount.value = event.touches.length;
+};
+
+window.addEventListener('touchstart', updateFingersCount);
+window.addEventListener('touchmove', updateFingersCount);
+window.addEventListener('touchend', updateFingersCount);
+
 const isDragging = ref(false);
 const nodeStart = ref({x: 0, y: 0});
 const canvasStart = ref({x: 0, y: 0});
@@ -172,12 +182,12 @@ const onDragStart = (x: number, y: number) => {
 };
 
 const onTouchStart = (event: TouchEvent) => {
-  if (event.touches.length > 1) return; // Ignore multi-touch
+  if (fingersCount.value > 1) return; // Ignore multi-touch
   onDragStart(event.touches[0].pageX, event.touches[0].pageY);
 };
 
 const onTouchMove = (event: TouchEvent) => {
-  if (event.touches.length > 1) return; // Ignore multi-touch
+  if (fingersCount.value > 1) return; // Ignore multi-touch
   onDragging(event.touches[0].pageX, event.touches[0].pageY);
 };
 
@@ -545,9 +555,9 @@ const jsonData = {
                @mousedown="e => onDragStart(e.pageX, e.pageY)"
                @mousemove="e => onDragging(e.pageX, e.pageY)"
                @mouseup="onDragEnd"
-               @touchstart.stop="onTouchStart"
-               @touchmove.stop="onTouchMove"
-               @touchend.stop="onDragEnd"
+               @touchstart="onTouchStart"
+               @touchmove="onTouchMove"
+               @touchend="onDragEnd"
           >
             <p class="mt-1 text-h6" :style="'color: ' + node.data.titleColor">
               <b>{{ node.data.title }}</b>
