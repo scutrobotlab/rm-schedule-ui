@@ -160,6 +160,32 @@ async function updateMpMatch() {
   }
 }
 
+const isDragging = ref(false);
+const nodeStart = ref({x: 0, y: 0});
+const canvasStart = ref({x: 0, y: 0});
+
+const onDragStart = (x: number, y: number) => {
+  isDragging.value = true;
+  nodeStart.value = {x: x, y: y};
+  const canvasOffset = graphRef.value.getInstance().options.canvasOffset
+  canvasStart.value = {x: canvasOffset.x, y: canvasOffset.y};
+};
+
+const onDragging = (x: number, y: number) => {
+  if (isDragging.value) {
+    const offsetX = x - nodeStart.value.x;
+    const offsetY = y - nodeStart.value.y;
+    graphRef.value.getInstance().options.canvasOffset = {
+      x: canvasStart.value.x + offsetX,
+      y: canvasStart.value.y + offsetY
+    };
+  }
+};
+
+const onDragEnd = (event: Event) => {
+  isDragging.value = false;
+};
+
 const title = computed(() => {
   if (!promotionStore.schedule.data) return ''
   const zone = promotionStore.currentZone
@@ -499,9 +525,20 @@ const jsonData = {
         <h1 class="font-weight-bold">{{ title }}</h1>
       </div>
       <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
-      <relation-graph class="draggable" ref="graphRef" :options="options">
+      <relation-graph
+        class="draggable"
+        ref="graphRef"
+        :options="options"
+      >
         <template #node="{node}">
-          <div class="py-2 my-1" :style="'color: ' + node.data.titleColor">
+          <div class="py-2 my-1" :style="'color: ' + node.data.titleColor"
+               @mousedown="e => onDragStart(e.pageX, e.pageY)"
+               @mousemove="e => onDragging(e.pageX, e.pageY)"
+               @mouseup="onDragEnd"
+               @touchstart.stop="e => onDragStart(e.touches[0].pageX, e.touches[0].pageY)"
+               @touchmove.stop="e => onDragging(e.touches[0].pageX, e.touches[0].pageY)"
+               @touchend.stop="onDragEnd"
+          >
             <p class="mt-1 text-h6" :style="'color: ' + node.data.titleColor">
               <b>{{ node.data.title }}</b>
               <span class="ml-1" v-if="isForecast(node)">*</span>
