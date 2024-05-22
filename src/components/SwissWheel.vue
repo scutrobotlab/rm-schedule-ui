@@ -173,7 +173,7 @@ const onDragStart = (x: number, y: number) => {
 
 const onTouchStart = (event: TouchEvent) => {
   if (event.touches.length > 1) return; // Ignore multi-touch
-  onDragging(event.touches[0].pageX, event.touches[0].pageY);
+  onDragStart(event.touches[0].pageX, event.touches[0].pageY);
 };
 
 const onTouchMove = (event: TouchEvent) => {
