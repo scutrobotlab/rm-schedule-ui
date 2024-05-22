@@ -171,6 +171,16 @@ const onDragStart = (x: number, y: number) => {
   canvasStart.value = {x: canvasOffset.x, y: canvasOffset.y};
 };
 
+const onTouchStart = (event: TouchEvent) => {
+  if (event.touches.length > 1) return; // Ignore multi-touch
+  onDragging(event.touches[0].pageX, event.touches[0].pageY);
+};
+
+const onTouchMove = (event: TouchEvent) => {
+  if (event.touches.length > 1) return; // Ignore multi-touch
+  onDragging(event.touches[0].pageX, event.touches[0].pageY);
+};
+
 const onDragging = (x: number, y: number) => {
   if (isDragging.value) {
     const offsetX = x - nodeStart.value.x;
@@ -535,8 +545,8 @@ const jsonData = {
                @mousedown="e => onDragStart(e.pageX, e.pageY)"
                @mousemove="e => onDragging(e.pageX, e.pageY)"
                @mouseup="onDragEnd"
-               @touchstart.stop="e => onDragStart(e.touches[0].pageX, e.touches[0].pageY)"
-               @touchmove.stop="e => onDragging(e.touches[0].pageX, e.touches[0].pageY)"
+               @touchstart.stop="onTouchStart"
+               @touchmove.stop="onTouchMove"
                @touchend.stop="onDragEnd"
           >
             <p class="mt-1 text-h6" :style="'color: ' + node.data.titleColor">
