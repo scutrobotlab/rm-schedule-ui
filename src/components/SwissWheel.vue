@@ -182,12 +182,20 @@ const onDragStart = (x: number, y: number) => {
 };
 
 const onTouchStart = (event: TouchEvent) => {
-  if (fingersCount.value > 1) return; // Ignore multi-touch
+  if (fingersCount.value > 1) {
+    // 两个手指以上不允许拖拽
+    isDragging.value = false;
+    return;
+  }
   onDragStart(event.touches[0].pageX, event.touches[0].pageY);
 };
 
 const onTouchMove = (event: TouchEvent) => {
-  if (fingersCount.value > 1) return; // Ignore multi-touch
+  if (fingersCount.value > 1) {
+    // 两个手指以上不允许拖拽
+    isDragging.value = false;
+    return;
+  }
   onDragging(event.touches[0].pageX, event.touches[0].pageY);
 };
 
