@@ -12,6 +12,11 @@ interface Props {
 
 const props = defineProps<Props>()
 
+interface PlayerWithMatch {
+  player: Player,
+  match: MatchNode,
+}
+
 const loading = ref(true)
 
 const promotionStore = usePromotionStore();
@@ -89,20 +94,26 @@ function matchRank(player: Player): number {
   }
 }
 
-function rankList(zone: any): Player[] {
-  let players: Player[] = []
+function rankList(zone: any): PlayerWithMatch[] {
+  const playerWithMatches: PlayerWithMatch[] = []
   for (let i = 0; i < zone.winners.length; i++) {
     const player = winner(zone.winners[i])
-    if (player) players.push(player)
+    if (player) playerWithMatches.push({
+      player: player,
+      match: match(zone.winners[i])
+    })
   }
   for (let i = 0; i < zone.losers.length; i++) {
     const player = loser(zone.losers[i])
-    if (player) players.push(player)
+    if (player) playerWithMatches.push({
+      player: player,
+      match: match(zone.losers[i])
+    })
   }
-  players.sort((a, b) => {
-    return matchRank(a) - matchRank(b)
+  playerWithMatches.sort((a, b) => {
+    return matchRank(a.player) - matchRank(b.player)
   })
-  return players
+  return playerWithMatches
 }
 
 function padNumber(num: number): string {
@@ -506,13 +517,16 @@ const jsonData = {
                   <div class="container ml-2">
                     <div class="right-column">
                       <div v-if="v" class="top-row row-content mb-3">
-                        <div style="background: #43A047">
-                          <h4 class="px-1" style="width: 2.5rem"> {{ convertToOrdinal(matchRank(v)) }} </h4>
+                        <div v-if="v.match.status == 'DONE'" style="background: #43A047">
+                          <h4 class="px-1" style="width: 2.5rem">{{ convertToOrdinal(matchRank(v.player)) }}</h4>
+                        </div>
+                        <div v-else style="background: #616161">
+                          <h4 class="px-1" style="width: 2.5rem"> 待定 </h4>
                         </div>
                         <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
-                          <v-img :src="v.team.collegeLogo"/>
+                          <v-img :src="v.player.team.collegeLogo"/>
                         </v-avatar>
-                        <span class="one-line-text">{{ v.team.collegeName }}</span>
+                        <span class="one-line-text">{{ v.player.team.collegeName }}</span>
                       </div>
                     </div>
                   </div>
