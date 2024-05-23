@@ -7,7 +7,8 @@ import {computed} from "vue";
 import {GroupPlayer} from "../types/group_rank_info";
 
 interface Props {
-  zone: 'A' | 'B',
+  type: 'group' | 'knockout',
+  zone: '' | 'A' | 'B',
 }
 
 const props = defineProps<Props>()
@@ -19,7 +20,11 @@ const promise1 = promotionStore.updateSchedule()
 const promise2 = promotionStore.updateGroupRank()
 Promise.all([promise1, promise2]).then(async () => {
   await updateMpMatch()
-  await graphRef.value.setJsonData(jsonData)
+  if (props.type == 'group') {
+    await graphRef.value.setJsonData(groupJsonData)
+  } else {
+    await graphRef.value.setJsonData(knockoutJsonData)
+  }
   await graphRef.value.getInstance().zoomToFit()
   loading.value = false
 })
@@ -192,7 +197,8 @@ const onDragEnd = (event: Event) => {
 const title = computed(() => {
   if (!promotionStore.schedule.data) return ''
   const zone = promotionStore.currentZone
-  return `${promotionStore.schedule.data.event.title} ${zone.name} ${props.zone}组`
+  if (props.type == 'knockout') return `${promotionStore.schedule.data.event.title} ${zone.name} 淘汰赛`
+  else if (props.type == 'group') return `${promotionStore.schedule.data.event.title} ${zone.name} 瑞士轮 ${props.zone}组`
 })
 
 const zoneIndex = computed(() => {
@@ -232,7 +238,7 @@ const round = computed(() => {
 const rx = 0;
 const ry = 0;
 
-const jsonData = {
+const groupJsonData = {
   rootId: '#1',
   nodes: [
     {
@@ -517,6 +523,41 @@ const jsonData = {
     {from: '#4', to: '#8',},
     {from: '#5', to: '#8',},
     {from: '#5', to: '#9',},
+  ],
+}
+
+const knockoutJsonData = {
+  rootId: '#1',
+  nodes: [
+    {
+      id: '#1',
+      text: '第一轮 0:0',
+      x: rx,
+      y: ry,
+      data: {
+        title: '瑞士轮第一轮 0胜0负',
+        titleColor: '#FFFFFF',
+        round: 1,
+        type: 'match',
+        zones: [
+          {
+            matches: [1, 2, 3, 4, 5, 6, 7, 8],
+            winners: [],
+            losers: [],
+            text: ['A1', 'A9', 'A2', 'A10', 'A3', 'A11', 'A4', 'A12', 'A5', 'A13', 'A6', 'A14', 'A7', 'A15', 'A8', 'A16']
+          },
+          {
+            matches: [9, 10, 11, 12, 13, 14, 15, 16],
+            winners: [],
+            losers: [],
+            text: ['B1', 'B9', 'B2', 'B10', 'B3', 'B11', 'B4', 'B12', 'B5', 'B13', 'B6', 'B14', 'B7', 'B15', 'B8', 'B16']
+          }
+        ]
+      }
+    },
+  ],
+  lines: [
+    {from: '#1', to: '#2',},
   ],
 }
 </script>

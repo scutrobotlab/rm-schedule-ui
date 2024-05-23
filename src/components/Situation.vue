@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {useAppStore} from "../stores/app";
+import MatchGraph from "./MatchGraph.vue";
 
 const selectedZone = ref([0])
 const appStore = useAppStore()
@@ -25,10 +26,13 @@ const appStore = useAppStore()
                 v-model="selectedZone"
               >
                 <v-carousel-item>
-                  <SwissWheel zone="A"></SwissWheel>
+                  <MatchGraph type="knockout" zone=""></MatchGraph>
                 </v-carousel-item>
                 <v-carousel-item>
-                  <SwissWheel zone="B"></SwissWheel>
+                  <MatchGraph type="group" zone="A"></MatchGraph>
+                </v-carousel-item>
+                <v-carousel-item>
+                  <MatchGraph type="group" zone="B"></MatchGraph>
                 </v-carousel-item>
 
               </v-carousel>
@@ -44,7 +48,7 @@ const appStore = useAppStore()
                         mandatory="force"
                       >
                         <v-slide-group-item
-                          v-for="n in ['A', 'B']"
+                          v-for="n in ['淘汰赛', 'A组', 'B组']"
                           :key="n"
                           v-slot="{ isSelected, toggle }"
                         >
@@ -52,8 +56,9 @@ const appStore = useAppStore()
                             :color="isSelected ? 'primary' : undefined"
                             class="ma-2"
                             rounded
+                            size="small"
                             @click="toggle">
-                            {{ n }}组
+                            {{ n }}
                           </v-btn>
                         </v-slide-group-item>
                       </v-slide-group>
@@ -64,6 +69,7 @@ const appStore = useAppStore()
                       class="ma-2"
                       variant="flat"
                       color="info"
+                      size="small"
                       @click="appStore.aboutDialog = true"
                     >
                       关于

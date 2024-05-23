@@ -11,9 +11,10 @@ declare module 'vue' {
     AppFooter: typeof import('./components/AppFooter.vue')['default']
     HelloWorld: typeof import('./components/HelloWorld.vue')['default']
     MatchesNode: typeof import('./components/MatchesNode.vue')['default']
+    MatchGraph: typeof import('./components/MatchGraph.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Situation: typeof import('./components/Situation.vue')['default']
-    SwissWheel: typeof import('./components/SwissWheel.vue')['default']
+    SwissWheel: typeof import('./components/MatchGraph.vue')['default']
   }
 }
