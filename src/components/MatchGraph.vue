@@ -136,9 +136,21 @@ function generateNumberArray(baseId: number, n: number): number[] {
 }
 
 async function updateMpMatch() {
-  const firstId = Number(promotionStore.currentZone.groupMatches.nodes[0].id)
-  const lastId = Number(promotionStore.currentZone.knockoutMatches.nodes[promotionStore.currentZone.knockoutMatches.nodes.length - 1].id)
-  await promotionStore.updateMpMatch(generateNumberArray(firstId, lastId - firstId + 1))
+  let firstId: number, lastId: number
+  if (props.type == 'group') {
+    firstId = Number(promotionStore.currentZone.groupMatches.nodes[0].id)
+    const idList = []
+    groupJsonData.nodes.forEach(e => {
+      e.data.zones[zoneIndex.value].matches.forEach((order: number, i: number) => {
+        idList.push(firstId + order - 1)
+      })
+    })
+    await promotionStore.updateMpMatch(idList)
+  } else if (props.type == 'knockout') {
+    firstId = Number(promotionStore.currentZone.knockoutMatches.nodes[0].id)
+    lastId = Number(promotionStore.currentZone.knockoutMatches.nodes[promotionStore.currentZone.knockoutMatches.nodes.length - 1].id)
+    await promotionStore.updateMpMatch(generateNumberArray(firstId, lastId - firstId + 1))
+  }
 }
 
 const fingersCount = ref(0);
@@ -427,11 +439,13 @@ const groupJsonData = {
         type: 'eliminate',
         zones: [
           {
+            matches: [],
             winners: [],
             losers: [21, 22, 23, 24],
             text: ['A组 第13名', 'A组 第14名', 'A组 第15名', 'A组 第16名']
           },
           {
+            matches: [],
             winners: [],
             losers: [29, 30, 31, 32],
             text: ['B组 第13名', 'B组 第14名', 'B组 第15名', 'B组 第16名']
@@ -451,11 +465,13 @@ const groupJsonData = {
         type: 'promote',
         zones: [
           {
+            matches: [],
             winners: [33, 34],
             losers: [],
             text: ['A组 第1名', 'A组 第2名']
           },
           {
+            matches: [],
             winners: [39, 40],
             losers: [],
             text: ['B组 第1名', 'B组 第2名']
@@ -475,11 +491,13 @@ const groupJsonData = {
         type: 'promote',
         zones: [
           {
+            matches: [],
             winners: [35, 36, 37, 38],
             losers: [33, 34],
             text: ['A组 第3名', 'A组 第4名', 'A组 第5名', 'A组 第6名', 'A组 第7名', 'A组 第8名']
           },
           {
+            matches: [],
             winners: [41, 42, 43, 44],
             losers: [39, 40],
             text: ['B组 第3名', 'B组 第4名', 'B组 第5名', 'B组 第6名', 'B组 第7名', 'B组 第8名']
@@ -499,11 +517,13 @@ const groupJsonData = {
         type: 'eliminate',
         zones: [
           {
+            matches: [],
             winners: [],
             losers: [35, 36, 37, 38],
             text: ['A组 第9名', 'A组 第10名', 'A组 第11名', 'A组 第12名']
           },
           {
+            matches: [],
             winners: [],
             losers: [41, 42, 43, 44],
             text: ['B组 第9名', 'B组 第10名', 'B组 第11名', 'B组 第12名']
