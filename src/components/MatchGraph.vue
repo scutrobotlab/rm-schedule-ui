@@ -547,18 +547,20 @@ const groupJsonData = {
 }
 
 const knockoutYOffset = 70;
-let thirdWinnerOrderNumber = 66;
-let championOrderNumber = 67;
 
-switch (ZoneId) {
-  case 498:
-    thirdWinnerOrderNumber = 66;
-    championOrderNumber = 67;
-    break;
-  case 499:
-    thirdWinnerOrderNumber = 67;
-    championOrderNumber = 69;
-    break;
+const knockoutOrderNumbers = {
+  498: [0,
+    45, 46, 47, 48, 49, 50, 51, 52,
+    53, 54, 57, 58,
+    63, 64,
+    66, 67,
+  ],
+  499: [0,
+    45, 46, 47, 48, 49, 50, 51, 52,
+    53, 54, 55, 56,
+    61, 62,
+    67, 69,
+  ]
 }
 
 const knockoutJsonData = {
@@ -576,7 +578,7 @@ const knockoutJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [45],
+            matches: [knockoutOrderNumbers[ZoneId][1]],
             winners: [],
             losers: [],
             text: ['小组赛B 第1名', '小组赛A 第8名']
@@ -596,7 +598,7 @@ const knockoutJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [46],
+            matches: [knockoutOrderNumbers[ZoneId][2]],
             winners: [],
             losers: [],
             text: ['小组赛A 第4名', '小组赛B 第5名']
@@ -616,7 +618,7 @@ const knockoutJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [47],
+            matches: [knockoutOrderNumbers[ZoneId][3]],
             winners: [],
             losers: [],
             text: ['小组赛A 第7名', '小组赛B 第2名']
@@ -636,7 +638,7 @@ const knockoutJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [48],
+            matches: [knockoutOrderNumbers[ZoneId][4]],
             winners: [],
             losers: [],
             text: ['小组赛B 第6名', '小组赛A 第3名']
@@ -656,7 +658,7 @@ const knockoutJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [49],
+            matches: [knockoutOrderNumbers[ZoneId][5]],
             winners: [],
             losers: [],
             text: ['小组赛A 第2名', '小组赛B 第7名']
@@ -676,7 +678,7 @@ const knockoutJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [50],
+            matches: [knockoutOrderNumbers[ZoneId][6]],
             winners: [],
             losers: [],
             text: ['小组赛B 第3名', '小组赛A 第6名']
@@ -696,7 +698,7 @@ const knockoutJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [51],
+            matches: [knockoutOrderNumbers[ZoneId][7]],
             winners: [],
             losers: [],
             text: ['小组赛B 第8名', '小组赛A 第1名']
@@ -716,7 +718,7 @@ const knockoutJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [52],
+            matches: [knockoutOrderNumbers[ZoneId][8]],
             winners: [],
             losers: [],
             text: ['小组赛A 第5名', '小组赛B 第4名']
@@ -736,10 +738,10 @@ const knockoutJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [53],
-            winners: [46, 45],
+            matches: [knockoutOrderNumbers[ZoneId][9]],
+            winners: [knockoutOrderNumbers[ZoneId][2], knockoutOrderNumbers[ZoneId][1]],
             losers: [],
-            text: ['第46场 胜者', '第45场 胜者']
+            text: [`第${knockoutOrderNumbers[ZoneId][2]}场 胜者`, `第${knockoutOrderNumbers[ZoneId][1]}场 胜者`]
           },
         ]
       }
@@ -756,10 +758,10 @@ const knockoutJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [54],
-            winners: [47, 48],
+            matches: [knockoutOrderNumbers[ZoneId][10]],
+            winners: [knockoutOrderNumbers[ZoneId][3], knockoutOrderNumbers[ZoneId][4]],
             losers: [],
-            text: ['第47场 胜者', '第48场 胜者']
+            text: [`第${knockoutOrderNumbers[ZoneId][3]}场 胜者`, `第${knockoutOrderNumbers[ZoneId][4]}场 胜者`]
           },
         ]
       }
@@ -776,10 +778,10 @@ const knockoutJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [55],
-            winners: [50, 49],
+            matches: [knockoutOrderNumbers[ZoneId][11]],
+            winners: [knockoutOrderNumbers[ZoneId][6], knockoutOrderNumbers[ZoneId][5]],
             losers: [],
-            text: ['第50场 胜者', '第49场 胜者']
+            text: [`第${knockoutOrderNumbers[ZoneId][6]}场 胜者`, `第${knockoutOrderNumbers[ZoneId][5]}场 胜者`]
           },
         ]
       }
@@ -796,10 +798,10 @@ const knockoutJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [56],
-            winners: [48, 47],
+            matches: [knockoutOrderNumbers[ZoneId][12]],
+            winners: [knockoutOrderNumbers[ZoneId][7], knockoutOrderNumbers[ZoneId][8]],
             losers: [],
-            text: ['第48场 胜者', '第47场 胜者']
+            text: [`第${knockoutOrderNumbers[ZoneId][7]}场 胜者`, `第${knockoutOrderNumbers[ZoneId][8]}场 胜者`]
           },
         ]
       }
@@ -816,10 +818,10 @@ const knockoutJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [61],
-            winners: [53, 55],
+            matches: [knockoutOrderNumbers[ZoneId][13]],
+            winners: [knockoutOrderNumbers[ZoneId][9], knockoutOrderNumbers[ZoneId][11]],
             losers: [],
-            text: ['第53场 胜者', '第55场 胜者']
+            text: [`第${knockoutOrderNumbers[ZoneId][9]}场 胜者`, `第${knockoutOrderNumbers[ZoneId][11]}场 胜者`]
           },
         ]
       }
@@ -836,10 +838,10 @@ const knockoutJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [62],
-            winners: [54, 56],
+            matches: [knockoutOrderNumbers[ZoneId][14]],
+            winners: [knockoutOrderNumbers[ZoneId][10], knockoutOrderNumbers[ZoneId][12]],
             losers: [],
-            text: ['第54场 胜者', '第56场 胜者']
+            text: [`第${knockoutOrderNumbers[ZoneId][10]}场 胜者`, `第${knockoutOrderNumbers[ZoneId][12]}场 胜者`]
           },
         ]
       }
@@ -856,10 +858,10 @@ const knockoutJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [thirdWinnerOrderNumber],
+            matches: [knockoutOrderNumbers[ZoneId][15]],
             winners: [],
-            losers: [62, 63],
-            text: ['第62场 败者', '第63场 败者']
+            losers: [knockoutOrderNumbers[ZoneId][13], knockoutOrderNumbers[ZoneId][14]],
+            text: [`第${knockoutOrderNumbers[ZoneId][13]}场 胜者`, `第${knockoutOrderNumbers[ZoneId][14]}场 胜者`]
           },
         ]
       }
@@ -876,10 +878,10 @@ const knockoutJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [championOrderNumber],
-            winners: [62, 63],
+            matches: [knockoutOrderNumbers[ZoneId][16]],
+            winners: [knockoutOrderNumbers[ZoneId][13], knockoutOrderNumbers[ZoneId][14]],
             losers: [],
-            text: ['第62场 胜者', '第63场 胜者']
+            text: [`第${knockoutOrderNumbers[ZoneId][13]}场 胜者`, `第${knockoutOrderNumbers[ZoneId][14]}场 胜者`]
           },
         ]
       }
@@ -895,8 +897,8 @@ const knockoutJsonData = {
     {from: '#7', to: '#12',},
     {from: '#8', to: '#12',},
     {from: '#9', to: '#13',},
-    {from: '#10', to: '#13',},
-    {from: '#11', to: '#14',},
+    {from: '#10', to: '#14',},
+    {from: '#11', to: '#13',},
     {from: '#12', to: '#14',},
     {from: '#13', to: '#15',},
     {from: '#14', to: '#15',},
