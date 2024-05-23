@@ -2,7 +2,7 @@
 import {RGOptions} from "relation-graph-vue3/types/types/relation-graph-models/types";
 import RelationGraph from 'relation-graph-vue3';
 import {usePromotionStore} from "../stores/promotion";
-import {MatchNode, Player} from "../types/schedule";
+import {MatchNode, Player, PlayerWithMatch} from "../types/schedule";
 import {computed} from "vue";
 import {GroupPlayer} from "../types/group_rank_info";
 
@@ -11,11 +11,6 @@ interface Props {
 }
 
 const props = defineProps<Props>()
-
-interface PlayerWithMatch {
-  player: Player,
-  match: MatchNode,
-}
 
 const loading = ref(true)
 
@@ -53,14 +48,6 @@ const options = ref<RGOptions>({
 
 function match(orderNumber: number): MatchNode | undefined {
   return promotionStore.getMatchByOrder(orderNumber)
-}
-
-function forecast(index: number): GroupPlayer[] | undefined {
-  return promotionStore.getForecastByIndex(zoneIndex.value, index)
-}
-
-function limitText(text: string, limit: number): string {
-  return text.length > limit ? text.slice(0, limit) + '...' : text
 }
 
 function isForecast(node: any): boolean {

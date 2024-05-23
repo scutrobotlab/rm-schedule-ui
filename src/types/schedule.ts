@@ -100,6 +100,11 @@ export interface Player {
   team?: Team
 }
 
+export interface PlayerWithMatch {
+  player: Player,
+  match: MatchNode,
+}
+
 export interface RedSide {
   id: string
   preparedStatus: string
