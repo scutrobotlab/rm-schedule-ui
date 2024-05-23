@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {RGOptions} from "relation-graph-vue3/types/types/relation-graph-models/types";
 import RelationGraph from 'relation-graph-vue3';
-import {usePromotionStore} from "../stores/promotion";
+import {usePromotionStore, ZoneId} from "../stores/promotion";
 import {MatchNode, Player, PlayerWithMatch} from "../types/schedule";
 import {computed} from "vue";
 import {GroupPlayer} from "../types/group_rank_info";
@@ -547,6 +547,19 @@ const groupJsonData = {
 }
 
 const knockoutYOffset = 70;
+let thirdWinnerOrderNumber = 66;
+let championOrderNumber = 67;
+
+switch (ZoneId) {
+  case 498:
+    thirdWinnerOrderNumber = 66;
+    championOrderNumber = 67;
+    break;
+  case 499:
+    thirdWinnerOrderNumber = 67;
+    championOrderNumber = 69;
+    break;
+}
 
 const knockoutJsonData = {
   rootId: '#16',
@@ -843,7 +856,7 @@ const knockoutJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [66],
+            matches: [thirdWinnerOrderNumber],
             winners: [],
             losers: [62, 63],
             text: ['第62场 败者', '第63场 败者']
@@ -863,7 +876,7 @@ const knockoutJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [67],
+            matches: [championOrderNumber],
             winners: [62, 63],
             losers: [],
             text: ['第62场 胜者', '第63场 胜者']
