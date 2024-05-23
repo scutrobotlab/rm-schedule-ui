@@ -131,20 +131,9 @@ function generateNumberArray(baseId: number, n: number): number[] {
 }
 
 async function updateMpMatch() {
-  const baseId = Number(promotionStore.currentZone.groupMatches.nodes[0].id)
-  switch (round.value) {
-    case 0:
-      return
-    case 1:
-      await promotionStore.updateMpMatch(generateNumberArray(baseId, 16))
-      return
-    case 2:
-      await promotionStore.updateMpMatch(generateNumberArray(baseId + 16, 16))
-      return
-    case 3:
-      await promotionStore.updateMpMatch(generateNumberArray(baseId + 32, 12))
-      return
-  }
+  const firstId = Number(promotionStore.currentZone.groupMatches.nodes[0].id)
+  const lastId = Number(promotionStore.currentZone.knockoutMatches.nodes[promotionStore.currentZone.knockoutMatches.nodes.length - 1].id)
+  await promotionStore.updateMpMatch(generateNumberArray(firstId, lastId - firstId + 1))
 }
 
 const fingersCount = ref(0);
@@ -617,7 +606,7 @@ const jsonData = {
                         <div class="colorful-red">
                           <h4 class="px-1">{{ match(v).redSideWinGameCount }}</h4>
                         </div>
-                        <div v-if="round == node.data.round && promotionStore.getMpMatch(match(v).id)"
+                        <div v-if="promotionStore.getMpMatch(match(v).id)"
                              class="ml-1 text-caption"
                              :style="{
                                width: '2.5rem',
@@ -636,7 +625,7 @@ const jsonData = {
                         <div class="colorful-blue">
                           <h4 class="px-1">{{ match(v).blueSideWinGameCount }}</h4>
                         </div>
-                        <div v-if="round == node.data.round && promotionStore.getMpMatch(match(v).id)"
+                        <div v-if="promotionStore.getMpMatch(match(v).id)"
                              class="ml-1 text-caption"
                              :style="{
                                width: '2.5rem',
