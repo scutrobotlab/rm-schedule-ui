@@ -30,7 +30,6 @@ export const usePromotionStore = defineStore('promotion', {
         url: '/api/schedule',
       }).then(async (response: AxiosResponse<Schedule>) => {
         this.schedule = response.data
-        const zone: ZoneNode = this.currentZone
       })
     },
     async updateGroupRank() {

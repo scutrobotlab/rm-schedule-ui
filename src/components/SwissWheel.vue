@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import {RGOptions} from "relation-graph-vue3/types/types/relation-graph-models/types";
 import RelationGraph from 'relation-graph-vue3';
-import {usePromotionStore, ZoneIdStr} from "../stores/promotion";
-import {MatchNode, Player, ZoneNode} from "../types/schedule";
+import {usePromotionStore} from "../stores/promotion";
+import {MatchNode, Player} from "../types/schedule";
 import {computed} from "vue";
 import {GroupPlayer} from "../types/group_rank_info";
-import {fi} from "vuetify/locale";
 
 interface Props {
   zone: 'A' | 'B',
