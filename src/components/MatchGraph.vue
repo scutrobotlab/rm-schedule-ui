@@ -554,7 +554,7 @@ const knockoutJsonData = {
     {
       id: '#1',
       text: '16进8淘汰赛 第1场',
-      x: rx,
+      x: rx - nodeWidth * 3 - 450,
       y: ry - knockoutYOffset * 7,
       data: {
         title: '16进8淘汰赛 第1场',
@@ -574,7 +574,7 @@ const knockoutJsonData = {
     {
       id: '#2',
       text: '16进8淘汰赛 第2场',
-      x: rx,
+      x: rx - nodeWidth * 3 - 450,
       y: ry - knockoutYOffset * 5,
       data: {
         title: '16进8淘汰赛 第2场',
@@ -594,7 +594,7 @@ const knockoutJsonData = {
     {
       id: '#3',
       text: '16进8淘汰赛 第3场',
-      x: rx,
+      x: rx - nodeWidth * 3 - 450,
       y: ry - knockoutYOffset * 3,
       data: {
         title: '16进8淘汰赛 第3场',
@@ -614,7 +614,7 @@ const knockoutJsonData = {
     {
       id: '#4',
       text: '16进8淘汰赛 第4场',
-      x: rx,
+      x: rx - nodeWidth * 3 - 450,
       y: ry - knockoutYOffset,
       data: {
         title: '16进8淘汰赛 第4场',
@@ -634,7 +634,7 @@ const knockoutJsonData = {
     {
       id: '#5',
       text: '16进8淘汰赛 第5场',
-      x: rx,
+      x: rx - nodeWidth * 3 - 450,
       y: ry + knockoutYOffset,
       data: {
         title: '16进8淘汰赛 第5场',
@@ -654,7 +654,7 @@ const knockoutJsonData = {
     {
       id: '#6',
       text: '16进8淘汰赛 第6场',
-      x: rx,
+      x: rx - nodeWidth * 3 - 450,
       y: ry + knockoutYOffset * 3,
       data: {
         title: '16进8淘汰赛 第6场',
@@ -674,7 +674,7 @@ const knockoutJsonData = {
     {
       id: '#7',
       text: '16进8淘汰赛 第7场',
-      x: rx,
+      x: rx - nodeWidth * 3 - 450,
       y: ry + knockoutYOffset * 5,
       data: {
         title: '16进8淘汰赛 第7场',
@@ -694,7 +694,7 @@ const knockoutJsonData = {
     {
       id: '#8',
       text: '16进8淘汰赛 第8场',
-      x: rx,
+      x: rx - nodeWidth * 3 - 450,
       y: ry + knockoutYOffset * 7,
       data: {
         title: '16进8淘汰赛 第8场',
@@ -714,7 +714,7 @@ const knockoutJsonData = {
     {
       id: '#9',
       text: '8进4淘汰赛 第1场',
-      x: rx + nodeWidth + 100,
+      x: rx - nodeWidth * 2 - 300,
       y: ry - knockoutYOffset * 6,
       data: {
         title: '8进4淘汰赛 第1场',
@@ -734,7 +734,7 @@ const knockoutJsonData = {
     {
       id: '#10',
       text: '8进4淘汰赛 第2场',
-      x: rx + nodeWidth + 100,
+      x: rx - nodeWidth * 2 - 300,
       y: ry - knockoutYOffset * 2,
       data: {
         title: '8进4淘汰赛 第2场',
@@ -754,7 +754,7 @@ const knockoutJsonData = {
     {
       id: '#11',
       text: '8进4淘汰赛 第3场',
-      x: rx + nodeWidth + 100,
+      x: rx - nodeWidth * 2 - 300,
       y: ry + knockoutYOffset * 2,
       data: {
         title: '8进4淘汰赛 第3场',
@@ -774,7 +774,7 @@ const knockoutJsonData = {
     {
       id: '#12',
       text: '8进4淘汰赛 第4场',
-      x: rx + nodeWidth + 100,
+      x: rx - nodeWidth * 2 - 300,
       y: ry + knockoutYOffset * 6,
       data: {
         title: '8进4淘汰赛 第4场',
@@ -794,7 +794,7 @@ const knockoutJsonData = {
     {
       id: '#13',
       text: '半决赛 第1场',
-      x: rx + nodeWidth * 2 + 200,
+      x: rx - nodeWidth - 150,
       y: ry - knockoutYOffset * 4,
       data: {
         title: '半决赛 第1场',
@@ -814,7 +814,7 @@ const knockoutJsonData = {
     {
       id: '#14',
       text: '半决赛 第2场',
-      x: rx + nodeWidth * 2 + 200,
+      x: rx - nodeWidth - 150,
       y: ry + knockoutYOffset * 4,
       data: {
         title: '半决赛 第2场',
@@ -834,7 +834,7 @@ const knockoutJsonData = {
     {
       id: '#15',
       text: '季军争夺战',
-      x: rx + nodeWidth * 3 + 300,
+      x: rx,
       y: ry + knockoutYOffset * 2,
       data: {
         title: '季军争夺战',
@@ -854,7 +854,7 @@ const knockoutJsonData = {
     {
       id: '#16',
       text: '冠军争夺战',
-      x: rx + nodeWidth * 3 + 300,
+      x: rx,
       y: ry - knockoutYOffset * 2,
       data: {
         title: '冠军争夺战',
@@ -968,7 +968,11 @@ const knockoutJsonData = {
 
                 <!--已确认的赛程-->
                 <div v-if="round + 1 > node.data.round" class="container my-3">
-                  <div class="container mt-2">
+                  <div :class="{
+                    'container': true,
+                    'mt-2': type == 'group',
+                  }"
+                  >
                     <div class="left-column ma-1">
                       <h2 class="px-1">{{ padNumber(match(v).orderNumber) }}</h2>
                     </div>
@@ -1017,7 +1021,10 @@ const knockoutJsonData = {
 
                 <!--纯文字+红蓝R标 A-1-->
                 <div v-else class="container my-3">
-                  <div class="container mt-2">
+                  <div :class="{
+                    'container': true,
+                    'mt-2': type == 'group',
+                    }">
                     <div class="left-column ma-1">
                       <h2 class="px-1">{{ padNumber(match(v).orderNumber) }}</h2>
                     </div>
