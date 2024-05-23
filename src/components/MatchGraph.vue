@@ -724,7 +724,7 @@ const knockoutJsonData = {
         zones: [
           {
             matches: [53],
-            winners: [],
+            winners: [46, 45],
             losers: [],
             text: ['第46场 胜者', '第45场 胜者']
           },
@@ -744,7 +744,7 @@ const knockoutJsonData = {
         zones: [
           {
             matches: [54],
-            winners: [],
+            winners: [47, 48],
             losers: [],
             text: ['第47场 胜者', '第48场 胜者']
           },
@@ -764,7 +764,7 @@ const knockoutJsonData = {
         zones: [
           {
             matches: [55],
-            winners: [],
+            winners: [50, 49],
             losers: [],
             text: ['第50场 胜者', '第49场 胜者']
           },
@@ -784,7 +784,7 @@ const knockoutJsonData = {
         zones: [
           {
             matches: [56],
-            winners: [],
+            winners: [48, 47],
             losers: [],
             text: ['第48场 胜者', '第47场 胜者']
           },
@@ -804,7 +804,7 @@ const knockoutJsonData = {
         zones: [
           {
             matches: [61],
-            winners: [],
+            winners: [53, 55],
             losers: [],
             text: ['第53场 胜者', '第55场 胜者']
           },
@@ -824,7 +824,7 @@ const knockoutJsonData = {
         zones: [
           {
             matches: [62],
-            winners: [],
+            winners: [54, 56],
             losers: [],
             text: ['第54场 胜者', '第56场 胜者']
           },
@@ -845,7 +845,7 @@ const knockoutJsonData = {
           {
             matches: [66],
             winners: [],
-            losers: [],
+            losers: [62, 63],
             text: ['第62场 败者', '第63场 败者']
           },
         ]
@@ -864,7 +864,7 @@ const knockoutJsonData = {
         zones: [
           {
             matches: [67],
-            winners: [],
+            winners: [62, 63],
             losers: [],
             text: ['第62场 胜者', '第63场 胜者']
           },
@@ -991,10 +991,18 @@ const knockoutJsonData = {
                              }">
                           {{ (100 * promotionStore.getMpMatch(match(v).id).redRate).toFixed(1) }}%
                         </div>
-                        <v-avatar class="mx-1" color="white" size="x-small">
-                          <v-img :src="match(v).redSide.player?.team.collegeLogo"></v-img>
-                        </v-avatar>
-                        <span class="one-line-text">{{ match(v).redSide.player?.team.collegeName }}</span>
+                        <div v-if="match(v).redSide.player">
+                          <v-avatar class="mx-1" color="white" size="x-small">
+                            <v-img :src="match(v).redSide.player?.team.collegeLogo"></v-img>
+                          </v-avatar>
+                          <span class="one-line-text">{{ match(v).redSide.player?.team.collegeName }}</span>
+                        </div>
+                        <div v-else>
+                          <v-avatar class="mx-1" size="x-small">
+                            <v-img src="@/assets/school_red.png"></v-img>
+                          </v-avatar>
+                          <span class="one-line-text">{{ node.data.zones[zoneIndex].text[2 * i] }}</span>
+                        </div>
                       </div>
 
                       <div class="row-content">
@@ -1010,10 +1018,18 @@ const knockoutJsonData = {
                              }">
                           {{ (100 * promotionStore.getMpMatch(match(v).id).blueRate).toFixed(1) }}%
                         </div>
-                        <v-avatar class="mx-1" color="white" size="x-small">
-                          <v-img :src="match(v).blueSide.player?.team.collegeLogo"></v-img>
-                        </v-avatar>
-                        <span class="one-line-text">{{ match(v).blueSide.player?.team.collegeName }}</span>
+                        <div v-if="match(v).blueSide.player">
+                          <v-avatar class="mx-1" color="white" size="x-small">
+                            <v-img :src="match(v).blueSide.player?.team.collegeLogo"></v-img>
+                          </v-avatar>
+                          <span class="one-line-text">{{ match(v).blueSide.player?.team.collegeName }}</span>
+                        </div>
+                        <div v-else>
+                          <v-avatar class="mx-1" size="x-small">
+                            <v-img src="@/assets/school_blue.png"></v-img>
+                          </v-avatar>
+                          <span class="one-line-text">{{ node.data.zones[zoneIndex].text[2 * i + 1] }}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
