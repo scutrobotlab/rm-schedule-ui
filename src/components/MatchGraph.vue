@@ -243,7 +243,7 @@ const round = computed(() => {
       else if (promotionStore.getMatchByOrder(9).redSide.player) return 1
       else return 1
     default:
-      return 0
+      return -1
   }
 })
 
@@ -546,38 +546,349 @@ const groupJsonData = {
   ],
 }
 
+const knockoutYOffset = 70;
+
 const knockoutJsonData = {
-  rootId: '#1',
+  rootId: '#16',
   nodes: [
     {
       id: '#1',
-      text: '第一轮 0:0',
+      text: '16进8淘汰赛 第1场',
       x: rx,
-      y: ry,
+      y: ry - knockoutYOffset * 7,
       data: {
-        title: '瑞士轮第一轮 0胜0负',
+        title: '16进8淘汰赛 第1场',
         titleColor: '#FFFFFF',
-        round: 1,
+        round: -1,
         type: 'match',
         zones: [
           {
-            matches: [1, 2, 3, 4, 5, 6, 7, 8],
+            matches: [45],
             winners: [],
             losers: [],
-            text: ['A1', 'A9', 'A2', 'A10', 'A3', 'A11', 'A4', 'A12', 'A5', 'A13', 'A6', 'A14', 'A7', 'A15', 'A8', 'A16']
+            text: ['小组赛B 第1名', '小组赛A 第8名']
           },
+        ]
+      }
+    },
+    {
+      id: '#2',
+      text: '16进8淘汰赛 第2场',
+      x: rx,
+      y: ry - knockoutYOffset * 5,
+      data: {
+        title: '16进8淘汰赛 第2场',
+        titleColor: '#FFFFFF',
+        round: -1,
+        type: 'match',
+        zones: [
           {
-            matches: [9, 10, 11, 12, 13, 14, 15, 16],
+            matches: [46],
             winners: [],
             losers: [],
-            text: ['B1', 'B9', 'B2', 'B10', 'B3', 'B11', 'B4', 'B12', 'B5', 'B13', 'B6', 'B14', 'B7', 'B15', 'B8', 'B16']
-          }
+            text: ['小组赛A 第4名', '小组赛B 第5名']
+          },
+        ]
+      }
+    },
+    {
+      id: '#3',
+      text: '16进8淘汰赛 第3场',
+      x: rx,
+      y: ry - knockoutYOffset * 3,
+      data: {
+        title: '16进8淘汰赛 第3场',
+        titleColor: '#FFFFFF',
+        round: -1,
+        type: 'match',
+        zones: [
+          {
+            matches: [47],
+            winners: [],
+            losers: [],
+            text: ['小组赛A 第7名', '小组赛B 第2名']
+          },
+        ]
+      }
+    },
+    {
+      id: '#4',
+      text: '16进8淘汰赛 第4场',
+      x: rx,
+      y: ry - knockoutYOffset,
+      data: {
+        title: '16进8淘汰赛 第4场',
+        titleColor: '#FFFFFF',
+        round: -1,
+        type: 'match',
+        zones: [
+          {
+            matches: [48],
+            winners: [],
+            losers: [],
+            text: ['小组赛B 第6名', '小组赛A 第3名']
+          },
+        ]
+      }
+    },
+    {
+      id: '#5',
+      text: '16进8淘汰赛 第5场',
+      x: rx,
+      y: ry + knockoutYOffset,
+      data: {
+        title: '16进8淘汰赛 第5场',
+        titleColor: '#FFFFFF',
+        round: -1,
+        type: 'match',
+        zones: [
+          {
+            matches: [49],
+            winners: [],
+            losers: [],
+            text: ['小组赛A 第2名', '小组赛B 第7名']
+          },
+        ]
+      }
+    },
+    {
+      id: '#6',
+      text: '16进8淘汰赛 第6场',
+      x: rx,
+      y: ry + knockoutYOffset * 3,
+      data: {
+        title: '16进8淘汰赛 第6场',
+        titleColor: '#FFFFFF',
+        round: -1,
+        type: 'match',
+        zones: [
+          {
+            matches: [50],
+            winners: [],
+            losers: [],
+            text: ['小组赛B 第3名', '小组赛A 第6名']
+          },
+        ]
+      }
+    },
+    {
+      id: '#7',
+      text: '16进8淘汰赛 第7场',
+      x: rx,
+      y: ry + knockoutYOffset * 5,
+      data: {
+        title: '16进8淘汰赛 第7场',
+        titleColor: '#FFFFFF',
+        round: -1,
+        type: 'match',
+        zones: [
+          {
+            matches: [51],
+            winners: [],
+            losers: [],
+            text: ['小组赛B 第8名', '小组赛A 第1名']
+          },
+        ]
+      }
+    },
+    {
+      id: '#8',
+      text: '16进8淘汰赛 第8场',
+      x: rx,
+      y: ry + knockoutYOffset * 7,
+      data: {
+        title: '16进8淘汰赛 第8场',
+        titleColor: '#FFFFFF',
+        round: -1,
+        type: 'match',
+        zones: [
+          {
+            matches: [52],
+            winners: [],
+            losers: [],
+            text: ['小组赛A 第5名', '小组赛B 第4名']
+          },
+        ]
+      }
+    },
+    {
+      id: '#9',
+      text: '8进4淘汰赛 第1场',
+      x: rx + nodeWidth + 100,
+      y: ry - knockoutYOffset * 6,
+      data: {
+        title: '8进4淘汰赛 第1场',
+        titleColor: '#FFFFFF',
+        round: -1,
+        type: 'match',
+        zones: [
+          {
+            matches: [53],
+            winners: [],
+            losers: [],
+            text: ['第46场 胜者', '第45场 胜者']
+          },
+        ]
+      }
+    },
+    {
+      id: '#10',
+      text: '8进4淘汰赛 第2场',
+      x: rx + nodeWidth + 100,
+      y: ry - knockoutYOffset * 2,
+      data: {
+        title: '8进4淘汰赛 第2场',
+        titleColor: '#FFFFFF',
+        round: -1,
+        type: 'match',
+        zones: [
+          {
+            matches: [54],
+            winners: [],
+            losers: [],
+            text: ['第47场 胜者', '第48场 胜者']
+          },
+        ]
+      }
+    },
+    {
+      id: '#11',
+      text: '8进4淘汰赛 第3场',
+      x: rx + nodeWidth + 100,
+      y: ry + knockoutYOffset * 2,
+      data: {
+        title: '8进4淘汰赛 第3场',
+        titleColor: '#FFFFFF',
+        round: -1,
+        type: 'match',
+        zones: [
+          {
+            matches: [55],
+            winners: [],
+            losers: [],
+            text: ['第50场 胜者', '第49场 胜者']
+          },
+        ]
+      }
+    },
+    {
+      id: '#12',
+      text: '8进4淘汰赛 第4场',
+      x: rx + nodeWidth + 100,
+      y: ry + knockoutYOffset * 6,
+      data: {
+        title: '8进4淘汰赛 第4场',
+        titleColor: '#FFFFFF',
+        round: -1,
+        type: 'match',
+        zones: [
+          {
+            matches: [56],
+            winners: [],
+            losers: [],
+            text: ['第48场 胜者', '第47场 胜者']
+          },
+        ]
+      }
+    },
+    {
+      id: '#13',
+      text: '半决赛 第1场',
+      x: rx + nodeWidth * 2 + 200,
+      y: ry - knockoutYOffset * 4,
+      data: {
+        title: '半决赛 第1场',
+        titleColor: '#FFFFFF',
+        round: -1,
+        type: 'match',
+        zones: [
+          {
+            matches: [61],
+            winners: [],
+            losers: [],
+            text: ['第53场 胜者', '第55场 胜者']
+          },
+        ]
+      }
+    },
+    {
+      id: '#14',
+      text: '半决赛 第2场',
+      x: rx + nodeWidth * 2 + 200,
+      y: ry + knockoutYOffset * 4,
+      data: {
+        title: '半决赛 第2场',
+        titleColor: '#FFFFFF',
+        round: -1,
+        type: 'match',
+        zones: [
+          {
+            matches: [62],
+            winners: [],
+            losers: [],
+            text: ['第54场 胜者', '第56场 胜者']
+          },
+        ]
+      }
+    },
+    {
+      id: '#15',
+      text: '季军争夺战',
+      x: rx + nodeWidth * 3 + 300,
+      y: ry + knockoutYOffset * 2,
+      data: {
+        title: '季军争夺战',
+        titleColor: '#FFFFFF',
+        round: -1,
+        type: 'match',
+        zones: [
+          {
+            matches: [66],
+            winners: [],
+            losers: [],
+            text: ['第62场 败者', '第63场 败者']
+          },
+        ]
+      }
+    },
+    {
+      id: '#16',
+      text: '冠军争夺战',
+      x: rx + nodeWidth * 3 + 300,
+      y: ry - knockoutYOffset * 2,
+      data: {
+        title: '冠军争夺战',
+        titleColor: '#FBC02D',
+        round: -1,
+        type: 'match',
+        zones: [
+          {
+            matches: [67],
+            winners: [],
+            losers: [],
+            text: ['第62场 胜者', '第63场 胜者']
+          },
         ]
       }
     },
   ],
   lines: [
-    {from: '#1', to: '#2',},
+    {from: '#1', to: '#9',},
+    {from: '#2', to: '#9',},
+    {from: '#3', to: '#10',},
+    {from: '#4', to: '#10',},
+    {from: '#5', to: '#11',},
+    {from: '#6', to: '#11',},
+    {from: '#7', to: '#12',},
+    {from: '#8', to: '#12',},
+    {from: '#9', to: '#13',},
+    {from: '#10', to: '#13',},
+    {from: '#11', to: '#14',},
+    {from: '#12', to: '#14',},
+    {from: '#13', to: '#15',},
+    {from: '#14', to: '#15',},
+    {from: '#13', to: '#16',},
+    {from: '#14', to: '#16',},
   ],
 }
 </script>
