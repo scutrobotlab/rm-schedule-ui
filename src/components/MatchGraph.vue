@@ -1004,18 +1004,15 @@ const knockoutJsonData = {
                              }">
                           {{ (100 * promotionStore.getMpMatch(match(v).id).redRate).toFixed(1) }}%
                         </div>
-                        <div v-if="match(v).redSide.player">
-                          <v-avatar class="mx-1" color="white" size="x-small">
-                            <v-img :src="match(v).redSide.player?.team.collegeLogo"></v-img>
-                          </v-avatar>
-                          <span class="one-line-text">{{ match(v).redSide.player?.team.collegeName }}</span>
-                        </div>
-                        <div v-else>
-                          <v-avatar class="mx-1" size="x-small">
-                            <v-img src="@/assets/school_red.png"></v-img>
-                          </v-avatar>
-                          <span class="one-line-text">{{ node.data.zones[zoneIndex].text[2 * i] }}</span>
-                        </div>
+                        <v-avatar v-if="match(v).redSide.player" class="mx-1" color="white" size="x-small">
+                          <v-img :src="match(v).redSide.player?.team.collegeLogo"></v-img>
+                        </v-avatar>
+                        <v-avatar v-else class="mx-1" size="x-small">
+                          <v-img src="@/assets/school_red.png"></v-img>
+                        </v-avatar>
+                        <span v-if="match(v).redSide.player"
+                              class="one-line-text">{{ match(v).redSide.player?.team.collegeName }}</span>
+                        <span v-else class="one-line-text">{{ node.data.zones[zoneIndex].text[2 * i] }}</span>
                       </div>
 
                       <div class="row-content">
@@ -1031,18 +1028,15 @@ const knockoutJsonData = {
                              }">
                           {{ (100 * promotionStore.getMpMatch(match(v).id).blueRate).toFixed(1) }}%
                         </div>
-                        <div v-if="match(v).blueSide.player">
-                          <v-avatar class="mx-1" color="white" size="x-small">
-                            <v-img :src="match(v).blueSide.player?.team.collegeLogo"></v-img>
-                          </v-avatar>
-                          <span class="one-line-text">{{ match(v).blueSide.player?.team.collegeName }}</span>
-                        </div>
-                        <div v-else>
-                          <v-avatar class="mx-1" size="x-small">
-                            <v-img src="@/assets/school_blue.png"></v-img>
-                          </v-avatar>
-                          <span class="one-line-text">{{ node.data.zones[zoneIndex].text[2 * i + 1] }}</span>
-                        </div>
+                        <v-avatar v-if="match(v).blueSide.player" class="mx-1" color="white" size="x-small">
+                          <v-img :src="match(v).blueSide.player?.team.collegeLogo"></v-img>
+                        </v-avatar>
+                        <v-avatar v-else class="mx-1" size="x-small">
+                          <v-img src="@/assets/school_blue.png"></v-img>
+                        </v-avatar>
+                        <span v-if="match(v).blueSide.player"
+                              class="one-line-text">{{ match(v).blueSide.player?.team.collegeName }}</span>
+                        <span v-else class="one-line-text">{{ node.data.zones[zoneIndex].text[2 * i + 1] }}</span>
                       </div>
                     </div>
                   </div>
