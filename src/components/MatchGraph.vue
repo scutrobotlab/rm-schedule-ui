@@ -20,13 +20,13 @@ const promise1 = promotionStore.updateSchedule()
 const promise2 = promotionStore.updateGroupRank()
 Promise.all([promise1, promise2]).then(async () => {
   await updateMpMatch()
+  loading.value = false
   if (props.type == 'group') {
     await graphRef.value.setJsonData(groupJsonData)
   } else {
     await graphRef.value.setJsonData(knockoutJsonData)
   }
   await graphRef.value.getInstance().zoomToFit()
-  loading.value = false
 })
 
 const graphRef = ref<RelationGraph>()
@@ -916,6 +916,7 @@ const knockoutJsonData = {
       </div>
       <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
       <relation-graph
+        v-show="!loading"
         class="draggable"
         ref="graphRef"
         :options="options"
