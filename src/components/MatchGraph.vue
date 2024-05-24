@@ -28,6 +28,14 @@ Promise.all([promise1, promise2]).then(async () => {
   await graphRef.value.getInstance().zoomToFit()
 })
 
+function refresh() {
+  promotionStore.updateSchedule()
+  promotionStore.updateGroupRank()
+  updateMpMatch()
+}
+
+setInterval(refresh, 30_000)
+
 const graphRef = ref<RelationGraph>()
 
 const nodeWidth = 300;
