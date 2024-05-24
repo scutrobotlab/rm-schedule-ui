@@ -1091,36 +1091,43 @@ const knockoutJsonData = {
             <!--晋级和淘汰-->
             <div v-else-if="node.data.type == 'eliminate' || node.data.type == 'promote'"
                  class="my-3 mx-4">
-              <div v-for="(v, i) in node.data.zones[zoneIndex].winners" :key="i"
-                   class="mb-3">
-                <div v-if="round >= 3 && winner(v)" class="container2 mb-1">
-                  <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
-                    <v-img :src="winner(v)?.team.collegeLogo"/>
-                  </v-avatar>
-                  <span class="one-line-text">{{ winner(v)?.team.collegeName }}</span>
-                </div>
-                <div v-else class="container2 mb-1">
-                  <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
-                    <v-img src="@/assets/school_grey.png"/>
-                  </v-avatar>
-                  <span class="one-line-text">待定 {{ node.data.zones[zoneIndex].text[0 + i] }}</span>
+              <div class="mx-2"
+                   v-for="(v, i) in rankList(node.data.zones[zoneIndex])" :key="i">
+                <div class="container ml-2">
+                  <div class="right-column">
+                    <div v-if="v" class="top-row row-content mb-3">
+                      <div v-if="v.match.status == 'DONE'" style="background: #43A047">
+                        <h4 class="px-1" style="width: 2.5rem; color: white">
+                          {{ convertToOrdinal(matchRank(v.player)) }}
+                        </h4>
+                      </div>
+                      <div v-else style="background: #616161">
+                        <h4 class="px-1" style="width: 2.5rem; color: white"> 待定 </h4>
+                      </div>
+                      <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
+                        <v-img :src="v.player.team.collegeLogo"/>
+                      </v-avatar>
+                      <span class="one-line-text">{{ v.player.team.collegeName }}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div v-for="(v, i) in node.data.zones[zoneIndex].losers" :key="i"
-                   class="mb-3">
-                <div v-if="round + 1 >= node.data.round && loser(v)" class="container2 mb-1">
-                  <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
-                    <v-img :src="loser(v)?.team.collegeLogo"/>
-                  </v-avatar>
-                  <span class="one-line-text">{{ loser(v)?.team.collegeName }}</span>
-                </div>
-                <div v-else class="container2 mb-1">
-                  <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
-                    <v-img src="@/assets/school_grey.png"/>
-                  </v-avatar>
-                  <span class="one-line-text">待定
-                    {{ node.data.zones[zoneIndex].text[node.data.zones[zoneIndex].winners.length + i] }}</span>
+              <div class="mx-2"
+                   v-for="(v, i) in node.data.zones[zoneIndex].text.slice(rankList(node.data.zones[zoneIndex]).length)"
+                   :key="i">
+                <div class="container ml-2">
+                  <div class="right-column">
+                    <div class="top-row row-content mb-3">
+                      <div style="background: #616161">
+                        <h4 class="px-1" style="width: 2.5rem">待定</h4>
+                      </div>
+                      <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
+                        <v-img src="@/assets/school_grey.png"/>
+                      </v-avatar>
+                      <span class="one-line-text">{{ v }}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
