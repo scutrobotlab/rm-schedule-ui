@@ -873,7 +873,7 @@ const knockoutJsonData = {
       y: ry - knockoutYOffset * 2,
       data: {
         title: '',
-        titleColor: '#FBC02D',
+        titleColor: '#FFFFFF',
         round: -1,
         type: 'match',
         zones: [
@@ -921,7 +921,12 @@ const knockoutJsonData = {
         :options="options"
       >
         <template #node="{node}">
-          <div class="py-2 my-1" :style="'color: ' + node.data.titleColor"
+          <div :class="{
+              'py-2': true,
+              'my-1': true,
+              'golden-shine': node.id == '#16',
+            }"
+               :style="{ color: node.data.titleColor }"
                @mousedown="e => onDragStart(e.pageX, e.pageY)"
                @mousemove="e => onDragging(e.pageX, e.pageY)"
                @mouseup="onDragEnd"
@@ -1195,9 +1200,9 @@ const knockoutJsonData = {
             v-if="type == 'knockout'"
             :style="{
               left: `${rx + 320}px`,
-              top: `${ry - knockoutYOffset * 2 - 80}px`,
+              top: `${ry - knockoutYOffset * 2 - 60}px`,
               position:'absolute',
-              width: `100px`
+              width: `80px`
             }">
             <div>
               <v-img src="@/assets/champion.png"></v-img>
@@ -1343,4 +1348,20 @@ const knockoutJsonData = {
   background-repeat: no-repeat;
   z-index: 1;
 }
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.golden-shine {
+  background: linear-gradient(60deg, #263238 10%, rgba(255, 223, 0, 0.5) 50%, #263238 75%);
+  background-size: 2000px 100%;
+  animation: shimmer 4s linear infinite;
+}
+
 </style>
