@@ -861,7 +861,7 @@ const knockoutJsonData = {
             matches: [knockoutOrderNumbers[ZoneId][15]],
             winners: [],
             losers: [knockoutOrderNumbers[ZoneId][13], knockoutOrderNumbers[ZoneId][14]],
-            text: [`第${knockoutOrderNumbers[ZoneId][13]}场 胜者`, `第${knockoutOrderNumbers[ZoneId][14]}场 胜者`]
+            text: [`第${knockoutOrderNumbers[ZoneId][13]}场 败者`, `第${knockoutOrderNumbers[ZoneId][14]}场 败者`]
           },
         ]
       }
