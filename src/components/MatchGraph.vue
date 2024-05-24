@@ -154,6 +154,12 @@ async function updateMpMatch() {
   }
 }
 
+function colorfulNode(node: any): boolean {
+  if (props.type != 'knockout') return false;
+  if (node.data.type != 'match') return false;
+  return match(node.data.zones[0].matches[0]).status == 'STARTED';
+}
+
 const fingersCount = ref(0);
 const updateFingersCount = (event: TouchEvent) => {
   fingersCount.value = event.touches.length;
@@ -927,6 +933,7 @@ const knockoutJsonData = {
               'py-2': true,
               'my-1': true,
               'golden-shine': node.id == '#16',
+              'highlight-gray': colorfulNode(node),
             }"
                :style="{ color: node.data.titleColor }"
                @mousedown="e => onDragStart(e.pageX, e.pageY)"
@@ -1339,6 +1346,23 @@ const knockoutJsonData = {
   }
   100% {
     background: #1565C0;
+  }
+}
+
+.highlight-gray {
+  border-radius: 12px;
+  animation: color-change-gray 2s infinite;
+}
+
+@keyframes color-change-gray {
+  0% {
+    border: 4px solid #263238;
+  }
+  50% {
+    border: 4px solid #90A4AE;
+  }
+  100% {
+    border: 4px solid #263238;
   }
 }
 
