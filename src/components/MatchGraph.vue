@@ -1190,6 +1190,19 @@ const knockoutJsonData = {
               <h2>季军争夺战</h2>
             </div>
           </div>
+
+          <div
+            v-if="type == 'knockout'"
+            :style="{
+              left: `${rx + 320}px`,
+              top: `${ry - knockoutYOffset * 2 - 80}px`,
+              position:'absolute',
+              width: `100px`
+            }">
+            <div>
+              <v-img src="@/assets/champion.png"></v-img>
+            </div>
+          </div>
         </template>
       </relation-graph>
     </div>
