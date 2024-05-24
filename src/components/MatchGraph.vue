@@ -231,13 +231,13 @@ const round = computed(() => {
   // return 4;
   switch (props.zone) {
     case 'A':
-      if (promotionStore.getMatchByOrder(45).redSide.player) return 4
+      if (promotionStore.getMatchByOrder(46).redSide.player) return 4
       else if (promotionStore.getMatchByOrder(33).redSide.player) return 3
       else if (promotionStore.getMatchByOrder(17).redSide.player) return 2
       else if (promotionStore.getMatchByOrder(1).redSide.player) return 1
       else return 0
     case 'B':
-      if (promotionStore.getMatchByOrder(46).redSide.player) return 4
+      if (promotionStore.getMatchByOrder(46).blueSide.player) return 4
       else if (promotionStore.getMatchByOrder(39).redSide.player) return 3
       else if (promotionStore.getMatchByOrder(25).redSide.player) return 2
       else if (promotionStore.getMatchByOrder(9).redSide.player) return 1
@@ -932,7 +932,7 @@ const knockoutJsonData = {
             <p class="mt-1 text-h6" :style="'color: ' + node.data.titleColor">
               <b>{{ node.data.title }}</b>
               <span class="ml-1" v-if="isForecast(node)">*</span>
-              <span class="ml-1" v-if="round == node.data.round">**</span>
+              <!--              <span class="ml-1" v-if="round == node.data.round">**</span>-->
             </p>
 
             <div v-if="node.data.type == 'match'" class="mt-2">
