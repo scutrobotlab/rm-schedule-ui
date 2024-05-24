@@ -997,9 +997,10 @@ const knockoutJsonData = {
                         <div class="colorful-red">
                           <h4 class="px-1">{{ match(v).redSideWinGameCount }}</h4>
                         </div>
-                        <div v-if="promotionStore.getMpMatch(match(v).id)"
-                             class="ml-1 text-caption"
-                             :style="{
+                        <div
+                          v-if="promotionStore.getMpMatch(match(v).id) && promotionStore.getMpMatch(match(v).id).redRate > 0"
+                          class="ml-1 text-caption"
+                          :style="{
                                width: '2.5rem',
                                background: `linear-gradient(to right, #EF6C00 ${promotionStore.getMpMatch(match(v).id).redRate * 100}%, transparent ${promotionStore.getMpMatch(match(v).id).redRate * 100 + 20}%)`,
                                border: '2px solid #EF6C00',
@@ -1021,9 +1022,10 @@ const knockoutJsonData = {
                         <div class="colorful-blue">
                           <h4 class="px-1">{{ match(v).blueSideWinGameCount }}</h4>
                         </div>
-                        <div v-if="promotionStore.getMpMatch(match(v).id)"
-                             class="ml-1 text-caption"
-                             :style="{
+                        <div
+                          v-if="promotionStore.getMpMatch(match(v).id) && promotionStore.getMpMatch(match(v).id).blueRate > 0"
+                          class="ml-1 text-caption"
+                          :style="{
                                width: '2.5rem',
                                background: `linear-gradient(to right, #00695C ${promotionStore.getMpMatch(match(v).id).blueRate * 100}%, transparent ${promotionStore.getMpMatch(match(v).id).blueRate * 100 + 20}%)`,
                                border: '2px solid #00695C'
