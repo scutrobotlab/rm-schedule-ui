@@ -1137,7 +1137,7 @@ const knockoutJsonData = {
               width: `${nodeWidth}px`
             }">
             <div class="text-center"
-                 style="padding:10px; background: #2196F3">
+                 style="padding:10px; background: #2196F388">
               <h2>16进8淘汰赛</h2>
             </div>
           </div>
@@ -1151,7 +1151,7 @@ const knockoutJsonData = {
               width: `${nodeWidth}px`
             }">
             <div class="text-center"
-                 style="padding:10px; background: #2196F3">
+                 style="padding:10px; background: #2196F388">
               <h2>8进4淘汰赛</h2>
             </div>
           </div>
@@ -1165,7 +1165,7 @@ const knockoutJsonData = {
               width: `${nodeWidth}px`
             }">
             <div class="text-center"
-                 style="padding:10px; background: #2196F3">
+                 style="padding:10px; background: #2196F388">
               <h2>半决赛</h2>
             </div>
           </div>
@@ -1179,7 +1179,7 @@ const knockoutJsonData = {
               width: `${nodeWidth}px`
             }">
             <div class="text-center"
-                 style="padding:10px; background: #2196F3">
+                 style="padding:10px; background: #2196F388">
               <h2>冠军争夺战</h2>
             </div>
           </div>
@@ -1193,7 +1193,7 @@ const knockoutJsonData = {
               width: `${nodeWidth}px`
             }">
             <div class="text-center"
-                 style="padding:10px; background: #2196F3">
+                 style="padding:10px; background: #2196F388">
               <h2>季军争夺战</h2>
             </div>
           </div>
@@ -1361,7 +1361,7 @@ const knockoutJsonData = {
 }
 
 .golden-shine {
-  background: linear-gradient(60deg, #263238 10%, rgba(255, 223, 0, 0.5) 50%, #263238 75%);
+  background: linear-gradient(60deg, #263238 10%, rgba(199, 191, 170, 0.75) 50%, #263238 75%);
   background-size: 2000px 100%;
   animation: shimmer 4s linear infinite;
 }
