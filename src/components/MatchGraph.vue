@@ -4,7 +4,6 @@ import RelationGraph from 'relation-graph-vue3';
 import {usePromotionStore, ZoneId} from "../stores/promotion";
 import {MatchNode, Player, PlayerWithMatch} from "../types/schedule";
 import {computed} from "vue";
-import {GroupPlayer} from "../types/group_rank_info";
 
 interface Props {
   type: 'group' | 'knockout',
@@ -61,6 +60,7 @@ function isForecast(node: any): boolean {
 
 function winner(orderNumber: number): Player | null {
   const match = promotionStore.getMatchByOrder(orderNumber)
+  if (match.status != 'DONE') return null
   if (match.redSideWinGameCount == 2) return match.redSide.player
   if (match.blueSideWinGameCount == 2) return match.blueSide.player
   return null
@@ -68,6 +68,7 @@ function winner(orderNumber: number): Player | null {
 
 function loser(orderNumber: number): Player | null {
   const match = promotionStore.getMatchByOrder(orderNumber)
+  if (match.status != 'DONE') return null
   if (match.redSideWinGameCount == 2) return match.blueSide.player
   if (match.blueSideWinGameCount == 2) return match.redSide.player
   return null
