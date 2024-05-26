@@ -1401,7 +1401,7 @@ const knockoutJsonData = {
 }
 
 .golden-shine {
-  background: linear-gradient(60deg, #263238 10%, rgba(199, 191, 170, 0.75) 50%, #263238 75%);
+  background: linear-gradient(60deg, #263238 10%, rgba(238, 232, 170, 0.8) 50%, #263238 75%);
   background-size: 2000px 100%;
   animation: shimmer 4s linear infinite;
 }
