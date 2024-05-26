@@ -1,9 +1,14 @@
 <script setup lang="ts">
 import {useAppStore} from "../stores/app";
 import MatchGraph from "./MatchGraph.vue";
+import {computed} from "vue";
 
 const selectedZone = ref([0])
 const appStore = useAppStore()
+
+const zoneId = computed(() => {
+  return 499
+})
 </script>
 
 <template>
@@ -26,13 +31,13 @@ const appStore = useAppStore()
                 v-model="selectedZone"
               >
                 <v-carousel-item>
-                  <MatchGraph type="knockout" zone=""></MatchGraph>
+                  <MatchGraph :zone-id="zoneId" type="knockout" zone=""></MatchGraph>
                 </v-carousel-item>
                 <v-carousel-item>
-                  <MatchGraph type="group" zone="A"></MatchGraph>
+                  <MatchGraph :zone-id="zoneId" type="group" zone="A"></MatchGraph>
                 </v-carousel-item>
                 <v-carousel-item>
-                  <MatchGraph type="group" zone="B"></MatchGraph>
+                  <MatchGraph :zone-id="zoneId" type="group" zone="B"></MatchGraph>
                 </v-carousel-item>
 
               </v-carousel>

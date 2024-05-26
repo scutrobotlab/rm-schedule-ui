@@ -9,20 +9,13 @@ export interface Schedule {
   data: ScheduleData
 }
 
-export const ZoneId = 499
-export const ZoneIdStr = ZoneId.toString()
-
 export const usePromotionStore = defineStore('promotion', {
   state: () => ({
     schedule: {} as Schedule,
     groupRank: {} as GroupRankInfo,
     mpMatchMap: new Map<string, MpMatch>(),
   }),
-  getters: {
-    currentZone(state) {
-      return state.schedule.data.event.zones.nodes.find((zone: ZoneNode) => zone.id == ZoneIdStr)
-    }
-  },
+  getters: {},
   actions: {
     async updateSchedule() {
       await axios({
@@ -53,16 +46,16 @@ export const usePromotionStore = defineStore('promotion', {
         })
       })
     },
-    getMatchByOrder(orderNumber: number): MatchNode | undefined {
-      const zone = this.currentZone
+    getZone(zoneId: number): ZoneNode {
+      return this.schedule.data.event.zones.nodes.find((zone: ZoneNode) => zone.id == zoneId.toString())
+    },
+    getMatchByOrder(zoneId: number, orderNumber: number): MatchNode | undefined {
+      const zone = this.getZone(zoneId)
       let node = zone.groupMatches.nodes.find((match: MatchNode) => match.orderNumber == orderNumber)
       if (node) return node
       node = zone.knockoutMatches.nodes.find((match: MatchNode) => match.orderNumber == orderNumber)
       if (node) return node
       return undefined
-    },
-    getForecastByIndex(zoneIndex: number, index: number): GroupPlayer[] | undefined {
-      return this.currentZone.groups[zoneIndex].groupPlayers[index]
     },
     getMpMatch(matchId: string): MpMatch {
       return this.mpMatchMap.get(matchId) as MpMatch

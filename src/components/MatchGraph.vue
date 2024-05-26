@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import {RGOptions} from "relation-graph-vue3/types/types/relation-graph-models/types";
 import RelationGraph from 'relation-graph-vue3';
-import {usePromotionStore, ZoneId} from "../stores/promotion";
+import {usePromotionStore} from "../stores/promotion";
 import {MatchNode, Player, PlayerWithMatch} from "../types/schedule";
 import {computed} from "vue";
 
 interface Props {
+  zoneId: number,
   type: 'group' | 'knockout',
   zone: '' | 'A' | 'B',
 }
@@ -59,7 +60,7 @@ const options = ref<RGOptions>({
 })
 
 function match(orderNumber: number): MatchNode | undefined {
-  return promotionStore.getMatchByOrder(orderNumber)
+  return promotionStore.getMatchByOrder(props.zoneId, orderNumber)
 }
 
 function isForecast(node: any): boolean {
@@ -67,7 +68,7 @@ function isForecast(node: any): boolean {
 }
 
 function winner(orderNumber: number): Player | null {
-  const match = promotionStore.getMatchByOrder(orderNumber)
+  const match = promotionStore.getMatchByOrder(props.zoneId, orderNumber)
   if (match.status != 'DONE') return null
   if (match.redSideWinGameCount == 2) return match.redSide.player
   if (match.blueSideWinGameCount == 2) return match.blueSide.player
@@ -75,7 +76,7 @@ function winner(orderNumber: number): Player | null {
 }
 
 function loser(orderNumber: number): Player | null {
-  const match = promotionStore.getMatchByOrder(orderNumber)
+  const match = promotionStore.getMatchByOrder(props.zoneId, orderNumber)
   if (match.status != 'DONE') return null
   if (match.redSideWinGameCount == 2) return match.blueSide.player
   if (match.blueSideWinGameCount == 2) return match.redSide.player
@@ -83,7 +84,7 @@ function loser(orderNumber: number): Player | null {
 }
 
 function matchRank(player: Player): number {
-  const zone = promotionStore.currentZone
+  const zone = promotionStore.getZone(props.zoneId)
   for (let i = 0; i < zone.groups.nodes.length; i++) {
     const group = zone.groups.nodes[i]
     for (let j = 0; j < group.players.nodes.length; j++) {
@@ -147,7 +148,7 @@ function generateNumberArray(baseId: number, n: number): number[] {
 async function updateMpMatch() {
   let firstId: number, lastId: number
   if (props.type == 'group') {
-    firstId = Number(promotionStore.currentZone.groupMatches.nodes[0].id)
+    firstId = Number(promotionStore.getZone(props.zoneId).groupMatches.nodes[0].id)
     const idList = []
     groupJsonData.nodes.forEach(e => {
       e.data.zones[zoneIndex.value].matches.forEach((order: number, i: number) => {
@@ -156,8 +157,8 @@ async function updateMpMatch() {
     })
     await promotionStore.updateMpMatch(idList)
   } else if (props.type == 'knockout') {
-    firstId = Number(promotionStore.currentZone.knockoutMatches.nodes[0].id)
-    lastId = Number(promotionStore.currentZone.knockoutMatches.nodes[promotionStore.currentZone.knockoutMatches.nodes.length - 1].id)
+    firstId = Number(promotionStore.getZone(props.zoneId).knockoutMatches.nodes[0].id)
+    lastId = Number(promotionStore.getZone(props.zoneId).knockoutMatches.nodes[promotionStore.getZone(props.zoneId).knockoutMatches.nodes.length - 1].id)
     await promotionStore.updateMpMatch(generateNumberArray(firstId, lastId - firstId + 1))
   }
 }
@@ -223,7 +224,7 @@ const onDragEnd = (event: Event) => {
 
 const title = computed(() => {
   if (!promotionStore.schedule.data) return ''
-  const zone = promotionStore.currentZone
+  const zone = promotionStore.getZone(props.zoneId)
   if (props.type == 'knockout') return `${promotionStore.schedule.data.event.title} ${zone.name} 淘汰赛`
   else if (props.type == 'group') return `${promotionStore.schedule.data.event.title} ${zone.name} 瑞士轮 ${props.zone}组`
 })
@@ -246,16 +247,16 @@ const round = computed(() => {
   // return 4;
   switch (props.zone) {
     case 'A':
-      if (promotionStore.getMatchByOrder(46).redSide.player) return 4
-      else if (promotionStore.getMatchByOrder(33).redSide.player) return 3
-      else if (promotionStore.getMatchByOrder(17).redSide.player) return 2
-      else if (promotionStore.getMatchByOrder(1).redSide.player) return 1
+      if (promotionStore.getMatchByOrder(props.zoneId, 46).redSide.player) return 4
+      else if (promotionStore.getMatchByOrder(props.zoneId, 33).redSide.player) return 3
+      else if (promotionStore.getMatchByOrder(props.zoneId, 17).redSide.player) return 2
+      else if (promotionStore.getMatchByOrder(props.zoneId, 1).redSide.player) return 1
       else return 0
     case 'B':
-      if (promotionStore.getMatchByOrder(46).blueSide.player) return 4
-      else if (promotionStore.getMatchByOrder(39).redSide.player) return 3
-      else if (promotionStore.getMatchByOrder(25).redSide.player) return 2
-      else if (promotionStore.getMatchByOrder(9).redSide.player) return 1
+      if (promotionStore.getMatchByOrder(props.zoneId, 46).blueSide.player) return 4
+      else if (promotionStore.getMatchByOrder(props.zoneId, 39).redSide.player) return 3
+      else if (promotionStore.getMatchByOrder(props.zoneId, 25).redSide.player) return 2
+      else if (promotionStore.getMatchByOrder(props.zoneId, 9).redSide.player) return 1
       else return 1
     default:
       return -1
@@ -593,7 +594,7 @@ const knockoutJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [knockoutOrderNumbers[ZoneId][1]],
+            matches: [knockoutOrderNumbers[props.zoneId][1]],
             winners: [],
             losers: [],
             text: ['小组赛B 第1名', '小组赛A 第8名']
@@ -613,7 +614,7 @@ const knockoutJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [knockoutOrderNumbers[ZoneId][2]],
+            matches: [knockoutOrderNumbers[props.zoneId][2]],
             winners: [],
             losers: [],
             text: ['小组赛A 第4名', '小组赛B 第5名']
@@ -633,7 +634,7 @@ const knockoutJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [knockoutOrderNumbers[ZoneId][3]],
+            matches: [knockoutOrderNumbers[props.zoneId][3]],
             winners: [],
             losers: [],
             text: ['小组赛A 第7名', '小组赛B 第2名']
@@ -653,7 +654,7 @@ const knockoutJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [knockoutOrderNumbers[ZoneId][4]],
+            matches: [knockoutOrderNumbers[props.zoneId][4]],
             winners: [],
             losers: [],
             text: ['小组赛B 第6名', '小组赛A 第3名']
@@ -673,7 +674,7 @@ const knockoutJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [knockoutOrderNumbers[ZoneId][5]],
+            matches: [knockoutOrderNumbers[props.zoneId][5]],
             winners: [],
             losers: [],
             text: ['小组赛A 第2名', '小组赛B 第7名']
@@ -693,7 +694,7 @@ const knockoutJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [knockoutOrderNumbers[ZoneId][6]],
+            matches: [knockoutOrderNumbers[props.zoneId][6]],
             winners: [],
             losers: [],
             text: ['小组赛B 第3名', '小组赛A 第6名']
@@ -713,7 +714,7 @@ const knockoutJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [knockoutOrderNumbers[ZoneId][7]],
+            matches: [knockoutOrderNumbers[props.zoneId][7]],
             winners: [],
             losers: [],
             text: ['小组赛B 第8名', '小组赛A 第1名']
@@ -733,7 +734,7 @@ const knockoutJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [knockoutOrderNumbers[ZoneId][8]],
+            matches: [knockoutOrderNumbers[props.zoneId][8]],
             winners: [],
             losers: [],
             text: ['小组赛A 第5名', '小组赛B 第4名']
@@ -753,10 +754,10 @@ const knockoutJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [knockoutOrderNumbers[ZoneId][9]],
-            winners: [knockoutOrderNumbers[ZoneId][2], knockoutOrderNumbers[ZoneId][1]],
+            matches: [knockoutOrderNumbers[props.zoneId][9]],
+            winners: [knockoutOrderNumbers[props.zoneId][2], knockoutOrderNumbers[props.zoneId][1]],
             losers: [],
-            text: [`第${knockoutOrderNumbers[ZoneId][2]}场 胜者`, `第${knockoutOrderNumbers[ZoneId][1]}场 胜者`]
+            text: [`第${knockoutOrderNumbers[props.zoneId][2]}场 胜者`, `第${knockoutOrderNumbers[props.zoneId][1]}场 胜者`]
           },
         ]
       }
@@ -773,10 +774,10 @@ const knockoutJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [knockoutOrderNumbers[ZoneId][10]],
-            winners: [knockoutOrderNumbers[ZoneId][3], knockoutOrderNumbers[ZoneId][4]],
+            matches: [knockoutOrderNumbers[props.zoneId][10]],
+            winners: [knockoutOrderNumbers[props.zoneId][3], knockoutOrderNumbers[props.zoneId][4]],
             losers: [],
-            text: [`第${knockoutOrderNumbers[ZoneId][3]}场 胜者`, `第${knockoutOrderNumbers[ZoneId][4]}场 胜者`]
+            text: [`第${knockoutOrderNumbers[props.zoneId][3]}场 胜者`, `第${knockoutOrderNumbers[props.zoneId][4]}场 胜者`]
           },
         ]
       }
@@ -793,10 +794,10 @@ const knockoutJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [knockoutOrderNumbers[ZoneId][11]],
-            winners: [knockoutOrderNumbers[ZoneId][6], knockoutOrderNumbers[ZoneId][5]],
+            matches: [knockoutOrderNumbers[props.zoneId][11]],
+            winners: [knockoutOrderNumbers[props.zoneId][6], knockoutOrderNumbers[props.zoneId][5]],
             losers: [],
-            text: [`第${knockoutOrderNumbers[ZoneId][6]}场 胜者`, `第${knockoutOrderNumbers[ZoneId][5]}场 胜者`]
+            text: [`第${knockoutOrderNumbers[props.zoneId][6]}场 胜者`, `第${knockoutOrderNumbers[props.zoneId][5]}场 胜者`]
           },
         ]
       }
@@ -813,10 +814,10 @@ const knockoutJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [knockoutOrderNumbers[ZoneId][12]],
-            winners: [knockoutOrderNumbers[ZoneId][7], knockoutOrderNumbers[ZoneId][8]],
+            matches: [knockoutOrderNumbers[props.zoneId][12]],
+            winners: [knockoutOrderNumbers[props.zoneId][7], knockoutOrderNumbers[props.zoneId][8]],
             losers: [],
-            text: [`第${knockoutOrderNumbers[ZoneId][7]}场 胜者`, `第${knockoutOrderNumbers[ZoneId][8]}场 胜者`]
+            text: [`第${knockoutOrderNumbers[props.zoneId][7]}场 胜者`, `第${knockoutOrderNumbers[props.zoneId][8]}场 胜者`]
           },
         ]
       }
@@ -833,10 +834,10 @@ const knockoutJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [knockoutOrderNumbers[ZoneId][13]],
-            winners: [knockoutOrderNumbers[ZoneId][9], knockoutOrderNumbers[ZoneId][11]],
+            matches: [knockoutOrderNumbers[props.zoneId][13]],
+            winners: [knockoutOrderNumbers[props.zoneId][9], knockoutOrderNumbers[props.zoneId][11]],
             losers: [],
-            text: [`第${knockoutOrderNumbers[ZoneId][9]}场 胜者`, `第${knockoutOrderNumbers[ZoneId][11]}场 胜者`]
+            text: [`第${knockoutOrderNumbers[props.zoneId][9]}场 胜者`, `第${knockoutOrderNumbers[props.zoneId][11]}场 胜者`]
           },
         ]
       }
@@ -853,10 +854,10 @@ const knockoutJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [knockoutOrderNumbers[ZoneId][14]],
-            winners: [knockoutOrderNumbers[ZoneId][10], knockoutOrderNumbers[ZoneId][12]],
+            matches: [knockoutOrderNumbers[props.zoneId][14]],
+            winners: [knockoutOrderNumbers[props.zoneId][10], knockoutOrderNumbers[props.zoneId][12]],
             losers: [],
-            text: [`第${knockoutOrderNumbers[ZoneId][10]}场 胜者`, `第${knockoutOrderNumbers[ZoneId][12]}场 胜者`]
+            text: [`第${knockoutOrderNumbers[props.zoneId][10]}场 胜者`, `第${knockoutOrderNumbers[props.zoneId][12]}场 胜者`]
           },
         ]
       }
@@ -873,10 +874,10 @@ const knockoutJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [knockoutOrderNumbers[ZoneId][15]],
+            matches: [knockoutOrderNumbers[props.zoneId][15]],
             winners: [],
-            losers: [knockoutOrderNumbers[ZoneId][13], knockoutOrderNumbers[ZoneId][14]],
-            text: [`第${knockoutOrderNumbers[ZoneId][13]}场 败者`, `第${knockoutOrderNumbers[ZoneId][14]}场 败者`]
+            losers: [knockoutOrderNumbers[props.zoneId][13], knockoutOrderNumbers[props.zoneId][14]],
+            text: [`第${knockoutOrderNumbers[props.zoneId][13]}场 败者`, `第${knockoutOrderNumbers[props.zoneId][14]}场 败者`]
           },
         ]
       }
@@ -893,10 +894,10 @@ const knockoutJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [knockoutOrderNumbers[ZoneId][16]],
-            winners: [knockoutOrderNumbers[ZoneId][13], knockoutOrderNumbers[ZoneId][14]],
+            matches: [knockoutOrderNumbers[props.zoneId][16]],
+            winners: [knockoutOrderNumbers[props.zoneId][13], knockoutOrderNumbers[props.zoneId][14]],
             losers: [],
-            text: [`第${knockoutOrderNumbers[ZoneId][13]}场 胜者`, `第${knockoutOrderNumbers[ZoneId][14]}场 胜者`]
+            text: [`第${knockoutOrderNumbers[props.zoneId][13]}场 胜者`, `第${knockoutOrderNumbers[props.zoneId][14]}场 胜者`]
           },
         ]
       }
