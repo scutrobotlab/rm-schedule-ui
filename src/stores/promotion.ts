@@ -1,5 +1,5 @@
 import {defineStore} from 'pinia'
-import {ScheduleData, MatchNode, ZoneNode} from "../types/schedule";
+import {ScheduleData, MatchNode, ZoneNode, Player, PlayerWithMatch} from "../types/schedule";
 import axios, {AxiosResponse} from "axios";
 import {GroupPlayer, GroupRankInfo, GroupRankInfoZone} from "../types/group_rank_info";
 import {MpMatch, MpMatchRoot} from "../types/mp_match";
@@ -14,6 +14,7 @@ export const usePromotionStore = defineStore('promotion', {
     schedule: {} as Schedule,
     groupRank: {} as GroupRankInfo,
     mpMatchMap: new Map<string, MpMatch>(),
+    selectedPlayer: null as Player,
   }),
   getters: {},
   actions: {

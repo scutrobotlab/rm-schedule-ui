@@ -2,10 +2,12 @@
 import {useAppStore} from "../stores/app";
 import MatchGraph from "./MatchGraph.vue";
 import {computed} from "vue";
+import {usePromotionStore} from "../stores/promotion";
 
 const zoneTab = ref(499)
 const selectedGroup = ref([0])
 const appStore = useAppStore()
+const promotionStore = usePromotionStore();
 
 const zoneId = computed(() => Number(zoneTab.value))
 

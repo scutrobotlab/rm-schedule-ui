@@ -968,7 +968,11 @@ const knockoutJsonData = {
                      v-for="(v, i) in rankList(node.data.zones[groupIndex])" :key="i">
                   <div class="container ml-2">
                     <div class="right-column">
-                      <div v-if="v" class="top-row row-content mb-3">
+                      <div
+                        v-if="v"
+                        class="top-row row-content mb-3"
+                        @click="promotionStore.selectedPlayer = v.player"
+                      >
                         <div v-if="v.match.status == 'DONE'" style="background: #43A047">
                           <h4 class="px-1" style="width: 2.5rem">{{ convertToOrdinal(matchRank(v.player)) }}</h4>
                         </div>
@@ -1008,17 +1012,21 @@ const knockoutJsonData = {
 
                 <!--已确认的赛程-->
                 <div v-if="round + 1 > node.data.round && match(v)" class="container my-3">
-                  <div :class="{
-                    'container': true,
-                    'mt-2': type == 'group',
-                  }"
+                  <div
+                    :class="{
+                      'container': true,
+                      'mt-2': type == 'group',
+                    }"
                   >
                     <div class="left-column ma-1">
                       <h2 class="px-1">{{ padNumber(match(v).orderNumber) }}</h2>
                     </div>
 
                     <div class="right-column">
-                      <div class="top-row row-content mb-1">
+                      <div
+                        class="top-row row-content mb-1"
+                        @click="promotionStore.selectedPlayer = match(v).redSide.player"
+                      >
                         <div class="colorful-red">
                           <h4 class="px-1">{{ match(v).redSideWinGameCount }}</h4>
                         </div>
@@ -1043,7 +1051,10 @@ const knockoutJsonData = {
                         <span v-else class="one-line-text">{{ node.data.zones[groupIndex].text[2 * i] }}</span>
                       </div>
 
-                      <div class="row-content">
+                      <div
+                        class="row-content"
+                        @click="promotionStore.selectedPlayer = match(v).blueSide.player"
+                      >
                         <div class="colorful-blue">
                           <h4 class="px-1">{{ match(v).blueSideWinGameCount }}</h4>
                         </div>
@@ -1116,7 +1127,11 @@ const knockoutJsonData = {
                    v-for="(v, i) in rankList(node.data.zones[groupIndex])" :key="i">
                 <div class="container ml-2">
                   <div class="right-column">
-                    <div v-if="v" class="top-row row-content mb-3">
+                    <div
+                      v-if="v"
+                      class="top-row row-content mb-3"
+                      @click="promotionStore.selectedPlayer = v.player"
+                    >
                       <div v-if="v.match.status == 'DONE'" style="background: #43A047">
                         <h4 class="px-1" style="width: 2.5rem; color: white">
                           {{ convertToOrdinal(matchRank(v.player)) }}
