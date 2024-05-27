@@ -64,7 +64,7 @@ function convertToOrdinal(number: number): string {
     <v-card-title>
       <div class="container">
         <div class="left-column">
-          <v-avatar size="80">
+          <v-avatar size="100">
             <v-img
               :src="player.team.collegeLogo"
               color="white"
@@ -73,7 +73,8 @@ function convertToOrdinal(number: number): string {
         </div>
 
         <div class="right-column ml-4">
-          <h3>{{ player.team.collegeName }} {{ player.team.name }}</h3>
+          <h3>{{ player.team.collegeName }}</h3>
+          <h4>{{ player.team.name }}</h4>
           <h6 v-if="rank">RoboMaster 高校积分榜第 {{ rank.rankScoreItem.rank }} 名</h6>
         </div>
       </div>
@@ -81,7 +82,7 @@ function convertToOrdinal(number: number): string {
 
     <v-card-text>
       <v-row v-if="rank">
-        <v-col cols="6">
+        <v-col md="6" cols="12">
           <div>
             <v-chip color="info" variant="flat" label>
               <h3>完整形态考核排名 {{ rank.completeForm.rank }}/96</h3>
@@ -115,7 +116,7 @@ function convertToOrdinal(number: number): string {
           </div>
         </v-col>
 
-        <v-col cols="6">
+        <v-col md="6" cols="12">
           <div>
             <v-chip color="info" variant="flat" label>
               <h3>区域赛小组赛排名 {{ groupRank[0].itemValue }}/16</h3>
