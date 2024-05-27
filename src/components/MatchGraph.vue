@@ -166,7 +166,9 @@ async function updateMpMatch() {
 function colorfulNode(node: any): boolean {
   if (props.type != 'knockout') return false;
   if (node.data.type != 'match') return false;
-  return match(node.data.zones[0].matches[0]).status == 'STARTED';
+  const _match = match(node.data.zones[0].matches[0])
+  if (!_match) return false;
+  return _match.status == 'STARTED';
 }
 
 const fingersCount = ref(0);
@@ -926,8 +928,8 @@ const knockoutJsonData = {
 
 <template>
   <div class="my-graph pa-4">
-    <div style="height: calc(100vh - 180px);">
-      <div class="text-center mt-4">
+    <div class="mb-4" style="height: calc(100vh - 240px);">
+      <div class="text-center mb-4">
         <h1 class="font-weight-bold">{{ title }}</h1>
       </div>
       <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
@@ -1004,7 +1006,7 @@ const knockoutJsonData = {
                    v-for="(v, i) in node.data.zones[zoneIndex].matches" :key="i">
 
                 <!--已确认的赛程-->
-                <div v-if="round + 1 > node.data.round" class="container my-3">
+                <div v-if="round + 1 > node.data.round && match(v)" class="container my-3">
                   <div :class="{
                     'container': true,
                     'mt-2': type == 'group',
@@ -1070,9 +1072,11 @@ const knockoutJsonData = {
 
                 <!--纯文字+红蓝R标 A-1-->
                 <div v-else class="container my-3">
-                  <div :class="{
-                    'container': true,
-                    'mt-2': type == 'group',
+                  <div
+                    v-if="match(v)"
+                    :class="{
+                      'container': true,
+                      'mt-2': type == 'group',
                     }">
                     <div class="left-column ma-1">
                       <h2 class="px-1">{{ padNumber(match(v).orderNumber) }}</h2>

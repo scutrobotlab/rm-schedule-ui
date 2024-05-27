@@ -3,12 +3,17 @@ import {useAppStore} from "../stores/app";
 import MatchGraph from "./MatchGraph.vue";
 import {computed} from "vue";
 
+const zoneTab = ref(499)
 const selectedZone = ref([0])
 const appStore = useAppStore()
 
-const zoneId = computed(() => {
-  return 499
-})
+const zoneId = computed(() => Number(zoneTab.value))
+
+const zones = [
+  {id: 498, name: '东部赛区', disabled: false, selected: 0},
+  {id: 499, name: '中部赛区', disabled: false, selected: 0},
+  {id: 500, name: '南部赛区', disabled: true, selected: 0},
+]
 </script>
 
 <template>
@@ -20,6 +25,20 @@ const zoneId = computed(() => {
 
     <div class="container">
       <v-container class="content mt-2">
+        <v-tabs
+          v-model="zoneTab"
+          bg-color="primary"
+        >
+          <v-tab
+            v-for="zone in zones"
+            :key="zone.id"
+            :disabled="zone.disabled"
+            :value="zone.id"
+          >
+            {{ zone.name }}
+          </v-tab>
+        </v-tabs>
+
         <v-row>
           <v-col cols="12">
             <div>
@@ -39,7 +58,6 @@ const zoneId = computed(() => {
                 <v-carousel-item>
                   <MatchGraph :zone-id="zoneId" type="group" zone="B"></MatchGraph>
                 </v-carousel-item>
-
               </v-carousel>
 
               <div class="mx-auto container2" style="background: rgba(255, 255, 255, 0.2)">
