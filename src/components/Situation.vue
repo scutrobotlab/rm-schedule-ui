@@ -3,6 +3,7 @@ import {useAppStore} from "../stores/app";
 import MatchGraph from "./MatchGraph.vue";
 import {computed} from "vue";
 import {usePromotionStore} from "../stores/promotion";
+import AnalyzeTeam from "./AnalyzeTeam.vue";
 
 const zoneTab = ref(499)
 const selectedGroup = ref([0])
@@ -96,10 +97,17 @@ const zones = [
                     </div>
                     <div class="col text-right">
                       <v-btn
-                        class="ma-2"
-                        variant="flat"
-                        color="info"
-                        size="small"
+                        class="ma-2" variant="flat"
+                        color="info" size="small"
+                        :disabled="!promotionStore.selectedPlayer"
+                        @click="appStore.analysisDialog = true"
+                      >
+                        分析
+                      </v-btn>
+
+                      <v-btn
+                        class="ma-2" variant="flat"
+                        color="info" size="small"
                         @click="appStore.aboutDialog = true"
                       >
                         关于
@@ -111,6 +119,10 @@ const zones = [
             </div>
           </v-col>
         </v-row>
+
+        <v-bottom-sheet v-model="appStore.analysisDialog">
+          <AnalyzeTeam :player="promotionStore.selectedPlayer"></AnalyzeTeam>
+        </v-bottom-sheet>
       </v-container>
     </div>
   </div>
