@@ -5,7 +5,7 @@ import {computed} from "vue";
 import {usePromotionStore} from "../stores/promotion";
 import AnalyzeTeam from "./AnalyzeTeam.vue";
 
-const zoneTab = ref(499)
+const zoneTab = ref(500)
 const selectedGroup = ref([0])
 const appStore = useAppStore()
 const promotionStore = usePromotionStore();
@@ -15,7 +15,7 @@ const zoneId = computed(() => Number(zoneTab.value))
 const zones = [
   {id: 498, name: '东部赛区', disabled: false},
   {id: 499, name: '中部赛区', disabled: false},
-  {id: 500, name: '南部赛区', disabled: true},
+  {id: 500, name: '南部赛区', disabled: false},
 ]
 </script>
 
