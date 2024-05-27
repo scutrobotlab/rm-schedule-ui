@@ -75,6 +75,7 @@ const zones = [
                         class="mx-auto text-center bg-transparent"
                       >
                         <v-slide-group
+                          class="ml-2"
                           v-model="selectedGroup"
                           mandatory="force"
                         >
@@ -85,7 +86,7 @@ const zones = [
                           >
                             <v-btn
                               :color="isSelected ? 'primary' : undefined"
-                              class="ma-2"
+                              class="mx-1"
                               rounded
                               size="small"
                               @click="toggle">
@@ -97,7 +98,7 @@ const zones = [
                     </div>
                     <div class="col text-right">
                       <v-btn
-                        class="ma-2" variant="flat"
+                        class="mx-1" variant="flat"
                         color="info" size="small"
                         :disabled="!promotionStore.selectedPlayer"
                         @click="appStore.analysisDialog = true"
