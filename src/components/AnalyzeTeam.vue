@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {Player} from "../types/schedule";
+import {MatchNode, Player} from "../types/schedule";
 import axios, {AxiosResponse} from "axios";
 import {RankListItem} from "../types/rank";
 import {usePromotionStore} from "../stores/promotion";
@@ -25,6 +25,20 @@ axios({
   params: {school_name: props.player.team.collegeName,}
 }).then((resp: AxiosResponse<RankListItem>) => {
   rank.value = resp.data
+})
+
+const matchList = computed(() => {
+  const zone = promotionStore.getZone(props.zoneId)
+  const ret: MatchNode[] = []
+  zone.groupMatches.nodes.forEach((match) => {
+    if (match.redSide.playerId == props.player.id) ret.push(match)
+    else if (match.blueSide.playerId == props.player.id) ret.push(match)
+  })
+  zone.knockoutMatches.nodes.forEach((match) => {
+    if (match.redSide.playerId == props.player.id) ret.push(match)
+    else if (match.blueSide.playerId == props.player.id) ret.push(match)
+  })
+  return ret
 })
 
 const groupRank = computed(() => {
@@ -59,7 +73,7 @@ function convertToOrdinal(number: number): string {
 <template>
   <v-card
     v-if="player && player.team"
-    class="pa-2"
+    class="pa-2 pt-4"
   >
     <v-card-title>
       <div class="container">
@@ -80,8 +94,58 @@ function convertToOrdinal(number: number): string {
       </div>
     </v-card-title>
 
-    <v-card-text>
+    <v-card-text class="mt-2">
       <v-row v-if="rank">
+        <v-col md="6" cols="12">
+          <div>
+            <v-chip color="info" variant="flat" label>
+              <h3>比赛战绩</h3>
+            </v-chip>
+
+            <v-table class="mt-2">
+              <thead>
+              <tr>
+                <th class="text-left"><b>场次</b></th>
+                <th class="text-left"><b>红方</b></th>
+                <th class="text-left"><b>蓝方</b></th>
+                <th class="text-left"><b>比分</b></th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr v-for="n in matchList">
+                <td>{{ n.orderNumber }}</td>
+                <td>{{ n.redSide.player?.team?.collegeName }}</td>
+                <td>{{ n.blueSide.player?.team?.collegeName }}</td>
+                <td>{{ n.redSideWinGameCount }} : {{ n.blueSideWinGameCount }}</td>
+              </tr>
+              </tbody>
+            </v-table>
+          </div>
+        </v-col>
+
+        <v-col md="6" cols="12">
+          <div>
+            <v-chip color="info" variant="flat" label>
+              <h3>区域赛小组赛排名 {{ groupRank[0].itemValue }}/16</h3>
+            </v-chip>
+
+            <v-table class="mt-2">
+              <thead>
+              <tr>
+                <th class="text-left"><b>项目名称</b></th>
+                <th class="text-left"><b>数值</b></th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr v-for="n in groupRank.slice(2)">
+                <td>{{ n.itemName }}</td>
+                <td>{{ n.itemValue }}</td>
+              </tr>
+              </tbody>
+            </v-table>
+          </div>
+        </v-col>
+
         <v-col md="6" cols="12">
           <div>
             <v-chip color="info" variant="flat" label>
@@ -110,29 +174,6 @@ function convertToOrdinal(number: number): string {
               <tr>
                 <td>总初始金币</td>
                 <td>{{ rank.completeForm.initialCoinTotal }}</td>
-              </tr>
-              </tbody>
-            </v-table>
-          </div>
-        </v-col>
-
-        <v-col md="6" cols="12">
-          <div>
-            <v-chip color="info" variant="flat" label>
-              <h3>区域赛小组赛排名 {{ groupRank[0].itemValue }}/16</h3>
-            </v-chip>
-
-            <v-table class="mt-2">
-              <thead>
-              <tr>
-                <th class="text-left"><b>项目名称</b></th>
-                <th class="text-left"><b>数值</b></th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr v-for="n in groupRank.slice(2)">
-                <td>{{ n.itemName }}</td>
-                <td>{{ n.itemValue }}</td>
               </tr>
               </tbody>
             </v-table>
