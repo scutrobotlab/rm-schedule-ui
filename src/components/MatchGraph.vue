@@ -57,6 +57,7 @@ const options = ref<RGOptions>({
   disableDragNode: true,
   disableDragCanvas: false,
   zoomToFitWhenRefresh: true,
+  graphOffset_y: props.type == 'knockout' ? 0 : -40,
 })
 
 function match(orderNumber: number): MatchNode | undefined {
