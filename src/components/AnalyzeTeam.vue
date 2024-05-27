@@ -18,7 +18,7 @@ if (!props.player || !props.player.team) {
 
 const promotionStore = usePromotionStore();
 
-let rank = ref<RankListItem | null>(null)
+const rank = ref<RankListItem | null>(null)
 axios({
   method: 'GET',
   url: '/api/rank',
@@ -74,25 +74,40 @@ function convertToOrdinal(number: number): string {
 
         <div class="right-column ml-4">
           <h3>{{ player.team.collegeName }} {{ player.team.name }}</h3>
-          <h6 v-if="rank">RoboMaster 高校积分榜第 {{ rank.Rank }} 名</h6>
+          <h6 v-if="rank">RoboMaster 高校积分榜第 {{ rank.rankScoreItem.rank }} 名</h6>
         </div>
       </div>
     </v-card-title>
 
-    <v-card-text>
-      <v-chip color="blue" variant="flat" label>
-        <h3>小组赛 {{ convertToOrdinal(groupRank[0].itemValue) }}</h3>
-      </v-chip>
+    <v-card-text class="mt-2">
+      <div v-if="rank">
+        <v-chip color="blue" variant="flat" label>
+          <h3>完整形态考核排名 {{ rank.completeForm.rank }}/96</h3>
+        </v-chip>
+        <v-list class="my-2" lines="one">
+          <v-list-item-title>分数</v-list-item-title>
+          <v-list-item-subtitle>{{ rank.completeForm.score }}</v-list-item-subtitle>
+          <v-list-item-title>初始金币-项目文档</v-list-item-title>
+          <v-list-item-subtitle>{{ rank.completeForm.initialCoinDocument }}</v-list-item-subtitle>
+          <v-list-item-title> 初始金币-技术方案</v-list-item-title>
+          <v-list-item-subtitle>{{ rank.completeForm.initialCoinTechnology }}</v-list-item-subtitle>
+          <v-list-item-title>总初始金币</v-list-item-title>
+          <v-list-item-subtitle>{{ rank.completeForm.initialCoinTotal }}</v-list-item-subtitle>
+        </v-list>
+      </div>
 
-      <v-list lines="one">
-        <div
-          v-for="n in groupRank.slice(2)"
-          class="my-2"
-        >
-          <v-list-item-title>{{ n.itemName }}</v-list-item-title>
-          <v-list-item-subtitle>{{ n.itemValue }}</v-list-item-subtitle>
-        </div>
-      </v-list>
+      <div class="mt-6">
+        <v-chip color="blue" variant="flat" label>
+          <h3>区域赛小组赛排名 {{ groupRank[0].itemValue }}/16</h3>
+        </v-chip>
+
+        <v-list class="my-2" lines="one">
+          <div v-for="n in groupRank.slice(2)">
+            <v-list-item-title>{{ n.itemName }}</v-list-item-title>
+            <v-list-item-subtitle>{{ n.itemValue }}</v-list-item-subtitle>
+          </div>
+        </v-list>
+      </div>
     </v-card-text>
   </v-card>
 </template>
