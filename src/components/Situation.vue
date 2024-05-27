@@ -121,7 +121,10 @@ const zones = [
         </v-row>
 
         <v-bottom-sheet v-model="appStore.analysisDialog">
-          <AnalyzeTeam :player="promotionStore.selectedPlayer"></AnalyzeTeam>
+          <AnalyzeTeam
+            :zone-id="zoneId"
+            :player="promotionStore.selectedPlayer"
+          ></AnalyzeTeam>
         </v-bottom-sheet>
       </v-container>
     </div>
