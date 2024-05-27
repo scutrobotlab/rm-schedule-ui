@@ -1276,7 +1276,7 @@ const knockoutJsonData = {
   }
 
   .rel-node-checked {
-    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 16px 8px rgba(255, 255, 255, 0.6);
   }
 
   .rel-node {
