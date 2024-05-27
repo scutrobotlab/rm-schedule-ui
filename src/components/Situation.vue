@@ -58,13 +58,13 @@ const zones = [
                   v-model="selectedGroup"
                 >
                   <v-carousel-item>
-                    <MatchGraph :zone-id="zoneId" type="knockout" group=""></MatchGraph>
-                  </v-carousel-item>
-                  <v-carousel-item>
                     <MatchGraph :zone-id="zoneId" type="group" group="A"></MatchGraph>
                   </v-carousel-item>
                   <v-carousel-item>
                     <MatchGraph :zone-id="zoneId" type="group" group="B"></MatchGraph>
+                  </v-carousel-item>
+                  <v-carousel-item>
+                    <MatchGraph :zone-id="zoneId" type="knockout" group=""></MatchGraph>
                   </v-carousel-item>
                 </v-carousel>
 
@@ -80,7 +80,7 @@ const zones = [
                           mandatory="force"
                         >
                           <v-slide-group-item
-                            v-for="n in ['淘汰赛', 'A组', 'B组']"
+                            v-for="n in ['A组', 'B组', '淘汰赛']"
                             :key="n"
                             v-slot="{ isSelected, toggle }"
                           >
