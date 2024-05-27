@@ -41,62 +41,67 @@ const zones = [
 
         <v-row>
           <v-col cols="12">
-            <div>
-              <v-carousel
-                height="100vh - 100px"
-                :disabled="true"
-                hide-delimiters
-                :show-arrows="false"
-                v-model="selectedZone"
-              >
-                <v-carousel-item>
-                  <MatchGraph :zone-id="zoneId" type="knockout" zone=""></MatchGraph>
-                </v-carousel-item>
-                <v-carousel-item>
-                  <MatchGraph :zone-id="zoneId" type="group" zone="A"></MatchGraph>
-                </v-carousel-item>
-                <v-carousel-item>
-                  <MatchGraph :zone-id="zoneId" type="group" zone="B"></MatchGraph>
-                </v-carousel-item>
-              </v-carousel>
+            <div
+              v-for="zone in zones"
+              :key="zone.id"
+            >
+              <div v-if="zoneId == zone.id">
+                <v-carousel
+                  height="100vh - 100px"
+                  :disabled="true"
+                  hide-delimiters
+                  :show-arrows="false"
+                  v-model="selectedZone"
+                >
+                  <v-carousel-item>
+                    <MatchGraph :zone-id="zoneId" type="knockout" zone=""></MatchGraph>
+                  </v-carousel-item>
+                  <v-carousel-item>
+                    <MatchGraph :zone-id="zoneId" type="group" zone="A"></MatchGraph>
+                  </v-carousel-item>
+                  <v-carousel-item>
+                    <MatchGraph :zone-id="zoneId" type="group" zone="B"></MatchGraph>
+                  </v-carousel-item>
+                </v-carousel>
 
-              <div class="mx-auto container2" style="background: rgba(255, 255, 255, 0.2)">
-                <div class="row">
-                  <div class="col">
-                    <v-sheet
-                      class="mx-auto text-center bg-transparent"
-                    >
-                      <v-slide-group
-                        v-model="selectedZone"
-                        mandatory="force"
+                <div class="mx-auto container2" style="background: rgba(255, 255, 255, 0.2)">
+                  <div class="row">
+                    <div class="col">
+                      <v-sheet
+                        class="mx-auto text-center bg-transparent"
                       >
-                        <v-slide-group-item
-                          v-for="n in ['淘汰赛', 'A组', 'B组']"
-                          :key="n"
-                          v-slot="{ isSelected, toggle }"
+                        <v-slide-group
+                          v-model="selectedZone"
+                          mandatory="force"
                         >
-                          <v-btn
-                            :color="isSelected ? 'primary' : undefined"
-                            class="ma-2"
-                            rounded
-                            size="small"
-                            @click="toggle">
-                            {{ n }}
-                          </v-btn>
-                        </v-slide-group-item>
-                      </v-slide-group>
-                    </v-sheet>
-                  </div>
-                  <div class="col text-right">
-                    <v-btn
-                      class="ma-2"
-                      variant="flat"
-                      color="info"
-                      size="small"
-                      @click="appStore.aboutDialog = true"
-                    >
-                      关于
-                    </v-btn>
+                          <v-slide-group-item
+                            v-for="n in ['淘汰赛', 'A组', 'B组']"
+                            :key="n"
+                            v-slot="{ isSelected, toggle }"
+                          >
+                            <v-btn
+                              :color="isSelected ? 'primary' : undefined"
+                              class="ma-2"
+                              rounded
+                              size="small"
+                              @click="toggle">
+                              {{ n }}
+                            </v-btn>
+                          </v-slide-group-item>
+                        </v-slide-group>
+                      </v-sheet>
+                    </div>
+                    <div class="col text-right">
+                      <v-btn
+                        class="ma-2"
+                        variant="flat"
+                        color="info"
+                        size="small"
+                        @click="appStore.aboutDialog = true"
+                      >
+                        关于
+                      </v-btn>
+                    </div>
                   </div>
                 </div>
               </div>
