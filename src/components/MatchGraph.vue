@@ -8,7 +8,7 @@ import {computed, onMounted} from "vue";
 interface Props {
   zoneId: number,
   type: 'group' | 'knockout',
-  zone: '' | 'A' | 'B',
+  group: '' | 'A' | 'B',
 }
 
 const props = defineProps<Props>()
@@ -151,7 +151,7 @@ async function updateMpMatch() {
     firstId = Number(promotionStore.getZone(props.zoneId).groupMatches.nodes[0].id)
     const idList = []
     groupJsonData.nodes.forEach(e => {
-      e.data.zones[zoneIndex.value].matches.forEach((order: number, i: number) => {
+      e.data.zones[groupIndex.value].matches.forEach((order: number, i: number) => {
         idList.push(firstId + order - 1)
       })
     })
@@ -228,11 +228,11 @@ const title = computed(() => {
   if (!promotionStore.schedule.data) return ''
   const zone = promotionStore.getZone(props.zoneId)
   if (props.type == 'knockout') return `${promotionStore.schedule.data.event.title} ${zone.name} 淘汰赛`
-  else if (props.type == 'group') return `${promotionStore.schedule.data.event.title} ${zone.name} 瑞士轮 ${props.zone}组`
+  else if (props.type == 'group') return `${promotionStore.schedule.data.event.title} ${zone.name} 瑞士轮 ${props.group}组`
 })
 
-const zoneIndex = computed(() => {
-  switch (props.zone) {
+const groupIndex = computed(() => {
+  switch (props.group) {
     case 'A':
       return 0
     case 'B':
@@ -247,7 +247,7 @@ const round = computed(() => {
   // return 2;
   // return 3;
   // return 4;
-  switch (props.zone) {
+  switch (props.group) {
     case 'A':
       if (promotionStore.getMatchByOrder(props.zoneId, 46).redSide.player) return 4
       else if (promotionStore.getMatchByOrder(props.zoneId, 33).redSide.player) return 3
@@ -964,7 +964,7 @@ const knockoutJsonData = {
               <!--实时预测 动态刷新-->
               <div v-if="round + 1 == node.data.round" class="mt-4">
                 <div class="mx-2"
-                     v-for="(v, i) in rankList(node.data.zones[zoneIndex])" :key="i">
+                     v-for="(v, i) in rankList(node.data.zones[groupIndex])" :key="i">
                   <div class="container ml-2">
                     <div class="right-column">
                       <div v-if="v" class="top-row row-content mb-3">
@@ -984,7 +984,7 @@ const knockoutJsonData = {
                 </div>
 
                 <div class="mx-2"
-                     v-for="(v, i) in node.data.zones[zoneIndex].text.slice(rankList(node.data.zones[zoneIndex]).length)"
+                     v-for="(v, i) in node.data.zones[groupIndex].text.slice(rankList(node.data.zones[groupIndex]).length)"
                      :key="i">
                   <div class="container ml-2">
                     <div class="right-column">
@@ -1003,7 +1003,7 @@ const knockoutJsonData = {
               </div>
 
               <div class="mx-2" v-else
-                   v-for="(v, i) in node.data.zones[zoneIndex].matches" :key="i">
+                   v-for="(v, i) in node.data.zones[groupIndex].matches" :key="i">
 
                 <!--已确认的赛程-->
                 <div v-if="round + 1 > node.data.round && match(v)" class="container my-3">
@@ -1039,7 +1039,7 @@ const knockoutJsonData = {
                         </v-avatar>
                         <span v-if="match(v).redSide.player"
                               class="one-line-text">{{ match(v).redSide.player?.team.collegeName }}</span>
-                        <span v-else class="one-line-text">{{ node.data.zones[zoneIndex].text[2 * i] }}</span>
+                        <span v-else class="one-line-text">{{ node.data.zones[groupIndex].text[2 * i] }}</span>
                       </div>
 
                       <div class="row-content">
@@ -1064,7 +1064,7 @@ const knockoutJsonData = {
                         </v-avatar>
                         <span v-if="match(v).blueSide.player"
                               class="one-line-text">{{ match(v).blueSide.player?.team.collegeName }}</span>
-                        <span v-else class="one-line-text">{{ node.data.zones[zoneIndex].text[2 * i + 1] }}</span>
+                        <span v-else class="one-line-text">{{ node.data.zones[groupIndex].text[2 * i + 1] }}</span>
                       </div>
                     </div>
                   </div>
@@ -1090,7 +1090,7 @@ const knockoutJsonData = {
                         <v-avatar class="mx-1" size="x-small">
                           <v-img src="@/assets/school_red.png"></v-img>
                         </v-avatar>
-                        <span class="one-line-text">{{ node.data.zones[zoneIndex].text[2 * i] }}</span>
+                        <span class="one-line-text">{{ node.data.zones[groupIndex].text[2 * i] }}</span>
                       </div>
 
                       <div class="row-content">
@@ -1100,7 +1100,7 @@ const knockoutJsonData = {
                         <v-avatar class="mx-1" size="x-small">
                           <v-img src="@/assets/school_blue.png"></v-img>
                         </v-avatar>
-                        <span class="one-line-text">{{ node.data.zones[zoneIndex].text[2 * i + 1] }}</span>
+                        <span class="one-line-text">{{ node.data.zones[groupIndex].text[2 * i + 1] }}</span>
                       </div>
                     </div>
                   </div>
@@ -1112,7 +1112,7 @@ const knockoutJsonData = {
             <div v-else-if="node.data.type == 'eliminate' || node.data.type == 'promote'"
                  class="my-3 mx-4">
               <div class="mx-2"
-                   v-for="(v, i) in rankList(node.data.zones[zoneIndex])" :key="i">
+                   v-for="(v, i) in rankList(node.data.zones[groupIndex])" :key="i">
                 <div class="container ml-2">
                   <div class="right-column">
                     <div v-if="v" class="top-row row-content mb-3">
@@ -1134,7 +1134,7 @@ const knockoutJsonData = {
               </div>
 
               <div class="mx-2"
-                   v-for="(v, i) in node.data.zones[zoneIndex].text.slice(rankList(node.data.zones[zoneIndex]).length)"
+                   v-for="(v, i) in node.data.zones[groupIndex].text.slice(rankList(node.data.zones[groupIndex]).length)"
                    :key="i">
                 <div class="container ml-2">
                   <div class="right-column">

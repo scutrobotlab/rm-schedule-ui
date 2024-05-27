@@ -4,15 +4,15 @@ import MatchGraph from "./MatchGraph.vue";
 import {computed} from "vue";
 
 const zoneTab = ref(499)
-const selectedZone = ref([0])
+const selectedGroup = ref([0])
 const appStore = useAppStore()
 
 const zoneId = computed(() => Number(zoneTab.value))
 
 const zones = [
-  {id: 498, name: '东部赛区', disabled: false, selected: 0},
-  {id: 499, name: '中部赛区', disabled: false, selected: 0},
-  {id: 500, name: '南部赛区', disabled: true, selected: 0},
+  {id: 498, name: '东部赛区', disabled: false},
+  {id: 499, name: '中部赛区', disabled: false},
+  {id: 500, name: '南部赛区', disabled: true},
 ]
 </script>
 
@@ -51,16 +51,16 @@ const zones = [
                   :disabled="true"
                   hide-delimiters
                   :show-arrows="false"
-                  v-model="selectedZone"
+                  v-model="selectedGroup"
                 >
                   <v-carousel-item>
-                    <MatchGraph :zone-id="zoneId" type="knockout" zone=""></MatchGraph>
+                    <MatchGraph :zone-id="zoneId" type="knockout" group=""></MatchGraph>
                   </v-carousel-item>
                   <v-carousel-item>
-                    <MatchGraph :zone-id="zoneId" type="group" zone="A"></MatchGraph>
+                    <MatchGraph :zone-id="zoneId" type="group" group="A"></MatchGraph>
                   </v-carousel-item>
                   <v-carousel-item>
-                    <MatchGraph :zone-id="zoneId" type="group" zone="B"></MatchGraph>
+                    <MatchGraph :zone-id="zoneId" type="group" group="B"></MatchGraph>
                   </v-carousel-item>
                 </v-carousel>
 
@@ -71,7 +71,7 @@ const zones = [
                         class="mx-auto text-center bg-transparent"
                       >
                         <v-slide-group
-                          v-model="selectedZone"
+                          v-model="selectedGroup"
                           mandatory="force"
                         >
                           <v-slide-group-item
