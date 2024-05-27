@@ -1057,7 +1057,7 @@ const knockoutJsonData = {
                           <h4 class="px-1">{{ match(v).redSideWinGameCount }}</h4>
                         </div>
                         <div
-                          v-if="promotionStore.getMpMatch(match(v).id) && promotionStore.getMpMatch(match(v).id).redRate > 0"
+                          v-if="promotionStore.getMpMatch(match(v).id) && promotionStore.getMpMatch(match(v).id).redRate >= 0"
                           class="ml-1 text-caption"
                           :style="{
                                width: '2.5rem',
@@ -1088,7 +1088,7 @@ const knockoutJsonData = {
                           <h4 class="px-1">{{ match(v).blueSideWinGameCount }}</h4>
                         </div>
                         <div
-                          v-if="promotionStore.getMpMatch(match(v).id) && promotionStore.getMpMatch(match(v).id).blueRate > 0"
+                          v-if="promotionStore.getMpMatch(match(v).id) && promotionStore.getMpMatch(match(v).id).blueRate >= 0"
                           class="ml-1 text-caption"
                           :style="{
                                width: '2.5rem',
