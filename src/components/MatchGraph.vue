@@ -173,7 +173,7 @@ function colorfulNode(node: any): boolean {
 }
 
 function selectPlayer(player: Player) {
-  if (promotionStore.selectedPlayer == player) {
+  if (promotionStore.selectedPlayer && player && promotionStore.selectedPlayer.id == player.id) {
     promotionStore.selectedPlayer = null
   } else {
     promotionStore.selectedPlayer = player
