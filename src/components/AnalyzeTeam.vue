@@ -116,7 +116,7 @@ function convertToOrdinal(number: number): string {
                 <td>{{ n.orderNumber }}</td>
                 <td>{{ n.redSide.player?.team?.collegeName }}</td>
                 <td>{{ n.blueSide.player?.team?.collegeName }}</td>
-                <td>{{ n.redSideWinGameCount }} : {{ n.blueSideWinGameCount }}</td>
+                <td>{{ n.redSideWinGameCount }}:{{ n.blueSideWinGameCount }}</td>
               </tr>
               </tbody>
             </v-table>
