@@ -172,6 +172,20 @@ function colorfulNode(node: any): boolean {
   return _match.status == 'STARTED';
 }
 
+function selectPlayer(player: Player) {
+  if (promotionStore.selectedPlayer == player) {
+    promotionStore.selectedPlayer = null
+  } else {
+    promotionStore.selectedPlayer = player
+  }
+}
+
+function playerSelected(player: Player): boolean {
+  if (!promotionStore.selectedPlayer) return false
+  if (!player) return false
+  return promotionStore.selectedPlayer.id == player.id
+}
+
 const fingersCount = ref(0);
 const updateFingersCount = (event: TouchEvent) => {
   fingersCount.value = event.touches.length;
@@ -971,7 +985,10 @@ const knockoutJsonData = {
                       <div
                         v-if="v"
                         class="top-row row-content mb-3"
-                        @click="promotionStore.selectedPlayer = v.player"
+                        :class="{
+                          'selected-content': playerSelected(v.player),
+                        }"
+                        @click="selectPlayer(v.player)"
                       >
                         <div v-if="v.match.status == 'DONE'" style="background: #43A047">
                           <h4 class="px-1" style="width: 2.5rem">{{ convertToOrdinal(matchRank(v.player)) }}</h4>
@@ -1025,7 +1042,10 @@ const knockoutJsonData = {
                     <div class="right-column">
                       <div
                         class="top-row row-content mb-1"
-                        @click="promotionStore.selectedPlayer = match(v).redSide.player"
+                        :class="{
+                          'selected-content': playerSelected(match(v).redSide.player),
+                        }"
+                        @click="selectPlayer(match(v).redSide.player)"
                       >
                         <div class="colorful-red">
                           <h4 class="px-1">{{ match(v).redSideWinGameCount }}</h4>
@@ -1053,7 +1073,10 @@ const knockoutJsonData = {
 
                       <div
                         class="row-content"
-                        @click="promotionStore.selectedPlayer = match(v).blueSide.player"
+                        :class="{
+                          'selected-content': playerSelected(match(v).blueSide.player),
+                        }"
+                        @click="selectPlayer(match(v).blueSide.player)"
                       >
                         <div class="colorful-blue">
                           <h4 class="px-1">{{ match(v).blueSideWinGameCount }}</h4>
@@ -1130,7 +1153,10 @@ const knockoutJsonData = {
                     <div
                       v-if="v"
                       class="top-row row-content mb-3"
-                      @click="promotionStore.selectedPlayer = v.player"
+                      :class="{
+                        'selected-content': playerSelected(v.player),
+                      }"
+                      @click="selectPlayer(v.player)"
                     >
                       <div v-if="v.match.status == 'DONE'" style="background: #43A047">
                         <h4 class="px-1" style="width: 2.5rem; color: white">
@@ -1328,6 +1354,13 @@ const knockoutJsonData = {
   align-items: center; /* 垂直居中对齐 */
   justify-content: flex-start; /* 水平左对齐 */
   width: 90%; /* 确保行内容宽度 */
+  padding: 0 4px;
+}
+
+.selected-content {
+  background: #ECEFF166;
+  color: whitesmoke;
+  padding: 2px 4px;
 }
 
 .one-line-text {

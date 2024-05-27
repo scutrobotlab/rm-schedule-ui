@@ -27,6 +27,7 @@ const zones = [
 
     <div class="container">
       <v-container class="content mt-2">
+        <!--        Player = {{ promotionStore.selectedPlayer }}-->
         <v-tabs
           v-model="zoneTab"
           bg-color="#2196F3BB"
