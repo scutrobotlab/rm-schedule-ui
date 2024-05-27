@@ -80,34 +80,64 @@ function convertToOrdinal(number: number): string {
     </v-card-title>
 
     <v-card-text class="mt-2">
-      <div v-if="rank">
-        <v-chip color="blue" variant="flat" label>
-          <h3>完整形态考核排名 {{ rank.completeForm.rank }}/96</h3>
-        </v-chip>
-        <v-list class="my-2" lines="one">
-          <v-list-item-title>分数</v-list-item-title>
-          <v-list-item-subtitle>{{ rank.completeForm.score }}</v-list-item-subtitle>
-          <v-list-item-title>初始金币-项目文档</v-list-item-title>
-          <v-list-item-subtitle>{{ rank.completeForm.initialCoinDocument }}</v-list-item-subtitle>
-          <v-list-item-title> 初始金币-技术方案</v-list-item-title>
-          <v-list-item-subtitle>{{ rank.completeForm.initialCoinTechnology }}</v-list-item-subtitle>
-          <v-list-item-title>总初始金币</v-list-item-title>
-          <v-list-item-subtitle>{{ rank.completeForm.initialCoinTotal }}</v-list-item-subtitle>
-        </v-list>
-      </div>
-
-      <div class="mt-6">
-        <v-chip color="blue" variant="flat" label>
-          <h3>区域赛小组赛排名 {{ groupRank[0].itemValue }}/16</h3>
-        </v-chip>
-
-        <v-list class="my-2" lines="one">
-          <div v-for="n in groupRank.slice(2)">
-            <v-list-item-title>{{ n.itemName }}</v-list-item-title>
-            <v-list-item-subtitle>{{ n.itemValue }}</v-list-item-subtitle>
+      <v-row v-if="rank">
+        <v-col cols="6">
+          <div>
+            <v-chip color="info" variant="flat" label>
+              <h3>完整形态考核排名 {{ rank.completeForm.rank }}/96</h3>
+            </v-chip>
+            <v-table class="mt-2">
+              <thead>
+              <tr>
+                <th class="text-left"><b>项目名称</b></th>
+                <th class="text-left"><b>数值</b></th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+                <td>分数</td>
+                <td>{{ rank.completeForm.score }}</td>
+              </tr>
+              <tr>
+                <td>初始金币-项目文档</td>
+                <td>{{ rank.completeForm.initialCoinDocument }}</td>
+              </tr>
+              <tr>
+                <td>初始金币-技术方案</td>
+                <td>{{ rank.completeForm.initialCoinTechnology }}</td>
+              </tr>
+              <tr>
+                <td>总初始金币</td>
+                <td>{{ rank.completeForm.initialCoinTotal }}</td>
+              </tr>
+              </tbody>
+            </v-table>
           </div>
-        </v-list>
-      </div>
+        </v-col>
+
+        <v-col cols="6">
+          <div>
+            <v-chip color="info" variant="flat" label>
+              <h3>区域赛小组赛排名 {{ groupRank[0].itemValue }}/16</h3>
+            </v-chip>
+
+            <v-table class="mt-2">
+              <thead>
+              <tr>
+                <th class="text-left"><b>项目名称</b></th>
+                <th class="text-left"><b>数值</b></th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr v-for="n in groupRank.slice(2)">
+                <td>{{ n.itemName }}</td>
+                <td>{{ n.itemValue }}</td>
+              </tr>
+              </tbody>
+            </v-table>
+          </div>
+        </v-col>
+      </v-row>
     </v-card-text>
   </v-card>
 </template>
