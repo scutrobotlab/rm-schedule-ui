@@ -27,7 +27,7 @@ const zones = [
       <v-container class="content mt-2">
         <v-tabs
           v-model="zoneTab"
-          bg-color="primary"
+          bg-color="#2196F3BB"
         >
           <v-tab
             v-for="zone in zones"
