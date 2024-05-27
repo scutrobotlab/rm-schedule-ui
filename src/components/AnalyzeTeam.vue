@@ -79,7 +79,7 @@ function convertToOrdinal(number: number): string {
       </div>
     </v-card-title>
 
-    <v-card-text class="mt-2">
+    <v-card-text>
       <v-row v-if="rank">
         <v-col cols="6">
           <div>
