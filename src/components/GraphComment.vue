@@ -14,19 +14,21 @@ function openRMLive() {
       <v-card-title><h3>晋级图注释</h3></v-card-title>
       <v-card-subtitle>注释将帮助您更好地理解晋级图</v-card-subtitle>
 
-      <v-card-text class="px-2">
+      <v-card-text class="px-0">
         <v-list class="align-center text-center">
           <v-list-item>
             <v-list-item-title class="my-1"><h3>实时预测</h3></v-list-item-title>
             <span class="text-subtitle-1">标记 * 号的内容根据官网排名 <b>实时滚榜</b> 更新。</span>
-            <v-btn
-              class="my-2"
-              variant="outlined"
-              prepend-icon="mdi-open-in-new"
-              @click="openRMLive"
-            >
-              RoboMaster 官网直播
-            </v-btn>
+            <div>
+              <v-btn
+                class="my-2"
+                variant="outlined"
+                prepend-icon="mdi-open-in-new"
+                @click="openRMLive"
+              >
+                RoboMaster 官网直播
+              </v-btn>
+            </div>
           </v-list-item>
 
           <v-list-item class="my-2">
