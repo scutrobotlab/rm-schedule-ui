@@ -19,12 +19,16 @@ if (!props.player || !props.player.team) {
 const promotionStore = usePromotionStore();
 
 const rank = ref<RankListItem | null>(null)
+const loading = ref(true)
+
 axios({
   method: 'GET',
   url: '/api/rank',
   params: {school_name: props.player.team.collegeName,}
 }).then((resp: AxiosResponse<RankListItem>) => {
   rank.value = resp.data
+}).finally(() => {
+  loading.value = false
 })
 
 const matchList = computed(() => {
@@ -95,91 +99,108 @@ function convertToOrdinal(number: number): string {
     </v-card-title>
 
     <v-card-text class="mt-2">
-      <v-row v-if="rank">
-        <v-col md="6" cols="12">
-          <div>
-            <v-chip color="info" variant="flat" label>
-              <h3>比赛战绩</h3>
-            </v-chip>
+      <div v-if="loading">
+        <v-progress-linear indeterminate color="primary"></v-progress-linear>
+      </div>
 
-            <v-table class="mt-2">
-              <thead>
-              <tr>
-                <th class="text-left"><b>场次</b></th>
-                <th class="text-left"><b>红方</b></th>
-                <th class="text-left"><b>蓝方</b></th>
-                <th class="text-left"><b>比分</b></th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr v-for="n in matchList">
-                <td>{{ n.orderNumber }}</td>
-                <td>{{ n.redSide.player?.team?.collegeName }}</td>
-                <td>{{ n.blueSide.player?.team?.collegeName }}</td>
-                <td>{{ n.redSideWinGameCount }}:{{ n.blueSideWinGameCount }}</td>
-              </tr>
-              </tbody>
-            </v-table>
-          </div>
-        </v-col>
+      <div v-else>
+        <div v-if="rank">
+          <v-row>
+            <v-col md="6" cols="12">
+              <div>
+                <v-chip color="info" variant="flat" label>
+                  <h3>比赛战绩</h3>
+                </v-chip>
 
-        <v-col md="6" cols="12">
-          <div>
-            <v-chip color="info" variant="flat" label>
-              <h3>区域赛小组赛排名 {{ groupRank[0].itemValue }}/16</h3>
-            </v-chip>
+                <v-table class="mt-2">
+                  <thead>
+                  <tr>
+                    <th class="text-left"><b>场次</b></th>
+                    <th class="text-left"><b>红方</b></th>
+                    <th class="text-left"><b>蓝方</b></th>
+                    <th class="text-left"><b>比分</b></th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr v-for="n in matchList">
+                    <td>{{ n.orderNumber }}</td>
+                    <td>{{ n.redSide.player?.team?.collegeName }}</td>
+                    <td>{{ n.blueSide.player?.team?.collegeName }}</td>
+                    <td>{{ n.redSideWinGameCount }}:{{ n.blueSideWinGameCount }}</td>
+                  </tr>
+                  </tbody>
+                </v-table>
+              </div>
+            </v-col>
 
-            <v-table class="mt-2">
-              <thead>
-              <tr>
-                <th class="text-left"><b>项目名称</b></th>
-                <th class="text-left"><b>数值</b></th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr v-for="n in groupRank.slice(2)">
-                <td>{{ n.itemName }}</td>
-                <td>{{ n.itemValue }}</td>
-              </tr>
-              </tbody>
-            </v-table>
-          </div>
-        </v-col>
+            <v-col md="6" cols="12">
+              <div>
+                <v-chip color="info" variant="flat" label>
+                  <h3>区域赛小组赛排名 {{ groupRank[0].itemValue }}/16</h3>
+                </v-chip>
 
-        <v-col md="6" cols="12">
-          <div>
-            <v-chip color="info" variant="flat" label>
-              <h3>完整形态考核排名 {{ rank.completeForm.rank }}/96</h3>
-            </v-chip>
-            <v-table class="mt-2">
-              <thead>
-              <tr>
-                <th class="text-left"><b>项目名称</b></th>
-                <th class="text-left"><b>数值</b></th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr>
-                <td>分数</td>
-                <td>{{ rank.completeForm.score }}</td>
-              </tr>
-              <tr>
-                <td>初始金币-项目文档</td>
-                <td>{{ rank.completeForm.initialCoinDocument }}</td>
-              </tr>
-              <tr>
-                <td>初始金币-技术方案</td>
-                <td>{{ rank.completeForm.initialCoinTechnology }}</td>
-              </tr>
-              <tr>
-                <td>总初始金币</td>
-                <td>{{ rank.completeForm.initialCoinTotal }}</td>
-              </tr>
-              </tbody>
-            </v-table>
-          </div>
-        </v-col>
-      </v-row>
+                <v-table class="mt-2">
+                  <thead>
+                  <tr>
+                    <th class="text-left"><b>项目名称</b></th>
+                    <th class="text-left"><b>数值</b></th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr v-for="n in groupRank.slice(2)">
+                    <td>{{ n.itemName }}</td>
+                    <td>{{ n.itemValue }}</td>
+                  </tr>
+                  </tbody>
+                </v-table>
+              </div>
+            </v-col>
+
+            <v-col md="6" cols="12">
+              <div>
+                <v-chip color="info" variant="flat" label>
+                  <h3>完整形态考核排名 {{ rank.completeForm.rank }}/96</h3>
+                </v-chip>
+                <v-table class="mt-2">
+                  <thead>
+                  <tr>
+                    <th class="text-left"><b>项目名称</b></th>
+                    <th class="text-left"><b>数值</b></th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr>
+                    <td>分数</td>
+                    <td>{{ rank.completeForm.score }}</td>
+                  </tr>
+                  <tr>
+                    <td>初始金币-项目文档</td>
+                    <td>{{ rank.completeForm.initialCoinDocument }}</td>
+                  </tr>
+                  <tr>
+                    <td>初始金币-技术方案</td>
+                    <td>{{ rank.completeForm.initialCoinTechnology }}</td>
+                  </tr>
+                  <tr>
+                    <td>总初始金币</td>
+                    <td>{{ rank.completeForm.initialCoinTotal }}</td>
+                  </tr>
+                  </tbody>
+                </v-table>
+              </div>
+            </v-col>
+          </v-row>
+        </div>
+        <div v-else>
+          <v-alert
+            variant="tonal"
+            color="error"
+          >
+            <v-icon left>mdi-alert</v-icon>
+            未找到该队伍的信息
+          </v-alert>
+        </div>
+      </div>
     </v-card-text>
   </v-card>
 </template>
