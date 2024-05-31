@@ -4,6 +4,7 @@ import RelationGraph from 'relation-graph-vue3';
 import {usePromotionStore} from "../stores/promotion";
 import {MatchNode, Player, PlayerWithMatch} from "../types/schedule";
 import {computed, onMounted} from "vue";
+import {useAppStore} from "../stores/app";
 
 interface Props {
   zoneId: number,
@@ -15,6 +16,7 @@ const props = defineProps<Props>()
 
 const loading = ref(true)
 
+const appStore = useAppStore();
 const promotionStore = usePromotionStore();
 const promise1 = promotionStore.updateSchedule()
 const promise2 = promotionStore.updateGroupRank()
@@ -1294,10 +1296,16 @@ const knockoutJsonData = {
         src="@/assets/logo.png">
       </v-img>
 
-      <span class="ml-2 mb-2 text-disabled">
-        * 根据官网排名 <b>实时</b> 滚榜更新 <br>
-        ** 竞猜数据来自RM王牌预言家
-      </span>
+      <v-btn
+        class="ml-2 mb-2 px-2"
+        variant="text"
+        density="compact"
+        @click="appStore.commentDialog = true"
+      >
+        查看图注
+      </v-btn>
+
+      <GraphComment/>
     </div>
   </div>
 </template>

@@ -10,6 +10,7 @@ declare module 'vue' {
     About: typeof import('./components/About.vue')['default']
     AnalyzeTeam: typeof import('./components/AnalyzeTeam.vue')['default']
     AppFooter: typeof import('./components/AppFooter.vue')['default']
+    GraphComment: typeof import('./components/GraphComment.vue')['default']
     HelloWorld: typeof import('./components/HelloWorld.vue')['default']
     MatchGraph: typeof import('./components/MatchGraph.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
