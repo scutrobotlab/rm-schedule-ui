@@ -45,7 +45,10 @@ const zones = [
             </v-tab>
           </div>
 
-          <div class="text-right align-content-center mr-2">
+          <div
+            class="mr-2"
+            style="align-content: center"
+          >
             <v-btn
               variant="flat"
               color="transparent"
