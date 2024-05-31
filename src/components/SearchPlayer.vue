@@ -47,6 +47,12 @@ function confirm() {
   appStore.searchDialog = false
   promotionStore.selectedPlayer = selected.value
 }
+
+function analyze() {
+  appStore.searchDialog = false
+  promotionStore.selectedPlayer = selected.value
+  appStore.analysisDialog = true
+}
 </script>
 
 <template>
@@ -104,14 +110,18 @@ function confirm() {
       </v-card-text>
 
       <v-card-actions>
-        <v-spacer></v-spacer>
         <v-btn
           text="关闭"
           @click="appStore.searchDialog = false"
         ></v-btn>
+        <v-spacer></v-spacer>
         <v-btn
           text="选中"
           @click="confirm"
+        ></v-btn>
+        <v-btn
+          text="分析"
+          @click="analyze"
         ></v-btn>
       </v-card-actions>
     </v-card>
