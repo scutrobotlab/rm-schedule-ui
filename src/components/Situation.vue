@@ -17,6 +17,18 @@ const zones = [
   {id: 499, name: '中部赛区', disabled: false},
   {id: 500, name: '南部赛区', disabled: false},
 ]
+
+function badgeTab(zoneId: number): boolean {
+  if (!promotionStore.selectedPlayer) return false
+  const zone = promotionStore.getZone(zoneId)
+  if (!zone) return false
+  for (let group of zone.groups.nodes) {
+    for (let player of group.players.nodes) {
+      if (promotionStore.selectedPlayer.id == player.id) return true
+    }
+  }
+  return false
+}
 </script>
 
 <template>
@@ -43,7 +55,16 @@ const zones = [
                 :disabled="zone.disabled"
                 :value="zone.id"
               >
-                {{ zone.name }}
+                <v-badge
+                  v-if="badgeTab(zone.id)"
+                  color="white"
+                  dot floating
+                >
+                  {{ zone.name }}
+                </v-badge>
+                <span v-else>
+                  {{ zone.name }}
+                </span>
               </v-tab>
             </div>
 
