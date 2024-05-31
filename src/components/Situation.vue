@@ -30,18 +30,33 @@ const zones = [
       <v-container class="content mt-2">
         <!--        Player = {{ promotionStore.selectedPlayer }}-->
         <v-tabs
+          class="row"
           v-model="zoneTab"
           bg-color="#2196F3BB"
         >
-          <v-tab
-            v-for="zone in zones"
-            :key="zone.id"
-            :disabled="zone.disabled"
-            :value="zone.id"
-          >
-            {{ zone.name }}
-          </v-tab>
+          <div class="col">
+            <v-tab
+              v-for="zone in zones"
+              :key="zone.id"
+              :disabled="zone.disabled"
+              :value="zone.id"
+            >
+              {{ zone.name }}
+            </v-tab>
+          </div>
+
+          <div class="col text-right mr-2">
+            <v-btn
+              variant="flat"
+              color="transparent"
+              density="compact"
+              icon="mdi-magnify"
+              @click="appStore.searchDialog = true"
+            >
+            </v-btn>
+          </div>
         </v-tabs>
+
 
         <v-row>
           <v-col cols="12">

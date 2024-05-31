@@ -14,6 +14,7 @@ declare module 'vue' {
     MatchGraph: typeof import('./components/MatchGraph.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SearchPlayer: typeof import('./components/SearchPlayer.vue')['default']
     Situation: typeof import('./components/Situation.vue')['default']
   }
 }
