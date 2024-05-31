@@ -2134,6 +2134,11 @@ pinia@^2.1.7:
     "@vue/devtools-api" "^6.5.0"
     vue-demi ">=0.14.5"
 
+pinyin-match@^1.2.5:
+  version "1.2.5"
+  resolved "https://mirrors.huaweicloud.com/repository/npm/pinyin-match/-/pinyin-match-1.2.5.tgz#38633596412e8d3e6fa6b25a0c53e10746dcda45"
+  integrity sha512-+F3bi5v95enkqSJ0nD1e2fGp8Uj3YCRBzka3DlCQ4tyurfqYmAChLR3aAO/c/Pk+xBgvEx9zI35HoyYATSb0mw==
+
 pkg-types@^1.0.3, pkg-types@^1.1.0:
   version "1.1.1"
   resolved "https://mirrors.huaweicloud.com/repository/npm/pkg-types/-/pkg-types-1.1.1.tgz#07b626880749beb607b0c817af63aac1845a73f2"

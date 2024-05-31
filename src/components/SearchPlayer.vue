@@ -1,24 +1,100 @@
 <script setup lang="ts">
 import {useAppStore} from "../stores/app";
+import {usePromotionStore} from "../stores/promotion";
+import {computed} from "vue";
+import {Player} from "../types/schedule";
+import PinyinMatch from 'pinyin-match';
+
+export interface InternalItem<T = any> {
+  value: any
+  raw: T
+}
 
 const appStore = useAppStore()
+const promotionStore = usePromotionStore()
+
+const selected = ref<Player>()
+const players = computed(() => {
+  let ret: Player[] = []
+  const zones = promotionStore.schedule.data.event.zones
+  zones.nodes.forEach(zone => {
+    zone.groups.nodes.forEach(group => {
+      ret = ret.concat(group.players.nodes)
+    })
+  })
+  return ret
+})
+
+function customFilter(value: string, query: string, item?: InternalItem<Player>) {
+  if (!item) return false
+  if (!item.raw.team) return false
+  const t = item.raw.team
+  return t.collegeName.includes(query) || t.name.includes(query) ||
+    PinyinMatch.match(t.collegeName, query) || PinyinMatch.match(t.name, query)
+}
+
+function confirm() {
+  appStore.searchDialog = false
+  promotionStore.selectedPlayer = selected.value
+}
 </script>
 
 <template>
   <v-dialog max-width="480" v-model="appStore.searchDialog" :scrollable="true">
     <v-card variant="elevated">
       <v-card-title><h3>搜索队伍</h3></v-card-title>
-      <v-card-subtitle>通过汉字或拼音搜索学校名称或队伍名称</v-card-subtitle>
+      <v-card-subtitle>通过汉字或汉语拼音搜索队伍</v-card-subtitle>
 
-      <v-card-text class="text-center">
-        TODO
+      <v-card-text>
+        <v-autocomplete
+          v-model="selected"
+          :items="players"
+          color="blue-grey-lighten-2"
+          :custom-filter="customFilter"
+          hint="请输入学校或队伍名称"
+          persistent-hint
+          chips
+          closable-chips
+          return-object
+        >
+          <template v-slot:chip="{ props, item }">
+            <v-chip
+              v-bind="props"
+              :text="(item.raw as Player).team?.collegeName"
+            >
+              <template v-slot:prepend>
+                <v-avatar class="bg-white mr-1">
+                  <v-img :src="(item.raw as Player).team?.collegeLogo"></v-img>
+                </v-avatar>
+              </template>
+            </v-chip>
+          </template>
+
+          <template v-slot:item="{ props, item }">
+            <v-list-item
+              v-bind="props"
+              :title="(item.raw as Player).team?.collegeName"
+              :subtitle="(item.raw as Player).team?.name"
+            >
+              <template v-slot:prepend>
+                <v-avatar class="bg-white">
+                  <v-img :src="(item.raw as Player).team?.collegeLogo"></v-img>
+                </v-avatar>
+              </template>
+            </v-list-item>
+          </template>
+        </v-autocomplete>
       </v-card-text>
 
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn
           text="关闭"
-          @click="appStore.aboutDialog = false"
+          @click="appStore.searchDialog = false"
+        ></v-btn>
+        <v-btn
+          text="选中"
+          @click="confirm"
         ></v-btn>
       </v-card-actions>
     </v-card>
