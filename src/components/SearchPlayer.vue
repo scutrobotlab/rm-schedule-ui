@@ -41,7 +41,7 @@ function confirm() {
 
 <template>
   <v-dialog max-width="480" v-model="appStore.searchDialog" :scrollable="true">
-    <v-card variant="elevated">
+    <v-card class="pt-2" variant="elevated">
       <v-card-title><h3>搜索队伍</h3></v-card-title>
       <v-card-subtitle>通过汉字或汉语拼音搜索队伍</v-card-subtitle>
 
