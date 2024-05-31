@@ -5,6 +5,12 @@ import {computed} from "vue";
 import {Player} from "../types/schedule";
 import PinyinMatch from 'pinyin-match';
 
+interface Props {
+  zoneId: number,
+}
+
+const props = defineProps<Props>()
+
 export interface InternalItem<T = any> {
   value: any
   raw: T
@@ -13,11 +19,15 @@ export interface InternalItem<T = any> {
 const appStore = useAppStore()
 const promotionStore = usePromotionStore()
 
+const onlyCurrentZone = ref(true)
 const selected = ref<Player>()
 const players = computed(() => {
   let ret: Player[] = []
-  const zones = promotionStore.schedule.data.event.zones
-  zones.nodes.forEach(zone => {
+  let zones = promotionStore.schedule.data.event.zones.nodes
+  if (onlyCurrentZone.value) {
+    zones = zones.filter(zone => zone.id == props.zoneId.toString())
+  }
+  zones.forEach(zone => {
     zone.groups.nodes.forEach(group => {
       ret = ret.concat(group.players.nodes)
     })
@@ -46,6 +56,13 @@ function confirm() {
       <v-card-subtitle>通过汉字或汉语拼音搜索队伍</v-card-subtitle>
 
       <v-card-text>
+        <v-switch
+          v-model="onlyCurrentZone"
+          label="仅限当前赛区"
+          hide-details
+        >
+        </v-switch>
+
         <v-autocomplete
           v-model="selected"
           :items="players"

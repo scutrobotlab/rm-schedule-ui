@@ -26,6 +26,8 @@ const zones = [
       src="@/assets/background2.jpg"
       alt=""/>
 
+    <SearchPlayer :zone-id="zoneId"/>
+
     <div class="container">
       <v-container class="content mt-2">
         <div class="container2">
