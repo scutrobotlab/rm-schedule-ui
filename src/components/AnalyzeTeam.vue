@@ -3,7 +3,6 @@ import {MatchNode, Player} from "../types/schedule";
 import axios, {AxiosResponse} from "axios";
 import {RankListItem} from "../types/rank";
 import {usePromotionStore} from "../stores/promotion";
-import {GroupRankInfoZone} from "../types/group_rank_info";
 import {computed} from "vue";
 
 interface Props {
@@ -32,27 +31,27 @@ axios({
 })
 
 const matchList = computed(() => {
-  const zone = promotionStore.getZone(props.zoneId)
   const ret: MatchNode[] = []
-  zone.groupMatches.nodes.forEach((match) => {
-    if (match.redSide.playerId == props.player.id) ret.push(match)
-    else if (match.blueSide.playerId == props.player.id) ret.push(match)
-  })
-  zone.knockoutMatches.nodes.forEach((match) => {
-    if (match.redSide.playerId == props.player.id) ret.push(match)
-    else if (match.blueSide.playerId == props.player.id) ret.push(match)
-  })
+  for (const zone of promotionStore.schedule.data.event.zones.nodes) {
+    zone.groupMatches.nodes.forEach((match) => {
+      if (match.redSide.playerId == props.player.id) ret.push(match)
+      else if (match.blueSide.playerId == props.player.id) ret.push(match)
+    })
+    zone.knockoutMatches.nodes.forEach((match) => {
+      if (match.redSide.playerId == props.player.id) ret.push(match)
+      else if (match.blueSide.playerId == props.player.id) ret.push(match)
+    })
+  }
   return ret
 })
 
 const groupRank = computed(() => {
-  const zones = promotionStore.groupRank.zones.find((zone: GroupRankInfoZone) => {
-    return zone.zoneId == props.zoneId.toString()
-  })
-  for (const group of zones.groups) {
-    for (const players of group.groupPlayers) {
-      if (players[1].itemValue['collegeName'] == props.player.team.collegeName) {
-        return players
+  for (const zone of promotionStore.groupRank.zones) {
+    for (const group of zone.groups) {
+      for (const players of group.groupPlayers) {
+        if (players[1].itemValue['collegeName'] == props.player.team.collegeName) {
+          return players
+        }
       }
     }
   }
