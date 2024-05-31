@@ -19,7 +19,7 @@ export interface InternalItem<T = any> {
 const appStore = useAppStore()
 const promotionStore = usePromotionStore()
 
-const onlyCurrentZone = ref(true)
+const onlyCurrentZone = ref(false)
 const selected = ref<Player>()
 const players = computed(() => {
   let ret: Player[] = []
