@@ -6,7 +6,7 @@ import {usePromotionStore} from "../stores/promotion";
 import AnalyzeTeam from "./AnalyzeTeam.vue";
 
 const zoneTab = ref(500)
-const selectedGroup = ref([2])
+const selectedGroup = ref([0])
 const appStore = useAppStore()
 const promotionStore = usePromotionStore();
 
