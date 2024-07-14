@@ -41,7 +41,7 @@ setInterval(refresh, 30_000)
 
 const graphRef = ref<RelationGraph>()
 
-const nodeWidth = 320;
+const nodeWidth = 300;
 const options = ref<RGOptions>({
   layout: {
     'layoutName': 'fixed',
@@ -1042,12 +1042,13 @@ const knockoutJsonData = {
                   <!--已确认的赛程-->
                   <div v-if="round + 1 > node.data.round && match(v)" class="container">
                     <div
+                      class="ml-2"
                       :class="{
                       'container': true,
                       'mt-2': type == 'group',
                     }"
                     >
-                      <div class="left-column ma-1 order-image-container">
+                      <div class="left-column order-image-container">
                         <img src="@/assets/order_bg.png" alt="Image"/>
                         <div class="order-text-overlay">
                           <b>{{ padNumber(match(v).orderNumber) }}</b>
@@ -1062,28 +1063,33 @@ const knockoutJsonData = {
                         }"
                           @click="selectPlayer(match(v).redSide.player)"
                         >
-                          <div class="colorful-red">
-                            <h4 class="px-1">{{ match(v).redSideWinGameCount }}</h4>
-                          </div>
-                          <div
-                            v-if="promotionStore.getMpMatch(match(v).id) && promotionStore.getMpMatch(match(v).id).redRate >= 0"
-                            class="ml-1 text-caption"
-                            :style="{
+                          <div class="school-image-container">
+                            <img src="@/assets/school_bg.png" alt="Image"/>
+                            <div class="overlay ml-4">
+                              <div class="colorful-red">
+                                <h4 class="px-1">{{ match(v).redSideWinGameCount }}</h4>
+                              </div>
+                              <div
+                                v-if="promotionStore.getMpMatch(match(v).id) && promotionStore.getMpMatch(match(v).id).redRate >= 0"
+                                class="ml-1 text-caption"
+                                :style="{
                                width: '2.5rem',
                                background: `linear-gradient(to right, #EF6C00 ${promotionStore.getMpMatch(match(v).id).redRate * 100}%, transparent ${promotionStore.getMpMatch(match(v).id).redRate * 100 + 20}%)`,
                                border: '2px solid #EF6C00',
                              }">
-                            {{ (100 * promotionStore.getMpMatch(match(v).id).redRate).toFixed(1) }}%
+                                {{ (100 * promotionStore.getMpMatch(match(v).id).redRate).toFixed(1) }}%
+                              </div>
+                              <v-avatar v-if="match(v).redSide.player?.team" class="mx-1" color="white" size="x-small">
+                                <v-img :src="match(v).redSide.player?.team.collegeLogo"></v-img>
+                              </v-avatar>
+                              <v-avatar v-else class="mx-1" size="x-small">
+                                <v-img src="@/assets/school_red.png"></v-img>
+                              </v-avatar>
+                              <span v-if="match(v).redSide.player?.team"
+                                    class="one-line-text">{{ match(v).redSide.player?.team.collegeName }}</span>
+                              <span v-else class="one-line-text">{{ node.data.zones[groupIndex].text[2 * i] }}</span>
+                            </div>
                           </div>
-                          <v-avatar v-if="match(v).redSide.player?.team" class="mx-1" color="white" size="x-small">
-                            <v-img :src="match(v).redSide.player?.team.collegeLogo"></v-img>
-                          </v-avatar>
-                          <v-avatar v-else class="mx-1" size="x-small">
-                            <v-img src="@/assets/school_red.png"></v-img>
-                          </v-avatar>
-                          <span v-if="match(v).redSide.player?.team"
-                                class="one-line-text">{{ match(v).redSide.player?.team.collegeName }}</span>
-                          <span v-else class="one-line-text">{{ node.data.zones[groupIndex].text[2 * i] }}</span>
                         </div>
 
                         <div
@@ -1093,28 +1099,35 @@ const knockoutJsonData = {
                         }"
                           @click="selectPlayer(match(v).blueSide.player)"
                         >
-                          <div class="colorful-blue">
-                            <h4 class="px-1">{{ match(v).blueSideWinGameCount }}</h4>
-                          </div>
-                          <div
-                            v-if="promotionStore.getMpMatch(match(v).id) && promotionStore.getMpMatch(match(v).id).blueRate >= 0"
-                            class="ml-1 text-caption"
-                            :style="{
+                          <div class="school-image-container">
+                            <img src="@/assets/school_bg.png" alt="Image"/>
+                            <div class="overlay ml-4">
+                              <div class="colorful-blue">
+                                <h4 class="px-1">{{ match(v).blueSideWinGameCount }}</h4>
+                              </div>
+                              <div
+                                v-if="promotionStore.getMpMatch(match(v).id) && promotionStore.getMpMatch(match(v).id).blueRate >= 0"
+                                class="ml-1 text-caption"
+                                :style="{
                                width: '2.5rem',
                                background: `linear-gradient(to right, #00695C ${promotionStore.getMpMatch(match(v).id).blueRate * 100}%, transparent ${promotionStore.getMpMatch(match(v).id).blueRate * 100 + 20}%)`,
                                border: '2px solid #00695C'
                              }">
-                            {{ (100 * promotionStore.getMpMatch(match(v).id).blueRate).toFixed(1) }}%
+                                {{ (100 * promotionStore.getMpMatch(match(v).id).blueRate).toFixed(1) }}%
+                              </div>
+                              <v-avatar v-if="match(v).blueSide.player?.team" class="mx-1" color="white" size="x-small">
+                                <v-img :src="match(v).blueSide.player?.team.collegeLogo"></v-img>
+                              </v-avatar>
+                              <v-avatar v-else class="mx-1" size="x-small">
+                                <v-img src="@/assets/school_blue.png"></v-img>
+                              </v-avatar>
+                              <span v-if="match(v).blueSide.player?.team"
+                                    class="one-line-text">{{ match(v).blueSide.player?.team.collegeName }}</span>
+                              <span v-else class="one-line-text">{{
+                                  node.data.zones[groupIndex].text[2 * i + 1]
+                                }}</span>
+                            </div>
                           </div>
-                          <v-avatar v-if="match(v).blueSide.player?.team" class="mx-1" color="white" size="x-small">
-                            <v-img :src="match(v).blueSide.player?.team.collegeLogo"></v-img>
-                          </v-avatar>
-                          <v-avatar v-else class="mx-1" size="x-small">
-                            <v-img src="@/assets/school_blue.png"></v-img>
-                          </v-avatar>
-                          <span v-if="match(v).blueSide.player?.team"
-                                class="one-line-text">{{ match(v).blueSide.player?.team.collegeName }}</span>
-                          <span v-else class="one-line-text">{{ node.data.zones[groupIndex].text[2 * i + 1] }}</span>
                         </div>
                       </div>
                     </div>
@@ -1377,7 +1390,7 @@ const knockoutJsonData = {
   align-items: center; /* 垂直居中对齐 */
   justify-content: flex-start; /* 水平左对齐 */
   width: 90%; /* 确保行内容宽度 */
-  padding: 0 4px;
+  padding: 0 0;
 }
 
 .selected-content {
@@ -1516,6 +1529,26 @@ const knockoutJsonData = {
   position: absolute;
   width: 100%;
   text-align: center;
+}
+
+.school-image-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.school-image-container img {
+  width: 100%;
+}
+
+.overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .node-title-border {
