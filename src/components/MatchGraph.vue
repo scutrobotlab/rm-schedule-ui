@@ -1359,6 +1359,10 @@ const knockoutJsonData = {
         src="@/assets/logo.png">
       </v-img>
 
+      <p class="copyright">
+        华南理工大学华南虎
+      </p>
+
       <v-btn
         class="ml-2 mb-2 px-2"
         variant="text"
@@ -1512,14 +1516,26 @@ const knockoutJsonData = {
 
 .logo {
   position: absolute;
-  bottom: 0;
+  bottom: 20px;
   left: 0;
-  width: 100px;
+  width: 120px;
   opacity: 0.5;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   z-index: 1;
+}
+
+.copyright {
+  position: absolute;
+  bottom: 6px;
+  left: 8px;
+  opacity: 0.5;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 1;
+  font-size: 0.8rem;
 }
 
 .background-image {
