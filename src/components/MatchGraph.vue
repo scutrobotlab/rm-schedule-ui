@@ -318,7 +318,7 @@ const groupJsonData = {
     {
       id: '#2',
       text: '第二轮 1:0',
-      x: rx + nodeWidth + 100,
+      x: rx + nodeWidth + 80,
       y: ry - 80,
       data: {
         title: '瑞士轮第二轮 1胜0负',
@@ -357,7 +357,7 @@ const groupJsonData = {
     {
       id: '#3',
       text: '第二轮 0:1',
-      x: rx + nodeWidth + 100,
+      x: rx + nodeWidth + 80,
       y: ry + 330,
       data: {
         title: '瑞士轮第二轮 0胜1负',
@@ -396,7 +396,7 @@ const groupJsonData = {
     {
       id: '#4',
       text: '第三轮 2:0',
-      x: rx + 2 * nodeWidth + 200,
+      x: rx + 2 * nodeWidth + 160,
       y: ry - 120,
       data: {
         title: '瑞士轮第三轮 2胜0负',
@@ -431,7 +431,7 @@ const groupJsonData = {
     {
       id: '#5',
       text: '第三轮 1:1',
-      x: rx + 2 * nodeWidth + 200,
+      x: rx + 2 * nodeWidth + 160,
       y: ry + 110,
       data: {
         title: '瑞士轮第三轮 1胜1负',
@@ -470,7 +470,7 @@ const groupJsonData = {
     {
       id: '#6',
       text: '第三轮 0:2 淘汰',
-      x: rx + 2 * nodeWidth + 200,
+      x: rx + 2 * nodeWidth + 160,
       y: ry + 505,
       data: {
         title: '淘汰 0胜2负',
@@ -497,7 +497,7 @@ const groupJsonData = {
     {
       id: '#7',
       text: '第三轮 3:0 晋级',
-      x: rx + 3 * nodeWidth + 300,
+      x: rx + 3 * nodeWidth + 240,
       y: ry + 20,
       data: {
         title: '晋级淘汰赛 3胜0负',
@@ -524,7 +524,7 @@ const groupJsonData = {
     {
       id: '#8',
       text: '第三轮 2:1 晋级',
-      x: rx + 3 * nodeWidth + 300,
+      x: rx + 3 * nodeWidth + 240,
       y: ry + 180,
       data: {
         title: '晋级淘汰赛 2胜1负',
@@ -551,7 +551,7 @@ const groupJsonData = {
     {
       id: '#9',
       text: '第三轮 1:2 淘汰',
-      x: rx + 3 * nodeWidth + 300,
+      x: rx + 3 * nodeWidth + 240,
       y: ry + 520,
       data: {
         title: '淘汰 1胜2负',
@@ -1524,6 +1524,7 @@ const knockoutJsonData = {
   position: absolute;
   width: 100%;
   text-align: center;
+  text-shadow: 3px 3px 6px #000000;
 }
 
 .order-image-container {
