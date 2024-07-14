@@ -35,13 +35,13 @@ function badgeTab(zoneId: number): boolean {
   <div>
     <img
       class="background-image"
-      src="@/assets/background2.jpg"
+      src="@/assets/background3.png"
       alt=""/>
 
     <SearchPlayer :zone-id="zoneId"/>
 
     <div class="container">
-      <v-container class="content mt-2">
+      <div class="content">
         <div class="container2">
           <v-tabs
             class="row"
@@ -164,7 +164,7 @@ function badgeTab(zoneId: number): boolean {
             :player="promotionStore.selectedPlayer"
           ></AnalyzeTeam>
         </v-bottom-sheet>
-      </v-container>
+      </div>
     </div>
   </div>
 </template>
@@ -180,9 +180,8 @@ function badgeTab(zoneId: number): boolean {
 .background-image {
   position: absolute;
   bottom: 0;
-  left: 0;
+  right: 0;
   width: 100%;
-  height: 100%;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

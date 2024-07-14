@@ -63,6 +63,7 @@ const options = ref<RGOptions>({
   disableDragNode: true,
   disableDragCanvas: false,
   zoomToFitWhenRefresh: true,
+  allowShowMiniToolBar: !liveMode.value,
   graphOffset_y: props.type == 'knockout' ? 0 : -40,
 })
 
@@ -972,8 +973,8 @@ const knockoutJsonData = {
 </script>
 
 <template>
-  <div class="my-graph pt-4">
-    <div style="height: calc(100vh - 160px);">
+  <div class="my-graph pt-2">
+    <div style="height: calc(100vh - 100px);">
       <!--      <div class="text-center mb-4">-->
       <!--        <h1 class="font-weight-bold">{{ title }}</h1>-->
       <!--      </div>-->
@@ -1415,7 +1416,18 @@ const knockoutJsonData = {
 }
 
 .my-graph {
-  background: rgba(0, 0, 0, 0.75);
+  //background: rgba(0, 0, 0, 0.75);
+  //background: transparent;
+
+  background-image: url("src/assets/background3.png");
+  /* 背景图垂直、水平均居中 */
+  background-position: center center;
+  /* 背景图不平铺 */
+  background-repeat: no-repeat;
+  /* 当内容高度大于图片高度时，背景图像的位置相对于viewport固定 */
+  background-attachment: fixed;
+  /* 让背景图基于容器大小伸缩 */
+  background-size: cover;
 }
 
 .container {
