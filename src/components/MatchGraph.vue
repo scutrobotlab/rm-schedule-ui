@@ -1336,6 +1336,20 @@ const knockoutJsonData = {
               <v-img src="@/assets/champion.png"></v-img>
             </div>
           </div>
+
+          <div
+            :style="{
+              left: `${ry + 3 * nodeWidth + 220}px`,
+              top: `${rx - 160}px`,
+              position: 'absolute',
+              'white-space': 'nowrap',
+            }">
+            <div>
+              <b><span style="font-size: 5rem">A组小组赛</span></b>
+              <b><span style="font-size: 2.5rem; color: #f48b3c"
+                       class="ml-4">瑞士轮赛制</span></b>
+            </div>
+          </div>
         </template>
       </relation-graph>
     </div>
@@ -1502,6 +1516,18 @@ const knockoutJsonData = {
   left: 0;
   width: 100px;
   opacity: 0.5;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 1;
+}
+
+.background-image {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
