@@ -297,6 +297,7 @@ const groupJsonData = {
         title: '瑞士轮第一轮 0胜0负',
         titleColor: '#FFFFFF',
         titleImage: 'src/assets/title_bg.png',
+        borderColor: '#5a879c',
         round: 1,
         type: 'match',
         zones: [
@@ -324,6 +325,7 @@ const groupJsonData = {
         title: '瑞士轮第二轮 1胜0负',
         titleColor: '#FFFFFF',
         titleImage: 'src/assets/title_bg.png',
+        borderColor: '#5a879c',
         round: 2,
         type: 'match',
         zones: [
@@ -363,6 +365,7 @@ const groupJsonData = {
         title: '瑞士轮第二轮 0胜1负',
         titleColor: '#FFFFFF',
         titleImage: 'src/assets/title_bg.png',
+        borderColor: '#5a879c',
         round: 2,
         type: 'match',
         zones: [
@@ -402,6 +405,7 @@ const groupJsonData = {
         title: '瑞士轮第三轮 2胜0负',
         titleColor: '#FFFFFF',
         titleImage: 'src/assets/title_bg.png',
+        borderColor: '#5a879c',
         round: 3,
         type: 'match',
         zones: [
@@ -437,6 +441,7 @@ const groupJsonData = {
         title: '瑞士轮第三轮 1胜1负',
         titleColor: '#FFFFFF',
         titleImage: 'src/assets/title_bg.png',
+        borderColor: '#5a879c',
         round: 3,
         type: 'match',
         zones: [
@@ -476,6 +481,7 @@ const groupJsonData = {
         title: '淘汰 0胜2负',
         titleColor: '#FFFFFF',
         titleImage: 'src/assets/title_loser_bg.png',
+        borderColor: '#3e484d',
         round: 3,
         type: 'eliminate',
         zones: [
@@ -503,6 +509,7 @@ const groupJsonData = {
         title: '晋级淘汰赛 3胜0负',
         titleColor: '#FFFFFF',
         titleImage: 'src/assets/title_winner_bg.png',
+        borderColor: '#e7a662',
         round: 4,
         type: 'promote',
         zones: [
@@ -530,6 +537,7 @@ const groupJsonData = {
         title: '晋级淘汰赛 2胜1负',
         titleColor: '#FFFFFF',
         titleImage: 'src/assets/title_winner_bg.png',
+        borderColor: '#e7a662',
         round: 4,
         type: 'promote',
         zones: [
@@ -557,6 +565,7 @@ const groupJsonData = {
         title: '淘汰 1胜2负',
         titleColor: '#FFFFFF',
         titleImage: 'src/assets/title_loser_bg.png',
+        borderColor: '#3e484d',
         round: 4,
         type: 'eliminate',
         zones: [
@@ -988,7 +997,8 @@ const knockoutJsonData = {
                  class="text-h6"
                  :style="'color: ' + node.data.titleColor">
               <div class="title-image-container">
-                <img class="node-title-border" :src="node.data.titleImage" alt="Image"/>
+                <img :style="'border-right: 2px solid ' + node.data.borderColor"
+                     :src="node.data.titleImage" alt="Image"/>
                 <div class="title-text-overlay mt-1">
                   <b>{{ node.data.title }}</b>
                 </div>
@@ -996,7 +1006,12 @@ const knockoutJsonData = {
               <span class="ml-1" v-if="isForecast(node)">*</span>
             </div>
 
-            <div class="node-content-border pt-1 pb-3">
+            <div class="pt-1 pb-3"
+                 :style="{
+                   'border-left': '2px solid ' + node.data.borderColor,
+                   'border-right': '2px solid ' + node.data.borderColor,
+                   'border-bottom': '2px solid ' + node.data.borderColor,
+                 }">
               <div v-if="node.data.type == 'match'">
 
                 <!--实时预测 动态刷新-->
@@ -1568,10 +1583,4 @@ const knockoutJsonData = {
 .node-title-border {
   border-right: 2px solid #5a879c;
 }
-
-.node-content-border {
-  border: 2px solid #5a879c;
-  border-top: none;
-}
-
 </style>
