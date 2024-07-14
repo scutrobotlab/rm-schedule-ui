@@ -41,7 +41,7 @@ setInterval(refresh, 30_000)
 
 const graphRef = ref<RelationGraph>()
 
-const nodeWidth = 300;
+const nodeWidth = 350;
 const options = ref<RGOptions>({
   layout: {
     'layoutName': 'fixed',
@@ -1431,7 +1431,7 @@ const knockoutJsonData = {
   display: flex;
   align-items: center; /* 垂直居中对齐 */
   justify-content: flex-start; /* 水平左对齐 */
-  width: 90%; /* 确保行内容宽度 */
+  width: 96%; /* 确保行内容宽度 */
   padding: 0 0;
 }
 
