@@ -296,6 +296,7 @@ const groupJsonData = {
       data: {
         title: '瑞士轮第一轮 0胜0负',
         titleColor: '#FFFFFF',
+        titleImage: 'src/assets/title_bg.png',
         round: 1,
         type: 'match',
         zones: [
@@ -322,6 +323,7 @@ const groupJsonData = {
       data: {
         title: '瑞士轮第二轮 1胜0负',
         titleColor: '#FFFFFF',
+        titleImage: 'src/assets/title_bg.png',
         round: 2,
         type: 'match',
         zones: [
@@ -360,6 +362,7 @@ const groupJsonData = {
       data: {
         title: '瑞士轮第二轮 0胜1负',
         titleColor: '#FFFFFF',
+        titleImage: 'src/assets/title_bg.png',
         round: 2,
         type: 'match',
         zones: [
@@ -394,10 +397,11 @@ const groupJsonData = {
       id: '#4',
       text: '第三轮 2:0',
       x: rx + 2 * nodeWidth + 200,
-      y: ry - 100,
+      y: ry - 120,
       data: {
         title: '瑞士轮第三轮 2胜0负',
         titleColor: '#FFFFFF',
+        titleImage: 'src/assets/title_bg.png',
         round: 3,
         type: 'match',
         zones: [
@@ -428,10 +432,11 @@ const groupJsonData = {
       id: '#5',
       text: '第三轮 1:1',
       x: rx + 2 * nodeWidth + 200,
-      y: ry + 140,
+      y: ry + 110,
       data: {
         title: '瑞士轮第三轮 1胜1负',
         titleColor: '#FFFFFF',
+        titleImage: 'src/assets/title_bg.png',
         round: 3,
         type: 'match',
         zones: [
@@ -466,10 +471,11 @@ const groupJsonData = {
       id: '#6',
       text: '第三轮 0:2 淘汰',
       x: rx + 2 * nodeWidth + 200,
-      y: ry + 545,
+      y: ry + 505,
       data: {
         title: '淘汰 0胜2负',
-        titleColor: '#B0BEC5',
+        titleColor: '#FFFFFF',
+        titleImage: 'src/assets/title_loser_bg.png',
         round: 3,
         type: 'eliminate',
         zones: [
@@ -495,7 +501,8 @@ const groupJsonData = {
       y: ry + 20,
       data: {
         title: '晋级淘汰赛 3胜0负',
-        titleColor: '#FBC02D',
+        titleColor: '#FFFFFF',
+        titleImage: 'src/assets/title_winner_bg.png',
         round: 4,
         type: 'promote',
         zones: [
@@ -521,7 +528,8 @@ const groupJsonData = {
       y: ry + 180,
       data: {
         title: '晋级淘汰赛 2胜1负',
-        titleColor: '#FBC02D',
+        titleColor: '#FFFFFF',
+        titleImage: 'src/assets/title_winner_bg.png',
         round: 4,
         type: 'promote',
         zones: [
@@ -544,10 +552,11 @@ const groupJsonData = {
       id: '#9',
       text: '第三轮 1:2 淘汰',
       x: rx + 3 * nodeWidth + 300,
-      y: ry + 480,
+      y: ry + 520,
       data: {
         title: '淘汰 1胜2负',
-        titleColor: '#B0BEC5',
+        titleColor: '#FFFFFF',
+        titleImage: 'src/assets/title_loser_bg.png',
         round: 4,
         type: 'eliminate',
         zones: [
@@ -979,7 +988,7 @@ const knockoutJsonData = {
                  class="text-h6"
                  :style="'color: ' + node.data.titleColor">
               <div class="title-image-container">
-                <img class="node-title-border" src="@/assets/title_bg.png" alt="Image"/>
+                <img class="node-title-border" :src="node.data.titleImage" alt="Image"/>
                 <div class="title-text-overlay mt-1">
                   <b>{{ node.data.title }}</b>
                 </div>
@@ -987,7 +996,7 @@ const knockoutJsonData = {
               <span class="ml-1" v-if="isForecast(node)">*</span>
             </div>
 
-            <div class="node-content-border pt-2 pb-4">
+            <div class="node-content-border pt-1 pb-3">
               <div v-if="node.data.type == 'match'">
 
                 <!--实时预测 动态刷新-->
@@ -1172,32 +1181,36 @@ const knockoutJsonData = {
               </div>
 
               <!--晋级和淘汰-->
-              <div v-else-if="node.data.type == 'eliminate' || node.data.type == 'promote'"
-                   class="mx-4">
+              <div v-else-if="node.data.type == 'eliminate' || node.data.type == 'promote'">
                 <div class="mx-2"
                      v-for="(v, i) in rankList(node.data.zones[groupIndex])" :key="i">
                   <div class="container ml-2">
                     <div class="right-column">
                       <div
                         v-if="v"
-                        class="top-row row-content mb-3"
+                        class="top-row row-content mt-2"
                         :class="{
                         'selected-content': playerSelected(v.player),
                       }"
                         @click="selectPlayer(v.player)"
                       >
-                        <div v-if="v.match.status == 'DONE'" style="background: #43A047">
-                          <h4 class="px-1" style="width: 2.5rem; color: white">
-                            {{ convertToOrdinal(matchRank(v.player)) }}
-                          </h4>
+                        <div class="school-image-container">
+                          <img src="@/assets/school_bg.png" alt="Image"/>
+                          <div class="overlay ml-4">
+                            <div v-if="v.match.status == 'DONE'" style="background: #43A047">
+                              <h4 class="px-1" style="width: 2.5rem; color: white">
+                                {{ convertToOrdinal(matchRank(v.player)) }}
+                              </h4>
+                            </div>
+                            <div v-else style="background: #616161">
+                              <h4 class="px-1" style="width: 2.5rem; color: white"> 待定 </h4>
+                            </div>
+                            <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
+                              <v-img :src="v.player.team.collegeLogo"/>
+                            </v-avatar>
+                            <span class="one-line-text">{{ v.player.team.collegeName }}</span>
+                          </div>
                         </div>
-                        <div v-else style="background: #616161">
-                          <h4 class="px-1" style="width: 2.5rem; color: white"> 待定 </h4>
-                        </div>
-                        <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
-                          <v-img :src="v.player.team.collegeLogo"/>
-                        </v-avatar>
-                        <span class="one-line-text">{{ v.player.team.collegeName }}</span>
                       </div>
                     </div>
                   </div>
