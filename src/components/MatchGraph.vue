@@ -3,8 +3,9 @@ import {RGOptions} from "relation-graph-vue3/types/types/relation-graph-models/t
 import RelationGraph from 'relation-graph-vue3';
 import {usePromotionStore} from "../stores/promotion";
 import {MatchNode, Player, PlayerWithMatch} from "../types/schedule";
-import {computed, onMounted} from "vue";
+import {computed} from "vue";
 import {useAppStore} from "../stores/app";
+import {useRoute} from "vue-router";
 
 interface Props {
   zoneId: number,
@@ -15,6 +16,9 @@ interface Props {
 const props = defineProps<Props>()
 
 const loading = ref(true)
+
+const route = useRoute()
+const liveMode = ref(!!route.query.live)
 
 const appStore = useAppStore();
 const promotionStore = usePromotionStore();
@@ -968,11 +972,11 @@ const knockoutJsonData = {
 </script>
 
 <template>
-  <div class="my-graph pa-4">
-    <div class="mb-4" style="height: calc(100vh - 240px);">
-      <div class="text-center mb-4">
-        <h1 class="font-weight-bold">{{ title }}</h1>
-      </div>
+  <div class="my-graph pt-4">
+    <div style="height: calc(100vh - 160px);">
+      <!--      <div class="text-center mb-4">-->
+      <!--        <h1 class="font-weight-bold">{{ title }}</h1>-->
+      <!--      </div>-->
       <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
       <relation-graph
         v-show="!loading"
@@ -1364,7 +1368,8 @@ const knockoutJsonData = {
       </p>
 
       <v-btn
-        class="ml-2 mb-2 px-2"
+        v-if="!liveMode"
+        class="legend"
         variant="text"
         density="compact"
         @click="appStore.commentDialog = true"
@@ -1536,6 +1541,17 @@ const knockoutJsonData = {
   background-repeat: no-repeat;
   z-index: 1;
   font-size: 0.8rem;
+}
+
+.legend {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  opacity: 0.8;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 1;
 }
 
 .background-image {
