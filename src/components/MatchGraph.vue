@@ -400,7 +400,7 @@ const groupJsonData = {
       id: '#4',
       text: '第三轮 2:0',
       x: rx + 2 * nodeWidth + 160,
-      y: ry - 120,
+      y: ry - 140,
       data: {
         title: '瑞士轮第三轮 2胜0负',
         titleColor: '#FFFFFF',
@@ -436,7 +436,7 @@ const groupJsonData = {
       id: '#5',
       text: '第三轮 1:1',
       x: rx + 2 * nodeWidth + 160,
-      y: ry + 110,
+      y: ry + 100,
       data: {
         title: '瑞士轮第三轮 1胜1负',
         titleColor: '#FFFFFF',
@@ -504,7 +504,7 @@ const groupJsonData = {
       id: '#7',
       text: '第三轮 3:0 晋级',
       x: rx + 3 * nodeWidth + 240,
-      y: ry + 20,
+      y: ry + 10,
       data: {
         title: '晋级淘汰赛 3胜0负',
         titleColor: '#FFFFFF',
