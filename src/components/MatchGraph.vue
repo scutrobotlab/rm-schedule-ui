@@ -356,7 +356,7 @@ const groupJsonData = {
       id: '#3',
       text: '第二轮 0:1',
       x: rx + nodeWidth + 100,
-      y: ry + 300,
+      y: ry + 330,
       data: {
         title: '瑞士轮第二轮 0胜1负',
         titleColor: '#FFFFFF',
@@ -394,7 +394,7 @@ const groupJsonData = {
       id: '#4',
       text: '第三轮 2:0',
       x: rx + 2 * nodeWidth + 200,
-      y: ry - 140,
+      y: ry - 100,
       data: {
         title: '瑞士轮第三轮 2胜0负',
         titleColor: '#FFFFFF',
@@ -428,7 +428,7 @@ const groupJsonData = {
       id: '#5',
       text: '第三轮 1:1',
       x: rx + 2 * nodeWidth + 200,
-      y: ry + 90,
+      y: ry + 140,
       data: {
         title: '瑞士轮第三轮 1胜1负',
         titleColor: '#FFFFFF',
@@ -466,7 +466,7 @@ const groupJsonData = {
       id: '#6',
       text: '第三轮 0:2 淘汰',
       x: rx + 2 * nodeWidth + 200,
-      y: ry + 465,
+      y: ry + 545,
       data: {
         title: '淘汰 0胜2负',
         titleColor: '#B0BEC5',
@@ -492,7 +492,7 @@ const groupJsonData = {
       id: '#7',
       text: '第三轮 3:0 晋级',
       x: rx + 3 * nodeWidth + 300,
-      y: ry - 80,
+      y: ry + 20,
       data: {
         title: '晋级淘汰赛 3胜0负',
         titleColor: '#FBC02D',
@@ -518,7 +518,7 @@ const groupJsonData = {
       id: '#8',
       text: '第三轮 2:1 晋级',
       x: rx + 3 * nodeWidth + 300,
-      y: ry + 90,
+      y: ry + 180,
       data: {
         title: '晋级淘汰赛 2胜1负',
         titleColor: '#FBC02D',
@@ -544,7 +544,7 @@ const groupJsonData = {
       id: '#9',
       text: '第三轮 1:2 淘汰',
       x: rx + 3 * nodeWidth + 300,
-      y: ry + 400,
+      y: ry + 480,
       data: {
         title: '淘汰 1胜2负',
         titleColor: '#B0BEC5',
