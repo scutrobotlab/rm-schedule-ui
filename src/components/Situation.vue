@@ -9,6 +9,7 @@ import {useRoute, useRouter} from "vue-router";
 const route = useRoute()
 const router = useRouter()
 
+const liveMode = ref(!!route.query.live)
 const zoneTab = ref(Number(route.params.zoneId) || 500)
 const selectedGroup = ref([route.query.group || 0])
 const appStore = useAppStore()
@@ -47,10 +48,10 @@ function badgeTab(zoneId: number): boolean {
 
 <template>
   <div>
-    <img
-      class="background-image"
-      src="@/assets/background3.png"
-      alt=""/>
+    <!--    <img-->
+    <!--      class="background-image"-->
+    <!--      src="@/assets/background3.png"-->
+    <!--      alt=""/>-->
 
     <SearchPlayer :zone-id="zoneId"/>
 
@@ -58,6 +59,7 @@ function badgeTab(zoneId: number): boolean {
       <div class="content">
         <div class="container2">
           <v-tabs
+            v-if="!liveMode"
             class="row"
             v-model="zoneTab"
             bg-color="#2196F3BB"
@@ -119,7 +121,8 @@ function badgeTab(zoneId: number): boolean {
                   </v-carousel-item>
                 </v-carousel>
 
-                <div class="mx-auto container2" style="background: rgba(255, 255, 255, 0.2)">
+                <div v-if="!liveMode"
+                     class="mx-auto container2" style="background: rgba(255, 255, 255, 0.2)">
                   <div class="row">
                     <div class="col">
                       <v-sheet

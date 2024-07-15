@@ -974,7 +974,7 @@ const knockoutJsonData = {
 
 <template>
   <div class="my-graph pt-2">
-    <div style="height: calc(100vh - 100px);">
+    <div :style="liveMode ? 'height: calc(100vh - 0px);' : 'height: calc(100vh - 100px);'">
       <!--      <div class="text-center mb-4">-->
       <!--        <h1 class="font-weight-bold">{{ title }}</h1>-->
       <!--      </div>-->
@@ -1533,7 +1533,7 @@ const knockoutJsonData = {
 
 .logo {
   position: absolute;
-  bottom: 20px;
+  bottom: 28px;
   left: 0;
   width: 120px;
   opacity: 0.5;
@@ -1545,7 +1545,7 @@ const knockoutJsonData = {
 
 .copyright {
   position: absolute;
-  bottom: 6px;
+  bottom: 16px;
   left: 8px;
   opacity: 0.5;
   background-size: cover;
