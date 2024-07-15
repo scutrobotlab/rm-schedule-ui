@@ -9,7 +9,7 @@ import {useRoute, useRouter} from "vue-router";
 const route = useRoute()
 const router = useRouter()
 
-const liveMode = ref(!!route.query.live)
+const liveMode = ref(route.query.live == "1")
 const zoneTab = ref(Number(route.params.zoneId) || 500)
 const selectedGroup = ref([route.query.group || 0])
 const appStore = useAppStore()

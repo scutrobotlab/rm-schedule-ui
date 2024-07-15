@@ -18,7 +18,7 @@ const props = defineProps<Props>()
 const loading = ref(true)
 
 const route = useRoute()
-const liveMode = ref(!!route.query.live)
+const liveMode = ref(route.query.live == "1")
 
 const appStore = useAppStore();
 const promotionStore = usePromotionStore();
