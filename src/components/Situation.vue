@@ -1,21 +1,35 @@
 <script setup lang="ts">
 import {useAppStore} from "../stores/app";
 import MatchGraph from "./MatchGraph.vue";
-import {computed} from "vue";
+import {computed, watch} from "vue";
 import {usePromotionStore} from "../stores/promotion";
 import AnalyzeTeam from "./AnalyzeTeam.vue";
+import {useRoute, useRouter} from "vue-router";
 
-const zoneTab = ref(500)
-const selectedGroup = ref([0])
+const route = useRoute()
+const router = useRouter()
+
+const zoneTab = ref(Number(route.params.zoneId) || 500)
+const selectedGroup = ref([route.query.group || 0])
 const appStore = useAppStore()
 const promotionStore = usePromotionStore();
 
 const zoneId = computed(() => Number(zoneTab.value))
 
+function updateQuery() {
+  router.push({path: `/${zoneId.value}`, query: {group: selectedGroup.value}})
+}
+
+watch(zoneId, updateQuery)
+watch(selectedGroup, updateQuery)
+
 const zones = [
   {id: 498, name: '东部赛区', disabled: false},
   {id: 499, name: '中部赛区', disabled: false},
   {id: 500, name: '南部赛区', disabled: false},
+  {id: 524, name: '国际赛区&复活赛第一赛段', disabled: false},
+  {id: 525, name: '复活赛第二赛段', disabled: false},
+  {id: 526, name: '全国赛', disabled: false},
 ]
 
 function badgeTab(zoneId: number): boolean {
