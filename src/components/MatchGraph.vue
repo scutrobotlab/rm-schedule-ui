@@ -246,13 +246,6 @@ const onDragEnd = (event: Event) => {
   isDragging.value = false;
 };
 
-const title = computed(() => {
-  if (!promotionStore.schedule.data) return ''
-  const zone = promotionStore.getZone(props.zoneId)
-  if (props.type == 'knockout') return `${promotionStore.schedule.data.event.title} ${zone.name} 淘汰赛`
-  else if (props.type == 'group') return `${promotionStore.schedule.data.event.title} ${zone.name} 瑞士轮 ${props.group}组`
-})
-
 const groupIndex = computed(() => {
   switch (props.group) {
     case 'A':
@@ -604,7 +597,7 @@ const groupJsonData = {
   ],
 }
 
-const knockoutYOffset = 60;
+const knockoutYOffset = 50;
 
 const knockoutOrderNumbers = {
   498: [0,
@@ -633,7 +626,7 @@ const knockoutJsonData = {
     {
       id: '#1',
       text: '16进8淘汰赛 第1场',
-      x: rx - nodeWidth * 3 - 450,
+      x: rx - nodeWidth * 3 - 180,
       y: ry - knockoutYOffset * 7,
       data: {
         title: '',
@@ -653,7 +646,7 @@ const knockoutJsonData = {
     {
       id: '#2',
       text: '16进8淘汰赛 第2场',
-      x: rx - nodeWidth * 3 - 450,
+      x: rx - nodeWidth * 3 - 180,
       y: ry - knockoutYOffset * 5,
       data: {
         title: '',
@@ -673,7 +666,7 @@ const knockoutJsonData = {
     {
       id: '#3',
       text: '16进8淘汰赛 第3场',
-      x: rx - nodeWidth * 3 - 450,
+      x: rx - nodeWidth * 3 - 180,
       y: ry - knockoutYOffset * 3,
       data: {
         title: '',
@@ -693,7 +686,7 @@ const knockoutJsonData = {
     {
       id: '#4',
       text: '16进8淘汰赛 第4场',
-      x: rx - nodeWidth * 3 - 450,
+      x: rx - nodeWidth * 3 - 180,
       y: ry - knockoutYOffset,
       data: {
         title: '',
@@ -713,7 +706,7 @@ const knockoutJsonData = {
     {
       id: '#5',
       text: '16进8淘汰赛 第5场',
-      x: rx - nodeWidth * 3 - 450,
+      x: rx - nodeWidth * 3 - 180,
       y: ry + knockoutYOffset,
       data: {
         title: '',
@@ -733,7 +726,7 @@ const knockoutJsonData = {
     {
       id: '#6',
       text: '16进8淘汰赛 第6场',
-      x: rx - nodeWidth * 3 - 450,
+      x: rx - nodeWidth * 3 - 180,
       y: ry + knockoutYOffset * 3,
       data: {
         title: '',
@@ -753,7 +746,7 @@ const knockoutJsonData = {
     {
       id: '#7',
       text: '16进8淘汰赛 第7场',
-      x: rx - nodeWidth * 3 - 450,
+      x: rx - nodeWidth * 3 - 180,
       y: ry + knockoutYOffset * 5,
       data: {
         title: '',
@@ -773,7 +766,7 @@ const knockoutJsonData = {
     {
       id: '#8',
       text: '16进8淘汰赛 第8场',
-      x: rx - nodeWidth * 3 - 450,
+      x: rx - nodeWidth * 3 - 180,
       y: ry + knockoutYOffset * 7,
       data: {
         title: '',
@@ -793,7 +786,7 @@ const knockoutJsonData = {
     {
       id: '#9',
       text: '8进4淘汰赛 第1场',
-      x: rx - nodeWidth * 2 - 300,
+      x: rx - nodeWidth * 2 - 120,
       y: ry - knockoutYOffset * 6,
       data: {
         title: '',
@@ -813,7 +806,7 @@ const knockoutJsonData = {
     {
       id: '#10',
       text: '8进4淘汰赛 第2场',
-      x: rx - nodeWidth * 2 - 300,
+      x: rx - nodeWidth * 2 - 120,
       y: ry - knockoutYOffset * 2,
       data: {
         title: '',
@@ -833,7 +826,7 @@ const knockoutJsonData = {
     {
       id: '#11',
       text: '8进4淘汰赛 第3场',
-      x: rx - nodeWidth * 2 - 300,
+      x: rx - nodeWidth * 2 - 120,
       y: ry + knockoutYOffset * 2,
       data: {
         title: '',
@@ -853,7 +846,7 @@ const knockoutJsonData = {
     {
       id: '#12',
       text: '8进4淘汰赛 第4场',
-      x: rx - nodeWidth * 2 - 300,
+      x: rx - nodeWidth * 2 - 120,
       y: ry + knockoutYOffset * 6,
       data: {
         title: '',
@@ -873,7 +866,7 @@ const knockoutJsonData = {
     {
       id: '#13',
       text: '半决赛 第1场',
-      x: rx - nodeWidth - 150,
+      x: rx - nodeWidth - 60,
       y: ry - knockoutYOffset * 4,
       data: {
         title: '',
@@ -893,7 +886,7 @@ const knockoutJsonData = {
     {
       id: '#14',
       text: '半决赛 第2场',
-      x: rx - nodeWidth - 150,
+      x: rx - nodeWidth - 60,
       y: ry + knockoutYOffset * 4,
       data: {
         title: '',
@@ -970,6 +963,39 @@ const knockoutJsonData = {
     {from: '#14', to: '#16',},
   ],
 }
+
+const knockoutTitleData = [
+  {
+    left: `${rx - nodeWidth * 3 - 180 + 20}`,
+    top: `${ry - knockoutYOffset * 7 - 40}`,
+    title: '16进8淘汰赛',
+    image: 'src/assets/title_bg.png',
+  },
+  {
+    left: `${rx - nodeWidth * 2 - 120 + 20}`,
+    top: `${ry - knockoutYOffset * 6 - 40}`,
+    title: '8进4淘汰赛',
+    image: 'src/assets/title_bg.png',
+  },
+  {
+    left: `${rx - nodeWidth - 60 + 20}`,
+    top: `${ry - knockoutYOffset * 4 - 40}`,
+    title: '半决赛',
+    image: 'src/assets/title_bg.png',
+  },
+  {
+    left: `${rx + 20}`,
+    top: `${ry + knockoutYOffset * 2 - 40}`,
+    title: '季军争夺战',
+    image: 'src/assets/title_bg.png',
+  },
+  {
+    left: `${rx + 20}`,
+    top: `${ry - knockoutYOffset * 2 - 40}`,
+    title: '冠军争夺战',
+    image: 'src/assets/title_bg.png',
+  },
+]
 </script>
 
 <template>
@@ -987,7 +1013,7 @@ const knockoutJsonData = {
       >
         <template #node="{node}">
           <div :class="{
-              'golden-shine': node.id == '#16',
+              // 'golden-shine': node.id == '#16',
               'highlight-gray': colorfulNode(node),
             }"
                :style="{ color: node.data.titleColor }"
@@ -1259,73 +1285,21 @@ const knockoutJsonData = {
         </template>
 
         <template #canvas-plug>
-          <div
-            v-if="type == 'knockout'"
-            :style="{
-              left: `${rx - nodeWidth * 3 - 450 + 8}px`,
-              top: `${ry - knockoutYOffset * 7 - 60}px`,
-              position:'absolute',
-              width: `${nodeWidth}px`
-            }">
-            <div class="text-center"
-                 style="padding:10px; background: #2196F388">
-              <h2>16进8淘汰赛</h2>
-            </div>
-          </div>
-
-          <div
-            v-if="type == 'knockout'"
-            :style="{
-              left: `${rx - nodeWidth * 2 - 300 + 8}px`,
-              top: `${ry - knockoutYOffset * 6 - 60}px`,
-              position:'absolute',
-              width: `${nodeWidth}px`
-            }">
-            <div class="text-center"
-                 style="padding:10px; background: #2196F388">
-              <h2>8进4淘汰赛</h2>
-            </div>
-          </div>
-
-          <div
-            v-if="type == 'knockout'"
-            :style="{
-              left: `${rx - nodeWidth - 150 + 8}px`,
-              top: `${ry - knockoutYOffset * 4 - 60}px`,
-              position:'absolute',
-              width: `${nodeWidth}px`
-            }">
-            <div class="text-center"
-                 style="padding:10px; background: #2196F388">
-              <h2>半决赛</h2>
-            </div>
-          </div>
-
-          <div
-            v-if="type == 'knockout'"
-            :style="{
-              left: `${rx + 8}px`,
-              top: `${ry - knockoutYOffset * 2 - 60}px`,
-              position:'absolute',
-              width: `${nodeWidth}px`
-            }">
-            <div class="text-center"
-                 style="padding:10px; background: #2196F388">
-              <h2>冠军争夺战</h2>
-            </div>
-          </div>
-
-          <div
-            v-if="type == 'knockout'"
-            :style="{
-              left: `${rx + 8}px`,
-              top: `${ry + knockoutYOffset * 2 - 60}px`,
-              position:'absolute',
-              width: `${nodeWidth}px`
-            }">
-            <div class="text-center"
-                 style="padding:10px; background: #2196F388">
-              <h2>季军争夺战</h2>
+          <div v-if="type == 'knockout'">
+            <div
+              v-for="v in knockoutTitleData" :key="v.title"
+              :style="{
+                left: `${v.left}px`,
+                top: `${v.top}px`,
+                width: `${nodeWidth - 20}px`,
+                position:'absolute',
+              }">
+              <div class="title-image-container">
+                <img :src="v.image" alt="Image"/>
+                <div class="title-text-overlay">
+                  <h3>{{ v.title }}</h3>
+                </div>
+              </div>
             </div>
           </div>
 
