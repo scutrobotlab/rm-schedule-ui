@@ -5,6 +5,7 @@ import {computed, watch} from "vue";
 import {usePromotionStore} from "../stores/promotion";
 import AnalyzeTeam from "./AnalyzeTeam.vue";
 import {useRoute, useRouter} from "vue-router";
+import {GetPartitionKnockoutJsonData, PartitionGroupJsonData, PartitionKnockoutTitleData} from "../constant/partition";
 
 const route = useRoute()
 const router = useRouter()
@@ -111,13 +112,19 @@ function badgeTab(zoneId: number): boolean {
                   v-model="selectedGroup"
                 >
                   <v-carousel-item>
-                    <MatchGraph :zone-id="zoneId" type="group" group="A"></MatchGraph>
+                    <MatchGraph :zone-id="zoneId" type="group" group="A"
+                                :json-data="PartitionGroupJsonData"
+                                :extra-title-data="null"></MatchGraph>
                   </v-carousel-item>
                   <v-carousel-item>
-                    <MatchGraph :zone-id="zoneId" type="group" group="B"></MatchGraph>
+                    <MatchGraph :zone-id="zoneId" type="group" group="B"
+                                :json-data="PartitionGroupJsonData"
+                                :extra-title-data="null"></MatchGraph>
                   </v-carousel-item>
                   <v-carousel-item>
-                    <MatchGraph :zone-id="zoneId" type="knockout" group=""></MatchGraph>
+                    <MatchGraph :zone-id="zoneId" type="knockout" group=""
+                                :json-data="GetPartitionKnockoutJsonData(zoneId)"
+                                :extra-title-data="PartitionKnockoutTitleData"></MatchGraph>
                   </v-carousel-item>
                 </v-carousel>
 
