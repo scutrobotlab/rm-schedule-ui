@@ -7,6 +7,7 @@ import {computed} from "vue";
 import {useAppStore} from "../stores/app";
 import {useRoute} from "vue-router";
 import {PartitionKnockoutYOffset} from "../constant/partition";
+import {RoundOrder} from "../types/round_order";
 
 interface Props {
   zoneId: number,
@@ -14,6 +15,7 @@ interface Props {
   group: '' | 'A' | 'B',
   jsonData: any,
   extraTitleData: any | null,
+  roundOrder?: RoundOrder,
   rx?: number,
   ry?: number,
 }
@@ -264,22 +266,24 @@ const round = computed(() => {
   // return 2;
   // return 3;
   // return 4;
+  // return 5;
+  // return 6;
+  let orderList: number[]
   switch (props.group) {
     case 'A':
-      if (promotionStore.getMatchByOrder(props.zoneId, 46).redSide.player) return 4
-      else if (promotionStore.getMatchByOrder(props.zoneId, 33).redSide.player) return 3
-      else if (promotionStore.getMatchByOrder(props.zoneId, 17).redSide.player) return 2
-      else if (promotionStore.getMatchByOrder(props.zoneId, 1).redSide.player) return 1
-      else return 0
+      orderList = props.roundOrder.A
+      break
     case 'B':
-      if (promotionStore.getMatchByOrder(props.zoneId, 46).blueSide.player) return 4
-      else if (promotionStore.getMatchByOrder(props.zoneId, 39).redSide.player) return 3
-      else if (promotionStore.getMatchByOrder(props.zoneId, 25).redSide.player) return 2
-      else if (promotionStore.getMatchByOrder(props.zoneId, 9).redSide.player) return 1
-      else return 1
+      orderList = props.roundOrder.B
+      break
     default:
       return -1
   }
+  // 从后往前找到第一个有选手的比赛，返回其轮次
+  for (let i = orderList.length - 1; i >= 0; i--) {
+    if (promotionStore.getMatchByOrder(props.zoneId, orderList[i]).redSide.player) return i + 1
+  }
+  return 1
 })
 </script>
 

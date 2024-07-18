@@ -719,3 +719,8 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
   }
 
 }
+
+export const PartitionRoundOrder = {
+  'A': [1, 17, 33, 46],
+  'B': [9, 25, 39, 46],
+}
