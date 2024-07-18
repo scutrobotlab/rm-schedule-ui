@@ -11,6 +11,8 @@ import {
   PartitionKnockoutTitleData,
   PartitionRoundOrder
 } from "../constant/partition";
+import {RoundOrder} from "../types/round_order";
+import {Zones} from "../constant/zone";
 
 const route = useRoute()
 const router = useRouter()
@@ -29,15 +31,6 @@ function updateQuery() {
 
 watch(zoneId, updateQuery)
 watch(selectedGroup, updateQuery)
-
-const zones = [
-  {id: 498, name: '东部赛区', disabled: false},
-  {id: 499, name: '中部赛区', disabled: false},
-  {id: 500, name: '南部赛区', disabled: false},
-  {id: 524, name: '国际赛区&复活赛第一赛段', disabled: false},
-  {id: 525, name: '复活赛第二赛段', disabled: false},
-  {id: 526, name: '全国赛', disabled: false},
-]
 
 function badgeTab(zoneId: number): boolean {
   if (!promotionStore.selectedPlayer) return false
@@ -72,7 +65,7 @@ function badgeTab(zoneId: number): boolean {
           >
             <div class="col">
               <v-tab
-                v-for="zone in zones"
+                v-for="zone in Zones"
                 :key="zone.id"
                 :disabled="zone.disabled"
                 :value="zone.id"
@@ -105,7 +98,7 @@ function badgeTab(zoneId: number): boolean {
         <v-row>
           <v-col cols="12">
             <div
-              v-for="zone in zones"
+              v-for="zone in Zones"
               :key="zone.id"
             >
               <div v-if="zoneId == zone.id">
@@ -116,25 +109,17 @@ function badgeTab(zoneId: number): boolean {
                   :show-arrows="false"
                   v-model="selectedGroup"
                 >
-                  <v-carousel-item>
-                    <MatchGraph :zone-id="zoneId" type="group" group="A"
-                                :json-data="PartitionGroupJsonData"
-                                :extra-title-data="null"
-                                :round-order="PartitionRoundOrder"
-                    ></MatchGraph>
-                  </v-carousel-item>
-                  <v-carousel-item>
-                    <MatchGraph :zone-id="zoneId" type="group" group="B"
-                                :json-data="PartitionGroupJsonData"
-                                :extra-title-data="null"
-                                :round-order="PartitionRoundOrder"
-                    ></MatchGraph>
-                  </v-carousel-item>
-                  <v-carousel-item>
-                    <MatchGraph :zone-id="zoneId" type="knockout" group=""
-                                :json-data="GetPartitionKnockoutJsonData(zoneId)"
-                                :extra-title-data="PartitionKnockoutTitleData"
-                                :round-order="PartitionRoundOrder"
+                  <v-carousel-item
+                    v-for="part in zone.parts"
+                    :key="part.name"
+                  >
+                    <MatchGraph
+                      :zone-id="zoneId"
+                      :type="part.type"
+                      :group="part.group"
+                      :json-data="part.jsonData"
+                      :extra-title-data="part.extraTitleData"
+                      :round-order="part.roundOrder"
                     ></MatchGraph>
                   </v-carousel-item>
                 </v-carousel>
@@ -152,7 +137,7 @@ function badgeTab(zoneId: number): boolean {
                           mandatory="force"
                         >
                           <v-slide-group-item
-                            v-for="n in ['A组', 'B组', '淘汰赛']"
+                            v-for="n in zone.parts.map(p => p.name)"
                             :key="n"
                             v-slot="{ isSelected, toggle }"
                           >
