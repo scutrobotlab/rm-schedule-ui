@@ -262,7 +262,7 @@ const groupIndex = computed(() => {
 })
 
 const round = computed(() => {
-  return 1;
+  // return 1;
   // return 2;
   // return 3;
   // return 4;
@@ -335,7 +335,7 @@ const round = computed(() => {
               <div v-if="node.data.type == 'match'">
 
                 <!--实时预测 动态刷新-->
-                <div v-if="round + 1 == node.data.round">
+                <div v-if="round + 1 == node.data.round && !liveMode">
                   <div class="mx-2"
                        v-for="(v, i) in rankList(node.data.zones[groupIndex])" :key="i">
                     <div class="container ml-2">
