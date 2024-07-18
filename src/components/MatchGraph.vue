@@ -14,6 +14,8 @@ interface Props {
   group: '' | 'A' | 'B',
   jsonData: any,
   extraTitleData: any | null,
+  rx?: number,
+  ry?: number,
 }
 
 const props = defineProps<Props>()
@@ -63,7 +65,7 @@ const options = ref<RGOptions>({
   disableDragCanvas: false,
   zoomToFitWhenRefresh: true,
   allowShowMiniToolBar: !liveMode.value,
-  graphOffset_y: props.type == 'knockout' ? 0 : -40,
+  // graphOffset_y: props.type == 'knockout' ? 0 : -40,
 })
 
 function match(orderNumber: number): MatchNode | undefined {
@@ -157,7 +159,7 @@ async function updateMpMatch() {
   if (props.type == 'group') {
     firstId = Number(promotionStore.getZone(props.zoneId).groupMatches.nodes[0].id)
     const idList = []
-    props.jsonData.nodes.forEach(e => {
+    props.jsonData.nodes.forEach((e: any) => {
       e.data.zones[groupIndex.value].matches.forEach((order: number, i: number) => {
         idList.push(firstId + order - 1)
       })
@@ -171,6 +173,7 @@ async function updateMpMatch() {
 }
 
 function colorfulNode(node: any): boolean {
+  if (liveMode.value) return false; // 直播模式不闪烁
   if (props.type != 'knockout') return false;
   if (node.data.type != 'match') return false;
   const _match = match(node.data.zones[0].matches[0])
@@ -241,7 +244,7 @@ const onDragging = (x: number, y: number) => {
   }
 };
 
-const onDragEnd = (event: Event) => {
+const onDragEnd = () => {
   isDragging.value = false;
 };
 
@@ -278,9 +281,6 @@ const round = computed(() => {
       return -1
   }
 })
-
-const rx = 0;
-const ry = 0;
 </script>
 
 <template>
