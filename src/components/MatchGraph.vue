@@ -283,7 +283,7 @@ const round = computed(() => {
   for (let i = orderList.length - 1; i >= 0; i--) {
     const match = promotionStore.getMatchByOrder(props.zoneId, orderList[i])
     if (!match) continue
-    if (match.redSide) return i + 1
+    if (match.redSide.player) return i + 1
   }
   return 1
 })
@@ -582,14 +582,19 @@ const round = computed(() => {
                      :key="i">
                   <div class="container ml-2">
                     <div class="right-column">
-                      <div class="top-row row-content mb-3">
-                        <div style="background: #616161">
-                          <h4 class="px-1" style="width: 2.5rem">待定</h4>
+                      <div class="top-row row-content mt-2">
+                        <div class="school-image-container">
+                          <img src="@/assets/school_bg.png" alt="Image"/>
+                          <div class="overlay ml-4">
+                            <div style="background: #616161">
+                              <h4 class="px-1" style="width: 2.5rem">待定</h4>
+                            </div>
+                            <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
+                              <v-img src="@/assets/school_grey.png"/>
+                            </v-avatar>
+                            <span class="one-line-text">{{ v }}</span>
+                          </div>
                         </div>
-                        <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
-                          <v-img src="@/assets/school_grey.png"/>
-                        </v-avatar>
-                        <span class="one-line-text">{{ v }}</span>
                       </div>
                     </div>
                   </div>
