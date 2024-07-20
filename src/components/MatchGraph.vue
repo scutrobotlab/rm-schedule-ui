@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import RelationGraph from 'relation-graph/vue3'
-import {RGOptions} from 'relation-graph/types/vue3'
+import RelationGraph from '@summer-lights/relation-graph/vue3';
+import {RGOptions} from '@summer-lights/relation-graph';
 import {usePromotionStore} from "../stores/promotion";
 import {MatchNode, Player, PlayerWithMatch} from "../types/schedule";
 import {computed} from "vue";

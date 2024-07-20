@@ -317,6 +317,14 @@
   resolved "https://mirrors.huaweicloud.com/repository/npm/@rollup/rollup-win32-x64-msvc/-/rollup-win32-x64-msvc-4.17.2.tgz#5a2d08b81e8064b34242d5cc9973ef8dd1e60503"
   integrity sha512-TGGO7v7qOq4CYmSBVEYpI1Y5xDuCEnbVC5Vth8mOsW0gDSzxNrVERPc790IGHsrT2dQSimgMr9Ub3Y1Jci5/8w==
 
+"@summer-lights/relation-graph@^2.1.42-1":
+  version "2.1.42-1"
+  resolved "https://registry.yarnpkg.com/@summer-lights/relation-graph/-/relation-graph-2.1.42-1.tgz#d83720fe99ad8435deabb59eef44509dac8f6944"
+  integrity sha512-kN5x5MpCuoEiU3c5Ry5pTpOJRvcupXtJqRK9nke/1bVlmU+bfl45/wXXF9OBlLgxCPQpBH7nLbjL716SGufplg==
+  dependencies:
+    html2canvas "^1.4.1"
+    screenfull "^5.1.0"
+
 "@types/estree@1.0.5", "@types/estree@^1.0.0":
   version "1.0.5"
   resolved "https://mirrors.huaweicloud.com/repository/npm/@types/estree/-/estree-1.0.5.tgz#a6ce3e556e00fd9895dd872dd172ad0d4bd687f4"
@@ -2211,14 +2219,6 @@ regexpp@^3.0.0:
   version "3.2.0"
   resolved "https://mirrors.huaweicloud.com/repository/npm/regexpp/-/regexpp-3.2.0.tgz#0425a2768d8f23bad70ca4b90461fa2f1213e1b2"
   integrity sha512-pq2bWo9mVD43nbts2wGv17XLiNLya+GklZ8kaDLV2Z08gDCsGpnKn9BFMepvWuHCbyVvY7J5o5+BVvoQbmlJLg==
-
-relation-graph@2.1.42:
-  version "2.1.42"
-  resolved "https://registry.yarnpkg.com/relation-graph/-/relation-graph-2.1.42.tgz#7d44113e4ea74ddb82f7ed349b92368e22822299"
-  integrity sha512-vBCogSXsTXt0Paihixl8gD2NatBqjWtWVS7KzKuAzJbVm8ZYjmn82HJtmgge2O+rY839GvV14329xW3jC4c4CA==
-  dependencies:
-    html2canvas "^1.4.1"
-    screenfull "^5.1.0"
 
 resolve-from@^4.0.0:
   version "4.0.0"
