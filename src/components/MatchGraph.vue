@@ -638,8 +638,8 @@ const round = computed(() => {
 
           <div
             :style="{
-              left: `${ry + 3 * nodeWidth + 220}px`,
-              top: `${rx - 160}px`,
+              left: `0px`,
+              top: `-160px`,
               position: 'absolute',
               'white-space': 'nowrap',
             }">

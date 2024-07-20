@@ -1,7 +1,7 @@
 const rx = 0;
 const ry = 0;
 
-const nodeWidth = 350;
+const xOffset = 420;
 
 export const RepechageGroupJsonData = {
   rootId: '#1',
@@ -9,8 +9,8 @@ export const RepechageGroupJsonData = {
     {
       id: '#1',
       text: '第一轮 0-0',
-      x: rx,
-      y: ry,
+      x: rx - 3 * xOffset,
+      y: ry + 80,
       data: {
         title: '瑞士轮第一轮 0-0',
         titleColor: '#FFFFFF',
@@ -37,8 +37,8 @@ export const RepechageGroupJsonData = {
     {
       id: '#2',
       text: '第二轮 1-0',
-      x: rx + nodeWidth + 80,
-      y: ry - 80,
+      x: rx - 2 * xOffset,
+      y: ry - 20,
       data: {
         title: '瑞士轮第二轮 1-0',
         titleColor: '#FFFFFF',
@@ -73,7 +73,7 @@ export const RepechageGroupJsonData = {
     {
       id: '#3',
       text: '第二轮 0-1',
-      x: rx + nodeWidth + 80,
+      x: rx - 2 * xOffset,
       y: ry + 330,
       data: {
         title: '瑞士轮第二轮 0-1',
@@ -109,8 +109,8 @@ export const RepechageGroupJsonData = {
     {
       id: '#4',
       text: '第三轮 2-0',
-      x: rx + 2 * nodeWidth + 160,
-      y: ry - 140,
+      x: rx - xOffset,
+      y: ry - 80,
       data: {
         title: '瑞士轮第三轮 2-0',
         titleColor: '#FFFFFF',
@@ -143,8 +143,8 @@ export const RepechageGroupJsonData = {
     {
       id: '#5',
       text: '第三轮 1-1',
-      x: rx + 2 * nodeWidth + 160,
-      y: ry + 100,
+      x: rx - xOffset,
+      y: ry + 160,
       data: {
         title: '瑞士轮第三轮 1-1',
         titleColor: '#FFFFFF',
@@ -179,8 +179,8 @@ export const RepechageGroupJsonData = {
     {
       id: '#6',
       text: '淘汰 0-2',
-      x: rx + 2 * nodeWidth + 160,
-      y: ry + 505,
+      x: rx - xOffset,
+      y: ry + 500,
       data: {
         title: '淘汰 0-2',
         titleColor: '#FFFFFF',
@@ -207,8 +207,8 @@ export const RepechageGroupJsonData = {
     {
       id: '#7',
       text: '晋级 3-0',
-      x: rx + 3 * nodeWidth + 240,
-      y: ry + 10,
+      x: 0,
+      y: 0,
       data: {
         title: '晋级第二赛段',
         titleColor: '#FFFFFF',
@@ -235,8 +235,8 @@ export const RepechageGroupJsonData = {
     {
       id: '#8',
       text: '第三轮 2-1',
-      x: rx + 3 * nodeWidth + 240,
-      y: ry + 180,
+      x: rx,
+      y: ry + 200,
       data: {
         title: '晋级第二赛段',
         titleColor: '#FFFFFF',
@@ -263,8 +263,8 @@ export const RepechageGroupJsonData = {
     {
       id: '#9',
       text: '淘汰 1-2',
-      x: rx + 3 * nodeWidth + 240,
-      y: ry + 520,
+      x: rx,
+      y: ry + 440,
       data: {
         title: '淘汰 1-2',
         titleColor: '#FFFFFF',

@@ -1,7 +1,7 @@
 const rx = 0;
-const ry = 0;
+const ry = 30;
 
-const nodeWidth = 350;
+const xOffset = 420;
 
 export const PartitionGroupJsonData = {
   rootId: '#1',
@@ -9,13 +9,13 @@ export const PartitionGroupJsonData = {
     {
       id: '#1',
       text: '第一轮 0:0',
-      x: rx,
+      x: rx - 3 * xOffset,
       y: ry,
       data: {
         title: '瑞士轮第一轮 0胜0负',
         titleColor: '#FFFFFF',
         titleImage: 'src/assets/title_bg.png',
-        borderColor: '#5a879c',
+        borderColor: '#5A879C',
         round: 1,
         type: 'match',
         zones: [
@@ -37,7 +37,7 @@ export const PartitionGroupJsonData = {
     {
       id: '#2',
       text: '第二轮 1:0',
-      x: rx + nodeWidth + 80,
+      x: rx - 2 * xOffset,
       y: ry - 80,
       data: {
         title: '瑞士轮第二轮 1胜0负',
@@ -77,8 +77,8 @@ export const PartitionGroupJsonData = {
     {
       id: '#3',
       text: '第二轮 0:1',
-      x: rx + nodeWidth + 80,
-      y: ry + 330,
+      x: rx - 2 * xOffset,
+      y: ry + 340,
       data: {
         title: '瑞士轮第二轮 0胜1负',
         titleColor: '#FFFFFF',
@@ -117,7 +117,7 @@ export const PartitionGroupJsonData = {
     {
       id: '#4',
       text: '第三轮 2:0',
-      x: rx + 2 * nodeWidth + 160,
+      x: rx - xOffset,
       y: ry - 140,
       data: {
         title: '瑞士轮第三轮 2胜0负',
@@ -153,7 +153,7 @@ export const PartitionGroupJsonData = {
     {
       id: '#5',
       text: '第三轮 1:1',
-      x: rx + 2 * nodeWidth + 160,
+      x: rx - xOffset,
       y: ry + 100,
       data: {
         title: '瑞士轮第三轮 1胜1负',
@@ -193,7 +193,7 @@ export const PartitionGroupJsonData = {
     {
       id: '#6',
       text: '第三轮 0:2 淘汰',
-      x: rx + 2 * nodeWidth + 160,
+      x: rx - xOffset,
       y: ry + 505,
       data: {
         title: '淘汰 0胜2负',
@@ -221,8 +221,8 @@ export const PartitionGroupJsonData = {
     {
       id: '#7',
       text: '第三轮 3:0 晋级',
-      x: rx + 3 * nodeWidth + 240,
-      y: ry + 10,
+      x: 0, // MUST BE 0
+      y: 0, // MUST BE 0
       data: {
         title: '晋级淘汰赛 3胜0负',
         titleColor: '#FFFFFF',
@@ -249,8 +249,8 @@ export const PartitionGroupJsonData = {
     {
       id: '#8',
       text: '第三轮 2:1 晋级',
-      x: rx + 3 * nodeWidth + 240,
-      y: ry + 180,
+      x: rx,
+      y: ry + 140,
       data: {
         title: '晋级淘汰赛 2胜1负',
         titleColor: '#FFFFFF',
@@ -277,8 +277,8 @@ export const PartitionGroupJsonData = {
     {
       id: '#9',
       text: '第三轮 1:2 淘汰',
-      x: rx + 3 * nodeWidth + 240,
-      y: ry + 520,
+      x: rx,
+      y: ry + 480,
       data: {
         title: '淘汰 1胜2负',
         titleColor: '#FFFFFF',
@@ -342,19 +342,19 @@ export const PartitionKnockoutOrderNumbers = {
 
 export const PartitionKnockoutTitleData = [
   {
-    left: `${rx - nodeWidth * 3 - 180 + 20}`,
+    left: `${rx - xOffset * 3 - 180 + 20}`,
     top: `${ry - PartitionKnockoutYOffset * 7 - 40}`,
     title: '16进8淘汰赛',
     image: 'src/assets/title_bg.png',
   },
   {
-    left: `${rx - nodeWidth * 2 - 120 + 20}`,
+    left: `${rx - xOffset * 2 - 120 + 20}`,
     top: `${ry - PartitionKnockoutYOffset * 6 - 40}`,
     title: '8进4淘汰赛',
     image: 'src/assets/title_bg.png',
   },
   {
-    left: `${rx - nodeWidth - 60 + 20}`,
+    left: `${rx - xOffset - 60 + 20}`,
     top: `${ry - PartitionKnockoutYOffset * 4 - 40}`,
     title: '半决赛',
     image: 'src/assets/title_bg.png',
@@ -380,7 +380,7 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
       {
         id: '#1',
         text: '16进8淘汰赛 第1场',
-        x: rx - nodeWidth * 3 - 180,
+        x: rx - xOffset * 3 - 180,
         y: ry - PartitionKnockoutYOffset * 7,
         data: {
           title: '',
@@ -400,7 +400,7 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
       {
         id: '#2',
         text: '16进8淘汰赛 第2场',
-        x: rx - nodeWidth * 3 - 180,
+        x: rx - xOffset * 3 - 180,
         y: ry - PartitionKnockoutYOffset * 5,
         data: {
           title: '',
@@ -420,7 +420,7 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
       {
         id: '#3',
         text: '16进8淘汰赛 第3场',
-        x: rx - nodeWidth * 3 - 180,
+        x: rx - xOffset * 3 - 180,
         y: ry - PartitionKnockoutYOffset * 3,
         data: {
           title: '',
@@ -440,7 +440,7 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
       {
         id: '#4',
         text: '16进8淘汰赛 第4场',
-        x: rx - nodeWidth * 3 - 180,
+        x: rx - xOffset * 3 - 180,
         y: ry - PartitionKnockoutYOffset,
         data: {
           title: '',
@@ -460,7 +460,7 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
       {
         id: '#5',
         text: '16进8淘汰赛 第5场',
-        x: rx - nodeWidth * 3 - 180,
+        x: rx - xOffset * 3 - 180,
         y: ry + PartitionKnockoutYOffset,
         data: {
           title: '',
@@ -480,7 +480,7 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
       {
         id: '#6',
         text: '16进8淘汰赛 第6场',
-        x: rx - nodeWidth * 3 - 180,
+        x: rx - xOffset * 3 - 180,
         y: ry + PartitionKnockoutYOffset * 3,
         data: {
           title: '',
@@ -500,7 +500,7 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
       {
         id: '#7',
         text: '16进8淘汰赛 第7场',
-        x: rx - nodeWidth * 3 - 180,
+        x: rx - xOffset * 3 - 180,
         y: ry + PartitionKnockoutYOffset * 5,
         data: {
           title: '',
@@ -520,7 +520,7 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
       {
         id: '#8',
         text: '16进8淘汰赛 第8场',
-        x: rx - nodeWidth * 3 - 180,
+        x: rx - xOffset * 3 - 180,
         y: ry + PartitionKnockoutYOffset * 7,
         data: {
           title: '',
@@ -540,7 +540,7 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
       {
         id: '#9',
         text: '8进4淘汰赛 第1场',
-        x: rx - nodeWidth * 2 - 120,
+        x: rx - xOffset * 2 - 120,
         y: ry - PartitionKnockoutYOffset * 6,
         data: {
           title: '',
@@ -560,7 +560,7 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
       {
         id: '#10',
         text: '8进4淘汰赛 第2场',
-        x: rx - nodeWidth * 2 - 120,
+        x: rx - xOffset * 2 - 120,
         y: ry - PartitionKnockoutYOffset * 2,
         data: {
           title: '',
@@ -580,7 +580,7 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
       {
         id: '#11',
         text: '8进4淘汰赛 第3场',
-        x: rx - nodeWidth * 2 - 120,
+        x: rx - xOffset * 2 - 120,
         y: ry + PartitionKnockoutYOffset * 2,
         data: {
           title: '',
@@ -600,7 +600,7 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
       {
         id: '#12',
         text: '8进4淘汰赛 第4场',
-        x: rx - nodeWidth * 2 - 120,
+        x: rx - xOffset * 2 - 120,
         y: ry + PartitionKnockoutYOffset * 6,
         data: {
           title: '',
@@ -620,7 +620,7 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
       {
         id: '#13',
         text: '半决赛 第1场',
-        x: rx - nodeWidth - 60,
+        x: rx - xOffset - 60,
         y: ry - PartitionKnockoutYOffset * 4,
         data: {
           title: '',
@@ -640,7 +640,7 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
       {
         id: '#14',
         text: '半决赛 第2场',
-        x: rx - nodeWidth - 60,
+        x: rx - xOffset - 60,
         y: ry + PartitionKnockoutYOffset * 4,
         data: {
           title: '',
@@ -717,7 +717,6 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
       {from: '#14', to: '#16',},
     ],
   }
-
 }
 
 export const PartitionRoundOrder = {
