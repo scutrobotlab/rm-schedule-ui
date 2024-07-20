@@ -5,6 +5,7 @@ import {
   PartitionKnockoutTitleData,
   PartitionRoundOrder
 } from "./partition";
+import {RepechageGroupJsonData, RepechageRoundOrder} from "./repechage";
 
 export interface Part {
   name: string,
@@ -112,7 +113,24 @@ export const Zones: Zone[] = [
   },
   {
     id: 524, name: '国际赛区&复活赛第一赛段', disabled: false,
-    parts: []
+    parts: [
+      {
+        name: 'A组',
+        type: 'group',
+        group: 'A',
+        jsonData: RepechageGroupJsonData,
+        extraTitleData: null,
+        roundOrder: RepechageRoundOrder
+      },
+      {
+        name: 'B组',
+        type: 'group',
+        group: 'B',
+        jsonData: RepechageGroupJsonData,
+        extraTitleData: null,
+        roundOrder: RepechageRoundOrder
+      },
+    ]
   },
   {
     id: 525, name: '复活赛第二赛段', disabled: false,
