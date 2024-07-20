@@ -1,11 +1,11 @@
 import {RoundOrder} from "../types/round_order";
 import {
-  GetPartitionKnockoutJsonData,
-  PartitionGroupJsonData,
-  PartitionKnockoutTitleData,
-  PartitionRoundOrder
-} from "./partition";
-import {RepechageGroupJsonData, RepechageRoundOrder} from "./repechage";
+  GetGroupZoneKnockoutJsonData,
+  GroupZoneGroupJsonData,
+  GroupZoneKnockoutTitleData,
+  GroupZoneRoundOrder
+} from "./group_zone";
+import {RevivalZoneGroupJsonData, RevivalZoneRoundOrder} from "./revival_zone";
 
 export interface Part {
   name: string,
@@ -31,25 +31,25 @@ export const Zones: Zone[] = [
         name: 'A组',
         type: 'group',
         group: 'A',
-        jsonData: PartitionGroupJsonData,
+        jsonData: GroupZoneGroupJsonData,
         extraTitleData: null,
-        roundOrder: PartitionRoundOrder
+        roundOrder: GroupZoneRoundOrder
       },
       {
         name: 'B组',
         type: 'group',
         group: 'B',
-        jsonData: PartitionGroupJsonData,
+        jsonData: GroupZoneGroupJsonData,
         extraTitleData: null,
-        roundOrder: PartitionRoundOrder
+        roundOrder: GroupZoneRoundOrder
       },
       {
         name: '淘汰赛',
         type: 'knockout',
         group: '',
-        jsonData: GetPartitionKnockoutJsonData(498),
-        extraTitleData: PartitionKnockoutTitleData,
-        roundOrder: PartitionRoundOrder
+        jsonData: GetGroupZoneKnockoutJsonData(498),
+        extraTitleData: GroupZoneKnockoutTitleData,
+        roundOrder: GroupZoneRoundOrder
       }
     ]
   },
@@ -60,25 +60,25 @@ export const Zones: Zone[] = [
         name: 'A组',
         type: 'group',
         group: 'A',
-        jsonData: PartitionGroupJsonData,
+        jsonData: GroupZoneGroupJsonData,
         extraTitleData: null,
-        roundOrder: PartitionRoundOrder
+        roundOrder: GroupZoneRoundOrder
       },
       {
         name: 'B组',
         type: 'group',
         group: 'B',
-        jsonData: PartitionGroupJsonData,
+        jsonData: GroupZoneGroupJsonData,
         extraTitleData: null,
-        roundOrder: PartitionRoundOrder
+        roundOrder: GroupZoneRoundOrder
       },
       {
         name: '淘汰赛',
         type: 'knockout',
         group: '',
-        jsonData: GetPartitionKnockoutJsonData(499),
-        extraTitleData: PartitionKnockoutTitleData,
-        roundOrder: PartitionRoundOrder
+        jsonData: GetGroupZoneKnockoutJsonData(499),
+        extraTitleData: GroupZoneKnockoutTitleData,
+        roundOrder: GroupZoneRoundOrder
       }
     ]
   },
@@ -89,25 +89,25 @@ export const Zones: Zone[] = [
         name: 'A组',
         type: 'group',
         group: 'A',
-        jsonData: PartitionGroupJsonData,
+        jsonData: GroupZoneGroupJsonData,
         extraTitleData: null,
-        roundOrder: PartitionRoundOrder
+        roundOrder: GroupZoneRoundOrder
       },
       {
         name: 'B组',
         type: 'group',
         group: 'B',
-        jsonData: PartitionGroupJsonData,
+        jsonData: GroupZoneGroupJsonData,
         extraTitleData: null,
-        roundOrder: PartitionRoundOrder
+        roundOrder: GroupZoneRoundOrder
       },
       {
         name: '淘汰赛',
         type: 'knockout',
         group: '',
-        jsonData: GetPartitionKnockoutJsonData(500),
-        extraTitleData: PartitionKnockoutTitleData,
-        roundOrder: PartitionRoundOrder
+        jsonData: GetGroupZoneKnockoutJsonData(500),
+        extraTitleData: GroupZoneKnockoutTitleData,
+        roundOrder: GroupZoneRoundOrder
       }
     ]
   },
@@ -118,17 +118,17 @@ export const Zones: Zone[] = [
         name: 'A组',
         type: 'group',
         group: 'A',
-        jsonData: RepechageGroupJsonData,
+        jsonData: RevivalZoneGroupJsonData,
         extraTitleData: null,
-        roundOrder: RepechageRoundOrder
+        roundOrder: RevivalZoneRoundOrder
       },
       {
         name: 'B组',
         type: 'group',
         group: 'B',
-        jsonData: RepechageGroupJsonData,
+        jsonData: RevivalZoneGroupJsonData,
         extraTitleData: null,
-        roundOrder: RepechageRoundOrder
+        roundOrder: RevivalZoneRoundOrder
       },
     ]
   },

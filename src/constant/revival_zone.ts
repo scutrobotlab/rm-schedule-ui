@@ -3,7 +3,7 @@ const ry = 0;
 
 const xOffset = 420;
 
-export const RepechageGroupJsonData = {
+export const RevivalZoneGroupJsonData = {
   rootId: '#1',
   nodes: [
     {
@@ -303,7 +303,7 @@ export const RepechageGroupJsonData = {
   ],
 }
 
-export const RepechageRoundOrder = {
+export const RevivalZoneRoundOrder = {
   'A': [1, 9, 17, 23], // TODO: 23 可能有bug
   'B': [5, 13, 20, 23], // TODO: 23 可能有bug
 }

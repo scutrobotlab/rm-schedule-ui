@@ -3,7 +3,7 @@ const ry = 30;
 
 const xOffset = 420;
 
-export const PartitionGroupJsonData = {
+export const GroupZoneGroupJsonData = {
   rootId: '#1',
   nodes: [
     {
@@ -317,9 +317,9 @@ export const PartitionGroupJsonData = {
   ],
 }
 
-export const PartitionKnockoutYOffset = 50;
+export const GroupZoneKnockoutYOffset = 50;
 
-export const PartitionKnockoutOrderNumbers = {
+export const GroupZoneKnockoutOrderNumbers = {
   498: [0,
     45, 46, 47, 48, 49, 50, 51, 52,
     53, 54, 57, 58,
@@ -340,40 +340,40 @@ export const PartitionKnockoutOrderNumbers = {
   ],
 }
 
-export const PartitionKnockoutTitleData = [
+export const GroupZoneKnockoutTitleData = [
   {
     left: `${rx - xOffset * 3 - 180 + 20}`,
-    top: `${ry - PartitionKnockoutYOffset * 7 - 40}`,
+    top: `${ry - GroupZoneKnockoutYOffset * 7 - 40}`,
     title: '16进8淘汰赛',
     image: 'src/assets/title_bg.png',
   },
   {
     left: `${rx - xOffset * 2 - 120 + 20}`,
-    top: `${ry - PartitionKnockoutYOffset * 6 - 40}`,
+    top: `${ry - GroupZoneKnockoutYOffset * 6 - 40}`,
     title: '8进4淘汰赛',
     image: 'src/assets/title_bg.png',
   },
   {
     left: `${rx - xOffset - 60 + 20}`,
-    top: `${ry - PartitionKnockoutYOffset * 4 - 40}`,
+    top: `${ry - GroupZoneKnockoutYOffset * 4 - 40}`,
     title: '半决赛',
     image: 'src/assets/title_bg.png',
   },
   {
     left: `${rx + 20}`,
-    top: `${ry + PartitionKnockoutYOffset * 2 - 40}`,
+    top: `${ry + GroupZoneKnockoutYOffset * 2 - 40}`,
     title: '季军争夺战',
     image: 'src/assets/title_bg.png',
   },
   {
     left: `${rx + 20}`,
-    top: `${ry - PartitionKnockoutYOffset * 2 - 40}`,
+    top: `${ry - GroupZoneKnockoutYOffset * 2 - 40}`,
     title: '冠军争夺战',
     image: 'src/assets/title_bg.png',
   },
 ]
 
-export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
+export const GetGroupZoneKnockoutJsonData = (zoneId: number): any => {
   return {
     rootId: '#16',
     nodes: [
@@ -381,7 +381,7 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
         id: '#1',
         text: '16进8淘汰赛 第1场',
         x: rx - xOffset * 3 - 180,
-        y: ry - PartitionKnockoutYOffset * 7,
+        y: ry - GroupZoneKnockoutYOffset * 7,
         data: {
           title: '',
           titleColor: '#FFFFFF',
@@ -389,7 +389,7 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
           type: 'match',
           zones: [
             {
-              matches: [PartitionKnockoutOrderNumbers[zoneId][1]],
+              matches: [GroupZoneKnockoutOrderNumbers[zoneId][1]],
               winners: [],
               losers: [],
               text: ['小组赛B 第1名', '小组赛A 第8名']
@@ -401,7 +401,7 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
         id: '#2',
         text: '16进8淘汰赛 第2场',
         x: rx - xOffset * 3 - 180,
-        y: ry - PartitionKnockoutYOffset * 5,
+        y: ry - GroupZoneKnockoutYOffset * 5,
         data: {
           title: '',
           titleColor: '#FFFFFF',
@@ -409,7 +409,7 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
           type: 'match',
           zones: [
             {
-              matches: [PartitionKnockoutOrderNumbers[zoneId][2]],
+              matches: [GroupZoneKnockoutOrderNumbers[zoneId][2]],
               winners: [],
               losers: [],
               text: ['小组赛A 第4名', '小组赛B 第5名']
@@ -421,7 +421,7 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
         id: '#3',
         text: '16进8淘汰赛 第3场',
         x: rx - xOffset * 3 - 180,
-        y: ry - PartitionKnockoutYOffset * 3,
+        y: ry - GroupZoneKnockoutYOffset * 3,
         data: {
           title: '',
           titleColor: '#FFFFFF',
@@ -429,7 +429,7 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
           type: 'match',
           zones: [
             {
-              matches: [PartitionKnockoutOrderNumbers[zoneId][3]],
+              matches: [GroupZoneKnockoutOrderNumbers[zoneId][3]],
               winners: [],
               losers: [],
               text: ['小组赛A 第7名', '小组赛B 第2名']
@@ -441,7 +441,7 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
         id: '#4',
         text: '16进8淘汰赛 第4场',
         x: rx - xOffset * 3 - 180,
-        y: ry - PartitionKnockoutYOffset,
+        y: ry - GroupZoneKnockoutYOffset,
         data: {
           title: '',
           titleColor: '#FFFFFF',
@@ -449,7 +449,7 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
           type: 'match',
           zones: [
             {
-              matches: [PartitionKnockoutOrderNumbers[zoneId][4]],
+              matches: [GroupZoneKnockoutOrderNumbers[zoneId][4]],
               winners: [],
               losers: [],
               text: ['小组赛B 第6名', '小组赛A 第3名']
@@ -461,7 +461,7 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
         id: '#5',
         text: '16进8淘汰赛 第5场',
         x: rx - xOffset * 3 - 180,
-        y: ry + PartitionKnockoutYOffset,
+        y: ry + GroupZoneKnockoutYOffset,
         data: {
           title: '',
           titleColor: '#FFFFFF',
@@ -469,7 +469,7 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
           type: 'match',
           zones: [
             {
-              matches: [PartitionKnockoutOrderNumbers[zoneId][5]],
+              matches: [GroupZoneKnockoutOrderNumbers[zoneId][5]],
               winners: [],
               losers: [],
               text: ['小组赛A 第2名', '小组赛B 第7名']
@@ -481,7 +481,7 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
         id: '#6',
         text: '16进8淘汰赛 第6场',
         x: rx - xOffset * 3 - 180,
-        y: ry + PartitionKnockoutYOffset * 3,
+        y: ry + GroupZoneKnockoutYOffset * 3,
         data: {
           title: '',
           titleColor: '#FFFFFF',
@@ -489,7 +489,7 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
           type: 'match',
           zones: [
             {
-              matches: [PartitionKnockoutOrderNumbers[zoneId][6]],
+              matches: [GroupZoneKnockoutOrderNumbers[zoneId][6]],
               winners: [],
               losers: [],
               text: ['小组赛B 第3名', '小组赛A 第6名']
@@ -501,7 +501,7 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
         id: '#7',
         text: '16进8淘汰赛 第7场',
         x: rx - xOffset * 3 - 180,
-        y: ry + PartitionKnockoutYOffset * 5,
+        y: ry + GroupZoneKnockoutYOffset * 5,
         data: {
           title: '',
           titleColor: '#FFFFFF',
@@ -509,7 +509,7 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
           type: 'match',
           zones: [
             {
-              matches: [PartitionKnockoutOrderNumbers[zoneId][7]],
+              matches: [GroupZoneKnockoutOrderNumbers[zoneId][7]],
               winners: [],
               losers: [],
               text: ['小组赛B 第8名', '小组赛A 第1名']
@@ -521,7 +521,7 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
         id: '#8',
         text: '16进8淘汰赛 第8场',
         x: rx - xOffset * 3 - 180,
-        y: ry + PartitionKnockoutYOffset * 7,
+        y: ry + GroupZoneKnockoutYOffset * 7,
         data: {
           title: '',
           titleColor: '#FFFFFF',
@@ -529,7 +529,7 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
           type: 'match',
           zones: [
             {
-              matches: [PartitionKnockoutOrderNumbers[zoneId][8]],
+              matches: [GroupZoneKnockoutOrderNumbers[zoneId][8]],
               winners: [],
               losers: [],
               text: ['小组赛A 第5名', '小组赛B 第4名']
@@ -541,7 +541,7 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
         id: '#9',
         text: '8进4淘汰赛 第1场',
         x: rx - xOffset * 2 - 120,
-        y: ry - PartitionKnockoutYOffset * 6,
+        y: ry - GroupZoneKnockoutYOffset * 6,
         data: {
           title: '',
           titleColor: '#FFFFFF',
@@ -549,10 +549,10 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
           type: 'match',
           zones: [
             {
-              matches: [PartitionKnockoutOrderNumbers[zoneId][9]],
-              winners: [PartitionKnockoutOrderNumbers[zoneId][2], PartitionKnockoutOrderNumbers[zoneId][1]],
+              matches: [GroupZoneKnockoutOrderNumbers[zoneId][9]],
+              winners: [GroupZoneKnockoutOrderNumbers[zoneId][2], GroupZoneKnockoutOrderNumbers[zoneId][1]],
               losers: [],
-              text: [`第${PartitionKnockoutOrderNumbers[zoneId][2]}场 胜者`, `第${PartitionKnockoutOrderNumbers[zoneId][1]}场 胜者`]
+              text: [`第${GroupZoneKnockoutOrderNumbers[zoneId][2]}场 胜者`, `第${GroupZoneKnockoutOrderNumbers[zoneId][1]}场 胜者`]
             },
           ]
         }
@@ -561,7 +561,7 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
         id: '#10',
         text: '8进4淘汰赛 第2场',
         x: rx - xOffset * 2 - 120,
-        y: ry - PartitionKnockoutYOffset * 2,
+        y: ry - GroupZoneKnockoutYOffset * 2,
         data: {
           title: '',
           titleColor: '#FFFFFF',
@@ -569,10 +569,10 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
           type: 'match',
           zones: [
             {
-              matches: [PartitionKnockoutOrderNumbers[zoneId][10]],
-              winners: [PartitionKnockoutOrderNumbers[zoneId][3], PartitionKnockoutOrderNumbers[zoneId][4]],
+              matches: [GroupZoneKnockoutOrderNumbers[zoneId][10]],
+              winners: [GroupZoneKnockoutOrderNumbers[zoneId][3], GroupZoneKnockoutOrderNumbers[zoneId][4]],
               losers: [],
-              text: [`第${PartitionKnockoutOrderNumbers[zoneId][3]}场 胜者`, `第${PartitionKnockoutOrderNumbers[zoneId][4]}场 胜者`]
+              text: [`第${GroupZoneKnockoutOrderNumbers[zoneId][3]}场 胜者`, `第${GroupZoneKnockoutOrderNumbers[zoneId][4]}场 胜者`]
             },
           ]
         }
@@ -581,7 +581,7 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
         id: '#11',
         text: '8进4淘汰赛 第3场',
         x: rx - xOffset * 2 - 120,
-        y: ry + PartitionKnockoutYOffset * 2,
+        y: ry + GroupZoneKnockoutYOffset * 2,
         data: {
           title: '',
           titleColor: '#FFFFFF',
@@ -589,10 +589,10 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
           type: 'match',
           zones: [
             {
-              matches: [PartitionKnockoutOrderNumbers[zoneId][11]],
-              winners: [PartitionKnockoutOrderNumbers[zoneId][6], PartitionKnockoutOrderNumbers[zoneId][5]],
+              matches: [GroupZoneKnockoutOrderNumbers[zoneId][11]],
+              winners: [GroupZoneKnockoutOrderNumbers[zoneId][6], GroupZoneKnockoutOrderNumbers[zoneId][5]],
               losers: [],
-              text: [`第${PartitionKnockoutOrderNumbers[zoneId][6]}场 胜者`, `第${PartitionKnockoutOrderNumbers[zoneId][5]}场 胜者`]
+              text: [`第${GroupZoneKnockoutOrderNumbers[zoneId][6]}场 胜者`, `第${GroupZoneKnockoutOrderNumbers[zoneId][5]}场 胜者`]
             },
           ]
         }
@@ -601,7 +601,7 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
         id: '#12',
         text: '8进4淘汰赛 第4场',
         x: rx - xOffset * 2 - 120,
-        y: ry + PartitionKnockoutYOffset * 6,
+        y: ry + GroupZoneKnockoutYOffset * 6,
         data: {
           title: '',
           titleColor: '#FFFFFF',
@@ -609,10 +609,10 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
           type: 'match',
           zones: [
             {
-              matches: [PartitionKnockoutOrderNumbers[zoneId][12]],
-              winners: [PartitionKnockoutOrderNumbers[zoneId][7], PartitionKnockoutOrderNumbers[zoneId][8]],
+              matches: [GroupZoneKnockoutOrderNumbers[zoneId][12]],
+              winners: [GroupZoneKnockoutOrderNumbers[zoneId][7], GroupZoneKnockoutOrderNumbers[zoneId][8]],
               losers: [],
-              text: [`第${PartitionKnockoutOrderNumbers[zoneId][7]}场 胜者`, `第${PartitionKnockoutOrderNumbers[zoneId][8]}场 胜者`]
+              text: [`第${GroupZoneKnockoutOrderNumbers[zoneId][7]}场 胜者`, `第${GroupZoneKnockoutOrderNumbers[zoneId][8]}场 胜者`]
             },
           ]
         }
@@ -621,7 +621,7 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
         id: '#13',
         text: '半决赛 第1场',
         x: rx - xOffset - 60,
-        y: ry - PartitionKnockoutYOffset * 4,
+        y: ry - GroupZoneKnockoutYOffset * 4,
         data: {
           title: '',
           titleColor: '#FFFFFF',
@@ -629,10 +629,10 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
           type: 'match',
           zones: [
             {
-              matches: [PartitionKnockoutOrderNumbers[zoneId][13]],
-              winners: [PartitionKnockoutOrderNumbers[zoneId][9], PartitionKnockoutOrderNumbers[zoneId][11]],
+              matches: [GroupZoneKnockoutOrderNumbers[zoneId][13]],
+              winners: [GroupZoneKnockoutOrderNumbers[zoneId][9], GroupZoneKnockoutOrderNumbers[zoneId][11]],
               losers: [],
-              text: [`第${PartitionKnockoutOrderNumbers[zoneId][9]}场 胜者`, `第${PartitionKnockoutOrderNumbers[zoneId][11]}场 胜者`]
+              text: [`第${GroupZoneKnockoutOrderNumbers[zoneId][9]}场 胜者`, `第${GroupZoneKnockoutOrderNumbers[zoneId][11]}场 胜者`]
             },
           ]
         }
@@ -641,7 +641,7 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
         id: '#14',
         text: '半决赛 第2场',
         x: rx - xOffset - 60,
-        y: ry + PartitionKnockoutYOffset * 4,
+        y: ry + GroupZoneKnockoutYOffset * 4,
         data: {
           title: '',
           titleColor: '#FFFFFF',
@@ -649,10 +649,10 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
           type: 'match',
           zones: [
             {
-              matches: [PartitionKnockoutOrderNumbers[zoneId][14]],
-              winners: [PartitionKnockoutOrderNumbers[zoneId][10], PartitionKnockoutOrderNumbers[zoneId][12]],
+              matches: [GroupZoneKnockoutOrderNumbers[zoneId][14]],
+              winners: [GroupZoneKnockoutOrderNumbers[zoneId][10], GroupZoneKnockoutOrderNumbers[zoneId][12]],
               losers: [],
-              text: [`第${PartitionKnockoutOrderNumbers[zoneId][10]}场 胜者`, `第${PartitionKnockoutOrderNumbers[zoneId][12]}场 胜者`]
+              text: [`第${GroupZoneKnockoutOrderNumbers[zoneId][10]}场 胜者`, `第${GroupZoneKnockoutOrderNumbers[zoneId][12]}场 胜者`]
             },
           ]
         }
@@ -661,7 +661,7 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
         id: '#15',
         text: '季军争夺战',
         x: rx,
-        y: ry + PartitionKnockoutYOffset * 2,
+        y: ry + GroupZoneKnockoutYOffset * 2,
         data: {
           title: '',
           titleColor: '#FFFFFF',
@@ -669,10 +669,10 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
           type: 'match',
           zones: [
             {
-              matches: [PartitionKnockoutOrderNumbers[zoneId][15]],
+              matches: [GroupZoneKnockoutOrderNumbers[zoneId][15]],
               winners: [],
-              losers: [PartitionKnockoutOrderNumbers[zoneId][13], PartitionKnockoutOrderNumbers[zoneId][14]],
-              text: [`第${PartitionKnockoutOrderNumbers[zoneId][13]}场 败者`, `第${PartitionKnockoutOrderNumbers[zoneId][14]}场 败者`]
+              losers: [GroupZoneKnockoutOrderNumbers[zoneId][13], GroupZoneKnockoutOrderNumbers[zoneId][14]],
+              text: [`第${GroupZoneKnockoutOrderNumbers[zoneId][13]}场 败者`, `第${GroupZoneKnockoutOrderNumbers[zoneId][14]}场 败者`]
             },
           ]
         }
@@ -681,7 +681,7 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
         id: '#16',
         text: '冠军争夺战',
         x: rx,
-        y: ry - PartitionKnockoutYOffset * 2,
+        y: ry - GroupZoneKnockoutYOffset * 2,
         data: {
           title: '',
           titleColor: '#FFFFFF',
@@ -689,10 +689,10 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
           type: 'match',
           zones: [
             {
-              matches: [PartitionKnockoutOrderNumbers[zoneId][16]],
-              winners: [PartitionKnockoutOrderNumbers[zoneId][13], PartitionKnockoutOrderNumbers[zoneId][14]],
+              matches: [GroupZoneKnockoutOrderNumbers[zoneId][16]],
+              winners: [GroupZoneKnockoutOrderNumbers[zoneId][13], GroupZoneKnockoutOrderNumbers[zoneId][14]],
               losers: [],
-              text: [`第${PartitionKnockoutOrderNumbers[zoneId][13]}场 胜者`, `第${PartitionKnockoutOrderNumbers[zoneId][14]}场 胜者`]
+              text: [`第${GroupZoneKnockoutOrderNumbers[zoneId][13]}场 胜者`, `第${GroupZoneKnockoutOrderNumbers[zoneId][14]}场 胜者`]
             },
           ]
         }
@@ -719,7 +719,7 @@ export const GetPartitionKnockoutJsonData = (zoneId: number): any => {
   }
 }
 
-export const PartitionRoundOrder = {
+export const GroupZoneRoundOrder = {
   'A': [1, 17, 33, 46],
   'B': [9, 25, 39, 46],
 }
