@@ -281,7 +281,9 @@ const round = computed(() => {
   }
   // 从后往前找到第一个有选手的比赛，返回其轮次
   for (let i = orderList.length - 1; i >= 0; i--) {
-    if (promotionStore.getMatchByOrder(props.zoneId, orderList[i]).redSide.player) return i + 1
+    const match = promotionStore.getMatchByOrder(props.zoneId, orderList[i])
+    if (!match) continue
+    if (match.redSide) return i + 1
   }
   return 1
 })
