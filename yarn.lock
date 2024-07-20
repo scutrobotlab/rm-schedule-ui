@@ -2212,10 +2212,10 @@ regexpp@^3.0.0:
   resolved "https://mirrors.huaweicloud.com/repository/npm/regexpp/-/regexpp-3.2.0.tgz#0425a2768d8f23bad70ca4b90461fa2f1213e1b2"
   integrity sha512-pq2bWo9mVD43nbts2wGv17XLiNLya+GklZ8kaDLV2Z08gDCsGpnKn9BFMepvWuHCbyVvY7J5o5+BVvoQbmlJLg==
 
-relation-graph-vue3@^2.2.0:
-  version "2.2.0"
-  resolved "https://mirrors.huaweicloud.com/repository/npm/relation-graph-vue3/-/relation-graph-vue3-2.2.0.tgz#2930075b5909f8a73afceb595b8ac204976d6757"
-  integrity sha512-sWwryfSH48q2dp72AWhbHFUIT26jApsp1tAKqrXKJO0nnaMD0dpRjWxvQuc8FH3Po4cLkK+nCn/0LKewy8YhmA==
+relation-graph@2.1.42:
+  version "2.1.42"
+  resolved "https://registry.yarnpkg.com/relation-graph/-/relation-graph-2.1.42.tgz#7d44113e4ea74ddb82f7ed349b92368e22822299"
+  integrity sha512-vBCogSXsTXt0Paihixl8gD2NatBqjWtWVS7KzKuAzJbVm8ZYjmn82HJtmgge2O+rY839GvV14329xW3jC4c4CA==
   dependencies:
     html2canvas "^1.4.1"
     screenfull "^5.1.0"
