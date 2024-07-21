@@ -306,6 +306,6 @@ export const RevivalZoneGroupJsonData: ZoneJsonData = {
 }
 
 export const RevivalZoneRoundOrder = {
-  'A': [1, 9, 17, 23], // TODO: 23 可能有bug
-  'B': [5, 13, 20, 23], // TODO: 23 可能有bug
+  'A': [1, 9, 17, 22],
+  'B': [5, 13, 20, 22],
 }

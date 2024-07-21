@@ -1,4 +1,5 @@
 export interface RoundOrder {
-  A: number[],
-  B: number[],
+  A?: number[],
+  B?: number[],
+  C?: number[],
 }

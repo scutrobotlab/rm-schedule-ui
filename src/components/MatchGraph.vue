@@ -258,6 +258,8 @@ const groupIndex = computed(() => {
       return 0
     case 'B':
       return 1
+    case "C":
+      return 0
     default:
       return 0
   }
@@ -531,7 +533,8 @@ const round = computed(() => {
                               </v-avatar>
                               <span class="one-line-text">
                                 {{
-                                  match(v).redSide.player ? match(v).redSide.player.name : node.data.zones[groupIndex].text[2 * i]
+                                  // match(v).redSide.player ? match(v).redSide.player.name : node.data.zones[groupIndex].text[2 * i]
+                                  node.data.zones[groupIndex].text[2 * i]
                                 }}
                               </span>
                             </div>
@@ -550,7 +553,8 @@ const round = computed(() => {
                               </v-avatar>
                               <span class="one-line-text">
                                 {{
-                                  match(v).blueSide.player ? match(v).blueSide.player.name : node.data.zones[groupIndex].text[2 * i + 1]
+                                  // match(v).blueSide.player ? match(v).blueSide.player.name : node.data.zones[groupIndex].text[2 * i + 1]
+                                  node.data.zones[groupIndex].text[2 * i + 1]
                                 }}
                               </span>
                             </div>
