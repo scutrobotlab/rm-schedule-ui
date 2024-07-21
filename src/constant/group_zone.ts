@@ -3,7 +3,7 @@ import {ZoneJsonData} from "../types/zone";
 const rx = 0;
 const ry = 30;
 
-const xOffset = 420;
+const GroupXOffset = 420;
 
 export const GroupZoneGroupJsonData: ZoneJsonData = {
   rootId: '#1',
@@ -11,7 +11,7 @@ export const GroupZoneGroupJsonData: ZoneJsonData = {
     {
       id: '#1',
       text: '第一轮 0:0',
-      x: rx - 3 * xOffset,
+      x: rx - 3 * GroupXOffset,
       y: ry,
       data: {
         title: '瑞士轮第一轮 0胜0负',
@@ -39,7 +39,7 @@ export const GroupZoneGroupJsonData: ZoneJsonData = {
     {
       id: '#2',
       text: '第二轮 1:0',
-      x: rx - 2 * xOffset,
+      x: rx - 2 * GroupXOffset,
       y: ry - 80,
       data: {
         title: '瑞士轮第二轮 1胜0负',
@@ -79,7 +79,7 @@ export const GroupZoneGroupJsonData: ZoneJsonData = {
     {
       id: '#3',
       text: '第二轮 0:1',
-      x: rx - 2 * xOffset,
+      x: rx - 2 * GroupXOffset,
       y: ry + 340,
       data: {
         title: '瑞士轮第二轮 0胜1负',
@@ -119,7 +119,7 @@ export const GroupZoneGroupJsonData: ZoneJsonData = {
     {
       id: '#4',
       text: '第三轮 2:0',
-      x: rx - xOffset,
+      x: rx - GroupXOffset,
       y: ry - 140,
       data: {
         title: '瑞士轮第三轮 2胜0负',
@@ -155,7 +155,7 @@ export const GroupZoneGroupJsonData: ZoneJsonData = {
     {
       id: '#5',
       text: '第三轮 1:1',
-      x: rx - xOffset,
+      x: rx - GroupXOffset,
       y: ry + 100,
       data: {
         title: '瑞士轮第三轮 1胜1负',
@@ -195,7 +195,7 @@ export const GroupZoneGroupJsonData: ZoneJsonData = {
     {
       id: '#6',
       text: '第三轮 0:2 淘汰',
-      x: rx - xOffset,
+      x: rx - GroupXOffset,
       y: ry + 505,
       data: {
         title: '淘汰 0胜2负',
@@ -319,7 +319,8 @@ export const GroupZoneGroupJsonData: ZoneJsonData = {
   ],
 }
 
-export const GroupZoneKnockoutYOffset = 50;
+const KnockoutXOffset = 360;
+const KnockoutYOffset = 50;
 
 export const GroupZoneKnockoutOrderNumbers = {
   498: [0,
@@ -344,32 +345,32 @@ export const GroupZoneKnockoutOrderNumbers = {
 
 export const GroupZoneKnockoutTitleData = [
   {
-    left: `${rx - xOffset * 3 - 180 + 20}`,
-    top: `${ry - GroupZoneKnockoutYOffset * 7 - 40}`,
+    left: `${rx - KnockoutXOffset * 3 - 180 + 20}`,
+    top: `${ry - KnockoutYOffset * 7 - 40}`,
     title: '16进8淘汰赛',
     image: 'src/assets/title_bg.png',
   },
   {
-    left: `${rx - xOffset * 2 - 120 + 20}`,
-    top: `${ry - GroupZoneKnockoutYOffset * 6 - 40}`,
+    left: `${rx - KnockoutXOffset * 2 - 120 + 20}`,
+    top: `${ry - KnockoutYOffset * 6 - 40}`,
     title: '8进4淘汰赛',
     image: 'src/assets/title_bg.png',
   },
   {
-    left: `${rx - xOffset - 60 + 20}`,
-    top: `${ry - GroupZoneKnockoutYOffset * 4 - 40}`,
+    left: `${rx - KnockoutXOffset - 60 + 20}`,
+    top: `${ry - KnockoutYOffset * 4 - 40}`,
     title: '半决赛',
     image: 'src/assets/title_bg.png',
   },
   {
     left: `${rx + 20}`,
-    top: `${ry + GroupZoneKnockoutYOffset * 2 - 40}`,
+    top: `${ry + KnockoutYOffset * 2 - 40}`,
     title: '季军争夺战',
     image: 'src/assets/title_bg.png',
   },
   {
     left: `${rx + 20}`,
-    top: `${ry - GroupZoneKnockoutYOffset * 2 - 40}`,
+    top: `${ry - KnockoutYOffset * 2 - 40}`,
     title: '冠军争夺战',
     image: 'src/assets/title_bg.png',
   },
@@ -382,8 +383,8 @@ export const GetGroupZoneKnockoutJsonData = (zoneId: number): ZoneJsonData => {
       {
         id: '#1',
         text: '16进8淘汰赛 第1场',
-        x: rx - xOffset * 3 - 180,
-        y: ry - GroupZoneKnockoutYOffset * 7,
+        x: rx - KnockoutXOffset * 3 - 180,
+        y: ry - KnockoutYOffset * 7,
         data: {
           title: '',
           titleColor: '#FFFFFF',
@@ -402,8 +403,8 @@ export const GetGroupZoneKnockoutJsonData = (zoneId: number): ZoneJsonData => {
       {
         id: '#2',
         text: '16进8淘汰赛 第2场',
-        x: rx - xOffset * 3 - 180,
-        y: ry - GroupZoneKnockoutYOffset * 5,
+        x: rx - KnockoutXOffset * 3 - 180,
+        y: ry - KnockoutYOffset * 5,
         data: {
           title: '',
           titleColor: '#FFFFFF',
@@ -422,8 +423,8 @@ export const GetGroupZoneKnockoutJsonData = (zoneId: number): ZoneJsonData => {
       {
         id: '#3',
         text: '16进8淘汰赛 第3场',
-        x: rx - xOffset * 3 - 180,
-        y: ry - GroupZoneKnockoutYOffset * 3,
+        x: rx - KnockoutXOffset * 3 - 180,
+        y: ry - KnockoutYOffset * 3,
         data: {
           title: '',
           titleColor: '#FFFFFF',
@@ -442,8 +443,8 @@ export const GetGroupZoneKnockoutJsonData = (zoneId: number): ZoneJsonData => {
       {
         id: '#4',
         text: '16进8淘汰赛 第4场',
-        x: rx - xOffset * 3 - 180,
-        y: ry - GroupZoneKnockoutYOffset,
+        x: rx - KnockoutXOffset * 3 - 180,
+        y: ry - KnockoutYOffset,
         data: {
           title: '',
           titleColor: '#FFFFFF',
@@ -462,8 +463,8 @@ export const GetGroupZoneKnockoutJsonData = (zoneId: number): ZoneJsonData => {
       {
         id: '#5',
         text: '16进8淘汰赛 第5场',
-        x: rx - xOffset * 3 - 180,
-        y: ry + GroupZoneKnockoutYOffset,
+        x: rx - KnockoutXOffset * 3 - 180,
+        y: ry + KnockoutYOffset,
         data: {
           title: '',
           titleColor: '#FFFFFF',
@@ -482,8 +483,8 @@ export const GetGroupZoneKnockoutJsonData = (zoneId: number): ZoneJsonData => {
       {
         id: '#6',
         text: '16进8淘汰赛 第6场',
-        x: rx - xOffset * 3 - 180,
-        y: ry + GroupZoneKnockoutYOffset * 3,
+        x: rx - KnockoutXOffset * 3 - 180,
+        y: ry + KnockoutYOffset * 3,
         data: {
           title: '',
           titleColor: '#FFFFFF',
@@ -502,8 +503,8 @@ export const GetGroupZoneKnockoutJsonData = (zoneId: number): ZoneJsonData => {
       {
         id: '#7',
         text: '16进8淘汰赛 第7场',
-        x: rx - xOffset * 3 - 180,
-        y: ry + GroupZoneKnockoutYOffset * 5,
+        x: rx - KnockoutXOffset * 3 - 180,
+        y: ry + KnockoutYOffset * 5,
         data: {
           title: '',
           titleColor: '#FFFFFF',
@@ -522,8 +523,8 @@ export const GetGroupZoneKnockoutJsonData = (zoneId: number): ZoneJsonData => {
       {
         id: '#8',
         text: '16进8淘汰赛 第8场',
-        x: rx - xOffset * 3 - 180,
-        y: ry + GroupZoneKnockoutYOffset * 7,
+        x: rx - KnockoutXOffset * 3 - 180,
+        y: ry + KnockoutYOffset * 7,
         data: {
           title: '',
           titleColor: '#FFFFFF',
@@ -542,8 +543,8 @@ export const GetGroupZoneKnockoutJsonData = (zoneId: number): ZoneJsonData => {
       {
         id: '#9',
         text: '8进4淘汰赛 第1场',
-        x: rx - xOffset * 2 - 120,
-        y: ry - GroupZoneKnockoutYOffset * 6,
+        x: rx - KnockoutXOffset * 2 - 120,
+        y: ry - KnockoutYOffset * 6,
         data: {
           title: '',
           titleColor: '#FFFFFF',
@@ -562,8 +563,8 @@ export const GetGroupZoneKnockoutJsonData = (zoneId: number): ZoneJsonData => {
       {
         id: '#10',
         text: '8进4淘汰赛 第2场',
-        x: rx - xOffset * 2 - 120,
-        y: ry - GroupZoneKnockoutYOffset * 2,
+        x: rx - KnockoutXOffset * 2 - 120,
+        y: ry - KnockoutYOffset * 2,
         data: {
           title: '',
           titleColor: '#FFFFFF',
@@ -582,8 +583,8 @@ export const GetGroupZoneKnockoutJsonData = (zoneId: number): ZoneJsonData => {
       {
         id: '#11',
         text: '8进4淘汰赛 第3场',
-        x: rx - xOffset * 2 - 120,
-        y: ry + GroupZoneKnockoutYOffset * 2,
+        x: rx - KnockoutXOffset * 2 - 120,
+        y: ry + KnockoutYOffset * 2,
         data: {
           title: '',
           titleColor: '#FFFFFF',
@@ -602,8 +603,8 @@ export const GetGroupZoneKnockoutJsonData = (zoneId: number): ZoneJsonData => {
       {
         id: '#12',
         text: '8进4淘汰赛 第4场',
-        x: rx - xOffset * 2 - 120,
-        y: ry + GroupZoneKnockoutYOffset * 6,
+        x: rx - KnockoutXOffset * 2 - 120,
+        y: ry + KnockoutYOffset * 6,
         data: {
           title: '',
           titleColor: '#FFFFFF',
@@ -622,8 +623,8 @@ export const GetGroupZoneKnockoutJsonData = (zoneId: number): ZoneJsonData => {
       {
         id: '#13',
         text: '半决赛 第1场',
-        x: rx - xOffset - 60,
-        y: ry - GroupZoneKnockoutYOffset * 4,
+        x: rx - KnockoutXOffset - 60,
+        y: ry - KnockoutYOffset * 4,
         data: {
           title: '',
           titleColor: '#FFFFFF',
@@ -642,8 +643,8 @@ export const GetGroupZoneKnockoutJsonData = (zoneId: number): ZoneJsonData => {
       {
         id: '#14',
         text: '半决赛 第2场',
-        x: rx - xOffset - 60,
-        y: ry + GroupZoneKnockoutYOffset * 4,
+        x: rx - KnockoutXOffset - 60,
+        y: ry + KnockoutYOffset * 4,
         data: {
           title: '',
           titleColor: '#FFFFFF',
@@ -663,7 +664,7 @@ export const GetGroupZoneKnockoutJsonData = (zoneId: number): ZoneJsonData => {
         id: '#15',
         text: '季军争夺战',
         x: rx,
-        y: ry + GroupZoneKnockoutYOffset * 2,
+        y: ry + KnockoutYOffset * 2,
         data: {
           title: '',
           titleColor: '#FFFFFF',
@@ -683,7 +684,7 @@ export const GetGroupZoneKnockoutJsonData = (zoneId: number): ZoneJsonData => {
         id: '#16',
         text: '冠军争夺战',
         x: rx,
-        y: ry - GroupZoneKnockoutYOffset * 2,
+        y: ry - KnockoutYOffset * 2,
         data: {
           title: '',
           titleColor: '#FFFFFF',
