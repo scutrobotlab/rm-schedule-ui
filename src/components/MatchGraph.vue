@@ -635,19 +635,19 @@ const round = computed(() => {
             </div>
           </div>
 
-          <div
-            :style="{
-              left: `0px`,
-              top: `-160px`,
-              position: 'absolute',
-              'white-space': 'nowrap',
-            }">
-            <div>
-              <b><span style="font-size: 5rem">A组小组赛</span></b>
-              <b><span style="font-size: 2.5rem; color: #f48b3c"
-                       class="ml-4">瑞士轮赛制</span></b>
-            </div>
-          </div>
+          <!--          <div-->
+          <!--            :style="{-->
+          <!--              left: `0px`,-->
+          <!--              top: `-160px`,-->
+          <!--              position: 'absolute',-->
+          <!--              'white-space': 'nowrap',-->
+          <!--            }">-->
+          <!--            <div>-->
+          <!--              <b><span style="font-size: 5rem">A组小组赛</span></b>-->
+          <!--              <b><span style="font-size: 2.5rem; color: #f48b3c"-->
+          <!--                       class="ml-4">瑞士轮赛制</span></b>-->
+          <!--            </div>-->
+          <!--          </div>-->
         </template>
       </relation-graph>
     </div>
