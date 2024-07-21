@@ -50,11 +50,11 @@ const graphRef = ref<RelationGraph>()
 const nodeWidth = 350;
 const options = ref<RGOptions>({
   layout: {
-    'layoutName': 'fixed',
-    'layoutClassName': 'seeks-layout-fixed',
-    'defaultJunctionPoint': 'border',
-    'defaultNodeShape': 0,
-    'defaultLineShape': 1
+    layoutName: 'fixed',
+    layoutClassName: 'seeks-layout-fixed',
+    defaultJunctionPoint: 'border',
+    defaultNodeShape: 0,
+    defaultLineShape: 1
   },
   backgroundColor: 'rgba(255, 255, 255, 0)',
   defaultNodeColor: 'transparent',
