@@ -1,4 +1,4 @@
-import {ZoneJsonData} from "../types/zone";
+import {TitleData, ZoneJsonData} from "../types/zone";
 
 const rx = 0;
 const ry = 30;
@@ -351,34 +351,34 @@ export const GroupZoneKnockoutOrderNumbers = {
   ],
 }
 
-export const GroupZoneKnockoutTitleData = [
+export const GroupZoneKnockoutTitleData: TitleData[] = [
   {
-    left: `${rx - KnockoutXOffset * 3 - 180 + 20}`,
-    top: `${ry - KnockoutYOffset * 7 - 40}`,
+    left: rx - KnockoutXOffset * 3 - 180 + 20,
+    top: ry - KnockoutYOffset * 7 - 40,
     title: '16进8淘汰赛',
     image: 'src/assets/title_bg.png',
   },
   {
-    left: `${rx - KnockoutXOffset * 2 - 120 + 20}`,
-    top: `${ry - KnockoutYOffset * 6 - 40}`,
+    left: rx - KnockoutXOffset * 2 - 120 + 20,
+    top: ry - KnockoutYOffset * 6 - 40,
     title: '8进4淘汰赛',
     image: 'src/assets/title_bg.png',
   },
   {
-    left: `${rx - KnockoutXOffset - 60 + 20}`,
-    top: `${ry - KnockoutYOffset * 4 - 40}`,
+    left: rx - KnockoutXOffset - 60 + 20,
+    top: ry - KnockoutYOffset * 4 - 40,
     title: '半决赛',
     image: 'src/assets/title_bg.png',
   },
   {
-    left: `${rx + 20}`,
-    top: `${ry + KnockoutYOffset * 2 - 40}`,
+    left: rx + 20,
+    top: ry + KnockoutYOffset * 2 - 40,
     title: '季军争夺战',
     image: 'src/assets/title_bg.png',
   },
   {
-    left: `${rx + 20}`,
-    top: `${ry - KnockoutYOffset * 2 - 40}`,
+    left: rx + 20,
+    top: ry - KnockoutYOffset * 2 - 40,
     title: '冠军争夺战',
     image: 'src/assets/title_bg.png',
   },

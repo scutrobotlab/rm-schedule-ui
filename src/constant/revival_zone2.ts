@@ -1,4 +1,4 @@
-import {ZoneJsonData} from "../types/zone";
+import {ImageData, ZoneJsonData} from "../types/zone";
 
 const rx = 0;
 const ry = 90;
@@ -184,7 +184,7 @@ export const RevivalZone2GroupJsonData: ZoneJsonData = {
       id: '#8',
       text: '第三轮 2-1',
       x: rx - xOffset,
-      y: ry + 240,
+      y: ry + 320,
       data: {
         title: '瑞士轮第三轮 2-1',
         titleColor: '#FFFFFF',
@@ -209,7 +209,7 @@ export const RevivalZone2GroupJsonData: ZoneJsonData = {
       id: '#9',
       text: '淘汰 1-2',
       x: rx - xOffset,
-      y: ry + 420,
+      y: ry + 500,
       data: {
         title: '淘汰 1-2',
         titleColor: '#FFFFFF',
@@ -292,3 +292,12 @@ export const RevivalZone2GroupJsonData: ZoneJsonData = {
 export const RevivalZone2RoundOrder = {
   'C': [23, 28, 31, 34],
 }
+
+export const RevivalZone2ImageData: ImageData[] = [
+  {
+    id: 1,
+    left: -250,
+    top: 340,
+    image: 'src/assets/arrow_up.png',
+  }
+]

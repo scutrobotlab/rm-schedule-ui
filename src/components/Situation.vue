@@ -111,8 +111,9 @@ function badgeTab(zoneId: number): boolean {
                       :type="part.type"
                       :group="part.group"
                       :json-data="part.jsonData"
-                      :extra-title-data="part.extraTitleData"
                       :round-order="part.roundOrder"
+                      :extra-title-data="part.extraTitleData"
+                      :extra-image-data="part.extraImageData"
                     ></MatchGraph>
                   </v-carousel-item>
                 </v-carousel>

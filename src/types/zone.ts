@@ -43,3 +43,17 @@ export interface ZoneForecastData {
   red: number;
   blue: number;
 }
+
+export interface TitleData {
+  left: number,
+  top: number,
+  title: string,
+  image: string,
+}
+
+export interface ImageData {
+  id: number,
+  left: number,
+  top: number,
+  image: string,
+}

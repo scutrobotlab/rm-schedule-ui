@@ -7,15 +7,16 @@ import {computed} from "vue";
 import {useAppStore} from "../stores/app";
 import {useRoute} from "vue-router";
 import {RoundOrder} from "../types/round_order";
-import {GroupType, ZoneJsonData, ZoneNodeJsonData} from "../types/zone";
+import {GroupType, TitleData, ImageData, ZoneJsonData, ZoneNodeJsonData} from "../types/zone";
 
 interface Props {
   zoneId: number,
   type: 'group' | 'knockout',
   group: GroupType,
   jsonData: ZoneJsonData,
-  extraTitleData: any | null,
   roundOrder?: RoundOrder,
+  extraTitleData?: TitleData[],
+  extraImageData?: ImageData[],
   rx?: number,
   ry?: number,
 }
@@ -633,15 +634,14 @@ const round = computed(() => {
         </template>
 
         <template #canvas-plug>
-          <div v-if="type == 'knockout'">
-            <div
-              v-for="v in extraTitleData" :key="v.title"
-              :style="{
-                left: `${v.left}px`,
-                top: `${v.top}px`,
-                width: `${nodeWidth - 20}px`,
-                position:'absolute',
-              }">
+          <div>
+            <div v-for="v in extraTitleData" :key="v.title"
+                 :style="{
+                    left: `${v.left}px`,
+                    top: `${v.top}px`,
+                    width: `${nodeWidth - 20}px`,
+                    position:'absolute',
+                  }">
               <div class="title-image-container">
                 <img :src="v.image" alt="Image"/>
                 <div class="title-text-overlay">
@@ -651,16 +651,16 @@ const round = computed(() => {
             </div>
           </div>
 
-          <div
-            v-if="type == 'knockout'"
-            :style="{
-              left: `${rx + 320}px`,
-              top: `${ry - PartitionKnockoutYOffset * 2 - 60}px`,
-              position:'absolute',
-              width: `80px`
-            }">
-            <div>
-              <v-img src="@/assets/champion.png"></v-img>
+          <div>
+            <div v-for="v in extraImageData" :key="v.id"
+                 :style="{
+                    left: `${v.left}px`,
+                    top: `${v.top}px`,
+                    position:'absolute',
+                  }">
+              <div class="title-image-container">
+                <img :src="v.image" alt="Image"/>
+              </div>
             </div>
           </div>
 

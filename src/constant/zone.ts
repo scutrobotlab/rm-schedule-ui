@@ -9,16 +9,17 @@ import {
   RevivalZoneGroupJsonData,
   RevivalZoneRoundOrder
 } from "./revival_zone";
-import {GroupType} from "../types/zone";
-import {RevivalZone2GroupJsonData, RevivalZone2RoundOrder} from "./revival_zone2";
+import {GroupType, TitleData, ImageData, ZoneJsonData} from "../types/zone";
+import {RevivalZone2GroupJsonData, RevivalZone2ImageData, RevivalZone2RoundOrder} from "./revival_zone2";
 
 export interface Part {
   name: string,
   type: 'group' | 'knockout',
   group: GroupType,
-  jsonData: any,
-  extraTitleData: any,
-  roundOrder: RoundOrder,
+  jsonData: ZoneJsonData,
+  roundOrder?: RoundOrder,
+  extraTitleData?: TitleData[],
+  extraImageData?: ImageData[],
 }
 
 export interface Zone {
@@ -37,7 +38,6 @@ export const Zones: Zone[] = [
         type: 'group',
         group: 'A',
         jsonData: GroupZoneGroupJsonData,
-        extraTitleData: null,
         roundOrder: GroupZoneRoundOrder
       },
       {
@@ -45,7 +45,6 @@ export const Zones: Zone[] = [
         type: 'group',
         group: 'B',
         jsonData: GroupZoneGroupJsonData,
-        extraTitleData: null,
         roundOrder: GroupZoneRoundOrder
       },
       {
@@ -66,7 +65,6 @@ export const Zones: Zone[] = [
         type: 'group',
         group: 'A',
         jsonData: GroupZoneGroupJsonData,
-        extraTitleData: null,
         roundOrder: GroupZoneRoundOrder
       },
       {
@@ -74,7 +72,6 @@ export const Zones: Zone[] = [
         type: 'group',
         group: 'B',
         jsonData: GroupZoneGroupJsonData,
-        extraTitleData: null,
         roundOrder: GroupZoneRoundOrder
       },
       {
@@ -95,7 +92,6 @@ export const Zones: Zone[] = [
         type: 'group',
         group: 'A',
         jsonData: GroupZoneGroupJsonData,
-        extraTitleData: null,
         roundOrder: GroupZoneRoundOrder
       },
       {
@@ -103,7 +99,6 @@ export const Zones: Zone[] = [
         type: 'group',
         group: 'B',
         jsonData: GroupZoneGroupJsonData,
-        extraTitleData: null,
         roundOrder: GroupZoneRoundOrder
       },
       {
@@ -124,7 +119,6 @@ export const Zones: Zone[] = [
         type: 'group',
         group: 'A',
         jsonData: RevivalZoneGroupJsonData,
-        extraTitleData: null,
         roundOrder: RevivalZoneRoundOrder
       },
       {
@@ -132,7 +126,6 @@ export const Zones: Zone[] = [
         type: 'group',
         group: 'B',
         jsonData: RevivalZoneGroupJsonData,
-        extraTitleData: null,
         roundOrder: RevivalZoneRoundOrder
       },
     ]
@@ -145,8 +138,8 @@ export const Zones: Zone[] = [
         type: 'group',
         group: 'C',
         jsonData: RevivalZone2GroupJsonData,
-        extraTitleData: null,
         roundOrder: RevivalZone2RoundOrder,
+        extraImageData: RevivalZone2ImageData,
       },
     ]
   },
