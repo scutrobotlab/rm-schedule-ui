@@ -454,9 +454,11 @@ const round = computed(() => {
                                 <v-img src="@/assets/school_red.png"></v-img>
                               </v-avatar>
                               <span v-if="match(v).redSide.player?.team"
+                                    :style="{color: (node as ZoneNodeJsonData).data.collegeNameColor}"
                                     :class="{'color-gray': loser(v) == match(v).redSide.player }"
                                     class="one-line-text">{{ match(v).redSide.player?.team.collegeName }}</span>
-                              <span v-else class="one-line-text">{{ node.data.zones[groupIndex].text[2 * i] }}</span>
+                              <span v-else :style="{color: (node as ZoneNodeJsonData).data.collegeNameColor}"
+                                    class="one-line-text">{{ node.data.zones[groupIndex].text[2 * i] }}</span>
                             </div>
                           </div>
                         </div>
@@ -495,11 +497,11 @@ const round = computed(() => {
                                 <v-img src="@/assets/school_blue.png"></v-img>
                               </v-avatar>
                               <span v-if="match(v).blueSide.player?.team"
+                                    :style="{color: (node as ZoneNodeJsonData).data.collegeNameColor}"
                                     :class="{'color-gray': loser(v) == match(v).blueSide.player }"
                                     class="one-line-text">{{ match(v).blueSide.player?.team.collegeName }}</span>
-                              <span v-else class="one-line-text">{{
-                                  node.data.zones[groupIndex].text[2 * i + 1]
-                                }}</span>
+                              <span v-else :style="{color: (node as ZoneNodeJsonData).data.collegeNameColor}"
+                                    class="one-line-text">{{ node.data.zones[groupIndex].text[2 * i + 1] }}</span>
                             </div>
                           </div>
                         </div>

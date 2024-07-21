@@ -380,13 +380,13 @@ export const GroupZoneKnockoutTitleData: TitleData[] = [
     left: rx + 20,
     top: ry + KnockoutYOffset * 2 - 40,
     title: '季军争夺战',
-    image: 'src/assets/title_bg.png',
+    image: 'src/assets/title_winner_bg.png',
   },
   {
     left: rx + 20,
     top: ry - KnockoutYOffset * 2 - 40,
     title: '冠军争夺战',
-    image: 'src/assets/title_bg.png',
+    image: 'src/assets/title_winner_bg.png',
   },
 ]
 
@@ -681,7 +681,8 @@ export const GetGroupZoneKnockoutJsonData = (zoneId: number): ZoneJsonData => {
         y: ry + KnockoutYOffset * 2,
         data: {
           title: '',
-          titleColor: '#FFFFFF',
+          collegeNameColor: '#FFB553',
+          rankColor: '#FFA500',
           round: -1,
           type: 'match',
           zones: [
@@ -701,7 +702,8 @@ export const GetGroupZoneKnockoutJsonData = (zoneId: number): ZoneJsonData => {
         y: ry - KnockoutYOffset * 2,
         data: {
           title: '',
-          titleColor: '#FFFFFF',
+          collegeNameColor: '#FFB553',
+          rankColor: '#FFA500',
           round: -1,
           type: 'match',
           zones: [
