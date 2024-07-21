@@ -9,10 +9,10 @@
   },
   "dependencies": {
     "@mdi/font": "6.2.95",
-    "@summer-lights/relation-graph": "^2.1.42-1",
     "axios": "^1.6.8",
     "core-js": "^3.34.0",
     "pinyin-match": "^1.2.5",
+    "relation-graph-vue3": "^2.2.2",
     "roboto-fontface": "*",
     "vue": "^3.4.21",
     "vuetify": "^3.5.8"

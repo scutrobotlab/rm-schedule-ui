@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import RelationGraph from '@summer-lights/relation-graph/vue3';
-import {RGOptions} from '@summer-lights/relation-graph';
+import RelationGraph from 'relation-graph-vue3';
+import {RGOptions} from 'relation-graph-vue3';
 import {usePromotionStore} from "../stores/promotion";
 import {MatchNode, Player, PlayerWithMatch} from "../types/schedule";
 import {computed} from "vue";
@@ -56,7 +56,7 @@ const options = ref<RGOptions>({
     'defaultNodeShape': 0,
     'defaultLineShape': 1
   },
-  backgroundColor: 'transparent',
+  backgroundColor: 'rgba(255, 255, 255, 0)',
   defaultNodeColor: 'transparent',
   defaultNodeShape: 1,
   defaultNodeWidth: nodeWidth,
