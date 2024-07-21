@@ -1,9 +1,11 @@
+import {ZoneJsonData} from "../types/zone";
+
 const rx = 0;
 const ry = 0;
 
 const xOffset = 420;
 
-export const RevivalZoneGroupJsonData = {
+export const RevivalZoneGroupJsonData: ZoneJsonData = {
   rootId: '#1',
   nodes: [
     {

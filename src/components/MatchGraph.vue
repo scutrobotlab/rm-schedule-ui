@@ -7,12 +7,13 @@ import {computed} from "vue";
 import {useAppStore} from "../stores/app";
 import {useRoute} from "vue-router";
 import {RoundOrder} from "../types/round_order";
+import {ZoneJsonData} from "../types/zone";
 
 interface Props {
   zoneId: number,
   type: 'group' | 'knockout',
   group: '' | 'A' | 'B',
-  jsonData: any,
+  jsonData: ZoneJsonData,
   extraTitleData: any | null,
   roundOrder?: RoundOrder,
   rx?: number,

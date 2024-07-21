@@ -1,9 +1,11 @@
+import {ZoneJsonData} from "../types/zone";
+
 const rx = 0;
 const ry = 30;
 
 const xOffset = 420;
 
-export const GroupZoneGroupJsonData = {
+export const GroupZoneGroupJsonData: ZoneJsonData = {
   rootId: '#1',
   nodes: [
     {
@@ -373,8 +375,8 @@ export const GroupZoneKnockoutTitleData = [
   },
 ]
 
-export const GetGroupZoneKnockoutJsonData = (zoneId: number): any => {
-  return {
+export const GetGroupZoneKnockoutJsonData = (zoneId: number): ZoneJsonData => {
+  return <ZoneJsonData>{
     rootId: '#16',
     nodes: [
       {
