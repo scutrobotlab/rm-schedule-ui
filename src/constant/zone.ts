@@ -11,6 +11,7 @@ import {
 } from "./revival_zone";
 import {GroupType, TitleData, ImageData, ZoneJsonData} from "../types/zone";
 import {RevivalZone2GroupJsonData, RevivalZone2ImageData, RevivalZone2RoundOrder} from "./revival_zone2";
+import {FinalZoneKnockoutJsonData, FinalZoneKnockoutTitleData} from "./final_zone";
 
 export interface Part {
   name: string,
@@ -145,6 +146,15 @@ export const Zones: Zone[] = [
   },
   {
     id: 526, name: '全国赛', disabled: false,
-    parts: []
+    parts: [
+      {
+        name: '淘汰赛',
+        type: 'knockout',
+        group: 'Knockout',
+        jsonData: FinalZoneKnockoutJsonData,
+        extraTitleData: FinalZoneKnockoutTitleData,
+        roundOrder: null, // TODO
+      }
+    ]
   },
 ]
