@@ -5,13 +5,6 @@ import {computed, watch} from "vue";
 import {usePromotionStore} from "../stores/promotion";
 import AnalyzeTeam from "./AnalyzeTeam.vue";
 import {useRoute, useRouter} from "vue-router";
-import {
-  GetPartitionKnockoutJsonData,
-  PartitionGroupJsonData,
-  PartitionKnockoutTitleData,
-  PartitionRoundOrder
-} from "../constant/partition";
-import {RoundOrder} from "../types/round_order";
 import {Zones} from "../constant/zone";
 
 const route = useRoute()
@@ -47,10 +40,10 @@ function badgeTab(zoneId: number): boolean {
 
 <template>
   <div>
-    <!--    <img-->
-    <!--      class="background-image"-->
-    <!--      src="@/assets/background3.png"-->
-    <!--      alt=""/>-->
+    <img
+      class="background-image"
+      src="@/assets/background3.png"
+      alt=""/>
 
     <SearchPlayer :zone-id="zoneId"/>
 
