@@ -7,12 +7,12 @@ import {computed} from "vue";
 import {useAppStore} from "../stores/app";
 import {useRoute} from "vue-router";
 import {RoundOrder} from "../types/round_order";
-import {ZoneJsonData, ZoneNodeJsonData} from "../types/zone";
+import {GroupType, ZoneJsonData, ZoneNodeJsonData} from "../types/zone";
 
 interface Props {
   zoneId: number,
   type: 'group' | 'knockout',
-  group: '' | 'A' | 'B',
+  group: GroupType,
   jsonData: ZoneJsonData,
   extraTitleData: any | null,
   roundOrder?: RoundOrder,
@@ -71,7 +71,9 @@ const options = ref<RGOptions>({
 })
 
 function match(orderNumber: number): MatchNode | undefined {
-  return promotionStore.getMatchByOrder(props.zoneId, orderNumber)
+  let planGameCount = 3
+  if (props.group == 'Q' || props.group == 'W') planGameCount = 2
+  return promotionStore.getMatchByOrder(props.zoneId, orderNumber, planGameCount)
 }
 
 function isForecast(node: any): boolean {
@@ -79,18 +81,18 @@ function isForecast(node: any): boolean {
 }
 
 function winner(orderNumber: number): Player | null {
-  const match = promotionStore.getMatchByOrder(props.zoneId, orderNumber)
-  if (match.status != 'DONE') return null
-  if (match.redSideWinGameCount > match.blueSideWinGameCount) return match.redSide.player
-  if (match.redSideWinGameCount < match.blueSideWinGameCount) return match.blueSide.player
+  const m = match(orderNumber)
+  if (m.status != 'DONE') return null
+  if (m.redSideWinGameCount > m.blueSideWinGameCount) return m.redSide.player
+  if (m.redSideWinGameCount < m.blueSideWinGameCount) return m.blueSide.player
   return null
 }
 
 function loser(orderNumber: number): Player | null {
-  const match = promotionStore.getMatchByOrder(props.zoneId, orderNumber)
-  if (match.status != 'DONE') return null
-  if (match.redSideWinGameCount < match.blueSideWinGameCount) return match.redSide.player
-  if (match.redSideWinGameCount > match.blueSideWinGameCount) return match.blueSide.player
+  const m = match(orderNumber)
+  if (m.status != 'DONE') return null
+  if (m.redSideWinGameCount < m.blueSideWinGameCount) return m.redSide.player
+  if (m.redSideWinGameCount > m.blueSideWinGameCount) return m.blueSide.player
   return null
 }
 
@@ -282,9 +284,9 @@ const round = computed(() => {
   }
   // 从后往前找到第一个有选手的比赛，返回其轮次
   for (let i = orderList.length - 1; i >= 0; i--) {
-    const match = promotionStore.getMatchByOrder(props.zoneId, orderList[i])
-    if (!match) continue
-    if (match.redSide.player && match.redSide.player.team) return i + 1
+    const m = match(orderList[i])
+    if (!m) continue
+    if (m.redSide.player && m.redSide.player.team) return i + 1
   }
   return 0;
 })
@@ -527,7 +529,11 @@ const round = computed(() => {
                               <v-avatar class="mx-1" size="x-small">
                                 <v-img src="@/assets/school_red.png"></v-img>
                               </v-avatar>
-                              <span class="one-line-text">{{ node.data.zones[groupIndex].text[2 * i] }}</span>
+                              <span class="one-line-text">
+                                {{
+                                  match(v).redSide.player ? match(v).redSide.player.name : node.data.zones[groupIndex].text[2 * i]
+                                }}
+                              </span>
                             </div>
                           </div>
                         </div>
@@ -542,7 +548,11 @@ const round = computed(() => {
                               <v-avatar class="mx-1" size="x-small">
                                 <v-img src="@/assets/school_blue.png"></v-img>
                               </v-avatar>
-                              <span class="one-line-text">{{ node.data.zones[groupIndex].text[2 * i + 1] }}</span>
+                              <span class="one-line-text">
+                                {{
+                                  match(v).blueSide.player ? match(v).blueSide.player.name : node.data.zones[groupIndex].text[2 * i + 1]
+                                }}
+                              </span>
                             </div>
                           </div>
                         </div>

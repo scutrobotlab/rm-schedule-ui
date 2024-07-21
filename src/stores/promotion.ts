@@ -50,9 +50,9 @@ export const usePromotionStore = defineStore('promotion', {
     getZone(zoneId: number): ZoneNode {
       return this.schedule.data.event.zones.nodes.find((zone: ZoneNode) => zone.id == zoneId.toString())
     },
-    getMatchByOrder(zoneId: number, orderNumber: number): MatchNode | undefined {
+    getMatchByOrder(zoneId: number, orderNumber: number, planGameCount: number = 3): MatchNode | undefined {
       const zone = this.getZone(zoneId)
-      let node = zone.groupMatches.nodes.find((match: MatchNode) => match.orderNumber == orderNumber)
+      let node = zone.groupMatches.nodes.find((match: MatchNode) => match.orderNumber == orderNumber && match.planGameCount == planGameCount)
       if (node) return node
       node = zone.knockoutMatches.nodes.find((match: MatchNode) => match.orderNumber == orderNumber)
       if (node) return node

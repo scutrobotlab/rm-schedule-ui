@@ -1,3 +1,5 @@
+export type GroupType = 'A' | 'B' | 'Q' | 'W' | 'Knockout';
+
 export interface ZoneJsonData {
   rootId: string;
   nodes: ZoneNodeJsonData[];

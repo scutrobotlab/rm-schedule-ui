@@ -6,11 +6,12 @@ import {
   GroupZoneRoundOrder
 } from "./group_zone";
 import {RevivalZoneGroupJsonData, RevivalZoneRoundOrder} from "./revival_zone";
+import {GroupType} from "../types/zone";
 
 export interface Part {
   name: string,
   type: 'group' | 'knockout',
-  group: '' | 'A' | 'B',
+  group: GroupType,
   jsonData: any,
   extraTitleData: any,
   roundOrder: RoundOrder,
@@ -46,7 +47,7 @@ export const Zones: Zone[] = [
       {
         name: '淘汰赛',
         type: 'knockout',
-        group: '',
+        group: 'Knockout',
         jsonData: GetGroupZoneKnockoutJsonData(498),
         extraTitleData: GroupZoneKnockoutTitleData,
         roundOrder: GroupZoneRoundOrder
@@ -75,7 +76,7 @@ export const Zones: Zone[] = [
       {
         name: '淘汰赛',
         type: 'knockout',
-        group: '',
+        group: 'Knockout',
         jsonData: GetGroupZoneKnockoutJsonData(499),
         extraTitleData: GroupZoneKnockoutTitleData,
         roundOrder: GroupZoneRoundOrder
@@ -104,7 +105,7 @@ export const Zones: Zone[] = [
       {
         name: '淘汰赛',
         type: 'knockout',
-        group: '',
+        group: 'Knockout',
         jsonData: GetGroupZoneKnockoutJsonData(500),
         extraTitleData: GroupZoneKnockoutTitleData,
         roundOrder: GroupZoneRoundOrder
