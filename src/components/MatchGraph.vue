@@ -62,6 +62,7 @@ const options = ref<RGOptions>({
   defaultNodeShape: 1,
   defaultNodeWidth: nodeWidth,
   defaultLineShape: 4,
+  defaultLineWidth: 2,
   defaultJunctionPoint: 'lr',
   disableDragNode: true,
   disableDragCanvas: false,

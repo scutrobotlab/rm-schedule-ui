@@ -1,7 +1,7 @@
 import {ZoneJsonData} from "../types/zone";
 
 const rx = 0;
-const ry = 60;
+const ry = 90;
 
 const xOffset = 420;
 
@@ -86,7 +86,7 @@ export const RevivalZone2GroupJsonData: ZoneJsonData = {
       id: '#4',
       text: '第三轮 2-0',
       x: rx - 2 * xOffset,
-      y: ry - 100,
+      y: ry - 86,
       data: {
         title: '瑞士轮第三轮 2-0',
         titleColor: '#FFFFFF',
