@@ -1,4 +1,4 @@
-export type GroupType = 'A' | 'B' | 'Q' | 'W' | 'Knockout';
+export type GroupType = 'A' | 'B' | 'QW' | 'Knockout';
 
 export interface ZoneJsonData {
   rootId: string;

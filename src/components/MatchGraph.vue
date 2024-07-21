@@ -72,7 +72,7 @@ const options = ref<RGOptions>({
 
 function match(orderNumber: number): MatchNode | undefined {
   let planGameCount = 3
-  if (props.group == 'Q' || props.group == 'W') planGameCount = 2
+  if (props.group == 'QW') planGameCount = 2
   return promotionStore.getMatchByOrder(props.zoneId, orderNumber, planGameCount)
 }
 
