@@ -143,6 +143,8 @@ export const RevivalZone2GroupJsonData: ZoneJsonData = {
         titleColor: '#FFFFFF',
         titleImage: 'src/assets/title_loser_bg.png',
         borderColor: '#3E484D',
+        collegeNameColor: '#9D9F9F',
+        rankColor: '#4F4F4F',
         round: 3,
         type: 'eliminate',
         zones: [
@@ -215,6 +217,8 @@ export const RevivalZone2GroupJsonData: ZoneJsonData = {
         titleColor: '#FFFFFF',
         titleImage: 'src/assets/title_loser_bg.png',
         borderColor: '#3E484D',
+        collegeNameColor: '#9D9F9F',
+        rankColor: '#4F4F4F',
         round: 5,
         type: 'eliminate',
         zones: [
@@ -237,6 +241,8 @@ export const RevivalZone2GroupJsonData: ZoneJsonData = {
         titleColor: '#FFFFFF',
         titleImage: 'src/assets/title_winner_bg.png',
         borderColor: '#E7A662',
+        collegeNameColor: '#FFB553',
+        rankColor: '#FFA500',
         round: 5,
         type: 'promote',
         zones: [
@@ -259,6 +265,8 @@ export const RevivalZone2GroupJsonData: ZoneJsonData = {
         titleColor: '#FFFFFF',
         titleImage: 'src/assets/title_loser_bg.png',
         borderColor: '#3E484D',
+        collegeNameColor: '#9D9F9F',
+        rankColor: '#4F4F4F',
         round: 5,
         type: 'eliminate',
         zones: [

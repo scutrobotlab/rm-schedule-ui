@@ -621,7 +621,8 @@ const round = computed(() => {
                             <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
                               <v-img src="@/assets/school_grey.png"/>
                             </v-avatar>
-                            <span class="one-line-text">{{ v }}</span>
+                            <span :style="{color: (node as ZoneNodeJsonData).data.collegeNameColor}"
+                                  class="one-line-text">{{ v }}</span>
                           </div>
                         </div>
                       </div>

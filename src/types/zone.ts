@@ -22,8 +22,8 @@ export interface ZoneLineJsonData {
 export interface ZoneNodeData {
   title: string;
   titleColor: string;
-  titleImage: string;
-  borderColor: string;
+  titleImage?: string;
+  borderColor?: string;
   collegeNameColor?: string;
   rankColor?: string;
   round: number;

@@ -327,6 +327,12 @@ export const GroupZoneGroupJsonData: ZoneJsonData = {
   ],
 }
 
+export const GroupZoneRoundOrder = {
+  'A': [1, 17, 33, 46],
+  'B': [9, 25, 39, 46],
+}
+
+
 const KnockoutXOffset = 360;
 const KnockoutYOffset = 50;
 
@@ -728,9 +734,4 @@ export const GetGroupZoneKnockoutJsonData = (zoneId: number): ZoneJsonData => {
       {from: '#14', to: '#16',},
     ],
   }
-}
-
-export const GroupZoneRoundOrder = {
-  'A': [1, 17, 33, 46],
-  'B': [9, 25, 39, 46],
 }

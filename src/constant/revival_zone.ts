@@ -188,6 +188,8 @@ export const RevivalZoneGroupJsonData: ZoneJsonData = {
         titleColor: '#FFFFFF',
         titleImage: 'src/assets/title_loser_bg.png',
         borderColor: '#3E484D',
+        collegeNameColor: '#9D9F9F',
+        rankColor: '#4F4F4F',
         round: 3,
         type: 'eliminate',
         zones: [
@@ -212,10 +214,12 @@ export const RevivalZoneGroupJsonData: ZoneJsonData = {
       x: 0,
       y: 0,
       data: {
-        title: '晋级第二赛段',
+        title: '晋级全国赛',
         titleColor: '#FFFFFF',
         titleImage: 'src/assets/title_winner_bg.png',
         borderColor: '#E7A662',
+        collegeNameColor: '#FFB553',
+        rankColor: '#FFA500',
         round: 4,
         type: 'promote',
         zones: [
@@ -244,6 +248,8 @@ export const RevivalZoneGroupJsonData: ZoneJsonData = {
         titleColor: '#FFFFFF',
         titleImage: 'src/assets/title_winner_bg.png',
         borderColor: '#E7A662',
+        collegeNameColor: '#FFB553',
+        rankColor: '#FFA500',
         round: 4,
         type: 'promote',
         zones: [
@@ -272,6 +278,8 @@ export const RevivalZoneGroupJsonData: ZoneJsonData = {
         titleColor: '#FFFFFF',
         titleImage: 'src/assets/title_loser_bg.png',
         borderColor: '#3E484D',
+        collegeNameColor: '#9D9F9F',
+        rankColor: '#4F4F4F',
         round: 4,
         type: 'eliminate',
         zones: [
