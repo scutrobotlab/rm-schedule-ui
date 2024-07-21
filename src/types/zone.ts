@@ -22,6 +22,8 @@ export interface ZoneNodeData {
   titleColor: string;
   titleImage: string;
   borderColor: string;
+  collegeNameColor?: string;
+  rankColor?: string;
   round: number;
   type: string;
   zones: ZoneZoneData[];

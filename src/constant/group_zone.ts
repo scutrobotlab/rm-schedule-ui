@@ -201,7 +201,9 @@ export const GroupZoneGroupJsonData: ZoneJsonData = {
         title: '淘汰 0胜2负',
         titleColor: '#FFFFFF',
         titleImage: 'src/assets/title_loser_bg.png',
-        borderColor: '#3e484d',
+        borderColor: '#3E484D',
+        collegeNameColor: '#9D9F9F',
+        rankColor: '#4F4F4F',
         round: 3,
         type: 'eliminate',
         zones: [
@@ -229,7 +231,9 @@ export const GroupZoneGroupJsonData: ZoneJsonData = {
         title: '晋级淘汰赛 3胜0负',
         titleColor: '#FFFFFF',
         titleImage: 'src/assets/title_winner_bg.png',
-        borderColor: '#e7a662',
+        borderColor: '#E7A662',
+        collegeNameColor: '#FFB553',
+        rankColor: '#FFA500',
         round: 4,
         type: 'promote',
         zones: [
@@ -257,7 +261,9 @@ export const GroupZoneGroupJsonData: ZoneJsonData = {
         title: '晋级淘汰赛 2胜1负',
         titleColor: '#FFFFFF',
         titleImage: 'src/assets/title_winner_bg.png',
-        borderColor: '#e7a662',
+        borderColor: '#E7A662',
+        collegeNameColor: '#FFB553',
+        rankColor: '#FFA500',
         round: 4,
         type: 'promote',
         zones: [
@@ -285,7 +291,9 @@ export const GroupZoneGroupJsonData: ZoneJsonData = {
         title: '淘汰 1胜2负',
         titleColor: '#FFFFFF',
         titleImage: 'src/assets/title_loser_bg.png',
-        borderColor: '#3e484d',
+        borderColor: '#3E484D',
+        collegeNameColor: '#9D9F9F',
+        rankColor: '#4F4F4F',
         round: 4,
         type: 'eliminate',
         zones: [

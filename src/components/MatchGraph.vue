@@ -7,7 +7,7 @@ import {computed} from "vue";
 import {useAppStore} from "../stores/app";
 import {useRoute} from "vue-router";
 import {RoundOrder} from "../types/round_order";
-import {ZoneJsonData} from "../types/zone";
+import {ZoneJsonData, ZoneNodeJsonData} from "../types/zone";
 
 interface Props {
   zoneId: number,
@@ -81,16 +81,16 @@ function isForecast(node: any): boolean {
 function winner(orderNumber: number): Player | null {
   const match = promotionStore.getMatchByOrder(props.zoneId, orderNumber)
   if (match.status != 'DONE') return null
-  if (match.redSideWinGameCount == 2) return match.redSide.player
-  if (match.blueSideWinGameCount == 2) return match.blueSide.player
+  if (match.redSideWinGameCount > match.blueSideWinGameCount) return match.redSide.player
+  if (match.redSideWinGameCount < match.blueSideWinGameCount) return match.blueSide.player
   return null
 }
 
 function loser(orderNumber: number): Player | null {
   const match = promotionStore.getMatchByOrder(props.zoneId, orderNumber)
   if (match.status != 'DONE') return null
-  if (match.redSideWinGameCount == 2) return match.blueSide.player
-  if (match.blueSideWinGameCount == 2) return match.redSide.player
+  if (match.redSideWinGameCount < match.blueSideWinGameCount) return match.redSide.player
+  if (match.redSideWinGameCount > match.blueSideWinGameCount) return match.blueSide.player
   return null
 }
 
@@ -424,7 +424,11 @@ const round = computed(() => {
                           <div class="school-image-container">
                             <img src="@/assets/school_bg.png" alt="Image"/>
                             <div class="overlay ml-4">
-                              <div class="colorful-red">
+                              <div
+                                style="background: #616161"
+                                :class="{
+                                  'colorful-red': loser(v) != match(v).redSide.player,
+                                }">
                                 <h4 class="px-1">{{ match(v).redSideWinGameCount }}</h4>
                               </div>
                               <div
@@ -444,6 +448,7 @@ const round = computed(() => {
                                 <v-img src="@/assets/school_red.png"></v-img>
                               </v-avatar>
                               <span v-if="match(v).redSide.player?.team"
+                                    :class="{'color-gray': loser(v) == match(v).redSide.player }"
                                     class="one-line-text">{{ match(v).redSide.player?.team.collegeName }}</span>
                               <span v-else class="one-line-text">{{ node.data.zones[groupIndex].text[2 * i] }}</span>
                             </div>
@@ -460,7 +465,11 @@ const round = computed(() => {
                           <div class="school-image-container">
                             <img src="@/assets/school_bg.png" alt="Image"/>
                             <div class="overlay ml-4">
-                              <div class="colorful-blue">
+                              <div
+                                style="background: #616161"
+                                :class="{
+                                  'colorful-blue': loser(v) != match(v).blueSide.player,
+                                }">
                                 <h4 class="px-1">{{ match(v).blueSideWinGameCount }}</h4>
                               </div>
                               <div
@@ -480,6 +489,7 @@ const round = computed(() => {
                                 <v-img src="@/assets/school_blue.png"></v-img>
                               </v-avatar>
                               <span v-if="match(v).blueSide.player?.team"
+                                    :class="{'color-gray': loser(v) == match(v).blueSide.player }"
                                     class="one-line-text">{{ match(v).blueSide.player?.team.collegeName }}</span>
                               <span v-else class="one-line-text">{{
                                   node.data.zones[groupIndex].text[2 * i + 1]
@@ -559,7 +569,8 @@ const round = computed(() => {
                         <div class="school-image-container">
                           <img src="@/assets/school_bg.png" alt="Image"/>
                           <div class="overlay ml-4">
-                            <div v-if="v.match.status == 'DONE'" style="background: #43A047">
+                            <div v-if="v.match.status == 'DONE'"
+                                 :style="{background: node.data.rankColor}">
                               <h4 class="px-1" style="width: 2.5rem; color: white">
                                 {{ convertToOrdinal(matchRank(v.player)) }}
                               </h4>
@@ -570,7 +581,8 @@ const round = computed(() => {
                             <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
                               <v-img :src="v.player.team.collegeLogo"/>
                             </v-avatar>
-                            <span class="one-line-text">{{ v.player.team.collegeName }}</span>
+                            <span :style="{color: (node as ZoneNodeJsonData).data.collegeNameColor}"
+                                  class="one-line-text">{{ v.player.team.collegeName }}</span>
                           </div>
                         </div>
                       </div>
@@ -803,6 +815,10 @@ const round = computed(() => {
   100% {
     background: #1565C0;
   }
+}
+
+.color-gray {
+  color: #9D9F9F;
 }
 
 .highlight-gray {
