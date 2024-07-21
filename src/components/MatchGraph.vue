@@ -261,6 +261,7 @@ const groupIndex = computed(() => {
 })
 
 const round = computed(() => {
+  // return 0;
   // return 1;
   // return 2;
   // return 3;
@@ -282,9 +283,9 @@ const round = computed(() => {
   for (let i = orderList.length - 1; i >= 0; i--) {
     const match = promotionStore.getMatchByOrder(props.zoneId, orderList[i])
     if (!match) continue
-    if (match.redSide.player) return i + 1
+    if (match.redSide.player && match.redSide.player.team) return i + 1
   }
-  return 1
+  return 0;
 })
 </script>
 
@@ -336,7 +337,7 @@ const round = computed(() => {
               <div v-if="node.data.type == 'match'">
 
                 <!--实时预测 动态刷新-->
-                <div v-if="round + 1 == node.data.round && !liveMode">
+                <div v-if="round + 1 == node.data.round && round > 0 && !liveMode">
                   <div class="mx-2"
                        v-for="(v, i) in rankList(node.data.zones[groupIndex])" :key="i">
                     <div class="container ml-2">
