@@ -195,11 +195,11 @@ function badgeTab(zoneId: number): boolean {
   bottom: 0;
   right: 0;
   width: 100%;
-  background-size: cover;
+  height: 100%;
   background-position: center;
   background-repeat: no-repeat;
   z-index: 1;
-  object-fit: cover; /* 或 contain */
+  object-fit: cover;
 }
 
 .content {
