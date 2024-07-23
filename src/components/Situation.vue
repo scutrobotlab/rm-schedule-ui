@@ -39,7 +39,7 @@ function badgeTab(zoneId: number): boolean {
 </script>
 
 <template>
-  <div>
+  <div class="my-font">
     <img
       class="background-image"
       src="@/assets/background3.png"
@@ -221,5 +221,9 @@ function badgeTab(zoneId: number): boolean {
 .col {
   flex: 1; /* 列占用可用空间 */
   align-content: center;
+}
+
+.my-font {
+  font-family: 'MyFont', sans-serif;
 }
 </style>

@@ -297,7 +297,7 @@ const round = computed(() => {
 </script>
 
 <template>
-  <div class="my-graph pt-2">
+  <div class="my-graph pt-2 my-font">
     <div :style="liveMode ? 'height: calc(100vh - 0px);' : 'height: calc(100vh - 100px);'">
       <!--      <div class="text-center mb-4">-->
       <!--        <h1 class="font-weight-bold">{{ title }}</h1>-->
@@ -328,7 +328,7 @@ const round = computed(() => {
               <div class="title-image-container">
                 <img :style="'border-right: 2px solid ' + node.data.borderColor"
                      :src="node.data.titleImage" alt="Image"/>
-                <div class="title-text-overlay mt-1">
+                <div class="title-text-overlay mt-1 my-font">
                   <b>{{ node.data.title }}</b>
                   <b class="ml-1" v-if="isForecast(node)">*</b>
                 </div>
@@ -957,6 +957,7 @@ const round = computed(() => {
   position: absolute;
   width: 100%;
   text-align: center;
+  font-size: 12px;
 }
 
 .school-image-container {
@@ -981,5 +982,9 @@ const round = computed(() => {
 
 .node-title-border {
   border-right: 2px solid #5a879c;
+}
+
+.my-font {
+  font-family: 'MyFont', sans-serif;
 }
 </style>

@@ -1,5 +1,4 @@
 import {TitleData, ZoneJsonData} from "../types/zone";
-import {GroupZoneKnockoutOrderNumbers} from "./group_zone";
 
 const rx = 0;
 const ry = 0;
