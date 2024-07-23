@@ -177,10 +177,10 @@ export const FinalZoneKnockoutJsonData: ZoneJsonData = {
         ]
       }
     },
-    // 75 1-2
-    // 76 4-3
-    // 77 5-6
-    // 78 8-7
+    // 79 1-2
+    // 80 4-3
+    // 81 5-6
+    // 82 8-7
     {
       id: '#9',
       text: '16进8胜者组 第1场',
@@ -193,7 +193,7 @@ export const FinalZoneKnockoutJsonData: ZoneJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [75],
+            matches: [79],
             winners: [67, 68],
             losers: [],
             text: ['第67场胜者', '第68场胜者']
@@ -213,7 +213,7 @@ export const FinalZoneKnockoutJsonData: ZoneJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [76],
+            matches: [80],
             winners: [70, 69],
             losers: [],
             text: ['第70场胜者', '第69场胜者']
@@ -233,7 +233,7 @@ export const FinalZoneKnockoutJsonData: ZoneJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [77],
+            matches: [81],
             winners: [71, 72],
             losers: [],
             text: ['第71场胜者', '第72场胜者']
@@ -253,7 +253,7 @@ export const FinalZoneKnockoutJsonData: ZoneJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [78],
+            matches: [82],
             winners: [74, 73],
             losers: [],
             text: ['第74场胜者', '第73场胜者']
@@ -416,19 +416,19 @@ export const FinalZoneKnockoutTitleData: TitleData[] = [
   {
     left: rx - KnockoutXOffset * 4 + 20,
     top: ry - KnockoutYOffset * 7 - 40,
-    title: '16进8 第一轮 BO3',
+    title: '16进8第一轮 BO3',
     image: 'src/assets/title_bg.png',
   },
   {
     left: rx - KnockoutXOffset * 3 + 20,
     top: ry - KnockoutYOffset * 6 - 40,
-    title: '16进8 胜者组 BO3',
+    title: '16进8胜者组 BO3',
     image: 'src/assets/title_bg.png',
   },
   {
     left: rx - KnockoutXOffset * 2 + 20,
     top: ry - KnockoutYOffset * 4 - 40,
-    title: '8进4 胜者组 BO3',
+    title: '8进4胜者组 BO3',
     image: 'src/assets/title_bg.png',
   },
   {
@@ -448,5 +448,302 @@ export const FinalZoneKnockoutTitleData: TitleData[] = [
     top: ry - KnockoutYOffset * 2 - 40,
     title: '冠军争夺战 BO5',
     image: 'src/assets/title_winner_bg.png',
+  },
+]
+
+export const FinalZoneKnockoutLoserJsonData: ZoneJsonData = {
+  rootId: '#18',
+  nodes: [
+    // 75 1-2
+    // 76 4-3
+    // 77 5-6
+    // 78 8-7
+    {
+      id: '#1',
+      text: '16进8败者组第一轮 第1场',
+      x: rx - KnockoutXOffset * 3,
+      y: ry - KnockoutYOffset * 6,
+      data: {
+        title: '',
+        titleColor: '#FFFFFF',
+        round: -1,
+        type: 'match',
+        zones: [
+          {
+            matches: [75],
+            winners: [],
+            losers: [67, 68],
+            text: ['第67场败者', '第68场败者']
+          },
+        ]
+      }
+    },
+    {
+      id: '#2',
+      text: '16进8败者组第一轮 第2场',
+      x: rx - KnockoutXOffset * 3,
+      y: ry - KnockoutYOffset * 2,
+      data: {
+        title: '',
+        titleColor: '#FFFFFF',
+        round: -1,
+        type: 'match',
+        zones: [
+          {
+            matches: [76],
+            winners: [],
+            losers: [70, 69],
+            text: ['第70场败者', '第69场败者']
+          },
+        ]
+      }
+    },
+    {
+      id: '#3',
+      text: '16进8败者组第一轮 第3场',
+      x: rx - KnockoutXOffset * 3,
+      y: ry + KnockoutYOffset * 2,
+      data: {
+        title: '',
+        titleColor: '#FFFFFF',
+        round: -1,
+        type: 'match',
+        zones: [
+          {
+            matches: [77],
+            winners: [],
+            losers: [71, 72],
+            text: ['第71场败者', '第72场败者']
+          },
+        ]
+      }
+    },
+    {
+      id: '#4',
+      text: '16进8败者组第一轮 第4场',
+      x: rx - KnockoutXOffset * 3,
+      y: ry + KnockoutYOffset * 6,
+      data: {
+        title: '',
+        titleColor: '#FFFFFF',
+        round: -1,
+        type: 'match',
+        zones: [
+          {
+            matches: [78],
+            winners: [],
+            losers: [74, 73],
+            text: ['第74场败者', '第73场败者']
+          },
+        ]
+      }
+    },
+    // 83
+    // 84
+    // 85
+    // 86
+    {
+      id: '#5',
+      text: '16进8败者组第二轮 第1场',
+      x: rx - KnockoutXOffset * 2,
+      y: ry - KnockoutYOffset * 6,
+      data: {
+        title: '',
+        titleColor: '#FFFFFF',
+        round: -1,
+        type: 'match',
+        zones: [
+          {
+            matches: [83],
+            winners: [78],
+            losers: [79],
+            text: ['第78场胜者', '第79场败者']
+          },
+        ]
+      }
+    },
+    {
+      id: '#6',
+      text: '16进8败者组第二轮 第2场',
+      x: rx - KnockoutXOffset * 2,
+      y: ry - KnockoutYOffset * 2,
+      data: {
+        title: '',
+        titleColor: '#FFFFFF',
+        round: -1,
+        type: 'match',
+        zones: [
+          {
+            matches: [84],
+            winners: [77],
+            losers: [80],
+            text: ['第77场胜者', '第80场败者']
+          },
+        ]
+      }
+    },
+    {
+      id: '#7',
+      text: '16进8败者组第二轮 第3场',
+      x: rx - KnockoutXOffset * 2,
+      y: ry + KnockoutYOffset * 2,
+      data: {
+        title: '',
+        titleColor: '#FFFFFF',
+        round: -1,
+        type: 'match',
+        zones: [
+          {
+            matches: [85],
+            winners: [81],
+            losers: [76],
+            text: ['第81场败者', '第76场胜者']
+          },
+        ]
+      }
+    },
+    {
+      id: '#8',
+      text: '16进8败者组第二轮 第4场',
+      x: rx - KnockoutXOffset * 2,
+      y: ry + KnockoutYOffset * 6,
+      data: {
+        title: '',
+        titleColor: '#FFFFFF',
+        round: -1,
+        type: 'match',
+        zones: [
+          {
+            matches: [86],
+            winners: [75],
+            losers: [82],
+            text: ['第82场败者', '第75场胜者']
+          },
+        ]
+      }
+    },
+    // 89
+    // 90
+    {
+      id: '#9',
+      text: '8进4败者组第一轮 第1场',
+      x: rx - KnockoutXOffset,
+      y: ry - KnockoutYOffset * 4,
+      data: {
+        title: '',
+        titleColor: '#FFFFFF',
+        round: -1,
+        type: 'match',
+        zones: [
+          {
+            matches: [89],
+            winners: [83, 86],
+            losers: [],
+            text: ['第83场胜者', '第86场胜者']
+          },
+        ]
+      }
+    },
+    {
+      id: '#10',
+      text: '8进4败者组第一场 第2场',
+      x: rx - KnockoutXOffset,
+      y: ry + KnockoutYOffset * 4,
+      data: {
+        title: '',
+        titleColor: '#FFFFFF',
+        round: -1,
+        type: 'match',
+        zones: [
+          {
+            matches: [90],
+            winners: [84, 85],
+            losers: [],
+            text: ['第84场胜者', '第85场胜者']
+          },
+        ]
+      }
+    },
+    // 91
+    // 92
+    {
+      id: '#11',
+      text: '8进4败者组第二轮 第1场',
+      x: 0,
+      y: ry - KnockoutYOffset * 2,
+      data: {
+        title: '',
+        titleColor: '#FFFFFF',
+        round: -1,
+        type: 'match',
+        zones: [
+          {
+            matches: [91],
+            winners: [89],
+            losers: [87],
+            text: ['第87场败者', '第89场胜者']
+          },
+        ]
+      }
+    },
+    {
+      id: '#12',
+      text: '8进4败者组第二轮 第2场',
+      x: 0,
+      y: ry + KnockoutYOffset * 2,
+      data: {
+        title: '',
+        titleColor: '#FFFFFF',
+        round: -1,
+        type: 'match',
+        zones: [
+          {
+            matches: [92],
+            winners: [90],
+            losers: [88],
+            text: ['第88场败者', '第90场胜者']
+          },
+        ]
+      }
+    },
+  ],
+  lines: [
+    {from: '#1', to: '#5',},
+    {from: '#2', to: '#6',},
+    {from: '#3', to: '#7',},
+    {from: '#4', to: '#8',},
+    {from: '#5', to: '#9',},
+    {from: '#6', to: '#10',},
+    {from: '#7', to: '#9',},
+    {from: '#8', to: '#10',},
+    {from: '#9', to: '#11',},
+    {from: '#10', to: '#12',},
+  ],
+}
+
+export const FinalZoneKnockoutLoserTitleData: TitleData[] = [
+  {
+    left: rx - KnockoutXOffset * 3 + 20,
+    top: ry - KnockoutYOffset * 6 - 40,
+    title: '16进8败者组 第一轮 BO3',
+    image: 'src/assets/title_bg.png',
+  },
+  {
+    left: rx - KnockoutXOffset * 2 + 20,
+    top: ry - KnockoutYOffset * 6 - 40,
+    title: '16进8败者组 第二轮 BO3',
+    image: 'src/assets/title_bg.png',
+  },
+  {
+    left: rx - KnockoutXOffset + 20,
+    top: ry - KnockoutYOffset * 4 - 40,
+    title: '8进4败者组 第一轮 BO3',
+    image: 'src/assets/title_bg.png',
+  },
+  {
+    left: 20,
+    top: ry - KnockoutYOffset * 2 - 40,
+    title: '8进4败者组 第二轮 BO3',
+    image: 'src/assets/title_bg.png',
   },
 ]
