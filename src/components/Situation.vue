@@ -54,7 +54,7 @@ function badgeTab(zoneId: number): boolean {
             v-if="!liveMode"
             class="row"
             v-model="zoneTab"
-            bg-color="#2196F3BB"
+            bg-color="rgba(255, 255, 255, 0.1)"
           >
             <div class="col">
               <v-tab
@@ -119,7 +119,7 @@ function badgeTab(zoneId: number): boolean {
                 </v-carousel>
 
                 <div v-if="!liveMode"
-                     class="mx-auto container2" style="background: rgba(255, 255, 255, 0.2)">
+                     class="mx-auto container2" style="background: rgba(255, 255, 255, 0.1)">
                   <div class="row">
                     <div class="col">
                       <v-sheet
