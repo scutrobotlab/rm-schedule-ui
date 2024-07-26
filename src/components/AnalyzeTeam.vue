@@ -55,6 +55,7 @@ const groupRank = computed(() => {
       }
     }
   }
+  return []
 })
 
 function convertToOrdinal(number: number): string {
@@ -132,7 +133,7 @@ function convertToOrdinal(number: number): string {
               </div>
             </v-col>
 
-            <v-col md="6" cols="12">
+            <v-col v-if="groupRank.length > 0" md="6" cols="12">
               <div>
                 <v-chip color="info" variant="flat" label>
                   <h3>区域赛小组赛排名 {{ groupRank[0].itemValue }}/16</h3>
