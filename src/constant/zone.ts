@@ -13,6 +13,7 @@ import {
 import {GroupType, TitleData, ImageData, ZoneJsonData} from "../types/zone";
 import {RevivalZone2GroupJsonData, RevivalZone2ImageData, RevivalZone2RoundOrder} from "./revival_zone2";
 import {
+  FinalZoneGroup1JsonData, FinalZoneGroup1RoundOrder,
   FinalZoneKnockoutJsonData,
   FinalZoneKnockoutLoserJsonData,
   FinalZoneKnockoutLoserTitleData,
@@ -162,12 +163,18 @@ export const Zones: Zone[] = [
     id: 526, name: '全国赛', disabled: false,
     parts: [
       {
+        name: 'A组前四轮',
+        type: 'group',
+        group: 'A',
+        jsonData: FinalZoneGroup1JsonData,
+        roundOrder: FinalZoneGroup1RoundOrder,
+      },
+      {
         name: '淘汰赛',
         type: 'knockout',
         group: 'Knockout',
         jsonData: FinalZoneKnockoutJsonData,
         extraTitleData: FinalZoneKnockoutTitleData,
-        roundOrder: null, // TODO
       },
       {
         name: '败者组',
@@ -175,7 +182,6 @@ export const Zones: Zone[] = [
         group: 'Knockout',
         jsonData: FinalZoneKnockoutLoserJsonData,
         extraTitleData: FinalZoneKnockoutLoserTitleData,
-        roundOrder: null, // TODO
       }
     ]
   },

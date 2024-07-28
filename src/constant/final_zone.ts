@@ -3,6 +3,108 @@ import {TitleData, ZoneJsonData} from "../types/zone";
 const rx = 0;
 const ry = 0;
 
+const groupXOffset = 420;
+
+export const FinalZoneGroup1JsonData: ZoneJsonData = {
+  rootId: '#1',
+  nodes: [
+    {
+      id: '#1',
+      text: '第一轮 0-0',
+      x: rx - 4 * groupXOffset,
+      y: ry - 200,
+      data: {
+        title: '瑞士轮第一轮 0-0',
+        titleColor: '#FFFFFF',
+        titleImage: 'src/assets/title_bg.png',
+        borderColor: '#5A879C',
+        round: 1,
+        type: 'match',
+        zones: [
+          {
+            matches: [1, 2, 3, 4, 5, 6, 7, 8],
+            winners: [],
+            losers: [],
+            text: [
+              'A1', 'A9',
+              'A2', 'A10',
+              'A11', 'A3',
+              'A12', 'A4',
+              'A5', 'A13',
+              'A6', 'A14',
+              'A15', 'A7',
+              'A16', 'A8']
+          },
+        ]
+      }
+    },
+    {
+      id: '#2',
+      text: '第二轮 1-0',
+      x: rx - 3 * groupXOffset,
+      y: ry - 250,
+      data: {
+        title: '瑞士轮第二轮 1-0',
+        titleColor: '#FFFFFF',
+        titleImage: 'src/assets/title_bg.png',
+        borderColor: '#5A879C',
+        round: 2,
+        type: 'match',
+        zones: [
+          {
+            matches: [17, 18, 19, 20],
+            winners: [1, 2, 3, 4, 5, 6, 7, 8],
+            losers: [],
+            text: ['A组 第一轮 第1名', 'A组 第一轮 第2名', 'A组 第一轮 第3名', 'A组 第一轮 第4名',
+              'A组 第一轮 第6名', 'A组 第一轮 第5名', 'A组 第一轮 第8名', 'A组 第一轮 第7名'],
+            forecasts: [
+              {red: 1, blue: 2},
+              {red: 3, blue: 4},
+              {red: 6, blue: 5},
+              {red: 8, blue: 7},
+            ]
+          },
+        ]
+      }
+    },
+    {
+      id: '#3',
+      text: '第二轮 0-1',
+      x: rx - 3 * groupXOffset,
+      y: ry + 160,
+      data: {
+        title: '瑞士轮第二轮 0-1',
+        titleColor: '#FFFFFF',
+        titleImage: 'src/assets/title_bg.png',
+        borderColor: '#5A879C',
+        round: 2,
+        type: 'match',
+        zones: [
+          {
+            matches: [21, 22, 23, 24],
+            winners: [],
+            losers: [1, 2, 3, 4, 5, 6, 7, 8],
+            text: ['A组 第一轮 第9名', 'A组 第一轮 第10名', 'A组 第一轮 第11名', 'A组 第一轮 第12名',
+              'A组 第一轮 第14名', 'A组 第一轮 第13名', 'A组 第一轮 第16名', 'A组 第一轮 第15名'],
+            forecasts: [
+              {red: 9, blue: 10},
+              {red: 11, blue: 12},
+              {red: 14, blue: 13},
+              {red: 16, blue: 15},
+            ]
+          },
+        ]
+      }
+    },
+  ],
+  lines: [],
+}
+
+export const FinalZoneGroup1RoundOrder = {
+  'A': [],
+  'B': [],
+}
+
 const KnockoutXOffset = 420;
 const KnockoutYOffset = 50;
 
