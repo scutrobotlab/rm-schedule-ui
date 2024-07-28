@@ -388,7 +388,7 @@ export const GlobalZoneJsonData: ZoneJsonData = {
             matches: [7, 8],
             winners: [],
             losers: [],
-            text: ['Q1', 'W2', 'W1', 'Q2'],
+            text: ['Q组 第1名', 'W组 第2名', 'W组 第1名', 'Q组 第2名'],
           },
         ]
       }
