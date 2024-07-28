@@ -6,6 +6,7 @@ import {
   GroupZoneRoundOrder
 } from "./group_zone";
 import {
+  GlobalZoneJsonData, GlobalZoneRoundOrder,
   RevivalZoneGroupJsonData,
   RevivalZoneRoundOrder
 } from "./revival_zone";
@@ -134,6 +135,14 @@ export const Zones: Zone[] = [
         jsonData: RevivalZoneGroupJsonData,
         roundOrder: RevivalZoneRoundOrder
       },
+      {
+        name: '港澳台及海外赛区',
+        type: 'group',
+        group: 'QW',
+        jsonData: GlobalZoneJsonData,
+        extraTitleData: null,
+        roundOrder: GlobalZoneRoundOrder,
+      }
     ]
   },
   {

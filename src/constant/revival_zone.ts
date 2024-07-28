@@ -317,3 +317,115 @@ export const RevivalZoneRoundOrder = {
   'A': [1, 9, 17, 22],
   'B': [5, 13, 20, 22],
 }
+
+export const GlobalZoneJsonData: ZoneJsonData = {
+  rootId: '#1',
+  nodes: [
+    {
+      id: '#1',
+      text: 'Q组海外队伍小组赛',
+      x: rx - 2 * xOffset,
+      y: ry - 160,
+      data: {
+        title: 'Q组海外队伍小组赛',
+        titleColor: '#FFFFFF',
+        titleImage: 'src/assets/title_bg.png',
+        borderColor: '#5A879C',
+        rankColor: '#FFA500',
+        round: 1,
+        type: 'groupLoop',
+        zones: [
+          {
+            matches: [],
+            winners: [],
+            losers: [],
+            text: ['Q1', 'Q2', 'Q3'],
+            group: 'Q',
+            groupRank: [1, 2, 3]
+          },
+        ]
+      }
+    },
+    {
+      id: '#2',
+      text: 'W组海外队伍小组赛',
+      x: rx - 2 * xOffset,
+      y: ry + 160,
+      data: {
+        title: 'W组海外队伍小组赛',
+        titleColor: '#FFFFFF',
+        titleImage: 'src/assets/title_bg.png',
+        borderColor: '#5A879C',
+        rankColor: '#FFA500',
+        round: 1,
+        type: 'groupLoop',
+        zones: [
+          {
+            matches: [],
+            winners: [],
+            losers: [],
+            text: ['W1', 'W2', 'W3'],
+            group: 'W',
+            groupRank: [1, 2, 3]
+          },
+        ]
+      }
+    },
+    {
+      id: '#3',
+      text: '海外队伍淘汰赛',
+      x: rx - xOffset,
+      y: ry,
+      data: {
+        title: '海外队伍淘汰赛',
+        titleColor: '#FFFFFF',
+        titleImage: 'src/assets/title_bg.png',
+        borderColor: '#5A879C',
+        round: 2,
+        type: 'match',
+        zones: [
+          {
+            matches: [7, 8],
+            winners: [],
+            losers: [],
+            text: ['Q1', 'W2', 'W1', 'Q2'],
+          },
+        ]
+      }
+    },
+    {
+      id: '#4',
+      text: '晋级第二赛段',
+      x: 0,
+      y: 38,
+      data: {
+        title: '晋级第二赛段',
+        titleColor: '#FFFFFF',
+        titleImage: 'src/assets/title_winner_bg.png',
+        borderColor: '#E7A662',
+        collegeNameColor: '#FFB553',
+        rankColor: '#FFA500',
+        round: 3,
+        type: 'promote',
+        zones: [
+          {
+            matches: [],
+            winners: [7, 8],
+            losers: [],
+            text: ['第7场胜者', '第8场胜者'],
+          }
+        ]
+      }
+    }
+  ],
+  lines: [
+    {from: '#1', to: '#3',},
+    {from: '#2', to: '#3',},
+    {from: '#3', to: '#4',},
+  ],
+}
+
+
+export const GlobalZoneRoundOrder = {
+  'QW': [1, 7, 9],
+}

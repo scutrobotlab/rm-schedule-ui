@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import RelationGraph from 'relation-graph-vue3';
-import {RGOptions} from 'relation-graph-vue3';
+import RelationGraph, {RGOptions} from 'relation-graph-vue3';
 import {usePromotionStore} from "../stores/promotion";
 import {MatchNode, Player, PlayerWithMatch} from "../types/schedule";
 import {computed} from "vue";
 import {useAppStore} from "../stores/app";
 import {useRoute} from "vue-router";
 import {RoundOrder} from "../types/round_order";
-import {GroupType, TitleData, ImageData, ZoneJsonData, ZoneNodeJsonData} from "../types/zone";
+import {GroupType, ImageData, TitleData, ZoneJsonData, ZoneNodeJsonData} from "../types/zone";
 
 interface Props {
   zoneId: number,
@@ -131,6 +130,13 @@ function rankList(zone: any): PlayerWithMatch[] {
     return matchRank(a.player) - matchRank(b.player)
   })
   return playerWithMatches
+}
+
+function groupRank(groupName: string, rank: number): Player {
+  const zone = promotionStore.getZone(props.zoneId)
+  let group = zone.groups.nodes.find((g) => g.name == groupName)
+  if (!group) return null
+  return group.players.nodes.find((p) => p.rank == rank)
 }
 
 function padNumber(num: number): string {
@@ -562,6 +568,46 @@ const round = computed(() => {
                                 }}
                               </span>
                             </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div v-else-if="node.data.type == 'groupLoop'">
+                <div
+                  class="mx-2"
+                  v-for="(v, i) in node.data.zones[groupIndex].groupRank"
+                  :key="i">
+                  <div class="container ml-2">
+                    <div class="right-column">
+                      <div class="top-row row-content mt-2">
+                        <div class="school-image-container">
+                          <img src="@/assets/school_bg.png" alt="Image"/>
+                          <div class="overlay ml-4">
+                            <div :style="{background: node.data.rankColor}">
+                              <h4 class="px-1" style="width: 3rem">
+                                {{ convertToOrdinal(v) }}
+                              </h4>
+                            </div>
+                            <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
+                              <v-img v-if="groupRank(node.data.zones[groupIndex].group, v).team"
+                                     :src="groupRank(node.data.zones[groupIndex].group, v).team?.collegeLogo"/>
+                              <v-img v-else src="@/assets/school_grey.png"/>
+                            </v-avatar>
+                            <span v-if="groupRank(node.data.zones[groupIndex].group, v).team"
+                                  class="one-line-text">
+                              {{
+                                groupRank(node.data.zones[groupIndex].group, v).team?.collegeName
+                              }}
+                            </span>
+                            <span v-else class="one-line-text">
+                              {{
+                                node.data.zones[groupIndex].text[i]
+                              }}
+                            </span>
                           </div>
                         </div>
                       </div>

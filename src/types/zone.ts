@@ -27,7 +27,7 @@ export interface ZoneNodeData {
   collegeNameColor?: string;
   rankColor?: string;
   round: number;
-  type: string;
+  type: 'match' | 'promote' | 'eliminate' | 'groupLoop';
   zones: ZoneZoneData[];
 }
 
@@ -37,6 +37,8 @@ export interface ZoneZoneData {
   losers: number[];
   text: string[];
   forecasts?: ZoneForecastData[];
+  group?: 'Q' | 'W';
+  groupRank?: number[];
 }
 
 export interface ZoneForecastData {
