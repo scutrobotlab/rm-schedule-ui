@@ -588,7 +588,7 @@ const round = computed(() => {
                           <img src="@/assets/school_bg.png" alt="Image"/>
                           <div class="overlay ml-4">
                             <div :style="{background: node.data.rankColor}">
-                              <h4 class="px-1" style="width: 3rem">
+                              <h4 class="px-1" style="width: 2.5rem">
                                 {{ convertToOrdinal(v) }}
                               </h4>
                             </div>
