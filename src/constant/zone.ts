@@ -13,7 +13,7 @@ import {
 import {GroupType, TitleData, ImageData, ZoneJsonData} from "../types/zone";
 import {RevivalZone2GroupJsonData, RevivalZone2ImageData, RevivalZone2RoundOrder} from "./revival_zone2";
 import {
-  FinalZoneGroup1JsonData, FinalZoneGroup1RoundOrder,
+  FinalZoneGroup1JsonData, FinalZoneGroup1RoundOrder, FinalZoneGroup2JsonData, FinalZoneGroup2RoundOrder,
   FinalZoneKnockoutJsonData,
   FinalZoneKnockoutLoserJsonData,
   FinalZoneKnockoutLoserTitleData,
@@ -163,33 +163,47 @@ export const Zones: Zone[] = [
     id: 526, name: '全国赛', disabled: false,
     parts: [
       {
-        name: 'A组前四轮',
+        name: 'A组前段',
         type: 'group',
         group: 'A',
         jsonData: FinalZoneGroup1JsonData,
         roundOrder: FinalZoneGroup1RoundOrder,
       },
       {
-        name: 'B组前四轮',
+        name: 'B组前段',
         type: 'group',
         group: 'B',
         jsonData: FinalZoneGroup1JsonData,
         roundOrder: FinalZoneGroup1RoundOrder,
       },
       {
-        name: '淘汰赛',
+        name: 'A组后段',
+        type: 'group',
+        group: 'A',
+        jsonData: FinalZoneGroup2JsonData,
+        roundOrder: FinalZoneGroup2RoundOrder,
+      },
+      {
+        name: 'B组后段',
+        type: 'group',
+        group: 'B',
+        jsonData: FinalZoneGroup2JsonData,
+        roundOrder: FinalZoneGroup2RoundOrder
+      },
+      {
+        name: '淘汰赛败者组',
+        type: 'knockout',
+        group: 'Knockout',
+        jsonData: FinalZoneKnockoutLoserJsonData,
+        extraTitleData: FinalZoneKnockoutLoserTitleData,
+      },
+      {
+        name: '淘汰赛胜者组',
         type: 'knockout',
         group: 'Knockout',
         jsonData: FinalZoneKnockoutJsonData,
         extraTitleData: FinalZoneKnockoutTitleData,
       },
-      {
-        name: '败者组',
-        type: 'knockout',
-        group: 'Knockout',
-        jsonData: FinalZoneKnockoutLoserJsonData,
-        extraTitleData: FinalZoneKnockoutLoserTitleData,
-      }
     ]
   },
 ]
