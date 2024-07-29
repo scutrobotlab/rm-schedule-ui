@@ -170,6 +170,13 @@ export const Zones: Zone[] = [
         roundOrder: FinalZoneGroup1RoundOrder,
       },
       {
+        name: 'B组前四轮',
+        type: 'group',
+        group: 'B',
+        jsonData: FinalZoneGroup1JsonData,
+        roundOrder: FinalZoneGroup1RoundOrder,
+      },
+      {
         name: '淘汰赛',
         type: 'knockout',
         group: 'Knockout',
