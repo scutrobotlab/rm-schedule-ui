@@ -393,7 +393,7 @@ export const FinalZoneGroup1JsonData: ZoneJsonData = {
 
 export const FinalZoneGroup1RoundOrder = {
   'A': [1, 17, 33, 49],
-  'B': [9, 25, 41, 57],
+  'B': [9, 25, 41, 55],
 }
 
 const KnockoutXOffset = 420;
