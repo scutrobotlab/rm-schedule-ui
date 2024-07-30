@@ -16,7 +16,7 @@ export const FinalZoneGroup1JsonData: ZoneJsonData = {
       data: {
         title: '瑞士轮第一轮 0-0',
         titleColor: '#FFFFFF',
-        titleImage: 'src/assets/title_bg.png',
+        titleImage: 'static/title_bg.png',
         borderColor: '#5A879C',
         round: 1,
         type: 'match',
@@ -44,7 +44,7 @@ export const FinalZoneGroup1JsonData: ZoneJsonData = {
       data: {
         title: '瑞士轮第二轮 1-0',
         titleColor: '#FFFFFF',
-        titleImage: 'src/assets/title_bg.png',
+        titleImage: 'static/title_bg.png',
         borderColor: '#5A879C',
         round: 2,
         type: 'match',
@@ -86,7 +86,7 @@ export const FinalZoneGroup1JsonData: ZoneJsonData = {
       data: {
         title: '瑞士轮第二轮 0-1',
         titleColor: '#FFFFFF',
-        titleImage: 'src/assets/title_bg.png',
+        titleImage: 'static/title_bg.png',
         borderColor: '#5A879C',
         round: 2,
         type: 'match',
@@ -128,7 +128,7 @@ export const FinalZoneGroup1JsonData: ZoneJsonData = {
       data: {
         title: '瑞士轮第三轮 2-0',
         titleColor: '#FFFFFF',
-        titleImage: 'src/assets/title_bg.png',
+        titleImage: 'static/title_bg.png',
         borderColor: '#5A879C',
         round: 3,
         type: 'match',
@@ -164,7 +164,7 @@ export const FinalZoneGroup1JsonData: ZoneJsonData = {
       data: {
         title: '瑞士轮第三轮 1-1',
         titleColor: '#FFFFFF',
-        titleImage: 'src/assets/title_bg.png',
+        titleImage: 'static/title_bg.png',
         borderColor: '#5A879C',
         round: 3,
         type: 'match',
@@ -206,7 +206,7 @@ export const FinalZoneGroup1JsonData: ZoneJsonData = {
       data: {
         title: '瑞士轮第三轮 0-2',
         titleColor: '#FFFFFF',
-        titleImage: 'src/assets/title_bg.png',
+        titleImage: 'static/title_bg.png',
         borderColor: '#5A879C',
         round: 3,
         type: 'match',
@@ -242,7 +242,7 @@ export const FinalZoneGroup1JsonData: ZoneJsonData = {
       data: {
         title: '晋级淘汰赛 3-0',
         titleColor: '#FFFFFF',
-        titleImage: 'src/assets/title_winner_bg.png',
+        titleImage: 'static/title_winner_bg.png',
         borderColor: '#E7A662',
         collegeNameColor: '#FFB553',
         rankColor: '#FFA500',
@@ -272,7 +272,7 @@ export const FinalZoneGroup1JsonData: ZoneJsonData = {
       data: {
         title: '淘汰 0-3',
         titleColor: '#FFFFFF',
-        titleImage: 'src/assets/title_loser_bg.png',
+        titleImage: 'static/title_loser_bg.png',
         borderColor: '#3E484D',
         collegeNameColor: '#9D9F9F',
         rankColor: '#4F4F4F',
@@ -302,7 +302,7 @@ export const FinalZoneGroup1JsonData: ZoneJsonData = {
       data: {
         title: '瑞士轮第四轮 2-1',
         titleColor: '#FFFFFF',
-        titleImage: 'src/assets/title_bg.png',
+        titleImage: 'static/title_bg.png',
         borderColor: '#5A879C',
         round: 4,
         type: 'match',
@@ -342,7 +342,7 @@ export const FinalZoneGroup1JsonData: ZoneJsonData = {
       data: {
         title: '瑞士轮第四轮 1-2',
         titleColor: '#FFFFFF',
-        titleImage: 'src/assets/title_bg.png',
+        titleImage: 'static/title_bg.png',
         borderColor: '#5A879C',
         round: 4,
         type: 'match',
@@ -407,7 +407,7 @@ export const FinalZoneGroup2JsonData: ZoneJsonData = {
       data: {
         title: '晋级淘汰赛 3-0',
         titleColor: '#FFFFFF',
-        titleImage: 'src/assets/title_winner_bg.png',
+        titleImage: 'static/title_winner_bg.png',
         borderColor: '#E7A662',
         collegeNameColor: '#FFB553',
         rankColor: '#FFA500',
@@ -437,7 +437,7 @@ export const FinalZoneGroup2JsonData: ZoneJsonData = {
       data: {
         title: '瑞士轮第四轮 2-1',
         titleColor: '#FFFFFF',
-        titleImage: 'src/assets/title_bg.png',
+        titleImage: 'static/title_bg.png',
         borderColor: '#5A879C',
         round: 1,
         type: 'match',
@@ -475,7 +475,7 @@ export const FinalZoneGroup2JsonData: ZoneJsonData = {
       data: {
         title: '瑞士轮第四轮 1-2',
         titleColor: '#FFFFFF',
-        titleImage: 'src/assets/title_bg.png',
+        titleImage: 'static/title_bg.png',
         borderColor: '#5A879C',
         round: 1,
         type: 'match',
@@ -513,7 +513,7 @@ export const FinalZoneGroup2JsonData: ZoneJsonData = {
       data: {
         title: '晋级淘汰赛 3-1',
         titleColor: '#FFFFFF',
-        titleImage: 'src/assets/title_winner_bg.png',
+        titleImage: 'static/title_winner_bg.png',
         borderColor: '#E7A662',
         collegeNameColor: '#FFB553',
         rankColor: '#FFA500',
@@ -543,7 +543,7 @@ export const FinalZoneGroup2JsonData: ZoneJsonData = {
       data: {
         title: '瑞士轮第五轮 2-2',
         titleColor: '#FFFFFF',
-        titleImage: 'src/assets/title_bg.png',
+        titleImage: 'static/title_bg.png',
         borderColor: '#5A879C',
         round: 2,
         type: 'match',
@@ -581,7 +581,7 @@ export const FinalZoneGroup2JsonData: ZoneJsonData = {
       data: {
         title: '淘汰 1-3',
         titleColor: '#FFFFFF',
-        titleImage: 'src/assets/title_loser_bg.png',
+        titleImage: 'static/title_loser_bg.png',
         borderColor: '#3E484D',
         collegeNameColor: '#9D9F9F',
         rankColor: '#4F4F4F',
@@ -611,7 +611,7 @@ export const FinalZoneGroup2JsonData: ZoneJsonData = {
       data: {
         title: '晋级淘汰赛 3-2',
         titleColor: '#FFFFFF',
-        titleImage: 'src/assets/title_winner_bg.png',
+        titleImage: 'static/title_winner_bg.png',
         borderColor: '#E7A662',
         collegeNameColor: '#FFB553',
         rankColor: '#FFA500',
@@ -641,7 +641,7 @@ export const FinalZoneGroup2JsonData: ZoneJsonData = {
       data: {
         title: '淘汰 2-3',
         titleColor: '#FFFFFF',
-        titleImage: 'src/assets/title_loser_bg.png',
+        titleImage: 'static/title_loser_bg.png',
         borderColor: '#3E484D',
         collegeNameColor: '#9D9F9F',
         rankColor: '#4F4F4F',
@@ -1093,37 +1093,37 @@ export const FinalZoneKnockoutTitleData: TitleData[] = [
     left: rx - KnockoutXOffset * 4 + 20,
     top: ry - KnockoutYOffset * 7 - 40,
     title: '16进8第一轮 BO3',
-    image: 'src/assets/title_bg.png',
+    image: 'static/title_bg.png',
   },
   {
     left: rx - KnockoutXOffset * 3 + 20,
     top: ry - KnockoutYOffset * 6 - 40,
     title: '16进8胜者组 BO3',
-    image: 'src/assets/title_bg.png',
+    image: 'static/title_bg.png',
   },
   {
     left: rx - KnockoutXOffset * 2 + 20,
     top: ry - KnockoutYOffset * 4 - 40,
     title: '8进4胜者组 BO3',
-    image: 'src/assets/title_bg.png',
+    image: 'static/title_bg.png',
   },
   {
     left: rx - KnockoutXOffset + 20,
     top: ry - KnockoutYOffset * 4 - 40,
     title: '半决赛 BO3',
-    image: 'src/assets/title_bg.png',
+    image: 'static/title_bg.png',
   },
   {
     left: 20,
     top: ry + KnockoutYOffset * 2 - 40,
     title: '季军争夺战 BO5',
-    image: 'src/assets/title_winner_bg.png',
+    image: 'static/title_winner_bg.png',
   },
   {
     left: 20,
     top: ry - KnockoutYOffset * 2 - 40,
     title: '冠军争夺战 BO5',
-    image: 'src/assets/title_winner_bg.png',
+    image: 'static/title_winner_bg.png',
   },
 ]
 
@@ -1402,24 +1402,24 @@ export const FinalZoneKnockoutLoserTitleData: TitleData[] = [
     left: rx - KnockoutXOffset * 3 + 20,
     top: ry - KnockoutYOffset * 6 - 40,
     title: '16进8败者组 第一轮 BO3',
-    image: 'src/assets/title_bg.png',
+    image: 'static/title_bg.png',
   },
   {
     left: rx - KnockoutXOffset * 2 + 20,
     top: ry - KnockoutYOffset * 6 - 40,
     title: '16进8败者组 第二轮 BO3',
-    image: 'src/assets/title_bg.png',
+    image: 'static/title_bg.png',
   },
   {
     left: rx - KnockoutXOffset + 20,
     top: ry - KnockoutYOffset * 4 - 40,
     title: '8进4败者组 第一轮 BO3',
-    image: 'src/assets/title_bg.png',
+    image: 'static/title_bg.png',
   },
   {
     left: 20,
     top: ry - KnockoutYOffset * 2 - 40,
     title: '8进4败者组 第二轮 BO3',
-    image: 'src/assets/title_bg.png',
+    image: 'static/title_bg.png',
   },
 ]
