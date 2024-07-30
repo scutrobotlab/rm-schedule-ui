@@ -3,7 +3,7 @@
 ## Build
 
 ```bash
-docker build -t registry.cn-guangzhou.aliyuncs.com/scutrobot/rm-schedule-ui:latest .
+docker build --platform linux/amd64 -t registry.cn-guangzhou.aliyuncs.com/scutrobot/rm-schedule-ui:latest .
 ```
 
 ```bash
