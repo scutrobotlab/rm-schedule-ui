@@ -119,53 +119,52 @@ function badgeTab(zoneId: number): boolean {
                 </v-carousel>
 
                 <div v-if="!liveMode"
-                     class="mx-auto container2" style="background: rgba(255, 255, 255, 0.1)">
-                  <div class="row">
-                    <div class="col">
-                      <v-sheet
-                        class="mx-auto text-center bg-transparent"
+                     class="mx-auto" style="background: rgba(255, 255, 255, 0.1)">
+                  <v-sheet
+                    class="mx-auto text-center bg-transparent"
+                  >
+                    <v-slide-group
+                      class="ml-2"
+                      v-model="selectedGroup"
+                      mandatory="force"
+                    >
+                      <v-slide-group-item
+                        v-for="n in zone.parts.map(p => p.name)"
+                        :key="n"
+                        v-slot="{ isSelected, toggle }"
                       >
-                        <v-slide-group
-                          class="ml-2"
-                          v-model="selectedGroup"
-                          mandatory="force"
-                        >
-                          <v-slide-group-item
-                            v-for="n in zone.parts.map(p => p.name)"
-                            :key="n"
-                            v-slot="{ isSelected, toggle }"
-                          >
-                            <v-btn
-                              :color="isSelected ? 'primary' : undefined"
-                              class="mx-1 my-2"
-                              rounded
-                              size="small"
-                              @click="toggle">
-                              {{ n }}
-                            </v-btn>
-                          </v-slide-group-item>
-                        </v-slide-group>
-                      </v-sheet>
-                    </div>
-                    <div class="col text-right mr-2">
-                      <v-btn
-                        class="mx-1 my-2" variant="flat"
-                        color="info" size="small"
-                        :disabled="!promotionStore.selectedPlayer"
-                        @click="appStore.analysisDialog = true"
-                      >
-                        分析
-                      </v-btn>
+                        <v-btn
+                          :color="isSelected ? 'primary' : undefined"
+                          class="mx-1 my-2"
+                          rounded
+                          size="small"
+                          @click="toggle">
+                          {{ n }}
+                        </v-btn>
+                      </v-slide-group-item>
 
-                      <v-btn
-                        class="mx-1 my-2" variant="flat"
-                        color="info" size="small"
-                        @click="appStore.aboutDialog = true"
-                      >
-                        关于
-                      </v-btn>
-                    </div>
-                  </div>
+                      <v-spacer/>
+
+                      <div class="text-right">
+                        <v-btn
+                          class="mx-1 my-2" variant="flat"
+                          color="info" size="small"
+                          :disabled="!promotionStore.selectedPlayer"
+                          @click="appStore.analysisDialog = true"
+                        >
+                          分析
+                        </v-btn>
+
+                        <v-btn
+                          class="mx-1 my-2" variant="flat"
+                          color="info" size="small"
+                          @click="appStore.aboutDialog = true"
+                        >
+                          关于
+                        </v-btn>
+                      </div>
+                    </v-slide-group>
+                  </v-sheet>
                 </div>
               </div>
             </div>
