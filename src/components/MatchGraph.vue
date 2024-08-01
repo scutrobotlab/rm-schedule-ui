@@ -139,6 +139,21 @@ function groupRank(groupName: string, rank: number): Player {
   return group.players.nodes.find((p) => p.rank == rank)
 }
 
+function groupTrulyRank(groupName: string, rank: number): number {
+  const zone = promotionStore.getZone(props.zoneId)
+  let group = zone.groups.nodes.find((g) => g.name == groupName)
+  if (!group) return null
+  let allZero = true
+  for (let i = 0; i < group.players.nodes.length; i++) {
+    if (group.players.nodes[i].score != 0) {
+      allZero = false
+      break
+    }
+  }
+  if (allZero) return 1
+  return rank
+}
+
 function padNumber(num: number): string {
   return num.toString().padStart(2, '0');
 }
@@ -589,7 +604,7 @@ const round = computed(() => {
                           <div class="overlay ml-4">
                             <div :style="{background: node.data.rankColor}">
                               <h4 class="px-1" style="width: 2.5rem">
-                                {{ convertToOrdinal(v) }}
+                                {{ convertToOrdinal(groupTrulyRank(node.data.zones[groupIndex].group, v)) }}
                               </h4>
                             </div>
                             <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
