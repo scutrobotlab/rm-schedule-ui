@@ -381,7 +381,7 @@ const round = computed(() => {
                           <div class="school-image-container">
                             <img src="@/assets/school_bg.png" alt="Image"/>
                             <div class="overlay ml-4">
-                              <div v-if="v.match.status == 'DONE'" style="background: #43A047">
+                              <div v-if="v.match.status == 'DONE'" style="background: #FFA500">
                                 <h4 class="px-1" style="width: 2.5rem">{{ convertToOrdinal(matchRank(v.player)) }}</h4>
                               </div>
                               <div v-else style="background: #616161">
