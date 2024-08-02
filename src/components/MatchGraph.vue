@@ -67,7 +67,7 @@ const options = ref<RGOptions>({
   disableDragNode: true,
   disableDragCanvas: false,
   zoomToFitWhenRefresh: true,
-  allowShowMiniToolBar: !liveMode.value,
+  // allowShowMiniToolBar: !liveMode.value,
   // graphOffset_y: props.type == 'knockout' ? 0 : -40,
 })
 
@@ -351,7 +351,7 @@ const round = computed(() => {
                      :src="node.data.titleImage" alt="Image"/>
                 <div class="title-text-overlay mt-1 my-font">
                   <b>{{ node.data.title }}</b>
-                  <b class="ml-1" v-if="isForecast(node)">*</b>
+                  <b class="ml-1" v-if="isForecast(node) && !liveMode">*</b>
                 </div>
               </div>
             </div>
