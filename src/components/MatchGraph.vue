@@ -7,6 +7,7 @@ import {useAppStore} from "../stores/app";
 import {useRoute} from "vue-router";
 import {RoundOrder} from "../types/round_order";
 import {GroupType, ImageData, TitleData, ZoneJsonData, ZoneNodeJsonData} from "../types/zone";
+import moment from 'moment';
 
 interface Props {
   zoneId: number,
@@ -224,6 +225,12 @@ function playerSelected(player: Player): boolean {
   return promotionStore.selectedPlayer.id == player.id
 }
 
+function matchTooltip(match: MatchNode): string {
+  if (!match) return ""
+  const time = moment.parseZone(match.planStartedAt).utcOffset(8)
+  return `预计 ${time.format('M月D日 HH:mm')} 开始`
+}
+
 const fingersCount = ref(0);
 const updateFingersCount = (event: TouchEvent) => {
   fingersCount.value = event.touches.length;
@@ -435,168 +442,180 @@ const round = computed(() => {
 
                   <!--已确认的赛程-->
                   <div v-if="round + 1 > node.data.round && match(v)" class="container">
-                    <div
-                      class="container ml-2"
-                      :class="{
-                        'mt-2': type == 'group',
-                      }"
-                    >
-                      <div class="left-column order-image-container">
-                        <img src="@/assets/order_bg.png" alt="Image"/>
-                        <div class="order-text-overlay">
-                          <b>{{ padNumber(match(v).orderNumber) }}</b>
-                        </div>
-                      </div>
-
-                      <div class="right-column">
+                    <v-tooltip :text="matchTooltip(match(v))">
+                      <template v-slot:activator="{ props }">
                         <div
-                          class="top-row row-content mb-1"
+                          v-bind="props"
+                          class="container ml-2"
                           :class="{
-                            'selected-content': playerSelected(match(v).redSide.player),
+                            'mt-2': type == 'group',
                           }"
-                          @click="selectPlayer(match(v).redSide.player)"
                         >
-                          <div class="school-image-container">
-                            <img src="@/assets/school_bg.png" alt="Image"/>
-                            <div class="overlay ml-4">
-                              <div
-                                style="background: #616161"
-                                :class="{
-                                  'colorful-red': loser(v) != match(v).redSide.player,
-                                }">
-                                <h4 class="px-1">{{ match(v).redSideWinGameCount }}</h4>
-                              </div>
-                              <div
-                                v-if="!liveMode && promotionStore.getMpMatch(match(v).id) && promotionStore.getMpMatch(match(v).id).redRate >= 0"
-                                class="ml-1 text-caption"
-                                :style="{
-                                  width: '2.5rem',
-                                  background: `linear-gradient(to right, #F44336 ${promotionStore.getMpMatch(match(v).id).redRate * 100}%, transparent ${promotionStore.getMpMatch(match(v).id).redRate * 100 + 20}%)`,
-                                  border: '1px solid #F44336',
-                                  'border-radius': '2px',
-                                }">
-                                {{ (100 * promotionStore.getMpMatch(match(v).id).redRate).toFixed(1) }}%
-                              </div>
-                              <v-avatar v-if="match(v).redSide.player?.team" class="mx-1" color="white" size="x-small">
-                                <v-img :src="match(v).redSide.player?.team.collegeLogo"></v-img>
-                              </v-avatar>
-                              <v-avatar v-else class="mx-1" size="x-small">
-                                <v-img src="@/assets/school_red.png"></v-img>
-                              </v-avatar>
-                              <span v-if="match(v).redSide.player?.team"
-                                    :style="{color: (node as ZoneNodeJsonData).data.collegeNameColor}"
-                                    :class="{'color-gray': loser(v) == match(v).redSide.player }"
-                                    class="one-line-text">{{ match(v).redSide.player?.team.collegeName }}</span>
-                              <span v-else :style="{color: (node as ZoneNodeJsonData).data.collegeNameColor}"
-                                    class="one-line-text">{{ node.data.zones[groupIndex].text[2 * i] }}</span>
+                          <div class="left-column order-image-container">
+                            <img src="@/assets/order_bg.png" alt="Image"/>
+                            <div class="order-text-overlay">
+                              <b>{{ padNumber(match(v).orderNumber) }}</b>
                             </div>
                           </div>
-                        </div>
 
-                        <div
-                          class="row-content"
-                          :class="{
-                          'selected-content': playerSelected(match(v).blueSide.player),
-                        }"
-                          @click="selectPlayer(match(v).blueSide.player)"
-                        >
-                          <div class="school-image-container">
-                            <img src="@/assets/school_bg.png" alt="Image"/>
-                            <div class="overlay ml-4">
-                              <div
-                                style="background: #616161"
-                                :class="{
-                                  'colorful-blue': loser(v) != match(v).blueSide.player,
-                                }">
-                                <h4 class="px-1">{{ match(v).blueSideWinGameCount }}</h4>
+                          <div class="right-column">
+                            <div
+                              class="top-row row-content mb-1"
+                              :class="{
+                                'selected-content': playerSelected(match(v).redSide.player),
+                              }"
+                              @click="selectPlayer(match(v).redSide.player)"
+                            >
+                              <div class="school-image-container">
+                                <img src="@/assets/school_bg.png" alt="Image"/>
+                                <div class="overlay ml-4">
+                                  <div
+                                    style="background: #616161"
+                                    :class="{
+                                      'colorful-red': loser(v) != match(v).redSide.player,
+                                    }">
+                                    <h4 class="px-1">{{ match(v).redSideWinGameCount }}</h4>
+                                  </div>
+                                  <div
+                                    v-if="!liveMode && promotionStore.getMpMatch(match(v).id) && promotionStore.getMpMatch(match(v).id).redRate >= 0"
+                                    class="ml-1 text-caption"
+                                    :style="{
+                                      width: '2.5rem',
+                                      background: `linear-gradient(to right, #F44336 ${promotionStore.getMpMatch(match(v).id).redRate * 100}%, transparent ${promotionStore.getMpMatch(match(v).id).redRate * 100 + 20}%)`,
+                                      border: '1px solid #F44336',
+                                      'border-radius': '2px',
+                                    }">
+                                    {{ (100 * promotionStore.getMpMatch(match(v).id).redRate).toFixed(1) }}%
+                                  </div>
+                                  <v-avatar v-if="match(v).redSide.player?.team" class="mx-1" color="white"
+                                            size="x-small">
+                                    <v-img :src="match(v).redSide.player?.team.collegeLogo"></v-img>
+                                  </v-avatar>
+                                  <v-avatar v-else class="mx-1" size="x-small">
+                                    <v-img src="@/assets/school_red.png"></v-img>
+                                  </v-avatar>
+                                  <span v-if="match(v).redSide.player?.team"
+                                        :style="{color: (node as ZoneNodeJsonData).data.collegeNameColor}"
+                                        :class="{'color-gray': loser(v) == match(v).redSide.player }"
+                                        class="one-line-text">{{ match(v).redSide.player?.team.collegeName }}</span>
+                                  <span v-else :style="{color: (node as ZoneNodeJsonData).data.collegeNameColor}"
+                                        class="one-line-text">{{ node.data.zones[groupIndex].text[2 * i] }}</span>
+                                </div>
                               </div>
-                              <div
-                                v-if="!liveMode && promotionStore.getMpMatch(match(v).id) && promotionStore.getMpMatch(match(v).id).blueRate >= 0"
-                                class="ml-1 text-caption"
-                                :style="{
-                                   width: '2.5rem',
-                                   background: `linear-gradient(to right, #2196F3 ${promotionStore.getMpMatch(match(v).id).blueRate * 100}%, transparent ${promotionStore.getMpMatch(match(v).id).blueRate * 100 + 20}%)`,
-                                   border: '1px solid #2196F3',
-                                   'border-radius': '2px',
-                             }">
-                                {{ (100 * promotionStore.getMpMatch(match(v).id).blueRate).toFixed(1) }}%
+                            </div>
+
+                            <div
+                              class="row-content"
+                              :class="{
+                              'selected-content': playerSelected(match(v).blueSide.player),
+                            }"
+                              @click="selectPlayer(match(v).blueSide.player)"
+                            >
+                              <div class="school-image-container">
+                                <img src="@/assets/school_bg.png" alt="Image"/>
+                                <div class="overlay ml-4">
+                                  <div
+                                    style="background: #616161"
+                                    :class="{
+                                      'colorful-blue': loser(v) != match(v).blueSide.player,
+                                    }">
+                                    <h4 class="px-1">{{ match(v).blueSideWinGameCount }}</h4>
+                                  </div>
+                                  <div
+                                    v-if="!liveMode && promotionStore.getMpMatch(match(v).id) && promotionStore.getMpMatch(match(v).id).blueRate >= 0"
+                                    class="ml-1 text-caption"
+                                    :style="{
+                                       width: '2.5rem',
+                                       background: `linear-gradient(to right, #2196F3 ${promotionStore.getMpMatch(match(v).id).blueRate * 100}%, transparent ${promotionStore.getMpMatch(match(v).id).blueRate * 100 + 20}%)`,
+                                       border: '1px solid #2196F3',
+                                       'border-radius': '2px',
+                                 }">
+                                    {{ (100 * promotionStore.getMpMatch(match(v).id).blueRate).toFixed(1) }}%
+                                  </div>
+                                  <v-avatar v-if="match(v).blueSide.player?.team" class="mx-1" color="white"
+                                            size="x-small">
+                                    <v-img :src="match(v).blueSide.player?.team.collegeLogo"></v-img>
+                                  </v-avatar>
+                                  <v-avatar v-else class="mx-1" size="x-small">
+                                    <v-img src="@/assets/school_blue.png"></v-img>
+                                  </v-avatar>
+                                  <span v-if="match(v).blueSide.player?.team"
+                                        :style="{color: (node as ZoneNodeJsonData).data.collegeNameColor}"
+                                        :class="{'color-gray': loser(v) == match(v).blueSide.player }"
+                                        class="one-line-text">{{ match(v).blueSide.player?.team.collegeName }}</span>
+                                  <span v-else :style="{color: (node as ZoneNodeJsonData).data.collegeNameColor}"
+                                        class="one-line-text">{{ node.data.zones[groupIndex].text[2 * i + 1] }}</span>
+                                </div>
                               </div>
-                              <v-avatar v-if="match(v).blueSide.player?.team" class="mx-1" color="white" size="x-small">
-                                <v-img :src="match(v).blueSide.player?.team.collegeLogo"></v-img>
-                              </v-avatar>
-                              <v-avatar v-else class="mx-1" size="x-small">
-                                <v-img src="@/assets/school_blue.png"></v-img>
-                              </v-avatar>
-                              <span v-if="match(v).blueSide.player?.team"
-                                    :style="{color: (node as ZoneNodeJsonData).data.collegeNameColor}"
-                                    :class="{'color-gray': loser(v) == match(v).blueSide.player }"
-                                    class="one-line-text">{{ match(v).blueSide.player?.team.collegeName }}</span>
-                              <span v-else :style="{color: (node as ZoneNodeJsonData).data.collegeNameColor}"
-                                    class="one-line-text">{{ node.data.zones[groupIndex].text[2 * i + 1] }}</span>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
+                      </template>
+                    </v-tooltip>
                   </div>
 
                   <!--纯文字+红蓝R标 A-1-->
                   <div v-else class="container">
-                    <div
-                      v-if="match(v)"
-                      class="container ml-2"
-                      :class="{
-                        'mt-2': type == 'group',
-                      }">
-                      <div class="left-column order-image-container">
-                        <img src="@/assets/order_bg.png" alt="Image"/>
-                        <div class="order-text-overlay">
-                          <b>{{ padNumber(match(v).orderNumber) }}</b>
-                        </div>
-                      </div>
+                    <v-tooltip :text="matchTooltip(match(v))">
+                      <template v-slot:activator="{ props }">
+                        <div
+                          v-bind="props"
+                          v-if="match(v)"
+                          class="container ml-2"
+                          :class="{
+                            'mt-2': type == 'group',
+                          }">
+                          <div class="left-column order-image-container">
+                            <img src="@/assets/order_bg.png" alt="Image"/>
+                            <div class="order-text-overlay">
+                              <b>{{ padNumber(match(v).orderNumber) }}</b>
+                            </div>
+                          </div>
 
-                      <div class="right-column">
-                        <div class="top-row row-content mb-1">
-                          <div class="school-image-container">
-                            <img src="@/assets/school_bg.png" alt="Image"/>
-                            <div class="overlay ml-4">
-                              <div style="background: #616161">
-                                <h4 class="px-1"> 0 </h4>
+                          <div class="right-column">
+                            <div class="top-row row-content mb-1">
+                              <div class="school-image-container">
+                                <img src="@/assets/school_bg.png" alt="Image"/>
+                                <div class="overlay ml-4">
+                                  <div style="background: #616161">
+                                    <h4 class="px-1"> 0 </h4>
+                                  </div>
+                                  <v-avatar class="mx-1" size="x-small">
+                                    <v-img src="@/assets/school_red.png"></v-img>
+                                  </v-avatar>
+                                  <span class="one-line-text">
+                                    {{
+                                      // match(v).redSide.player ? match(v).redSide.player.name : node.data.zones[groupIndex].text[2 * i]
+                                      node.data.zones[groupIndex].text[2 * i]
+                                    }}
+                                  </span>
+                                </div>
                               </div>
-                              <v-avatar class="mx-1" size="x-small">
-                                <v-img src="@/assets/school_red.png"></v-img>
-                              </v-avatar>
-                              <span class="one-line-text">
-                                {{
-                                  // match(v).redSide.player ? match(v).redSide.player.name : node.data.zones[groupIndex].text[2 * i]
-                                  node.data.zones[groupIndex].text[2 * i]
-                                }}
-                              </span>
+                            </div>
+
+                            <div class="row-content">
+                              <div class="school-image-container">
+                                <img src="@/assets/school_bg.png" alt="Image"/>
+                                <div class="overlay ml-4">
+                                  <div style="background: #616161">
+                                    <h4 class="px-1"> 0 </h4>
+                                  </div>
+                                  <v-avatar class="mx-1" size="x-small">
+                                    <v-img src="@/assets/school_blue.png"></v-img>
+                                  </v-avatar>
+                                  <span class="one-line-text">
+                                    {{
+                                      // match(v).blueSide.player ? match(v).blueSide.player.name : node.data.zones[groupIndex].text[2 * i + 1]
+                                      node.data.zones[groupIndex].text[2 * i + 1]
+                                    }}
+                                  </span>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
-
-                        <div class="row-content">
-                          <div class="school-image-container">
-                            <img src="@/assets/school_bg.png" alt="Image"/>
-                            <div class="overlay ml-4">
-                              <div style="background: #616161">
-                                <h4 class="px-1"> 0 </h4>
-                              </div>
-                              <v-avatar class="mx-1" size="x-small">
-                                <v-img src="@/assets/school_blue.png"></v-img>
-                              </v-avatar>
-                              <span class="one-line-text">
-                                {{
-                                  // match(v).blueSide.player ? match(v).blueSide.player.name : node.data.zones[groupIndex].text[2 * i + 1]
-                                  node.data.zones[groupIndex].text[2 * i + 1]
-                                }}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                      </template>
+                    </v-tooltip>
                   </div>
                 </div>
               </div>
