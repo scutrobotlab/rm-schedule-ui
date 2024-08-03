@@ -314,8 +314,8 @@ export const RevivalZoneGroupJsonData: ZoneJsonData = {
 }
 
 export const RevivalZoneRoundOrder = {
-  'A': [1, 9, 17, 22],
-  'B': [5, 13, 20, 22],
+  'A': [1, 9, 17, 17],
+  'B': [5, 13, 20, 20],
 }
 
 export const GlobalZoneJsonData: ZoneJsonData = {
@@ -427,5 +427,5 @@ export const GlobalZoneJsonData: ZoneJsonData = {
 
 
 export const GlobalZoneRoundOrder = {
-  'QW': [1, 7, 9],
+  'QW': [1, 7, 7],
 }

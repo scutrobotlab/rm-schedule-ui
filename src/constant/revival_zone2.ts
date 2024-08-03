@@ -298,7 +298,7 @@ export const RevivalZone2GroupJsonData: ZoneJsonData = {
 }
 
 export const RevivalZone2RoundOrder = {
-  'C': [23, 28, 31, 34],
+  'C': [23, 27, 31, 34, 34],
 }
 
 export const RevivalZone2ImageData: ImageData[] = [

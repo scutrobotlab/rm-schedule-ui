@@ -675,8 +675,8 @@ export const FinalZoneGroup2JsonData: ZoneJsonData = {
 }
 
 export const FinalZoneGroup2RoundOrder = {
-  'A': [49, 61, 67],
-  'B': [55, 64, 67],
+  'A': [49, 61, 61],
+  'B': [55, 64, 64],
 }
 
 const KnockoutXOffset = 420;
