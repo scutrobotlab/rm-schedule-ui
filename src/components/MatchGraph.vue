@@ -306,6 +306,12 @@ const round = computed(() => {
     case 'B':
       orderList = props.roundOrder.B
       break
+    case 'C':
+      orderList = props.roundOrder.C
+      break
+    case "QW":
+      orderList = props.roundOrder.QW
+      break
     default:
       return -1
   }
