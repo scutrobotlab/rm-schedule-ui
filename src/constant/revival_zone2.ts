@@ -44,7 +44,7 @@ export const RevivalZone2GroupJsonData: ZoneJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [28, 28],
+            matches: [27, 28],
             winners: [23, 24, 25, 26],
             losers: [],
             text: ['C组 第一轮 第1名', 'C组 第一轮 第2名', 'C组 第一轮 第3名', 'C组 第一轮 第4名'],
@@ -99,7 +99,7 @@ export const RevivalZone2GroupJsonData: ZoneJsonData = {
             matches: [31],
             winners: [27, 28],
             losers: [],
-            text: ['C组 第二轮 第1名', 'C组 第二轮 第2名'],
+            text: ['C组 第二轮 第2名', 'C组 第二轮 第1名'],
             forecasts: [
               {red: 2, blue: 1},
             ]
