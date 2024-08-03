@@ -471,8 +471,9 @@ const round = computed(() => {
                                 class="ml-1 text-caption"
                                 :style="{
                                   width: '2.5rem',
-                                  background: `linear-gradient(to right, #EF6C00 ${promotionStore.getMpMatch(match(v).id).redRate * 100}%, transparent ${promotionStore.getMpMatch(match(v).id).redRate * 100 + 20}%)`,
-                                  border: '2px solid #EF6C00',
+                                  background: `linear-gradient(to right, #F44336 ${promotionStore.getMpMatch(match(v).id).redRate * 100}%, transparent ${promotionStore.getMpMatch(match(v).id).redRate * 100 + 20}%)`,
+                                  border: '1px solid #F44336',
+                                  'border-radius': '2px',
                                 }">
                                 {{ (100 * promotionStore.getMpMatch(match(v).id).redRate).toFixed(1) }}%
                               </div>
@@ -513,9 +514,10 @@ const round = computed(() => {
                                 v-if="promotionStore.getMpMatch(match(v).id) && promotionStore.getMpMatch(match(v).id).blueRate >= 0"
                                 class="ml-1 text-caption"
                                 :style="{
-                               width: '2.5rem',
-                               background: `linear-gradient(to right, #00695C ${promotionStore.getMpMatch(match(v).id).blueRate * 100}%, transparent ${promotionStore.getMpMatch(match(v).id).blueRate * 100 + 20}%)`,
-                               border: '2px solid #00695C'
+                                   width: '2.5rem',
+                                   background: `linear-gradient(to right, #2196F3 ${promotionStore.getMpMatch(match(v).id).blueRate * 100}%, transparent ${promotionStore.getMpMatch(match(v).id).blueRate * 100 + 20}%)`,
+                                   border: '1px solid #2196F3',
+                                   'border-radius': '2px',
                              }">
                                 {{ (100 * promotionStore.getMpMatch(match(v).id).blueRate).toFixed(1) }}%
                               </div>
