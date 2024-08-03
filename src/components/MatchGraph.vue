@@ -7,7 +7,7 @@ import {useAppStore} from "../stores/app";
 import {useRoute} from "vue-router";
 import {RoundOrder} from "../types/round_order";
 import {GroupType, ImageData, TitleData, ZoneJsonData, ZoneNodeJsonData} from "../types/zone";
-import moment from 'moment';
+import moment from "moment";
 
 interface Props {
   zoneId: number,
