@@ -184,9 +184,7 @@ function generateNumberArray(baseId: number, n: number): number[] {
 async function updateMpMatch() {
   let firstId: number, lastId: number
   if (props.type == 'group') {
-    const groupMatchNodes = promotionStore.getZone(props.zoneId).groupMatches.nodes
-    groupMatchNodes.sort((a: any, b: any) => Number(a.id) - Number(b.id))
-    firstId = Number(groupMatchNodes[0].id)
+    firstId = Number(promotionStore.getZone(props.zoneId).groupMatches.nodes[0].id)
     const idList = []
     props.jsonData.nodes.forEach((e: any) => {
       e.data.zones[groupIndex.value].matches.forEach((order: number, i: number) => {
