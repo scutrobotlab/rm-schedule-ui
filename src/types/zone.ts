@@ -17,6 +17,7 @@ export interface ZoneNodeJsonData {
 export interface ZoneLineJsonData {
   from: string;
   to: string;
+  lineShape?: number;
 }
 
 export interface ZoneNodeData {

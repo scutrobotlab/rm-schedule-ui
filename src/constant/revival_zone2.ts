@@ -288,7 +288,7 @@ export const RevivalZone2GroupJsonData: ZoneJsonData = {
     {from: '#3', to: '#5',},
     {from: '#3', to: '#6',},
     {from: '#4', to: '#7',},
-    {from: '#4', to: '#10',},
+    {from: '#4', to: '#10', lineShape: 6},
     {from: '#5', to: '#8',},
     {from: '#5', to: '#9',},
     {from: '#7', to: '#10',},
