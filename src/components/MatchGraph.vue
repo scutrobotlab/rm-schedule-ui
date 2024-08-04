@@ -188,6 +188,7 @@ async function updateMpMatch() {
     const groupMatchNodes = promotionStore.getZone(props.zoneId).groupMatches.nodes
     groupMatchNodes.sort((a: any, b: any) => Number(a.id) - Number(b.id))
     firstId = Number(groupMatchNodes[0].id)
+    if (props.group == 'C') firstId -= 22 // TODO: 临时解决方案
     const idList = []
     props.jsonData.nodes.forEach((e: any) => {
       e.data.zones[groupIndex.value].matches.forEach((order: number, i: number) => {
