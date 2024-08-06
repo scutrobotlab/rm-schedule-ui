@@ -172,8 +172,8 @@ export const RevivalZone2GroupJsonData: ZoneJsonData = {
         zones: [
           {
             matches: [35],
-            winners: [31, 34],
-            losers: [],
+            winners: [34],
+            losers: [31],
             text: ['第31场 败者', '第34场 胜者'],
             forecasts: [
               {red: 2, blue: 1},

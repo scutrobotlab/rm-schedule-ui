@@ -1313,9 +1313,9 @@ export const FinalZoneKnockoutLoserJsonData: ZoneJsonData = {
         zones: [
           {
             matches: [89],
-            winners: [83, 86],
+            winners: [83, 85],
             losers: [],
-            text: ['第83场胜者', '第86场胜者']
+            text: ['第83场胜者', '第85场胜者']
           },
         ]
       }
@@ -1333,9 +1333,9 @@ export const FinalZoneKnockoutLoserJsonData: ZoneJsonData = {
         zones: [
           {
             matches: [90],
-            winners: [84, 85],
+            winners: [84, 86],
             losers: [],
-            text: ['第84场胜者', '第85场胜者']
+            text: ['第84场胜者', '第86场胜者']
           },
         ]
       }
