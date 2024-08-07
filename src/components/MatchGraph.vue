@@ -232,6 +232,13 @@ function matchTooltip(match: MatchNode): string {
   return `预计 ${time.format('M月D日 HH:mm')} 开始`
 }
 
+function logoCDN(url: string): string {
+  url = url.replace("https://rm-static.djicdn.com", "/api/static/rm-static_djicdn_com")
+  url = url.replace("https://terra-cn-oss-cdn-public-pro.oss-cn-hangzhou.aliyuncs.com", "/api/static/terra-cn-oss-cdn-public-pro_oss-cn-hangzhou_aliyuncs_com")
+  url = url.replace("https://pro-robomasters-hz-n5i3.oss-cn-hangzhou.aliyuncs.com", "/api/static/pro-robomasters-hz-n5i3_oss-cn-hangzhou_aliyuncs_com")
+  return url
+}
+
 const fingersCount = ref(0);
 const updateFingersCount = (event: TouchEvent) => {
   fingersCount.value = event.touches.length;
@@ -404,7 +411,7 @@ const round = computed(() => {
                                 <h4 class="px-1" style="width: 2.5rem"> 待定 </h4>
                               </div>
                               <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
-                                <v-img :src="v.player.team.collegeLogo"/>
+                                <v-img :src="logoCDN(v.player.team.collegeLogo)"/>
                               </v-avatar>
                               <span class="one-line-text">{{ v.player.team.collegeName }}</span>
                             </div>
@@ -490,7 +497,7 @@ const round = computed(() => {
                                   </div>
                                   <v-avatar v-if="match(v).redSide.player?.team" class="mx-1" color="white"
                                             size="x-small">
-                                    <v-img :src="match(v).redSide.player?.team.collegeLogo"></v-img>
+                                    <v-img :src="logoCDN(match(v).redSide.player?.team.collegeLogo)"></v-img>
                                   </v-avatar>
                                   <v-avatar v-else class="mx-1" size="x-small">
                                     <v-img src="@/assets/school_red.png"></v-img>
@@ -535,7 +542,7 @@ const round = computed(() => {
                                   </div>
                                   <v-avatar v-if="match(v).blueSide.player?.team" class="mx-1" color="white"
                                             size="x-small">
-                                    <v-img :src="match(v).blueSide.player?.team.collegeLogo"></v-img>
+                                    <v-img :src="logoCDN(match(v).blueSide.player?.team.collegeLogo)"></v-img>
                                   </v-avatar>
                                   <v-avatar v-else class="mx-1" size="x-small">
                                     <v-img src="@/assets/school_blue.png"></v-img>
@@ -639,7 +646,7 @@ const round = computed(() => {
                             </div>
                             <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
                               <v-img v-if="groupRank(node.data.zones[groupIndex].group, v).team"
-                                     :src="groupRank(node.data.zones[groupIndex].group, v).team?.collegeLogo"/>
+                                     :src="logoCDN(groupRank(node.data.zones[groupIndex].group, v).team?.collegeLogo)"/>
                               <v-img v-else src="@/assets/school_grey.png"/>
                             </v-avatar>
                             <span v-if="groupRank(node.data.zones[groupIndex].group, v).team"
@@ -688,7 +695,7 @@ const round = computed(() => {
                               <h4 class="px-1" style="width: 2.5rem; color: white"> 待定 </h4>
                             </div>
                             <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
-                              <v-img :src="v.player.team.collegeLogo"/>
+                              <v-img :src="logoCDN(v.player.team.collegeLogo)"/>
                             </v-avatar>
                             <span :style="{color: (node as ZoneNodeJsonData).data.collegeNameColor}"
                                   class="one-line-text">{{ v.player.team.collegeName }}</span>
