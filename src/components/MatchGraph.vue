@@ -33,7 +33,7 @@ const promotionStore = usePromotionStore();
 const promise1 = promotionStore.updateSchedule()
 const promise2 = promotionStore.updateGroupRank()
 Promise.all([promise1, promise2]).then(async () => {
-  await updateMpMatch()
+  // await updateMpMatch()
   loading.value = false
   await graphRef.value.setJsonData(props.jsonData)
   await graphRef.value.getInstance().zoomToFit()
@@ -42,7 +42,7 @@ Promise.all([promise1, promise2]).then(async () => {
 function refresh() {
   promotionStore.updateSchedule()
   promotionStore.updateGroupRank()
-  updateMpMatch()
+  // updateMpMatch()
 }
 
 setInterval(refresh, 30_000)
