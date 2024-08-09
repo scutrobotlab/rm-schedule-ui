@@ -356,7 +356,7 @@ const round = computed(() => {
         <template #node="{node}">
           <div :class="{
               // 'golden-shine': node.id == '#16',
-              'highlight-gray': colorfulNode(node),
+              // 'highlight-gray': colorfulNode(node),
             }"
                :style="{ color: node.data.titleColor }"
                @mousedown="e => onDragStart(e.pageX, e.pageY)"
