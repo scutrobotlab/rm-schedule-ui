@@ -1130,13 +1130,9 @@ export const FinalZoneKnockoutTitleData: TitleData[] = [
 export const FinalZoneKnockoutLoserJsonData: ZoneJsonData = {
   rootId: '#18',
   nodes: [
-    // 75 1-2
-    // 76 4-3
-    // 77 5-6
-    // 78 8-7
     {
       id: '#1',
-      text: '16进8败者组第一轮 第1场',
+      text: '16进8败者组第一轮 第4场',
       x: rx - KnockoutXOffset * 3,
       y: ry - KnockoutYOffset * 6,
       data: {
@@ -1146,39 +1142,19 @@ export const FinalZoneKnockoutLoserJsonData: ZoneJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [75],
+            matches: [78],
             winners: [],
-            losers: [67, 68],
-            text: ['第67场败者', '第68场败者']
+            losers: [74, 73],
+            text: ['第74场败者', '第73场败者']
           },
         ]
       }
     },
     {
       id: '#2',
-      text: '16进8败者组第一轮 第2场',
-      x: rx - KnockoutXOffset * 3,
-      y: ry - KnockoutYOffset * 2,
-      data: {
-        title: '',
-        titleColor: '#FFFFFF',
-        round: -1,
-        type: 'match',
-        zones: [
-          {
-            matches: [76],
-            winners: [],
-            losers: [70, 69],
-            text: ['第70场败者', '第69场败者']
-          },
-        ]
-      }
-    },
-    {
-      id: '#3',
       text: '16进8败者组第一轮 第3场',
       x: rx - KnockoutXOffset * 3,
-      y: ry + KnockoutYOffset * 2,
+      y: ry - KnockoutYOffset * 2,
       data: {
         title: '',
         titleColor: '#FFFFFF',
@@ -1195,8 +1171,28 @@ export const FinalZoneKnockoutLoserJsonData: ZoneJsonData = {
       }
     },
     {
+      id: '#3',
+      text: '16进8败者组第一轮 第2场',
+      x: rx - KnockoutXOffset * 3,
+      y: ry + KnockoutYOffset * 2,
+      data: {
+        title: '',
+        titleColor: '#FFFFFF',
+        round: -1,
+        type: 'match',
+        zones: [
+          {
+            matches: [76],
+            winners: [],
+            losers: [70, 69],
+            text: ['第70场败者', '第69场败者']
+          },
+        ]
+      }
+    },
+    {
       id: '#4',
-      text: '16进8败者组第一轮 第4场',
+      text: '16进8败者组第一轮 第1场',
       x: rx - KnockoutXOffset * 3,
       y: ry + KnockoutYOffset * 6,
       data: {
@@ -1206,10 +1202,10 @@ export const FinalZoneKnockoutLoserJsonData: ZoneJsonData = {
         type: 'match',
         zones: [
           {
-            matches: [78],
+            matches: [75],
             winners: [],
-            losers: [74, 73],
-            text: ['第74场败者', '第73场败者']
+            losers: [67, 68],
+            text: ['第67场败者', '第68场败者']
           },
         ]
       }
