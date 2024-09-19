@@ -150,7 +150,7 @@ docker push registry.cn-guangzhou.aliyuncs.com/scutrobot/rm-schedule-ui:latest
 └── yarn.lock 依赖锁
 ```
 
-### RoadMap
+## RoadMap
 
 - [ ] 打造成 RoboMaster 必备工具站
 - [ ] 实现对一支队伍更多维度的分析
@@ -159,3 +159,23 @@ docker push registry.cn-guangzhou.aliyuncs.com/scutrobot/rm-schedule-ui:latest
     - 本赛季软件没有出现过逻辑性硬伤，但在复活赛期间出现过文案错误，被飞镖群群友捉虫
 - [ ] 优化缓存策略，争取下赛季不被 DJI 的 CDN 识别成恶意流量（逃
     - 全国赛进行到中途，我们王牌预言家的数据显示不出来，经过排查我们的服务器 IP 已被源站封禁
+
+## 贡献者
+
+### 研发人员
+
+[常霆钰](https://github.com/1067088037) 开发和运维
+
+[罗棨文](https://github.com/wintbiit) 运维
+
+### 宣传人员
+
+杨卓石、卢佳羽、徐晴
+
+### RoboMaster 组委会
+
+陈欢、叶楚天、张蔼婷、陈琳睿
+
+## 致谢
+
+特别感谢 RoboMaster 组委会提供的支持。
