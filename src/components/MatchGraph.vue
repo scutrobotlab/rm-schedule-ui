@@ -358,7 +358,7 @@ const round = computed(() => {
 
 <template>
   <div class="my-graph pt-2 my-font">
-    <div :style="liveMode ? 'height: calc(100vh - 0px);' : 'height: calc(100vh - 100px);'">
+    <div :style="liveMode ? 'height: calc(100vh - 0px);' : 'height: calc(100vh - 160px);'">
       <!--      <div class="text-center mb-4">-->
       <!--        <h1 class="font-weight-bold">{{ title }}</h1>-->
       <!--      </div>-->

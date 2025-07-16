@@ -118,6 +118,19 @@ function badgeTab(zoneId: number): boolean {
               </v-btn>
             </div>
           </v-tabs>
+
+          <v-banner
+            class="bg-transparent"
+            icon="mdi-vote"
+            lines="one">
+            <v-banner-text>
+              <a href="https://mp.weixin.qq.com/s/sz-43wAiDWigDKl-ROQSHw"
+                 target="_blank"
+                 class="text-decoration-none text-white">
+                为 RoboSouls 投票！争夺 2025CUSGA 最具人气奖
+              </a>
+            </v-banner-text>
+          </v-banner>
         </div>
 
         <v-row>
