@@ -13,6 +13,12 @@ import { fileURLToPath, URL } from 'node:url'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  esbuild: {
+    target: 'esnext', // 设置编译目标为 ESNext
+    supported: {
+      'import-meta': true // 明确支持 import.meta
+    }
+  },
   plugins: [
     VueRouter({
       dts: 'src/typed-router.d.ts',

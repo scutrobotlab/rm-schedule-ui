@@ -2827,6 +2827,11 @@ vue-eslint-parser@^9.3.1, vue-eslint-parser@^9.4.2:
     lodash "^4.17.21"
     semver "^7.3.6"
 
+vue-gtag@^3.5.2:
+  version "3.5.2"
+  resolved "https://registry.yarnpkg.com/vue-gtag/-/vue-gtag-3.5.2.tgz#ef56195ddec0ce9bdccf5636baee982e50ead9cc"
+  integrity sha512-efTY4yrkNraFSu6CZqhFZLX5LggqCr44d6kcPnPPtzYhvu5ywrTFUnuvM2Vm238QC+YT43HkVEXV/L1OYnHvNg==
+
 vue-router@^4.3.0:
   version "4.3.2"
   resolved "https://mirrors.huaweicloud.com/repository/npm/vue-router/-/vue-router-4.3.2.tgz#08096c7765dacc6832f58e35f7a081a8b34116a7"

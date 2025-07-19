@@ -16,6 +16,7 @@
     "relation-graph-vue3": "^2.2.2",
     "roboto-fontface": "*",
     "vue": "^3.4.21",
+    "vue-gtag": "^3.5.2",
     "vuetify": "^3.5.8"
   },
   "devDependencies": {
