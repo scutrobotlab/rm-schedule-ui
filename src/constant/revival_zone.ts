@@ -325,7 +325,7 @@ export const GlobalZoneJsonData: ZoneJsonData = {
       id: '#1',
       text: 'Q组海外队伍小组赛',
       x: rx - 2 * xOffset,
-      y: ry - 160,
+      y: ry - 120,
       data: {
         title: 'Q组海外队伍小组赛',
         titleColor: '#FFFFFF',
@@ -350,7 +350,7 @@ export const GlobalZoneJsonData: ZoneJsonData = {
       id: '#2',
       text: 'W组海外队伍小组赛',
       x: rx - 2 * xOffset,
-      y: ry + 160,
+      y: ry + 180,
       data: {
         title: 'W组海外队伍小组赛',
         titleColor: '#FFFFFF',
@@ -397,7 +397,7 @@ export const GlobalZoneJsonData: ZoneJsonData = {
       id: '#4',
       text: '晋级第二赛段',
       x: 0,
-      y: 38,
+      y: 48,
       data: {
         title: '晋级第二赛段',
         titleColor: '#FFFFFF',

@@ -82,7 +82,7 @@ export const FinalZoneGroup1JsonData: ZoneJsonData = {
       id: '#3',
       text: '第二轮 0-1',
       x: rx - 3 * groupXOffset,
-      y: ry + 180,
+      y: ry + 240,
       data: {
         title: '瑞士轮第二轮 0-1',
         titleColor: '#FFFFFF',
@@ -160,7 +160,7 @@ export const FinalZoneGroup1JsonData: ZoneJsonData = {
       id: '#5',
       text: '第三轮 1-1',
       x: rx - 2 * groupXOffset,
-      y: ry - 40,
+      y: ry - 20,
       data: {
         title: '瑞士轮第三轮 1-1',
         titleColor: '#FFFFFF',
@@ -202,7 +202,7 @@ export const FinalZoneGroup1JsonData: ZoneJsonData = {
       id: '#6',
       text: '第三轮 0-2',
       x: rx - 2 * groupXOffset,
-      y: ry + 395,
+      y: ry + 460,
       data: {
         title: '瑞士轮第三轮 0-2',
         titleColor: '#FFFFFF',
@@ -238,7 +238,7 @@ export const FinalZoneGroup1JsonData: ZoneJsonData = {
       id: '#7',
       text: '晋级 3-0',
       x: rx - groupXOffset + 15,
-      y: ry - 264,
+      y: ry - 252,
       data: {
         title: '晋级淘汰赛 3-0',
         titleColor: '#FFFFFF',
@@ -268,7 +268,7 @@ export const FinalZoneGroup1JsonData: ZoneJsonData = {
       id: '#8',
       text: '淘汰 0-3',
       x: rx - groupXOffset + 15,
-      y: ry + 430,
+      y: ry + 508,
       data: {
         title: '淘汰 0-3',
         titleColor: '#FFFFFF',
@@ -338,7 +338,7 @@ export const FinalZoneGroup1JsonData: ZoneJsonData = {
       id: '#10',
       text: '第四轮 1-2',
       x: 0,
-      y: ry + 180,
+      y: ry + 220,
       data: {
         title: '瑞士轮第四轮 1-2',
         titleColor: '#FFFFFF',
@@ -433,7 +433,7 @@ export const FinalZoneGroup2JsonData: ZoneJsonData = {
       id: '#2',
       text: '第四轮 2-1',
       x: rx - 2 * groupXOffset,
-      y: ry - 140,
+      y: ry - 130,
       data: {
         title: '瑞士轮第四轮 2-1',
         titleColor: '#FFFFFF',
@@ -471,7 +471,7 @@ export const FinalZoneGroup2JsonData: ZoneJsonData = {
       id: '#3',
       text: '第四轮 1-2',
       x: rx - 2 * groupXOffset,
-      y: ry + 200,
+      y: ry + 260,
       data: {
         title: '瑞士轮第四轮 1-2',
         titleColor: '#FFFFFF',
@@ -539,7 +539,7 @@ export const FinalZoneGroup2JsonData: ZoneJsonData = {
       id: '#5',
       text: '第五轮 2-2',
       x: rx - groupXOffset,
-      y: ry - 40,
+      y: ry - 20,
       data: {
         title: '瑞士轮第五轮 2-2',
         titleColor: '#FFFFFF',
@@ -577,7 +577,7 @@ export const FinalZoneGroup2JsonData: ZoneJsonData = {
       id: '#6',
       text: '淘汰 1-3',
       x: rx - groupXOffset,
-      y: ry + 300,
+      y: ry + 370,
       data: {
         title: '淘汰 1-3',
         titleColor: '#FFFFFF',
@@ -637,7 +637,7 @@ export const FinalZoneGroup2JsonData: ZoneJsonData = {
       id: '#8',
       text: '淘汰 2-3',
       x: 0,
-      y: ry + 200,
+      y: ry + 240,
       data: {
         title: '淘汰 2-3',
         titleColor: '#FFFFFF',
@@ -756,7 +756,7 @@ export const FinalZoneGroup1JsonData2025: ZoneJsonData = {
       id: '#3',
       text: '第二轮 0-1',
       x: rx - 3 * groupXOffset,
-      y: ry + 180,
+      y: ry + 240,
       data: {
         title: '瑞士轮第二轮 0-1',
         titleColor: '#FFFFFF',
@@ -834,7 +834,7 @@ export const FinalZoneGroup1JsonData2025: ZoneJsonData = {
       id: '#5',
       text: '第三轮 1-1',
       x: rx - 2 * groupXOffset,
-      y: ry - 40,
+      y: ry - 20,
       data: {
         title: '瑞士轮第三轮 1-1',
         titleColor: '#FFFFFF',
@@ -876,7 +876,7 @@ export const FinalZoneGroup1JsonData2025: ZoneJsonData = {
       id: '#6',
       text: '第三轮 0-2',
       x: rx - 2 * groupXOffset,
-      y: ry + 395,
+      y: ry + 460,
       data: {
         title: '瑞士轮第三轮 0-2',
         titleColor: '#FFFFFF',
@@ -912,7 +912,7 @@ export const FinalZoneGroup1JsonData2025: ZoneJsonData = {
       id: '#7',
       text: '晋级 3-0',
       x: rx - groupXOffset + 15,
-      y: ry - 264,
+      y: ry - 252,
       data: {
         title: '晋级淘汰赛 3-0',
         titleColor: '#FFFFFF',
@@ -942,7 +942,7 @@ export const FinalZoneGroup1JsonData2025: ZoneJsonData = {
       id: '#8',
       text: '淘汰 0-3',
       x: rx - groupXOffset + 15,
-      y: ry + 430,
+      y: ry + 508,
       data: {
         title: '淘汰 0-3',
         titleColor: '#FFFFFF',
@@ -1012,7 +1012,7 @@ export const FinalZoneGroup1JsonData2025: ZoneJsonData = {
       id: '#10',
       text: '第四轮 1-2',
       x: 0,
-      y: ry + 180,
+      y: ry + 220,
       data: {
         title: '瑞士轮第四轮 1-2',
         titleColor: '#FFFFFF',
@@ -1107,7 +1107,7 @@ export const FinalZoneGroup2JsonData2025: ZoneJsonData = {
       id: '#2',
       text: '第四轮 2-1',
       x: rx - 2 * groupXOffset,
-      y: ry - 140,
+      y: ry - 130,
       data: {
         title: '瑞士轮第四轮 2-1',
         titleColor: '#FFFFFF',
@@ -1145,7 +1145,7 @@ export const FinalZoneGroup2JsonData2025: ZoneJsonData = {
       id: '#3',
       text: '第四轮 1-2',
       x: rx - 2 * groupXOffset,
-      y: ry + 200,
+      y: ry + 260,
       data: {
         title: '瑞士轮第四轮 1-2',
         titleColor: '#FFFFFF',
@@ -1213,7 +1213,7 @@ export const FinalZoneGroup2JsonData2025: ZoneJsonData = {
       id: '#5',
       text: '第五轮 2-2',
       x: rx - groupXOffset,
-      y: ry - 40,
+      y: ry - 20,
       data: {
         title: '瑞士轮第五轮 2-2',
         titleColor: '#FFFFFF',
@@ -1251,7 +1251,7 @@ export const FinalZoneGroup2JsonData2025: ZoneJsonData = {
       id: '#6',
       text: '淘汰 1-3',
       x: rx - groupXOffset,
-      y: ry + 300,
+      y: ry + 370,
       data: {
         title: '淘汰 1-3',
         titleColor: '#FFFFFF',
@@ -1311,7 +1311,7 @@ export const FinalZoneGroup2JsonData2025: ZoneJsonData = {
       id: '#8',
       text: '淘汰 2-3',
       x: 0,
-      y: ry + 200,
+      y: ry + 240,
       data: {
         title: '淘汰 2-3',
         titleColor: '#FFFFFF',

@@ -305,7 +305,7 @@ export const RevivalZone2ImageData: ImageData[] = [
   {
     id: 1,
     left: -250,
-    top: 340,
+    top: 350,
     image: '/static/arrow_up.png',
   }
 ]
