@@ -173,6 +173,13 @@ function padNumber(num: number): string {
   return num.toString().padStart(2, '0');
 }
 
+function schoolNameStyle(name?: string | number | null) {
+  const length = String(name ?? '').trim().length
+  if (length >= 13) return {fontSize: '18px'}
+  if (length >= 12) return {fontSize: '20px'}
+  return undefined
+}
+
 function convertToOrdinal(number: number): string {
   const lastDigit = number % 10;
   const lastTwoDigits = number % 100;
@@ -510,7 +517,7 @@ const round = computed(() => {
                               <v-avatar class="mx-1 avatar-center bg-white" color="white" size="x-small">
                                 <v-img :src="logoCDN(v.player.team.collegeLogo)"/>
                               </v-avatar>
-                              <span class="one-line-text">{{ v.player.team.collegeName }}</span>
+                              <span class="one-line-text" :style="schoolNameStyle(v.player.team.collegeName)">{{ v.player.team.collegeName }}</span>
                             </div>
                           </div>
                         </div>
@@ -534,7 +541,7 @@ const round = computed(() => {
                               <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
                                 <v-img src="@/assets/school_grey.png"/>
                               </v-avatar>
-                              <span class="one-line-text">{{ v }}</span>
+                              <span class="one-line-text" :style="schoolNameStyle(v)">{{ v }}</span>
                             </div>
                           </div>
                         </div>
@@ -601,10 +608,10 @@ const round = computed(() => {
                                     <v-img src="@/assets/school_red.png"></v-img>
                                   </v-avatar>
                                   <span v-if="match(v).redSide.player?.team"
-                                        :style="{color: (node as ZoneNodeJsonData).data.collegeNameColor}"
+                                        :style="[schoolNameStyle(match(v).redSide.player?.team.collegeName), {color: (node as ZoneNodeJsonData).data.collegeNameColor}]"
                                         :class="{'color-gray': loser(v) == match(v).redSide.player }"
                                         class="one-line-text">{{ match(v).redSide.player?.team.collegeName }}</span>
-                                  <span v-else :style="{color: (node as ZoneNodeJsonData).data.collegeNameColor}"
+                                  <span v-else :style="[schoolNameStyle(node.data.zones[groupIndex].text[2 * i]), {color: (node as ZoneNodeJsonData).data.collegeNameColor}]"
                                         class="one-line-text">{{ node.data.zones[groupIndex].text[2 * i] }}</span>
                                   <v-icon
                                     v-if="promotionStore.suggestionEnabled && winnerSuggestion(match(v)) == 'RED'"
@@ -650,10 +657,10 @@ const round = computed(() => {
                                     <v-img src="@/assets/school_blue.png"></v-img>
                                   </v-avatar>
                                   <span v-if="match(v).blueSide.player?.team"
-                                        :style="{color: (node as ZoneNodeJsonData).data.collegeNameColor}"
+                                        :style="[schoolNameStyle(match(v).blueSide.player?.team.collegeName), {color: (node as ZoneNodeJsonData).data.collegeNameColor}]"
                                         :class="{'color-gray': loser(v) == match(v).blueSide.player }"
                                         class="one-line-text">{{ match(v).blueSide.player?.team.collegeName }}</span>
-                                  <span v-else :style="{color: (node as ZoneNodeJsonData).data.collegeNameColor}"
+                                  <span v-else :style="[schoolNameStyle(node.data.zones[groupIndex].text[2 * i + 1]), {color: (node as ZoneNodeJsonData).data.collegeNameColor}]"
                                         class="one-line-text">{{ node.data.zones[groupIndex].text[2 * i + 1] }}</span>
                                   <v-icon
                                     v-if="promotionStore.suggestionEnabled && winnerSuggestion(match(v)) == 'BLUE'"
@@ -698,7 +705,7 @@ const round = computed(() => {
                                   <v-avatar class="mx-1" size="x-small">
                                     <v-img src="@/assets/school_red.png"></v-img>
                                   </v-avatar>
-                                  <span class="one-line-text">
+                                  <span class="one-line-text" :style="schoolNameStyle(node.data.zones[groupIndex].text[2 * i])">
                                     {{
                                       // match(v).redSide.player ? match(v).redSide.player.name : node.data.zones[groupIndex].text[2 * i]
                                       node.data.zones[groupIndex].text[2 * i]
@@ -718,7 +725,7 @@ const round = computed(() => {
                                   <v-avatar class="mx-1" size="x-small">
                                     <v-img src="@/assets/school_blue.png"></v-img>
                                   </v-avatar>
-                                  <span class="one-line-text">
+                                  <span class="one-line-text" :style="schoolNameStyle(node.data.zones[groupIndex].text[2 * i + 1])">
                                     {{
                                       // match(v).blueSide.player ? match(v).blueSide.player.name : node.data.zones[groupIndex].text[2 * i + 1]
                                       node.data.zones[groupIndex].text[2 * i + 1]
@@ -757,12 +764,13 @@ const round = computed(() => {
                               <v-img v-else src="@/assets/school_grey.png"/>
                             </v-avatar>
                             <span v-if="groupRank(node.data.zones[groupIndex].group, v).team"
+                                  :style="schoolNameStyle(groupRank(node.data.zones[groupIndex].group, v).team?.collegeName)"
                                   class="one-line-text">
                               {{
                                 groupRank(node.data.zones[groupIndex].group, v).team?.collegeName
                               }}
                             </span>
-                            <span v-else class="one-line-text">
+                            <span v-else class="one-line-text" :style="schoolNameStyle(node.data.zones[groupIndex].text[i])">
                               {{
                                 node.data.zones[groupIndex].text[i]
                               }}
@@ -804,7 +812,7 @@ const round = computed(() => {
                             <v-avatar class="mx-1 avatar-center bg-white" color="white" size="x-small">
                               <v-img :src="logoCDN(v.player.team.collegeLogo)"/>
                             </v-avatar>
-                            <span :style="{color: (node as ZoneNodeJsonData).data.collegeNameColor}"
+                            <span :style="[schoolNameStyle(v.player.team.collegeName), {color: (node as ZoneNodeJsonData).data.collegeNameColor}]"
                                   class="one-line-text">{{ v.player.team.collegeName }}</span>
                           </div>
                         </div>
@@ -828,7 +836,7 @@ const round = computed(() => {
                             <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
                               <v-img src="@/assets/school_grey.png"/>
                             </v-avatar>
-                            <span :style="{color: (node as ZoneNodeJsonData).data.collegeNameColor}"
+                            <span :style="[schoolNameStyle(v), {color: (node as ZoneNodeJsonData).data.collegeNameColor}]"
                                   class="one-line-text">{{ v }}</span>
                           </div>
                         </div>
