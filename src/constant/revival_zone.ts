@@ -242,7 +242,7 @@ export const RevivalZoneGroupJsonData: ZoneJsonData = {
       id: '#8',
       text: '第三轮 2-1',
       x: rx,
-      y: ry + 200,
+      y: ry + 165,
       data: {
         title: '晋级第二赛段',
         titleColor: '#FFFFFF',
