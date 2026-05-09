@@ -465,10 +465,10 @@ const round = computed(() => {
                  class="text-h6"
                  :class="{'node-title-bg-gray': bgGrayEnabled}"
                  :style="'color: ' + node.data.titleColor">
-              <div class="title-image-container">
+              <div class="title-image-container graph-title-image-container">
                 <img :style="'border-right: 2px solid ' + node.data.borderColor"
                      :src="node.data.titleImage" alt="Image"/>
-                <div class="title-text-overlay mt-1 my-font">
+                <div class="title-text-overlay graph-title-text-overlay mt-1 my-font">
                   <b>{{ node.data.title }}</b>
                   <b class="ml-1" v-if="isForecast(node) && !liveMode">*</b>
                 </div>
@@ -938,6 +938,9 @@ const round = computed(() => {
 .my-graph {
   //background: rgba(0, 0, 0, 0.75);
   background: transparent;
+  --school-row-height: 44px;
+  --school-logo-size: 30px;
+  --graph-title-height: 48px;
 
   //background-image: url("src/assets/background3.png");
   ///* 背景图垂直、水平均居中 */
@@ -1135,6 +1138,10 @@ const round = computed(() => {
   align-items: center;
 }
 
+.graph-title-image-container {
+  height: var(--graph-title-height);
+}
+
 .title-image-container img {
   width: 100%;
   height: 100%;
@@ -1145,6 +1152,10 @@ const round = computed(() => {
   width: 100%;
   text-align: center;
   text-shadow: 3px 3px 6px #000000;
+}
+
+.graph-title-text-overlay {
+  font-size: 22px;
 }
 
 .order-image-container {
@@ -1175,6 +1186,17 @@ const round = computed(() => {
 
 .school-image-container img {
   width: 100%;
+}
+
+.school-image-container > img {
+  height: var(--school-row-height);
+  object-fit: fill;
+}
+
+.school-image-container :deep(.v-avatar) {
+  width: var(--school-logo-size) !important;
+  height: var(--school-logo-size) !important;
+  min-width: var(--school-logo-size) !important;
 }
 
 .overlay {
