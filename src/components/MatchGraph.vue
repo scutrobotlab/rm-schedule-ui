@@ -999,7 +999,7 @@ const round = computed(() => {
   flex: 1; /* 占据剩余空间 */
   min-width: 0; /* 确保 flex 项目的最小宽度为 0 */
   text-align: left; /* 确保文本居左对齐 */
-  font-size: 18px;
+  font-size: 22px;
 }
 
 .container2 {
