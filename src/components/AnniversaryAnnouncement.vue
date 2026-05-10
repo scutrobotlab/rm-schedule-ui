@@ -113,6 +113,9 @@ function closeDialog() {
       </v-card-text>
 
       <v-card-actions>
+        <span class="reopen-tip">
+          点击左下角的 LOGO 即可进入该页面
+        </span>
         <v-spacer></v-spacer>
         <v-btn
           text="关闭"
@@ -197,9 +200,19 @@ function closeDialog() {
   opacity: 0.72;
 }
 
+.reopen-tip {
+  padding-left: 8px;
+  font-size: 0.9rem;
+  opacity: 0.72;
+}
+
 @media (max-width: 720px) {
   .product-grid {
     grid-template-columns: 1fr;
+  }
+
+  .reopen-tip {
+    font-size: 0.8rem;
   }
 }
 </style>
