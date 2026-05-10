@@ -13,19 +13,19 @@ const products = [
   },
   {
     name: 'RM Extension',
-    description: '扩展 RM 无限可能',
+    description: '论坛百次引用，扩展 RM 无限可能',
     logo: new URL('@/assets/rm_extension_logo.png', import.meta.url).href,
     link: 'https://microsoftedge.microsoft.com/addons/detail/rm-extension-%E6%89%A9%E5%B1%95-rm-%E6%97%A0%E9%99%90%E5%8F%AF%E8%83%BD/gijjamcbbihnmmihpifeloolebhboife',
   },
   {
     name: 'RMLive',
-    description: '更清晰的赛事视图，更顺滑的直播体验',
+    description: '民间 RM 直播间，不一样的直播体验',
     logo: new URL('@/assets/rmlive_logo.svg', import.meta.url).href,
     link: 'https://rmlive.scutbot.cn/',
   },
   {
     name: 'RoboSouls',
-    description: 'RoboMaster 赛事模拟器',
+    description: '上架 Steam 的 RM 赛事模拟器',
     logo: new URL('@/assets/robosouls_logo.svg', import.meta.url).href,
     link: 'https://store.steampowered.com/app/3712750/RoboSouls/',
   },
@@ -37,7 +37,7 @@ const products = [
   },
   {
     name: 'RM Announce',
-    description: 'RoboMaster 官网公告推送（归档）',
+    description: 'RM 官网公告推送到飞书（归档）',
     logoText: 'RA',
     link: 'https://github.com/scutrobotlab/RMAnnounce',
   },
