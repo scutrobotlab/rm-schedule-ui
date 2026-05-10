@@ -35,6 +35,7 @@ export const usePromotionStore = defineStore("promotion", {
             return 0.5;
           }
         case 2025:
+        case 2026:
           return 0.5;
       }
 
