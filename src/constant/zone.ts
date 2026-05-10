@@ -171,7 +171,6 @@ export const ZoneMap: { [key: number]: Zone[] } = {
           type: 'group',
           group: 'QW',
           jsonData: GlobalZoneJsonData,
-          extraTitleData: null,
           roundOrder: GlobalZoneRoundOrder,
         }
       ]
