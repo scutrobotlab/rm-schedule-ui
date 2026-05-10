@@ -173,10 +173,20 @@ function padNumber(num: number): string {
   return num.toString().padStart(2, '0');
 }
 
+function schoolNameText(name?: string | number | null): string {
+  return String(name ?? '').replaceAll('（', '(').replaceAll('）', ')')
+}
+
+function schoolNameDisplayLength(name?: string | number | null): number {
+  const text = schoolNameText(name).trim()
+  const bracketPairCount = text.match(/\([^()]*\)/g)?.length ?? 0
+  return text.length - bracketPairCount
+}
+
 function schoolNameStyle(name?: string | number | null) {
-  const length = String(name ?? '').trim().length
-  if (length >= 13) return {fontSize: '18px'}
-  if (length >= 12) return {fontSize: '20px'}
+  const length = schoolNameDisplayLength(name)
+  if (length >= 12) return {fontSize: '18px'}
+  if (length >= 11) return {fontSize: '20px'}
   return undefined
 }
 
@@ -517,7 +527,7 @@ const round = computed(() => {
                               <v-avatar class="mx-1 avatar-center bg-white" color="white" size="x-small">
                                 <v-img :src="logoCDN(v.player.team.collegeLogo)"/>
                               </v-avatar>
-                              <span class="one-line-text" :style="schoolNameStyle(v.player.team.collegeName)">{{ v.player.team.collegeName }}</span>
+                              <span class="one-line-text" :style="schoolNameStyle(v.player.team.collegeName)">{{ schoolNameText(v.player.team.collegeName) }}</span>
                             </div>
                           </div>
                         </div>
@@ -541,7 +551,7 @@ const round = computed(() => {
                               <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
                                 <v-img src="@/assets/school_grey.png"/>
                               </v-avatar>
-                              <span class="one-line-text" :style="schoolNameStyle(v)">{{ v }}</span>
+                              <span class="one-line-text" :style="schoolNameStyle(v)">{{ schoolNameText(v) }}</span>
                             </div>
                           </div>
                         </div>
@@ -610,9 +620,9 @@ const round = computed(() => {
                                   <span v-if="match(v).redSide.player?.team"
                                         :style="[schoolNameStyle(match(v).redSide.player?.team.collegeName), {color: (node as ZoneNodeJsonData).data.collegeNameColor}]"
                                         :class="{'color-gray': loser(v) == match(v).redSide.player }"
-                                        class="one-line-text">{{ match(v).redSide.player?.team.collegeName }}</span>
+                                        class="one-line-text">{{ schoolNameText(match(v).redSide.player?.team.collegeName) }}</span>
                                   <span v-else :style="[schoolNameStyle(node.data.zones[groupIndex].text[2 * i]), {color: (node as ZoneNodeJsonData).data.collegeNameColor}]"
-                                        class="one-line-text">{{ node.data.zones[groupIndex].text[2 * i] }}</span>
+                                        class="one-line-text">{{ schoolNameText(node.data.zones[groupIndex].text[2 * i]) }}</span>
                                   <v-icon
                                     v-if="promotionStore.suggestionEnabled && winnerSuggestion(match(v)) == 'RED'"
                                     icon="mdi-checkbox-marked-circle">
@@ -659,9 +669,9 @@ const round = computed(() => {
                                   <span v-if="match(v).blueSide.player?.team"
                                         :style="[schoolNameStyle(match(v).blueSide.player?.team.collegeName), {color: (node as ZoneNodeJsonData).data.collegeNameColor}]"
                                         :class="{'color-gray': loser(v) == match(v).blueSide.player }"
-                                        class="one-line-text">{{ match(v).blueSide.player?.team.collegeName }}</span>
+                                        class="one-line-text">{{ schoolNameText(match(v).blueSide.player?.team.collegeName) }}</span>
                                   <span v-else :style="[schoolNameStyle(node.data.zones[groupIndex].text[2 * i + 1]), {color: (node as ZoneNodeJsonData).data.collegeNameColor}]"
-                                        class="one-line-text">{{ node.data.zones[groupIndex].text[2 * i + 1] }}</span>
+                                        class="one-line-text">{{ schoolNameText(node.data.zones[groupIndex].text[2 * i + 1]) }}</span>
                                   <v-icon
                                     v-if="promotionStore.suggestionEnabled && winnerSuggestion(match(v)) == 'BLUE'"
                                     icon="mdi-checkbox-marked-circle">
@@ -708,7 +718,7 @@ const round = computed(() => {
                                   <span class="one-line-text" :style="schoolNameStyle(node.data.zones[groupIndex].text[2 * i])">
                                     {{
                                       // match(v).redSide.player ? match(v).redSide.player.name : node.data.zones[groupIndex].text[2 * i]
-                                      node.data.zones[groupIndex].text[2 * i]
+                                      schoolNameText(node.data.zones[groupIndex].text[2 * i])
                                     }}
                                   </span>
                                 </div>
@@ -728,7 +738,7 @@ const round = computed(() => {
                                   <span class="one-line-text" :style="schoolNameStyle(node.data.zones[groupIndex].text[2 * i + 1])">
                                     {{
                                       // match(v).blueSide.player ? match(v).blueSide.player.name : node.data.zones[groupIndex].text[2 * i + 1]
-                                      node.data.zones[groupIndex].text[2 * i + 1]
+                                      schoolNameText(node.data.zones[groupIndex].text[2 * i + 1])
                                     }}
                                   </span>
                                 </div>
@@ -767,12 +777,12 @@ const round = computed(() => {
                                   :style="schoolNameStyle(groupRank(node.data.zones[groupIndex].group, v).team?.collegeName)"
                                   class="one-line-text">
                               {{
-                                groupRank(node.data.zones[groupIndex].group, v).team?.collegeName
+                                schoolNameText(groupRank(node.data.zones[groupIndex].group, v).team?.collegeName)
                               }}
                             </span>
                             <span v-else class="one-line-text" :style="schoolNameStyle(node.data.zones[groupIndex].text[i])">
                               {{
-                                node.data.zones[groupIndex].text[i]
+                                schoolNameText(node.data.zones[groupIndex].text[i])
                               }}
                             </span>
                           </div>
@@ -813,7 +823,7 @@ const round = computed(() => {
                               <v-img :src="logoCDN(v.player.team.collegeLogo)"/>
                             </v-avatar>
                             <span :style="[schoolNameStyle(v.player.team.collegeName), {color: (node as ZoneNodeJsonData).data.collegeNameColor}]"
-                                  class="one-line-text">{{ v.player.team.collegeName }}</span>
+                                  class="one-line-text">{{ schoolNameText(v.player.team.collegeName) }}</span>
                           </div>
                         </div>
                       </div>
@@ -837,7 +847,7 @@ const round = computed(() => {
                               <v-img src="@/assets/school_grey.png"/>
                             </v-avatar>
                             <span :style="[schoolNameStyle(v), {color: (node as ZoneNodeJsonData).data.collegeNameColor}]"
-                                  class="one-line-text">{{ v }}</span>
+                                  class="one-line-text">{{ schoolNameText(v) }}</span>
                           </div>
                         </div>
                       </div>
