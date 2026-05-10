@@ -10,6 +10,7 @@ const products = [
     description: '华南虎战队官方周边商城',
     logo: new URL('@/assets/huhu_store_logo.png', import.meta.url).href,
     link: 'https://store.scutbot.cn/',
+    featured: true,
   },
   {
     name: 'RM Search',
@@ -87,6 +88,7 @@ function closeDialog() {
               v-for="product in products"
               :key="product.name"
               class="product-card"
+              :class="{ 'product-card-featured': product.featured }"
               :href="product.link"
               target="_blank"
               rel="noopener noreferrer"
@@ -174,6 +176,23 @@ function closeDialog() {
   background: rgba(255, 255, 255, 0.04);
 }
 
+.product-card-featured {
+  border-color: rgba(255, 123, 0, 0.72);
+  background: linear-gradient(135deg, rgba(255, 123, 0, 0.22), rgba(255, 255, 255, 0.08));
+  box-shadow: 0 0 18px rgba(255, 123, 0, 0.18);
+  animation: featured-card-pulse 1.8s ease-in-out infinite;
+}
+
+.product-card-featured .product-logo {
+  width: 52px;
+  height: 52px;
+}
+
+.product-card-featured .product-name {
+  color: #ff9a3c;
+  font-size: 1.05rem;
+}
+
 .product-logo {
   flex: 0 0 auto;
   width: 44px;
@@ -198,6 +217,19 @@ function closeDialog() {
   margin-top: 2px;
   font-size: 0.85rem;
   opacity: 0.72;
+}
+
+@keyframes featured-card-pulse {
+  0%,
+  100% {
+    border-color: rgba(255, 123, 0, 0.55);
+    box-shadow: 0 0 14px rgba(255, 123, 0, 0.14);
+  }
+
+  50% {
+    border-color: rgba(255, 170, 64, 1);
+    box-shadow: 0 0 28px rgba(255, 123, 0, 0.42);
+  }
 }
 
 .reopen-tip {
