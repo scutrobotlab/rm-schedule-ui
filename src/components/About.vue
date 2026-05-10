@@ -75,6 +75,12 @@ const items = [
       </v-img>
 
       <v-card-text class="text-center">
+        <v-img
+          class="about-logo mx-auto mb-2"
+          src="@/assets/rm_schedule_logo.png"
+          alt="RM Schedule"
+        ></v-img>
+
         <h3 class="mt-2">— 研发 —</h3>
         <p>22-24赛季 软件开发组 常霆钰</p>
         <p>浙江理工大学钱塘蛟 潘任周</p>
@@ -114,5 +120,7 @@ const items = [
 </template>
 
 <style scoped lang="scss">
-
+.about-logo {
+  max-width: 240px;
+}
 </style>

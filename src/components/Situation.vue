@@ -159,8 +159,13 @@ const MenuItems = ref(
               v-model="promotionStore.suggestionEnabled"
             ></v-switch>
 
-            <div class="text-right ml-4 mr-2 mt-1">
-              <span v-if="width >= 800">
+            <div class="top-right-actions text-right ml-4 mr-2 mt-1">
+              <v-img
+                class="header-logo"
+                src="@/assets/rm_schedule_logo.png"
+                alt="RM Schedule"
+              ></v-img>
+              <span v-if="width >= 800" class="header-logo-text">
                 RM Schedule
               </span>
 
@@ -308,6 +313,22 @@ const MenuItems = ref(
 .row {
   display: flex; /* 每行也使用Flexbox布局 */
   flex-basis: 100%; /* 每行占满容器宽度 */
+}
+
+.top-right-actions {
+  display: flex;
+  align-items: center;
+}
+
+.header-logo {
+  flex: 0 0 auto;
+  width: 48px;
+  height: 40px;
+}
+
+.header-logo-text {
+  margin-left: 8px;
+  white-space: nowrap;
 }
 
 .col {
