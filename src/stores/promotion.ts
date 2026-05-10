@@ -55,7 +55,7 @@ export const usePromotionStore = defineStore("promotion", {
         case 2025:
           if (state.zoneId >= 570) {
             // 全国赛
-            return "/background/2025_final.png";
+            return "/background/2025_final.jpg";
           } else {
             // 区域赛
             if (isMobile) return "/background/2025_group_mobile.png";
