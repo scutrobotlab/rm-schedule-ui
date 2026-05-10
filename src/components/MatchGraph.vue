@@ -1162,6 +1162,10 @@ const round = computed(() => {
   text-shadow: 3px 3px 6px #000000;
 }
 
+.title-text-overlay h3 {
+  font-size: 22px;
+}
+
 .graph-title-text-overlay {
   font-size: 22px;
 }
