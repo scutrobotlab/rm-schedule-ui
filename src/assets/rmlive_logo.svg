@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="RMLive logo">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0b1220" />
+      <stop offset="100%" stop-color="#143a7b" />
+    </linearGradient>
+    <linearGradient id="beam" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f97316" />
+      <stop offset="100%" stop-color="#38bdf8" />
+    </linearGradient>
+  </defs>
+  <rect x="16" y="16" width="224" height="224" rx="48" fill="url(#bg)" />
+  <path d="M64 170V86h42c21 0 34 11 34 30 0 14-8 24-21 28l24 26H111l-19-22H89v22H64zm25-43h14c8 0 13-4 13-11s-5-10-13-10H89v21z" fill="#e2e8f0" />
+  <path d="M146 170V86h25v63h39v21h-64z" fill="#e2e8f0" />
+  <rect x="52" y="60" width="152" height="9" rx="4.5" fill="url(#beam)" opacity="0.95" />
+  <circle cx="201" cy="63.5" r="7" fill="#f43f5e" />
+</svg>
