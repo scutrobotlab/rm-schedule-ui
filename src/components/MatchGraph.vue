@@ -909,7 +909,8 @@ const round = computed(() => {
     <div class="text-end">
       <v-img
         class="logo"
-        src="@/assets/logo.png">
+        src="@/assets/logo.png"
+        @click="appStore.anniversaryAnnouncementDialog = true">
       </v-img>
 
       <p class="copyright">
@@ -1093,6 +1094,7 @@ const round = computed(() => {
   left: 0;
   width: 120px;
   opacity: 0.5;
+  cursor: pointer;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

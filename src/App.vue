@@ -1,6 +1,7 @@
 <template>
   <v-app>
     <v-main>
+      <AnniversaryAnnouncement/>
       <UpdateAnnouncement/>
       <router-view/>
     </v-main>
@@ -9,6 +10,7 @@
 
 <script lang="ts" setup>
 import { useAppStore } from "./stores/app";
+import AnniversaryAnnouncement from "./components/AnniversaryAnnouncement.vue";
 import UpdateAnnouncement from "./components/UpdateAnnouncement.vue";
 
 const appStore = useAppStore()
