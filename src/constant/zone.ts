@@ -9,6 +9,7 @@ import {
   GroupZoneKnockoutTitleData,
   GroupZoneRoundOrder,
   QuotaCompetition_11_5_JsonData, QuotaCompetition_8_6_JsonData, QuotaCompetition_9_5_JsonData,
+  QuotaCompetition_10_6_JsonData, QuotaCompetition_10_4_JsonData,
 } from "./group_zone";
 import {
   GlobalZoneJsonData, GlobalZoneRoundOrder,
@@ -53,11 +54,12 @@ export interface Zone {
   parts: Part[],
 }
 
-export const SeasonList = [2024, 2025];
+export const SeasonList = [2024, 2025, 2026];
 
 export const DefaultZoneMap = {
   2024: 526,
   2025: 572,
+  2026: 614,
 }
 
 export const ZoneMap: { [key: number]: Zone[] } = {
@@ -465,6 +467,155 @@ export const ZoneMap: { [key: number]: Zone[] } = {
           jsonData: FinalZoneKnockoutJsonData2025,
           extraTitleData: FinalZoneKnockoutTitleData2025,
         },
+      ]
+    },
+  ],
+  2026: [
+    {
+      id: 614, name: '南部赛区', disabled: false,
+      defaultGroup: 5,
+      parts: [
+        {
+          name: 'A组前段',
+          type: 'group',
+          group: 'A',
+          jsonData: GroupZoneGroup1JsonData,
+          roundOrder: GroupZoneGroup1RoundOrder,
+        },
+        {
+          name: 'B组前段',
+          type: 'group',
+          group: 'B',
+          jsonData: GroupZoneGroup1JsonData,
+          roundOrder: GroupZoneGroup1RoundOrder,
+        },
+        {
+          name: 'A组后段',
+          type: 'group',
+          group: 'A',
+          jsonData: GroupZoneGroup2JsonData,
+          roundOrder: GroupZoneGroup2RoundOrder,
+        },
+        {
+          name: 'B组后段',
+          type: 'group',
+          group: 'B',
+          jsonData: GroupZoneGroup2JsonData,
+          roundOrder: GroupZoneGroup2RoundOrder,
+        },
+        {
+          name: '全国赛名额争夺战',
+          type: 'group',
+          group: 'Knockout',
+          jsonData: QuotaCompetition_10_6_JsonData,
+          roundOrder: GroupZoneRoundOrder
+        },
+        {
+          name: '淘汰赛',
+          type: 'knockout',
+          group: 'Knockout',
+          jsonData: GetGroupZoneKnockoutJsonData(614),
+          extraTitleData: GroupZoneKnockoutTitleData,
+          roundOrder: GroupZoneRoundOrder
+        }
+      ]
+    },
+    {
+      id: 615, name: '东部赛区', disabled: false,
+      defaultGroup: 5,
+      parts: [
+        {
+          name: 'A组前段',
+          type: 'group',
+          group: 'A',
+          jsonData: GroupZoneGroup1JsonData,
+          roundOrder: GroupZoneGroup1RoundOrder,
+        },
+        {
+          name: 'B组前段',
+          type: 'group',
+          group: 'B',
+          jsonData: GroupZoneGroup1JsonData,
+          roundOrder: GroupZoneGroup1RoundOrder,
+        },
+        {
+          name: 'A组后段',
+          type: 'group',
+          group: 'A',
+          jsonData: GroupZoneGroup2JsonData,
+          roundOrder: GroupZoneGroup2RoundOrder,
+        },
+        {
+          name: 'B组后段',
+          type: 'group',
+          group: 'B',
+          jsonData: GroupZoneGroup2JsonData,
+          roundOrder: GroupZoneGroup2RoundOrder,
+        },
+        {
+          name: '复活赛名额争夺战',
+          type: 'group',
+          group: 'Knockout',
+          jsonData: QuotaCompetition_8_6_JsonData,
+          roundOrder: GroupZoneRoundOrder
+        },
+        {
+          name: '淘汰赛',
+          type: 'knockout',
+          group: 'Knockout',
+          jsonData: GetGroupZoneKnockoutJsonData(615),
+          extraTitleData: GroupZoneKnockoutTitleData,
+          roundOrder: GroupZoneRoundOrder
+        }
+      ]
+    },
+    {
+      id: 616, name: '北部赛区', disabled: false,
+      defaultGroup: 5,
+      parts: [
+        {
+          name: 'A组前段',
+          type: 'group',
+          group: 'A',
+          jsonData: GroupZoneGroup1JsonData,
+          roundOrder: GroupZoneGroup1RoundOrder,
+        },
+        {
+          name: 'B组前段',
+          type: 'group',
+          group: 'B',
+          jsonData: GroupZoneGroup1JsonData,
+          roundOrder: GroupZoneGroup1RoundOrder,
+        },
+        {
+          name: 'A组后段',
+          type: 'group',
+          group: 'A',
+          jsonData: GroupZoneGroup2JsonData,
+          roundOrder: GroupZoneGroup2RoundOrder,
+        },
+        {
+          name: 'B组后段',
+          type: 'group',
+          group: 'B',
+          jsonData: GroupZoneGroup2JsonData,
+          roundOrder: GroupZoneGroup2RoundOrder,
+        },
+        {
+          name: '全国赛名额争夺战',
+          type: 'group',
+          group: 'Knockout',
+          jsonData: QuotaCompetition_10_4_JsonData,
+          roundOrder: GroupZoneRoundOrder
+        },
+        {
+          name: '淘汰赛',
+          type: 'knockout',
+          group: 'Knockout',
+          jsonData: GetGroupZoneKnockoutJsonData(616),
+          extraTitleData: GroupZoneKnockoutTitleData,
+          roundOrder: GroupZoneRoundOrder
+        }
       ]
     },
   ]

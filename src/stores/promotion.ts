@@ -60,6 +60,9 @@ export const usePromotionStore = defineStore("promotion", {
             if (isMobile) return "/background/2025_group_mobile.png";
             else return "/background/2025_group.jpg";
           }
+        case 2026:
+          // 区域赛
+          return "/background/2026_group.jpg";
       }
 
       return "/background/2024_final.png";
