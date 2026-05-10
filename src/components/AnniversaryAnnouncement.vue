@@ -75,7 +75,7 @@ function closeDialog() {
 
       <v-card-text class="anniversary-content text-center">
         <h3>
-          今年是 RM Schedule 陪伴 RoboMaster 走进的第三个赛季
+          这是 RM Schedule 陪伴 RoboMaster 走进的第三个赛季
         </h3>
         <p>
           欢迎继续下滑浏览我们的其他产品
