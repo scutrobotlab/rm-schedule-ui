@@ -160,14 +160,20 @@ const MenuItems = ref(
             ></v-switch>
 
             <div class="top-right-actions text-right ml-4 mr-2 mt-1">
-              <v-img
-                class="header-logo"
-                src="@/assets/rm_schedule_logo.png"
-                alt="RM Schedule"
-              ></v-img>
-              <span v-if="width >= 800" class="header-logo-text">
-                RM Schedule
-              </span>
+              <button
+                class="header-brand"
+                type="button"
+                @click="appStore.aboutDialog = true"
+              >
+                <v-img
+                  class="header-logo"
+                  src="@/assets/rm_schedule_logo.png"
+                  alt="RM Schedule"
+                ></v-img>
+                <span v-if="width >= 800" class="header-logo-text">
+                  RM Schedule
+                </span>
+              </button>
 
               <v-btn
                 class="mx-1"
@@ -318,6 +324,13 @@ const MenuItems = ref(
 .top-right-actions {
   display: flex;
   align-items: center;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  color: inherit;
+  cursor: pointer;
 }
 
 .header-logo {
