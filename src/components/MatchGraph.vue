@@ -268,6 +268,10 @@ function playerSelected(player: Player): boolean {
 }
 
 function updateBilibiliReplay(orderNumber: number) {
+  if (promotionStore.season === 2026) {
+    promotionStore.bilibiliReplay = null
+    return
+  }
   if (!orderNumber || !match(orderNumber).redSide.player) {
     promotionStore.bilibiliReplay = null
     return
