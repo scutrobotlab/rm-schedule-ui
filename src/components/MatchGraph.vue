@@ -183,11 +183,19 @@ function schoolNameDisplayLength(name?: string | number | null): number {
   return text.length - bracketPairCount
 }
 
-function schoolNameStyle(name?: string | number | null) {
+function schoolNameStyle(name?: string | number | null, showMpRate = false) {
   const length = schoolNameDisplayLength(name)
-  if (length >= 12) return {fontSize: '18px'}
-  if (length >= 11) return {fontSize: '20px'}
+  const thresholdOffset = showMpRate ? 1 : 0
+  if (length >= 12 - thresholdOffset) return {fontSize: '18px'}
+  if (length >= 11 - thresholdOffset) return {fontSize: '20px'}
   return undefined
+}
+
+function mpMatchRateVisible(match?: MatchNode, side?: "RED" | "BLUE"): boolean {
+  if (liveMode.value || !match) return false
+  const mpMatch = promotionStore.getMpMatch(match.id)
+  if (!mpMatch) return false
+  return side == "RED" ? mpMatch.redRate >= 0 : mpMatch.blueRate >= 0
 }
 
 function convertToOrdinal(number: number): string {
@@ -600,7 +608,7 @@ const round = computed(() => {
                                     <h4 class="px-1">{{ match(v).redSideWinGameCount }}</h4>
                                   </div>
                                   <div
-                                    v-if="!liveMode && promotionStore.getMpMatch(match(v).id) && promotionStore.getMpMatch(match(v).id).redRate >= 0"
+                                    v-if="mpMatchRateVisible(match(v), 'RED')"
                                     class="ml-1 text-caption"
                                     :style="{
                                       width: '2.5rem',
@@ -618,10 +626,10 @@ const round = computed(() => {
                                     <v-img src="@/assets/school_red.png"></v-img>
                                   </v-avatar>
                                   <span v-if="match(v).redSide.player?.team"
-                                        :style="[schoolNameStyle(match(v).redSide.player?.team.collegeName), {color: (node as ZoneNodeJsonData).data.collegeNameColor}]"
+                                        :style="[schoolNameStyle(match(v).redSide.player?.team.collegeName, mpMatchRateVisible(match(v), 'RED')), {color: (node as ZoneNodeJsonData).data.collegeNameColor}]"
                                         :class="{'color-gray': loser(v) == match(v).redSide.player }"
                                         class="one-line-text">{{ schoolNameText(match(v).redSide.player?.team.collegeName) }}</span>
-                                  <span v-else :style="[schoolNameStyle(node.data.zones[groupIndex].text[2 * i]), {color: (node as ZoneNodeJsonData).data.collegeNameColor}]"
+                                  <span v-else :style="[schoolNameStyle(node.data.zones[groupIndex].text[2 * i], mpMatchRateVisible(match(v), 'RED')), {color: (node as ZoneNodeJsonData).data.collegeNameColor}]"
                                         class="one-line-text">{{ schoolNameText(node.data.zones[groupIndex].text[2 * i]) }}</span>
                                   <v-icon
                                     v-if="promotionStore.suggestionEnabled && winnerSuggestion(match(v)) == 'RED'"
@@ -649,7 +657,7 @@ const round = computed(() => {
                                     <h4 class="px-1">{{ match(v).blueSideWinGameCount }}</h4>
                                   </div>
                                   <div
-                                    v-if="!liveMode && promotionStore.getMpMatch(match(v).id) && promotionStore.getMpMatch(match(v).id).blueRate >= 0"
+                                    v-if="mpMatchRateVisible(match(v), 'BLUE')"
                                     class="ml-1 text-caption"
                                     :style="{
                                        width: '2.5rem',
@@ -667,10 +675,10 @@ const round = computed(() => {
                                     <v-img src="@/assets/school_blue.png"></v-img>
                                   </v-avatar>
                                   <span v-if="match(v).blueSide.player?.team"
-                                        :style="[schoolNameStyle(match(v).blueSide.player?.team.collegeName), {color: (node as ZoneNodeJsonData).data.collegeNameColor}]"
+                                        :style="[schoolNameStyle(match(v).blueSide.player?.team.collegeName, mpMatchRateVisible(match(v), 'BLUE')), {color: (node as ZoneNodeJsonData).data.collegeNameColor}]"
                                         :class="{'color-gray': loser(v) == match(v).blueSide.player }"
                                         class="one-line-text">{{ schoolNameText(match(v).blueSide.player?.team.collegeName) }}</span>
-                                  <span v-else :style="[schoolNameStyle(node.data.zones[groupIndex].text[2 * i + 1]), {color: (node as ZoneNodeJsonData).data.collegeNameColor}]"
+                                  <span v-else :style="[schoolNameStyle(node.data.zones[groupIndex].text[2 * i + 1], mpMatchRateVisible(match(v), 'BLUE')), {color: (node as ZoneNodeJsonData).data.collegeNameColor}]"
                                         class="one-line-text">{{ schoolNameText(node.data.zones[groupIndex].text[2 * i + 1]) }}</span>
                                   <v-icon
                                     v-if="promotionStore.suggestionEnabled && winnerSuggestion(match(v)) == 'BLUE'"
