@@ -44,11 +44,20 @@ function updateQuery() {
   if (!zone.value?.parts[selectedGroup.value]) {
     selectedGroup.value = zone.value?.defaultGroup
   }
-  router.push({ path: `/${promotionStore.season}/${zoneId.value}`, query: { group: selectedGroup.value } })
+  router.push({ path: `/${promotionStore.season}/${zoneId.value}`, query: { ...route.query, group: selectedGroup.value } })
 }
 
 function updateHref(newSeason: number) {
-  window.location.href = `/${newSeason}`
+  const query = new URLSearchParams()
+  Object.entries(route.query).forEach(([key, value]) => {
+    if (Array.isArray(value)) {
+      value.forEach((v) => v && query.append(key, v))
+    } else if (value) {
+      query.set(key, value)
+    }
+  })
+  const queryString = query.toString()
+  window.location.href = `/${newSeason}${queryString ? `?${queryString}` : ''}`
 }
 
 watch(zoneId, updateQuery)
@@ -126,8 +135,7 @@ const visibleMenuItems = computed(() => {
 
     <div class="container">
       <div class="content">
-        <div v-if="!liveMode"
-             class="floating-container glass-sheet">
+        <div class="floating-container glass-sheet">
           <v-tabs
             class="row bg-transparent"
             height="55px"
