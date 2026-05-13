@@ -80,6 +80,7 @@ const options = ref<RGOptions>({
   disableDragNode: true,
   disableDragCanvas: false,
   zoomToFitWhenRefresh: true,
+  allowShowDownloadButton: liveMode.value,
   // allowShowMiniToolBar: !liveMode.value,
   // graphOffset_y: props.type == 'knockout' ? 0 : -40,
 })
