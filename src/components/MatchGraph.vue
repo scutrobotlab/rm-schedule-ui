@@ -612,7 +612,8 @@ const round = computed(() => {
                                   <div
                                     style="background: #616161"
                                     :class="{
-                                      'colorful-red': loser(v) != match(v).redSide.player,
+                                      'colorful-red': !liveMode && loser(v) != match(v).redSide.player,
+                                      'score-red': liveMode && loser(v) != match(v).redSide.player,
                                     }">
                                     <h4 class="px-1">{{ match(v).redSideWinGameCount }}</h4>
                                   </div>
@@ -661,7 +662,8 @@ const round = computed(() => {
                                   <div
                                     style="background: #616161"
                                     :class="{
-                                      'colorful-blue': loser(v) != match(v).blueSide.player,
+                                      'colorful-blue': !liveMode && loser(v) != match(v).blueSide.player,
+                                      'score-blue': liveMode && loser(v) != match(v).blueSide.player,
                                     }">
                                     <h4 class="px-1">{{ match(v).blueSideWinGameCount }}</h4>
                                   </div>
@@ -1066,6 +1068,14 @@ const round = computed(() => {
 
 .colorful-blue {
   animation: color-change-blue 1.5s infinite;
+}
+
+.score-red {
+  background: #C62828 !important;
+}
+
+.score-blue {
+  background: #1565C0 !important;
 }
 
 @keyframes color-change-blue {
