@@ -245,7 +245,10 @@ const visibleMenuItems = computed(() => {
 
               <v-spacer/>
 
-              <div class="text-right">
+              <div class="text-right mr-4 live-mode-indicator-container">
+                <span v-if="liveMode" class="live-mode-indicator">
+                  直播模式
+                </span>
               </div>
             </v-slide-group>
           </v-sheet>
@@ -353,6 +356,15 @@ const visibleMenuItems = computed(() => {
 
 .header-logo-text {
   margin-left: 8px;
+  white-space: nowrap;
+}
+
+.live-mode-indicator-container {
+  display: flex;
+  align-items: center;
+}
+
+.live-mode-indicator {
   white-space: nowrap;
 }
 
