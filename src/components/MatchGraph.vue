@@ -2,7 +2,7 @@
 import RelationGraph, { RGOptions } from 'relation-graph-vue3';
 import { usePromotionStore } from "../stores/promotion";
 import { MatchNode, Player, PlayerWithMatch } from "../types/schedule";
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { RoundOrder } from "../types/round_order";
 import { GroupType, ImageData, TitleData, ZoneJsonData, ZoneNodeJsonData } from "../types/zone";
@@ -33,7 +33,7 @@ const props = defineProps<Props>()
 const loading = ref(true)
 
 const route = useRoute()
-const liveMode = ref(route.query.live == "1")
+const liveMode = computed(() => route.query.live == "1")
 
 const appStore = useAppStore()
 const promotionStore = usePromotionStore();
@@ -83,6 +83,10 @@ const options = ref<RGOptions>({
   allowShowDownloadButton: liveMode.value,
   // allowShowMiniToolBar: !liveMode.value,
   // graphOffset_y: props.type == 'knockout' ? 0 : -40,
+})
+
+watch(liveMode, (isLive) => {
+  options.value.allowShowDownloadButton = isLive
 })
 
 function match(orderNumber: number): MatchNode | undefined {

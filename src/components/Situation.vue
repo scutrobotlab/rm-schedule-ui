@@ -11,7 +11,7 @@ import AnalyzeMatch from "./AnalyzeMatch.vue";
 const route = useRoute()
 const router = useRouter()
 
-const liveMode = ref(Boolean(route.query.live == "1"))
+const liveMode = computed(() => route.query.live == "1")
 const predict = ref(Boolean(route.query.predict == "1"))
 const selectedGroup = ref(Number([route.query.group || -1]))
 const appStore = useAppStore()
@@ -60,6 +60,16 @@ function updateHref(newSeason: number) {
   window.location.href = `/${newSeason}${queryString ? `?${queryString}` : ''}`
 }
 
+function toggleLiveMode() {
+  const query = { ...route.query }
+  if (liveMode.value) {
+    delete query.live
+  } else {
+    query.live = "1"
+  }
+  router.replace({ path: route.path, query })
+}
+
 watch(zoneId, updateQuery)
 watch(selectedGroup, updateQuery)
 
@@ -96,6 +106,12 @@ const MenuItems = ref(
       action: () => {
         appStore.commentDialog = true
       },
+    },
+    {
+      title: () => liveMode.value ? '关闭直播' : '直播模式',
+      icon: 'mdi-broadcast',
+      disabled: () => false,
+      action: toggleLiveMode,
     },
     {
       title: '更新公告',
@@ -211,7 +227,7 @@ const visibleMenuItems = computed(() => {
                     :key="index"
                     :value="index"
                     :prepend-icon="item.icon"
-                    :title="item.title"
+                    :title="typeof item.title === 'function' ? item.title() : item.title"
                     :disabled="item.disabled()"
                     @click="item.action"
                   >
@@ -271,6 +287,7 @@ const visibleMenuItems = computed(() => {
               :key="part.name"
             >
               <MatchGraph
+                :key="`${zoneId}-${part.name}-${liveMode ? 'live' : 'normal'}`"
                 :zone-id="zoneId"
                 :type="part.type"
                 :group="part.group"
