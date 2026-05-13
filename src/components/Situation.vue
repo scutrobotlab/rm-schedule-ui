@@ -23,19 +23,24 @@ promotionStore.season = Number(route.params.season)
 promotionStore.zoneId = Number(route.params.zoneId)
 const season = computed(() => promotionStore.season)
 const zone = computed(() => ZoneMap[season.value].find((zone) => zone.id == zoneId.value))
+let needsRouteNormalize = false
 
 // 如果 Season 不存在，则自动选择最后一个可用的 Season
 if (!Object.keys(ZoneMap).includes(String(promotionStore.season))) {
   promotionStore.season = Number(Object.keys(ZoneMap).slice(-1)[0])
   promotionStore.zoneId = DefaultZoneMap[promotionStore.season]
+  needsRouteNormalize = true
 }
 // 如果 ZoneId 不存在，则自动选择默认的 ZoneId
 if (!ZoneMap[promotionStore.season].find((zone) => zone.id == zoneId.value)) {
   promotionStore.zoneId = DefaultZoneMap[promotionStore.season]
+  needsRouteNormalize = true
 }
 // 如果 selectedGroup 缺失或不存在，则重置为默认组
 if (!zone.value?.parts[selectedGroup.value]) {
   initSelectedGroup()
+} else if (needsRouteNormalize) {
+  updateQuery()
 }
 
 async function initSelectedGroup() {
