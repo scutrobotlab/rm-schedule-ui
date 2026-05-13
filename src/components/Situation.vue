@@ -13,9 +13,10 @@ const router = useRouter()
 
 const liveMode = computed(() => route.query.live == "1")
 const predict = ref(Boolean(route.query.predict == "1"))
-const selectedGroup = ref(Number([route.query.group || -1]))
+const selectedGroup = ref(Number(route.query.group ?? -1))
 const appStore = useAppStore()
 const promotionStore = usePromotionStore();
+const routeHasGroup = computed(() => route.query.group !== undefined)
 
 const zoneId = computed(() => promotionStore.zoneId)
 promotionStore.season = Number(route.params.season)
@@ -36,13 +37,29 @@ if (!ZoneMap[promotionStore.season].find((zone) => zone.id == zoneId.value)) {
 }
 // 如果 selectedGroup 为 -1 或不存在，则重置为默认组
 if (selectedGroup.value === -1) {
+  initSelectedGroup()
+}
+
+async function initSelectedGroup() {
+  if (!promotionStore.schedule.data?.event?.zones?.nodes) {
+    await promotionStore.updateSchedule()
+  }
+  selectedGroup.value = getDefaultSelectedGroup(!routeHasGroup.value)
   updateQuery()
+}
+
+function getDefaultSelectedGroup(preferStarted: boolean): number {
+  if (preferStarted) {
+    const startedGroup = zone.value?.parts.findIndex(partHasStartedMatch) ?? -1
+    if (startedGroup >= 0) return startedGroup
+  }
+  return zone.value?.defaultGroup ?? 0
 }
 
 function updateQuery() {
   // 如果选中的组不存在，则重置为第一个组
   if (!zone.value?.parts[selectedGroup.value]) {
-    selectedGroup.value = zone.value?.defaultGroup
+    selectedGroup.value = getDefaultSelectedGroup(false)
   }
   router.push({ path: `/${promotionStore.season}/${zoneId.value}`, query: { ...route.query, group: selectedGroup.value } })
 }
