@@ -28,15 +28,13 @@ const zone = computed(() => ZoneMap[season.value].find((zone) => zone.id == zone
 if (!Object.keys(ZoneMap).includes(String(promotionStore.season))) {
   promotionStore.season = Number(Object.keys(ZoneMap).slice(-1)[0])
   promotionStore.zoneId = DefaultZoneMap[promotionStore.season]
-  updateQuery()
 }
 // 如果 ZoneId 不存在，则自动选择默认的 ZoneId
 if (!ZoneMap[promotionStore.season].find((zone) => zone.id == zoneId.value)) {
   promotionStore.zoneId = DefaultZoneMap[promotionStore.season]
-  updateQuery()
 }
-// 如果 selectedGroup 为 -1 或不存在，则重置为默认组
-if (selectedGroup.value === -1) {
+// 如果 selectedGroup 缺失或不存在，则重置为默认组
+if (!zone.value?.parts[selectedGroup.value]) {
   initSelectedGroup()
 }
 
