@@ -5,7 +5,7 @@ import { computed, watch, ref } from "vue";
 import { usePromotionStore } from "../stores/promotion";
 import AnalyzeTeam from "./AnalyzeTeam.vue";
 import { useRoute, useRouter } from "vue-router";
-import { DefaultZoneMap, SeasonList, ZoneMap } from "../constant/zone";
+import { DefaultZoneMap, Part, SeasonList, ZoneMap } from "../constant/zone";
 import AnalyzeMatch from "./AnalyzeMatch.vue";
 
 const route = useRoute()
@@ -83,6 +83,19 @@ function badgeTab(zoneId: number): boolean {
     }
   }
   return false
+}
+
+function partHasStartedMatch(part: Part): boolean {
+  if (!promotionStore.schedule.data?.event?.zones?.nodes) return false
+  const planGameCount = part.group == 'QW' ? 2 : 3
+  const groupIndex = part.group == 'B' ? 1 : 0
+  return part.jsonData.nodes.some((node) => {
+    const zoneData = node.data.zones[groupIndex]
+    if (!zoneData) return false
+    return zoneData.matches.some((order) => {
+      return promotionStore.getMatchByOrder(zoneId.value, order, planGameCount)?.status == 'STARTED'
+    })
+  })
 }
 
 const width = computed(() => {
@@ -244,8 +257,8 @@ const visibleMenuItems = computed(() => {
               mandatory="force"
             >
               <v-slide-group-item
-                v-for="n in zone.parts.map(p => p.name)"
-                :key="n"
+                v-for="part in zone.parts"
+                :key="part.name"
                 v-slot="{ isSelected, toggle }"
               >
                 <v-btn
@@ -255,7 +268,11 @@ const visibleMenuItems = computed(() => {
                   variant="outlined"
                   size="small"
                   @click="toggle">
-                  {{ n }}
+                  {{ part.name }}
+                  <span
+                    v-if="!liveMode && partHasStartedMatch(part)"
+                    class="group-live-dot"
+                  ></span>
                 </v-btn>
               </v-slide-group-item>
 
@@ -383,6 +400,15 @@ const visibleMenuItems = computed(() => {
 
 .live-mode-indicator {
   white-space: nowrap;
+}
+
+.group-live-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-left: 6px;
+  border-radius: 50%;
+  background: #f44336;
 }
 
 .col {

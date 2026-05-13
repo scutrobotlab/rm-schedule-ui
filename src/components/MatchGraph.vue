@@ -95,6 +95,10 @@ function match(orderNumber: number): MatchNode | undefined {
   return promotionStore.getMatchByOrder(props.zoneId, orderNumber, planGameCount)
 }
 
+function matchStarted(orderNumber: number): boolean {
+  return match(orderNumber)?.status == 'STARTED'
+}
+
 function isForecast(node: any): boolean {
   return node.data.round == round.value + 1
 }
@@ -608,6 +612,10 @@ const round = computed(() => {
                             >
                               <div class="school-image-container">
                                 <img src="@/assets/school_bg.png" style="width: 320px" alt="Image"/>
+                                <span
+                                  v-if="!liveMode && matchStarted(v)"
+                                  class="order-live-dot"
+                                ></span>
                                 <div class="overlay ml-4">
                                   <div
                                     style="background: #616161"
@@ -727,6 +735,10 @@ const round = computed(() => {
                             <div class="top-row row-content mb-1">
                               <div class="school-image-container">
                                 <img src="@/assets/school_bg.png" style="width: 320px" alt="Image"/>
+                                <span
+                                  v-if="!liveMode && matchStarted(v)"
+                                  class="order-live-dot"
+                                ></span>
                                 <div class="overlay ml-4">
                                   <div style="background: #616161">
                                     <h4 class="px-1"> 0 </h4>
@@ -1226,6 +1238,33 @@ const round = computed(() => {
   width: 100%;
   text-align: center;
   font-size: 12px;
+}
+
+.order-live-dot {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  z-index: 10;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #f44336;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 10px 3px rgba(244, 67, 54, 0.75);
+  animation: order-live-dot-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes order-live-dot-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 10px 3px rgba(244, 67, 54, 0.65);
+  }
+
+  50% {
+    transform: scale(1.18);
+    box-shadow: 0 0 16px 5px rgba(244, 67, 54, 0.9);
+  }
 }
 
 .school-image-container {
