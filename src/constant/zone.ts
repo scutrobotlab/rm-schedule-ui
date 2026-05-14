@@ -472,7 +472,7 @@ export const ZoneMap: { [key: number]: Zone[] } = {
   2026: [
     {
       id: 614, name: '南部赛区', disabled: false,
-      defaultGroup: 0,
+      defaultGroup: 2,
       parts: [
         {
           name: 'A组前段',
