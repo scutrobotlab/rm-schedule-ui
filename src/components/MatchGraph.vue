@@ -1127,7 +1127,7 @@ const round = computed(() => {
 
 .forecast-guide-lines path {
   fill: none;
-  stroke: #FFA500;
+  stroke: #FFFFFF;
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
