@@ -37,6 +37,7 @@ export interface ZoneZoneData {
   winners: number[];
   losers: number[];
   text: string[];
+  forecastText?: string[];
   forecasts?: ZoneForecastData[];
   group?: 'Q' | 'W';
   groupRank?: number[];

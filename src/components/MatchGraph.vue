@@ -5,7 +5,7 @@ import { MatchNode, Player, PlayerWithMatch } from "../types/schedule";
 import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { RoundOrder } from "../types/round_order";
-import { GroupType, ImageData, TitleData, ZoneJsonData, ZoneNodeJsonData } from "../types/zone";
+import { GroupType, ImageData, TitleData, ZoneForecastData, ZoneJsonData, ZoneNodeJsonData, ZoneZoneData } from "../types/zone";
 import moment from "moment";
 import { CompleteForm } from "../constant/complete_form";
 import { useRobotDataStore } from "../stores/robot_data";
@@ -220,6 +220,50 @@ function convertToOrdinal(number: number): string {
   } else {
     return number + "th";
   }
+}
+
+function rankFromForecastText(text?: string): number | null {
+  const match = text?.match(/第(\d+)名/)
+  return match ? Number(match[1]) : null
+}
+
+function forecastDisplayText(zone: ZoneZoneData): string[] {
+  return zone.forecastText ?? zone.text
+}
+
+function forecastOrdinal(zone: ZoneZoneData, index: number, player: Player): string {
+  return convertToOrdinal(rankFromForecastText(forecastDisplayText(zone)[index]) ?? matchRank(player))
+}
+
+function forecastGuidePairs(zone: ZoneZoneData): { from: number, to: number }[] {
+  const rankIndexMap = new Map<number, number>()
+  forecastDisplayText(zone).forEach((text, index) => {
+    const rank = rankFromForecastText(text)
+    if (rank) rankIndexMap.set(rank, index)
+  })
+  return (zone.forecasts ?? [])
+    .map((forecast: ZoneForecastData) => ({
+      from: rankIndexMap.get(forecast.red),
+      to: rankIndexMap.get(forecast.blue),
+    }))
+    .filter((pair): pair is { from: number, to: number } => pair.from != null && pair.to != null)
+}
+
+function forecastGuideVisible(zone: ZoneZoneData): boolean {
+  return forecastGuidePairs(zone).some((pair) => Math.abs(pair.from - pair.to) > 1)
+}
+
+function forecastGuideHeight(zone: ZoneZoneData): number {
+  return Math.max(forecastDisplayText(zone).length, rankList(zone).length) * 52
+}
+
+function forecastGuidePath(pair: { from: number, to: number }): string {
+  const rowCenter = (index: number) => index * 52 + 27
+  const startY = rowCenter(pair.from)
+  const endY = rowCenter(pair.to)
+  const midY = (startY + endY) / 2
+  const outerX = 330 + Math.abs(pair.to - pair.from) * 5
+  return `M 322 ${startY} C ${outerX} ${startY}, ${outerX} ${midY}, ${outerX} ${midY} C ${outerX} ${midY}, ${outerX} ${endY}, 322 ${endY}`
 }
 
 function generateNumberArray(baseId: number, n: number): number[] {
@@ -523,7 +567,23 @@ const round = computed(() => {
               <div v-if="node.data.type == 'match'">
 
                 <!--实时预测 动态刷新-->
-                <div v-if="round + 1 == node.data.round && round > 0 && !liveMode">
+                <div
+                  v-if="round + 1 == node.data.round && round > 0 && !liveMode"
+                  class="forecast-list"
+                >
+                  <svg
+                    v-if="forecastGuideVisible(node.data.zones[groupIndex])"
+                    class="forecast-guide-lines"
+                    :style="{ height: `${forecastGuideHeight(node.data.zones[groupIndex])}px` }"
+                    :viewBox="`0 0 370 ${forecastGuideHeight(node.data.zones[groupIndex])}`"
+                    preserveAspectRatio="none"
+                  >
+                    <path
+                      v-for="(pair, i) in forecastGuidePairs(node.data.zones[groupIndex])"
+                      :key="i"
+                      :d="forecastGuidePath(pair)"
+                    />
+                  </svg>
                   <div class="mx-2"
                        v-for="(v, i) in rankList(node.data.zones[groupIndex])" :key="i">
                     <div class="container ml-2">
@@ -540,7 +600,9 @@ const round = computed(() => {
                             <img src="@/assets/school_bg.png" style="width: 320px" alt="Image"/>
                             <div class="overlay ml-4">
                               <div v-if="v.match.status == 'DONE'" style="background: #FFA500">
-                                <h4 class="px-1" style="width: 2.5rem">{{ convertToOrdinal(matchRank(v.player)) }}</h4>
+                                <h4 class="px-1" style="width: 2.5rem">
+                                  {{ forecastOrdinal(node.data.zones[groupIndex], i, v.player) }}
+                                </h4>
                               </div>
                               <div v-else style="background: #616161">
                                 <h4 class="px-1" style="width: 2.5rem"> 待定 </h4>
@@ -558,7 +620,7 @@ const round = computed(() => {
 
                   <div
                     class="mx-2"
-                    v-for="(v, i) in node.data.zones[groupIndex].text.slice(rankList(node.data.zones[groupIndex]).length)"
+                    v-for="(v, i) in forecastDisplayText(node.data.zones[groupIndex]).slice(rankList(node.data.zones[groupIndex]).length)"
                     :key="i">
                     <div class="container ml-2">
                       <div class="right-column">
@@ -1043,6 +1105,34 @@ const round = computed(() => {
   border-radius: 4px; /* 添加圆角边框 */
   box-shadow: 0 0 8px 4px rgba(255, 215, 0, 0.25); /* 添加阴影效果 */
   transition: all 0.5s ease; /* 添加过渡效果，使变化更平滑 */
+}
+
+.forecast-list {
+  position: relative;
+}
+
+.forecast-list > .mx-2 {
+  position: relative;
+  z-index: 1;
+}
+
+.forecast-guide-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.forecast-guide-lines path {
+  fill: none;
+  stroke: #FFA500;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 6 5;
+  opacity: 0.9;
 }
 
 .one-line-text {
