@@ -564,7 +564,7 @@ export const GroupZoneGroup2JsonData: ZoneJsonData = {
             matches: [64, 65, 66],
             winners: [58, 59, 60],
             losers: [55, 56, 57],
-            text: ['B组 第四轮 第7名', 'B组 第四轮 第6名', 'B组 第四轮 第8名', 'B组 第四轮 第9名', 'B组 第四轮 第11名', 'B组 第四轮 第10名'],
+            text: ['B组 第四轮 第11名', 'B组 第四轮 第6名', 'B组 第四轮 第7名', 'B组 第四轮 第10名', 'B组 第四轮 第9名', 'B组 第四轮 第8名'],
             forecastText: ['B组 第四轮 第6名', 'B组 第四轮 第7名', 'B组 第四轮 第8名', 'B组 第四轮 第9名', 'B组 第四轮 第10名', 'B组 第四轮 第11名'],
             forecasts: [
               { red: 11, blue: 6 },
