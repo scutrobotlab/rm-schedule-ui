@@ -18,6 +18,8 @@ export interface ZoneLineJsonData {
   from: string;
   to: string;
   lineShape?: number;
+  className?: string;
+  isHideArrow?: boolean;
 }
 
 export interface ZoneNodeData {

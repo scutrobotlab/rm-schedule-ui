@@ -1045,6 +1045,14 @@ const round = computed(() => {
       white-space: nowrap;
     }
   }
+
+  .knockout-cross-line-right {
+    transform: translateX(5px);
+  }
+
+  .knockout-cross-line-left {
+    transform: translateX(-5px);
+  }
 }
 
 .my-graph {
