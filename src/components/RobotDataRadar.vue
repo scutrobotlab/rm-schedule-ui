@@ -13,6 +13,7 @@ import { RadarSeriesDataItemOption } from "echarts/types/src/chart/radar/RadarSe
 
 interface Props {
   players: Player[],
+  season?: number,
 }
 
 const props = defineProps<Props>()
@@ -129,10 +130,38 @@ props.players.forEach((player) => {
 })
 
 // ECharts在控制台报的警告是一个一直存在的bug：https://github.com/apache/echarts/issues/17763
+interface RobotDataRadarConfig {
+  engineerIndicatorName: string,
+  dartIndicatorName: string,
+  dartSubtext: string,
+}
+
+const ROBOT_DATA_RADAR_CONFIG_2025: RobotDataRadarConfig = {
+  engineerIndicatorName: '工程局均兑换经济',
+  dartIndicatorName: '飞镖加权命中分数',
+  dartSubtext: '** 飞镖加权命中分数 = 1*前哨站数 + 5*基地固定 + 10*基地随机固定 + 25*基地随机移动',
+}
+
+const ROBOT_DATA_RADAR_CONFIG_2026: RobotDataRadarConfig = {
+  engineerIndicatorName: '工程局均装配经济',
+  dartIndicatorName: '飞镖命中次数得分',
+  dartSubtext: '** 飞镖命中次数得分 = 1*前哨站 + 5*基地固定 + 10*基地随机固定 + 100*基地随机移动 + 200*基地末端移动',
+}
+
+const ROBOT_DATA_RADAR_CONFIG_BY_SEASON: { [season: number]: RobotDataRadarConfig } = {
+  2025: ROBOT_DATA_RADAR_CONFIG_2025,
+  2026: ROBOT_DATA_RADAR_CONFIG_2026,
+}
+
+function getRobotDataRadarConfig(season?: number): RobotDataRadarConfig {
+  return ROBOT_DATA_RADAR_CONFIG_BY_SEASON[season ?? 2025] ?? ROBOT_DATA_RADAR_CONFIG_2025
+}
+
+const robotDataRadarConfig = getRobotDataRadarConfig(props.season)
+
 const option: echarts.EChartsOption = {
   title: {
-    subtext: '* 取所有队伍的最大值为 100%\n' +
-      '** 飞镖加权命中分数 = 1*前哨站数 + 5*基地固定 + 10*基地随机固定 + 25*基地随机移动',
+    subtext: '* 取所有队伍的最大值为 100%\n' + robotDataRadarConfig.dartSubtext,
     subtextStyle: {
       color: "white"
     }
@@ -153,11 +182,11 @@ const option: echarts.EChartsOption = {
       { name: '英雄局均关键伤害', max: robotDataStore.maxRobotDisplay.heroKeyDamage },
       { name: '英雄局均大弹丸命中率', max: robotDataStore.maxRobotDisplay.heroBigHitRate },
       // { name: '英雄局均部署命中数', max: robotDataStore.maxRobotDisplay.heroSnipeCnt },
-      { name: '工程局均兑换经济', max: robotDataStore.maxRobotDisplay.engineerEco },
+      { name: robotDataRadarConfig.engineerIndicatorName, max: robotDataStore.maxRobotDisplay.engineerEco },
       { name: '步兵局均总伤害', max: robotDataStore.maxRobotDisplay.standardDamage },
       { name: '无人机局均总伤害', max: robotDataStore.maxRobotDisplay.aerialDamage },
       { name: '哨兵局均总伤害', max: robotDataStore.maxRobotDisplay.sentryDamage },
-      { name: '飞镖加权命中分数', max: robotDataStore.maxRobotDisplay.dartWeightedScore },
+      { name: robotDataRadarConfig.dartIndicatorName, max: robotDataStore.maxRobotDisplay.dartWeightedScore },
       { name: '雷达局均易伤时间', max: robotDataStore.maxRobotDisplay.radarMarkDuration },
     ]
   },

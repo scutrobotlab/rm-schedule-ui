@@ -105,7 +105,8 @@ const robotData = computed(() => {
 
             <v-col v-if="showRobotDataRadar" md="6" cols="12">
               <RobotDataRadar
-                :players="[props.player]"/>
+                :players="[props.player]"
+                :season="promotionStore.season"/>
             </v-col>
           </v-row>
         </div>

@@ -103,7 +103,8 @@ const blueSideRobotData = computed(() => getRobotData(bluePlayer))
       <v-row>
         <v-col v-if="showRobotDataRadar" md="6" cols="12">
           <RobotDataRadar
-            :players="[redPlayer, bluePlayer]"/>
+            :players="[redPlayer, bluePlayer]"
+            :season="promotionStore.season"/>
         </v-col>
 
         <v-col md="6" cols="12">

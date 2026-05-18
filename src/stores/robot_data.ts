@@ -27,12 +27,16 @@ export const useRobotDataStore = defineStore("robot_data", {
         const newRobotData: RobotData = response.data;
         const newSumRobotData: Robot[] = [];
         const newMaxRobotData: Robot[] = [];
+        const newRobotDisplayMapRegional = new Map<string, RobotDisplay>();
+        const newRobotDisplayMapRepechage = new Map<string, RobotDisplay>();
+        const newRobotDisplayMapFinals = new Map<string, RobotDisplay>();
+        const newExistRobotDataSet = new Set<string>();
         const IgnoredKeys = ["id", "type", "robotNumber"] // 计算时忽略的键
         this.robotData = newRobotData;
         let teamCount = 0;
         for (const zone of newRobotData.zones) {
           for (const team of zone.teams) {
-            this.existRobotDataSet.add(team.collegeName)
+            newExistRobotDataSet.add(team.collegeName)
             // 国赛复活赛与区域赛分开计算，这里是临时解决方案，避免未开赛时全0数据覆盖了区域赛数据
             let avgHurtSum = 0
             for (const robot of team.robots) {
@@ -46,9 +50,13 @@ export const useRobotDataStore = defineStore("robot_data", {
             for (const robot of team.robots) {
               robot.eaKDA = this.fixKDA(robot.eaKDA);
               robot._eaKDAScore = this.getEaKDAScore(robot);
-              robot._reciprocalOfAvgMineTime = this.getReciprocalOfAvgMineTime(robot);
-              robot._etDartCnt = this.getDartHitCnt(robot);
-              robot._etDartWeightedScore = this.getDartWeightedScore(robot);
+              if (season === 2026) {
+                robot._etDartWeightedScore2026 = this.getDartWeightedScore2026(robot);
+              } else {
+                robot._reciprocalOfAvgMineTime = this.getReciprocalOfAvgMineTime(robot);
+                robot._etDartCnt = this.getDartHitCnt(robot);
+                robot._etDartWeightedScore = this.getDartWeightedScore(robot);
+              }
               newSumRobotData.find((r: Robot, index: number) => {
                 if (r.type === robot.type) {
                   Object.keys(robot).filter(key => !IgnoredKeys.includes(key)).forEach(key => {
@@ -74,13 +82,17 @@ export const useRobotDataStore = defineStore("robot_data", {
               }) || newMaxRobotData.push({ ...robot });
             }
             const currentZoneId = Number(zone.zoneId)
-            let targetMap = new Map<string, RobotDisplay>()
+            let targetMap = newRobotDisplayMapRegional
             if (season === 2025) {
-              if (currentZoneId <= 567) targetMap = this.robotDisplayMapRegional
-              else if (currentZoneId <= 571) targetMap = this.robotDisplayMapRepechage
-              else if (currentZoneId === 572) targetMap = this.robotDisplayMapFinals
+              if (currentZoneId <= 567) targetMap = newRobotDisplayMapRegional
+              else if (currentZoneId <= 571) targetMap = newRobotDisplayMapRepechage
+              else if (currentZoneId === 572) targetMap = newRobotDisplayMapFinals
+            } else if (zone.zoneName.includes("全国")) {
+              targetMap = newRobotDisplayMapFinals
+            } else if (zone.zoneName.includes("复活")) {
+              targetMap = newRobotDisplayMapRepechage
             }
-            targetMap.set(team.collegeName, this.extractDisplayData(team.robots));
+            targetMap.set(team.collegeName, this.extractDisplayData(team.robots, season));
           }
         }
         const newAvgRobotData: Robot[] = [];
@@ -100,9 +112,13 @@ export const useRobotDataStore = defineStore("robot_data", {
           newAvgRobotData.push(avgRobot);
         })
         this.avgRobotData = newAvgRobotData;
-        this.avgRobotDisplay = this.extractDisplayData(newAvgRobotData)
+        this.avgRobotDisplay = this.extractDisplayData(newAvgRobotData, season)
         this.maxRobotData = newMaxRobotData;
-        this.maxRobotDisplay = this.extractDisplayData(newMaxRobotData)
+        this.maxRobotDisplay = this.extractDisplayData(newMaxRobotData, season)
+        this.robotDisplayMapRegional = newRobotDisplayMapRegional;
+        this.robotDisplayMapRepechage = newRobotDisplayMapRepechage;
+        this.robotDisplayMapFinals = newRobotDisplayMapFinals;
+        this.existRobotDataSet = newExistRobotDataSet;
       });
     },
     fixKDA(kda: string): string {
@@ -127,13 +143,23 @@ export const useRobotDataStore = defineStore("robot_data", {
       return robot.etDartOutpostCnt + robot.etDartFixedCnt + robot.etDartRDFixCnt + robot.etDartRDMoveCnt;
     },
     getDartWeightedScore(robot: Robot): number {
+      // 2025 及之前公式
       return robot.etDartOutpostCnt +
         5 * robot.etDartFixedCnt +
         10 * robot.etDartRDFixCnt +
         25 * robot.etDartRDMoveCnt;
     },
-    extractDisplayData(robots: Robot[]): RobotDisplay {
+    getDartWeightedScore2026(robot: Robot): number {
+      // 2026 公式：末端移动目标 200 分，随机移动目标 100 分
+      return robot.etDartOutpostCnt +
+        5 * robot.etDartFixedCnt +
+        10 * robot.etDartRDFixCnt +
+        100 * robot.etDartRDMoveCnt +
+        200 * (robot.etDartEndMoveCnt ?? 0);
+    },
+    extractDisplayData(robots: Robot[], season: number): RobotDisplay {
       const result = {} as RobotDisplay
+      const is2026 = season === 2026
       for (const robot of robots) {
         switch (robot.type) {
           case "Hero":
@@ -142,7 +168,8 @@ export const useRobotDataStore = defineStore("robot_data", {
             result.heroSnipeCnt = robot.eaSnipeCnt
             break
           case "Sapper":
-            result.engineerEco = robot.eaExchangeEcon
+            // 2026 使用装配经济；2025 及之前使用兑换经济
+            result.engineerEco = is2026 ? robot.eaAssembleEcon : robot.eaExchangeEcon
             break
           case "Infantry":
             result.standardDamage = robot.eagHurt
@@ -154,7 +181,8 @@ export const useRobotDataStore = defineStore("robot_data", {
             result.sentryDamage = robot.eagHurt
             break
           case "Dart":
-            result.dartWeightedScore = robot._etDartWeightedScore
+            // 2026 使用新加权公式；2025 及之前使用旧公式
+            result.dartWeightedScore = is2026 ? robot._etDartWeightedScore2026 : robot._etDartWeightedScore
             break
           case "Radar":
             result.radarMarkDuration = robot.eaRadarMarkerTime
