@@ -35,13 +35,20 @@ export interface Robot {
   _etDartCnt: number //累计命中数
   _etDartWeightedScore: number //累计加权命中分数
   eaRadarMarkerTime: number //局均易伤时间
-  eaRadarDebuffDmg: number //局均额外伤害
-  eaExchangeEcon: number //局均兑换经济
-  avgMineTime: number //局均兑换时间
-  _reciprocalOfAvgMineTime: number //局均兑换时间倒数
-  avgMineDiff: number //局均兑换难度
+  eaRadarDebuffDmg: number //局均额外伤害（2025 及之前）
+  eaExchangeEcon: number //局均兑换经济（2025 及之前）
+  avgMineTime: number //局均兑换时间（2025 及之前）
+  _reciprocalOfAvgMineTime: number //局均兑换时间倒数（2025 及之前）
+  avgMineDiff: number //局均兑换难度（2025 及之前）
   avgShootNum: number //局均发弹量
   matchLargeEnergyActRoundsAvg: number // 大能量机关平均激活环数
+  // 2026 新增字段
+  eaAssembleEcon: number // 局均装配经济
+  eaAssembleSuccCnt: number // 局均成功装配次数
+  avgAssembleDiff: number // 次均装配难度
+  eaRadarParseSuccCnt: number // 局均解析成功次数
+  eaRadarCounterTime: number // 局均反制时间
+  etDartEndMoveCnt: number // 累计命中基地末端移动目标数
 }
 
 export interface RobotDisplay {

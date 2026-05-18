@@ -100,7 +100,7 @@ const robotData = computed(() => {
             </v-col>
 
             <v-col v-if="robotData" md="6" cols="12">
-              <RobotDataTable :robot-data-left="robotData"/>
+              <RobotDataTable :robot-data-left="robotData" :season="promotionStore.season"/>
             </v-col>
 
             <v-col v-if="showRobotDataRadar" md="6" cols="12">

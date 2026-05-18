@@ -116,7 +116,8 @@ const blueSideRobotData = computed(() => getRobotData(bluePlayer))
         <v-col v-if="redSideRobotData" md="12" cols="12">
           <RobotDataTable
             :robot-data-left="redSideRobotData"
-            :robot-data-right="blueSideRobotData"/>
+            :robot-data-right="blueSideRobotData"
+            :season="promotionStore.season"/>
         </v-col>
       </v-row>
     </v-card-text>
