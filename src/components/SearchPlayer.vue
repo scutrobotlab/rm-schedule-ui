@@ -75,7 +75,6 @@ function confirm() {
 }
 
 function analyze() {
-  if (promotionStore.season === 2026) return
   confirm()
   appStore.analysisDialog = true
 }
@@ -146,7 +145,6 @@ function analyze() {
           @click="confirm"
         ></v-btn>
         <v-btn
-          v-if="promotionStore.season !== 2026"
           text="分析"
           @click="analyze"
         ></v-btn>

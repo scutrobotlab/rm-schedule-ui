@@ -14,7 +14,6 @@ const props = defineProps<Props>();
 const appStore = useAppStore()
 const promotionStore = usePromotionStore();
 const match = computed(() => props.match)
-const showAnalysisActions = computed(() => promotionStore.season !== 2026)
 
 function matchTooltip(match: MatchNode): string {
   if (!match) return ""
@@ -37,7 +36,6 @@ function openBilibiliSpace(uid: number) {
 }
 
 function onAnalyzeMatch() {
-  if (!showAnalysisActions.value) return
   promotionStore.selectedMatch = match.value
   appStore.matchAnalysisDialog = true
 }
@@ -75,14 +73,12 @@ function onAnalyzeMatch() {
 
     <v-list>
       <v-list-item
-        v-if="showAnalysisActions"
         @click="onAnalyzeMatch"
         :disabled="!props.match.redSide.player || !props.match.blueSide.player"
       >
         分析比赛{{ promotionStore.getCurrentZone().name }}第{{ match.orderNumber }}场
       </v-list-item>
       <v-list-item
-        v-if="showAnalysisActions"
         @click="appStore.analysisDialog = true"
         :disabled="!promotionStore.selectedPlayer?.team"
       >

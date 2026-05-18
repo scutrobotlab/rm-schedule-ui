@@ -164,10 +164,6 @@ const MenuItems = ref(
     },
   ]
 )
-const visibleMenuItems = computed(() => {
-  if (promotionStore.season !== 2026) return MenuItems.value
-  return MenuItems.value.filter((item) => item.title !== '分析队伍')
-})
 </script>
 
 <template>
@@ -256,7 +252,7 @@ const visibleMenuItems = computed(() => {
                 </template>
                 <v-list>
                   <v-list-item
-                    v-for="(item, index) in visibleMenuItems"
+                    v-for="(item, index) in MenuItems"
                     :key="index"
                     :value="index"
                     :prepend-icon="item.icon"
