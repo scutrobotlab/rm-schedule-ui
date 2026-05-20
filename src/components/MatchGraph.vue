@@ -345,7 +345,7 @@ function updateBilibiliReplay(orderNumber: number) {
   })
 }
 
-function updateTeamInfo(collegeName: string) {
+function updateTeamInfo(collegeName?: string) {
   if (!collegeName) {
     promotionStore.teamInfo = null
     return
@@ -372,7 +372,7 @@ function selectPlayerMatch(match: MatchNode, player?: Player) {
     promotionStore.bilibiliReplay = null
     promotionStore.teamInfo = null
   } else {
-    promotionStore.selectedPlayer = player
+    promotionStore.selectedPlayer = player ?? null
 
     updateBilibiliReplay(match.orderNumber)
     updateTeamInfo(player?.team?.collegeName)
