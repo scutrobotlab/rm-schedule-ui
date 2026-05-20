@@ -194,9 +194,16 @@ function schoolNameDisplayLength(name?: string | number | null): number {
 
 function schoolNameStyle(name?: string | number | null, showMpRate = false) {
   const length = schoolNameDisplayLength(name)
+  // 仅非直播模式且显示胜率时，为长校名额外缩小字号
+  if (!liveMode.value && showMpRate) {
+    if (length >= 12) return { fontSize: '16px' }
+    if (length >= 11) return { fontSize: '18px' }
+    if (length >= 10) return { fontSize: '20px' }
+    return undefined
+  }
   const thresholdOffset = showMpRate ? 1 : 0
-  if (length >= 12 - thresholdOffset) return {fontSize: '18px'}
-  if (length >= 11 - thresholdOffset) return {fontSize: '20px'}
+  if (length >= 12 - thresholdOffset) return { fontSize: '18px' }
+  if (length >= 11 - thresholdOffset) return { fontSize: '20px' }
   return undefined
 }
 
