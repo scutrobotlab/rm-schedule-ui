@@ -266,35 +266,28 @@ function forecastGuidePath(pair: { from: number, to: number }): string {
   return `M 322 ${startY} C ${outerX} ${startY}, ${outerX} ${midY}, ${outerX} ${midY} C ${outerX} ${midY}, ${outerX} ${endY}, 322 ${endY}`
 }
 
-function generateNumberArray(baseId: number, n: number): number[] {
-  const result: number[] = [];
-  for (let i = 0; i < n; i++) {
-    result.push(baseId + i);
-  }
-  return result;
-}
-
 async function updateMpMatch() {
-  let firstId: number, lastId: number
-  if (props.type == 'group') {
-    const groupMatchNodes = promotionStore.getZone(props.zoneId).groupMatches.nodes
-    groupMatchNodes.sort((a: any, b: any) => Number(a.id) - Number(b.id))
-    firstId = Number(groupMatchNodes[0]?.id)
-    if (!firstId) return
-    if (props.group == 'C') firstId -= 22 // TODO: 临时解决方案
-    const idList = []
-    props.jsonData.nodes.forEach((e: any) => {
-      e.data.zones[groupIndex.value].matches.forEach((order: number, i: number) => {
-        idList.push(firstId + order - 1)
+  const idSet = new Set<number>()
+  const zone = promotionStore.getZone(props.zoneId)
+
+  props.jsonData.nodes.forEach((node: any) => {
+    const matchZones = props.type == 'group' ? [node.data.zones[groupIndex.value]] : node.data.zones
+    matchZones.forEach((matchZone: any) => {
+      matchZone?.matches?.forEach((order: number) => {
+        let matchNode: MatchNode | undefined
+        if (props.type == 'group') {
+          matchNode = match(order)
+        } else {
+          matchNode = zone.knockoutMatches.nodes.find((node: MatchNode) => node.orderNumber == order)
+        }
+
+        const matchId = Number(matchNode?.id)
+        if (matchId) idSet.add(matchId)
       })
     })
-    await promotionStore.updateMpMatch(idList)
-  } else if (props.type == 'knockout') {
-    firstId = Number(promotionStore.getZone(props.zoneId).knockoutMatches.nodes[0]?.id)
-    lastId = Number(promotionStore.getZone(props.zoneId).knockoutMatches.nodes[promotionStore.getZone(props.zoneId).knockoutMatches.nodes.length - 1]?.id)
-    if (!firstId || !lastId) return
-    await promotionStore.updateMpMatch(generateNumberArray(firstId, lastId - firstId + 1))
-  }
+  })
+
+  await promotionStore.updateMpMatch([...idSet])
 }
 
 function colorfulNode(node: any): boolean {
