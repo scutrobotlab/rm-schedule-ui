@@ -60,6 +60,7 @@ function refresh() {
 setInterval(refresh, 30_000)
 
 const graphRef = ref<RelationGraph>()
+const activeMatchMenuId = ref<string | null>(null)
 
 const nodeWidth = 380;
 const options = ref<RGOptions>({
@@ -363,8 +364,13 @@ function updateTeamInfo(collegeName: string) {
 }
 
 function selectPlayerMatch(match: MatchNode, player?: Player) {
+  promotionStore.selectedMatch = match
+  activeMatchMenuId.value = match.id
+
   if (promotionStore.selectedPlayer && player && promotionStore.selectedPlayer.id == player.id) {
     promotionStore.selectedPlayer = null
+    promotionStore.bilibiliReplay = null
+    promotionStore.teamInfo = null
   } else {
     promotionStore.selectedPlayer = player
 
@@ -377,11 +383,17 @@ function openBilibiliSpace(uid: number) {
   window.open(`https://space.bilibili.com/${uid}`, '_blank')
 }
 
-function onMatchMenuModelValue(on: boolean) {
+function onMatchMenuModelValue(on: boolean, match?: MatchNode) {
+  activeMatchMenuId.value = on && match ? match.id : null
+
   if (!on) {
     promotionStore.bilibiliReplay = null
     promotionStore.teamInfo = null
   }
+}
+
+function matchMenuActive(match?: MatchNode): boolean {
+  return !!match && activeMatchMenuId.value == match.id
 }
 
 function matchSelected(match: MatchNode): boolean {
@@ -647,7 +659,10 @@ const round = computed(() => {
 
                   <!--已确认的赛程-->
                   <div v-if="round + 1 > node.data.round && match(v)" class="container">
-                    <v-menu @update:model-value="onMatchMenuModelValue">
+                    <v-menu
+                      :model-value="matchMenuActive(match(v))"
+                      @update:model-value="onMatchMenuModelValue($event, match(v))"
+                    >
                       <template v-slot:activator="{ isActive, props }">
                         <div
                           v-bind="props"
@@ -670,7 +685,7 @@ const round = computed(() => {
                               :class="{
                                 'selected-player': playerSelected(match(v).redSide.player),
                               }"
-                              @click="selectPlayerMatch(match(v), match(v).redSide.player)"
+                              @click.stop="selectPlayerMatch(match(v), match(v).redSide.player)"
                             >
                               <div class="school-image-container">
                                 <img src="@/assets/school_bg.png" style="width: 320px" alt="Image"/>
@@ -724,7 +739,7 @@ const round = computed(() => {
                               :class="{
                               'selected-player': playerSelected(match(v).blueSide.player),
                             }"
-                              @click="selectPlayerMatch(match(v), match(v).blueSide.player)"
+                              @click.stop="selectPlayerMatch(match(v), match(v).blueSide.player)"
                             >
                               <div class="school-image-container">
                                 <img src="@/assets/school_bg.png" style="width: 320px" alt="Image"/>
