@@ -521,7 +521,7 @@ export const ZoneMap: { [key: number]: Zone[] } = {
     },
     {
       id: 615, name: '东部赛区', disabled: false,
-      defaultGroup: 0,
+      defaultGroup: 5,
       parts: [
         {
           name: 'A组前段',
