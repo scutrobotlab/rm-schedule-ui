@@ -2,7 +2,7 @@
 import RelationGraph, { RGOptions } from 'relation-graph-vue3';
 import { usePromotionStore } from "../stores/promotion";
 import { MatchNode, Player, PlayerWithMatch } from "../types/schedule";
-import { computed, ref, watch } from "vue";
+import { computed, onUnmounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { RoundOrder } from "../types/round_order";
 import { GroupType, ImageData, TitleData, ZoneForecastData, ZoneJsonData, ZoneNodeJsonData, ZoneZoneData } from "../types/zone";
@@ -34,6 +34,10 @@ const loading = ref(true)
 
 const route = useRoute()
 const liveMode = computed(() => route.query.live == "1")
+const staticArchivedSeasons = new Set([2024, 2025])
+const staticArchivedZoneMap = new Map<number, Set<number>>([
+  [2026, new Set([614, 615, 616])],
+])
 
 const appStore = useAppStore()
 const promotionStore = usePromotionStore();
@@ -57,7 +61,17 @@ function refresh() {
   updateMpMatch()
 }
 
-setInterval(refresh, 30_000)
+function isStaticArchivedZone(season: number, zoneId: number): boolean {
+  return staticArchivedSeasons.has(season) || !!staticArchivedZoneMap.get(season)?.has(zoneId)
+}
+
+let refreshInterval: ReturnType<typeof setInterval> | undefined
+if (!isStaticArchivedZone(promotionStore.season, props.zoneId)) {
+  refreshInterval = setInterval(refresh, 30_000)
+}
+onUnmounted(() => {
+  if (refreshInterval) clearInterval(refreshInterval)
+})
 
 const graphRef = ref<RelationGraph>()
 const activeMatchMenuId = ref<string | null>(null)
