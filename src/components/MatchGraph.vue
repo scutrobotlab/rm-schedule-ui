@@ -26,9 +26,12 @@ interface Props {
   extraImageData?: ImageData[],
   rx?: number,
   ry?: number,
+  exportMode?: boolean,
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  exportMode: false,
+})
 const emit = defineEmits<{
   ready: []
   error: [message: string]
@@ -84,7 +87,7 @@ function isStaticArchivedZone(season: number, zoneId: number): boolean {
 }
 
 let refreshInterval: ReturnType<typeof setInterval> | undefined
-if (!isStaticArchivedZone(promotionStore.season, props.zoneId)) {
+if (!props.exportMode && !isStaticArchivedZone(promotionStore.season, props.zoneId)) {
   refreshInterval = setInterval(refresh, 30_000)
 }
 onUnmounted(() => {

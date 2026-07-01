@@ -71,6 +71,7 @@ function onError(message: string) {
   <MatchGraph
     v-if="paramsValid && 'part' in resolved"
     ref="graphRef"
+    export-mode
     :zone-id="zoneId"
     :type="resolved.part.type"
     :group="resolved.part.group"
