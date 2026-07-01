@@ -26,9 +26,16 @@ interface Props {
   extraImageData?: ImageData[],
   rx?: number,
   ry?: number,
+  exportMode?: boolean,
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  exportMode: false,
+})
+const emit = defineEmits<{
+  ready: []
+  error: [message: string]
+}>()
 
 const loading = ref(true)
 
@@ -50,9 +57,23 @@ const dataUpdatePromises = [
 Promise.all(dataUpdatePromises).then(async () => {
   await updateMpMatch()
   loading.value = false
+  if (!graphRef.value) throw new Error('graph not mounted')
   await graphRef.value.setJsonData(props.jsonData)
   await graphRef.value.getInstance().zoomToFit()
+  emit('ready')
+}).catch((err) => {
+  loading.value = false
+  emit('error', err?.message ?? String(err))
 })
+
+function exportImage() {
+  if (!graphRef.value) {
+    return Promise.reject(new Error('graph not mounted'))
+  }
+  return graphRef.value.getInstance().getImageBase64('png')
+}
+
+defineExpose({ exportImage })
 
 function refresh() {
   promotionStore.updateSchedule()
@@ -66,7 +87,7 @@ function isStaticArchivedZone(season: number, zoneId: number): boolean {
 }
 
 let refreshInterval: ReturnType<typeof setInterval> | undefined
-if (!isStaticArchivedZone(promotionStore.season, props.zoneId)) {
+if (!props.exportMode && !isStaticArchivedZone(promotionStore.season, props.zoneId)) {
   refreshInterval = setInterval(refresh, 30_000)
 }
 onUnmounted(() => {
