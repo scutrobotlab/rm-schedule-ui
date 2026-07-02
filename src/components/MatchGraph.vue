@@ -60,11 +60,41 @@ Promise.all(dataUpdatePromises).then(async () => {
   if (!graphRef.value) throw new Error('graph not mounted')
   await graphRef.value.setJsonData(props.jsonData)
   await graphRef.value.getInstance().zoomToFit()
+  patchDownloadWithScale()
   emit('ready')
 }).catch((err) => {
   loading.value = false
   emit('error', err?.message ?? String(err))
 })
+
+const DOWNLOAD_IMAGE_SCALE = 2
+
+async function withDownloadImageScale<T>(fn: () => Promise<T>): Promise<T> {
+  const descriptor = Object.getOwnPropertyDescriptor(window, 'devicePixelRatio')
+  Object.defineProperty(window, 'devicePixelRatio', {
+    get: () => DOWNLOAD_IMAGE_SCALE,
+    configurable: true,
+  })
+  try {
+    return await fn()
+  } finally {
+    if (descriptor) {
+      Object.defineProperty(window, 'devicePixelRatio', descriptor)
+    }
+  }
+}
+
+const patchedDownloadInstances = new WeakSet<object>()
+
+function patchDownloadWithScale() {
+  const instance = graphRef.value?.getInstance()
+  if (!instance || patchedDownloadInstances.has(instance)) return
+
+  const origDownload = instance.downloadAsImage.bind(instance)
+  instance.downloadAsImage = (format?: string, fileName?: string) =>
+    withDownloadImageScale(() => origDownload(format, fileName))
+  patchedDownloadInstances.add(instance)
+}
 
 function exportImage() {
   if (!graphRef.value) {
