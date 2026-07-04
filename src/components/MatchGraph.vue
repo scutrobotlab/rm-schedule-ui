@@ -61,11 +61,42 @@ Promise.all(dataUpdatePromises).then(async () => {
   await graphRef.value.setJsonData(props.jsonData)
   await graphRef.value.getInstance().zoomToFit()
   patchDownloadWithScale()
+  if (props.exportMode) {
+    // 后台 chromedp 导出会在 ready 后立即快照，若此时校徽（走 /api/static 代理 + bg_white
+    // 处理，加载较慢）尚未加载完成，快照会得到 v-avatar 的白色底 → 校徽显示为白色。
+    // 浏览器里人工导出前图片早已加载，故只在无头导出稳定复现。这里显式等待画布内所有图片就绪。
+    await waitForGraphImagesLoaded()
+  }
   emit('ready')
 }).catch((err) => {
   loading.value = false
   emit('error', err?.message ?? String(err))
 })
+
+async function waitForGraphImagesLoaded(timeoutMs = 20000): Promise<void> {
+  const instance = graphRef.value?.getInstance?.()
+  const root: ParentNode = instance?.$canvasDom ?? document
+  // 未设置 src 的懒加载占位图不纳入等待（它们不会真正发起加载），只等待已有 src 的图片
+  const pendingImages = (): HTMLImageElement[] =>
+    (Array.from(root.querySelectorAll('img')) as HTMLImageElement[]).filter((img) => {
+      const src = img.currentSrc || img.getAttribute('src') || ''
+      if (!src) return false
+      return !img.complete || img.naturalWidth === 0
+    })
+
+  const deadline = Date.now() + timeoutMs
+  while (Date.now() < deadline && pendingImages().length > 0) {
+    await new Promise((resolve) => setTimeout(resolve, 100))
+  }
+
+  // 等待解码，确保快照绘制时像素可用
+  const images = Array.from(root.querySelectorAll('img')) as HTMLImageElement[]
+  await Promise.all(
+    images.map((img) =>
+      typeof img.decode === 'function' ? img.decode().catch(() => undefined) : Promise.resolve()
+    )
+  )
+}
 
 const DOWNLOAD_IMAGE_SCALE = 2
 
@@ -681,7 +712,7 @@ const round = computed(() => {
                                 <h4 class="px-1" style="width: 2.5rem"> 待定 </h4>
                               </div>
                               <v-avatar class="mx-1 avatar-center bg-white" color="white" size="x-small">
-                                <v-img :src="logoCDN(v.player.team.collegeLogo)"/>
+                                <v-img :eager="exportMode" :src="logoCDN(v.player.team.collegeLogo)"/>
                               </v-avatar>
                               <span class="one-line-text" :style="schoolNameStyle(v.player.team.collegeName)">{{ schoolNameText(v.player.team.collegeName) }}</span>
                             </div>
@@ -705,7 +736,7 @@ const round = computed(() => {
                                 <h4 class="px-1" style="width: 2.5rem">待定</h4>
                               </div>
                               <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
-                                <v-img src="@/assets/school_grey.png"/>
+                                <v-img :eager="exportMode" src="@/assets/school_grey.png"/>
                               </v-avatar>
                               <span class="one-line-text" :style="schoolNameStyle(v)">{{ schoolNameText(v) }}</span>
                             </div>
@@ -776,10 +807,10 @@ const round = computed(() => {
                                   </div>
                                   <v-avatar v-if="match(v).redSide.player?.team" class="mx-1 bg-white" color="white"
                                             size="x-small">
-                                    <v-img :src="logoCDN(match(v).redSide.player?.team.collegeLogo)"></v-img>
+                                    <v-img :eager="exportMode" :src="logoCDN(match(v).redSide.player?.team.collegeLogo)"></v-img>
                                   </v-avatar>
                                   <v-avatar v-else class="mx-1" size="x-small">
-                                    <v-img src="@/assets/school_red.png"></v-img>
+                                    <v-img :eager="exportMode" src="@/assets/school_red.png"></v-img>
                                   </v-avatar>
                                   <span v-if="match(v).redSide.player?.team"
                                         :style="[schoolNameStyle(match(v).redSide.player?.team.collegeName, mpMatchRateVisible(match(v), 'RED')), {color: (node as ZoneNodeJsonData).data.collegeNameColor}]"
@@ -826,10 +857,10 @@ const round = computed(() => {
                                   </div>
                                   <v-avatar v-if="match(v).blueSide.player?.team" class="mx-1 bg-white" color="white"
                                             size="x-small">
-                                    <v-img :src="logoCDN(match(v).blueSide.player?.team.collegeLogo)"></v-img>
+                                    <v-img :eager="exportMode" :src="logoCDN(match(v).blueSide.player?.team.collegeLogo)"></v-img>
                                   </v-avatar>
                                   <v-avatar v-else class="mx-1" size="x-small">
-                                    <v-img src="@/assets/school_blue.png"></v-img>
+                                    <v-img :eager="exportMode" src="@/assets/school_blue.png"></v-img>
                                   </v-avatar>
                                   <span v-if="match(v).blueSide.player?.team"
                                         :style="[schoolNameStyle(match(v).blueSide.player?.team.collegeName, mpMatchRateVisible(match(v), 'BLUE')), {color: (node as ZoneNodeJsonData).data.collegeNameColor}]"
@@ -882,7 +913,7 @@ const round = computed(() => {
                                     <h4 class="px-1"> 0 </h4>
                                   </div>
                                   <v-avatar class="mx-1" size="x-small">
-                                    <v-img src="@/assets/school_red.png"></v-img>
+                                    <v-img :eager="exportMode" src="@/assets/school_red.png"></v-img>
                                   </v-avatar>
                                   <span class="one-line-text" :style="schoolNameStyle(node.data.zones[groupIndex].text[2 * i])">
                                     {{
@@ -902,7 +933,7 @@ const round = computed(() => {
                                     <h4 class="px-1"> 0 </h4>
                                   </div>
                                   <v-avatar class="mx-1" size="x-small">
-                                    <v-img src="@/assets/school_blue.png"></v-img>
+                                    <v-img :eager="exportMode" src="@/assets/school_blue.png"></v-img>
                                   </v-avatar>
                                   <span class="one-line-text" :style="schoolNameStyle(node.data.zones[groupIndex].text[2 * i + 1])">
                                     {{
@@ -939,8 +970,9 @@ const round = computed(() => {
                             </div>
                             <v-avatar class="mx-1 avatar-center bg-white" color="white" size="x-small">
                               <v-img v-if="groupRank(node.data.zones[groupIndex].group, v).team"
+                                     :eager="exportMode"
                                      :src="logoCDN(groupRank(node.data.zones[groupIndex].group, v).team?.collegeLogo)"/>
-                              <v-img v-else src="@/assets/school_grey.png"/>
+                              <v-img v-else :eager="exportMode" src="@/assets/school_grey.png"/>
                             </v-avatar>
                             <span v-if="groupRank(node.data.zones[groupIndex].group, v).team"
                                   :style="schoolNameStyle(groupRank(node.data.zones[groupIndex].group, v).team?.collegeName)"
@@ -989,7 +1021,7 @@ const round = computed(() => {
                               <h4 class="px-1" style="width: 2.5rem; color: white"> 待定 </h4>
                             </div>
                             <v-avatar class="mx-1 avatar-center bg-white" color="white" size="x-small">
-                              <v-img :src="logoCDN(v.player.team.collegeLogo)"/>
+                              <v-img :eager="exportMode" :src="logoCDN(v.player.team.collegeLogo)"/>
                             </v-avatar>
                             <span :style="[schoolNameStyle(v.player.team.collegeName), {color: (node as ZoneNodeJsonData).data.collegeNameColor}]"
                                   class="one-line-text">{{ schoolNameText(v.player.team.collegeName) }}</span>
@@ -1013,7 +1045,7 @@ const round = computed(() => {
                               <h4 class="px-1" style="width: 2.5rem">待定</h4>
                             </div>
                             <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
-                              <v-img src="@/assets/school_grey.png"/>
+                              <v-img :eager="exportMode" src="@/assets/school_grey.png"/>
                             </v-avatar>
                             <span :style="[schoolNameStyle(v), {color: (node as ZoneNodeJsonData).data.collegeNameColor}]"
                                   class="one-line-text">{{ schoolNameText(v) }}</span>
