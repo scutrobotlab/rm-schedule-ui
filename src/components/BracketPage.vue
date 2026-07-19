@@ -71,7 +71,9 @@ function toStageItem(label: string, index: number, length: number, teams: number
     !label.includes('四分之一')
 
   if (isTrophy) {
-    return { label, icon: 'trophy' }
+    // 仅全国赛决赛用自定义奖杯图，赛区决赛用表情
+    const icon = zone.value?.name === '全国赛' ? 'trophy' : 'trophyEmoji'
+    return { label, icon }
   }
   const count = Math.max(teams, 1)
   return {

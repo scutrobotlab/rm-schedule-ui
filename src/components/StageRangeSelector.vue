@@ -4,8 +4,8 @@ import championIcon from '@/assets/champion.png'
 
 export interface StageItem {
   label: string
-  /** 轨道内缩略图：横线条数，或奖杯 */
-  icon: number | 'trophy'
+  /** 轨道内缩略图：横线条数 / 全国赛奖杯图 / 普通决赛表情 */
+  icon: number | 'trophy' | 'trophyEmoji'
   /** 粗横条（如小组赛） */
   thick?: boolean
   /** 双列排布（如 32 强） */
@@ -262,13 +262,18 @@ function barsStyle(stage: StageItem): Record<string, string> {
           class="stage-range__icon-cell"
           :class="{ 'stage-range__icon-cell--active': isActive(index) }"
         >
-          <div
+          <img
             v-if="stage.icon === 'trophy'"
             class="stage-range__trophy"
-            :style="{ '--trophy-mask': `url(${championIcon})` }"
+            :src="championIcon"
+            alt="冠军"
+          />
+          <span
+            v-else-if="stage.icon === 'trophyEmoji'"
+            class="stage-range__trophy-emoji"
             role="img"
             aria-label="冠军"
-          />
+          >🏆</span>
           <div
             v-else
             class="stage-range__bars"
@@ -280,6 +285,10 @@ function barsStyle(stage: StageItem): Record<string, string> {
               :key="barIndex"
               class="stage-range__bar"
             />
+            <span
+              v-if="typeof stage.icon === 'number' && stage.icon > 8"
+              class="stage-range__count"
+            >{{ stage.icon }}</span>
           </div>
         </div>
       </div>
@@ -425,6 +434,7 @@ function barsStyle(stage: StageItem): Record<string, string> {
 
 .stage-range__bars--cols {
   --bar-rows: 4;
+  position: relative;
   display: grid;
   grid-template-columns: repeat(2, auto);
   grid-auto-flow: column;
@@ -471,16 +481,37 @@ function barsStyle(stage: StageItem): Record<string, string> {
   height: 2.5px;
 }
 
-.stage-range__trophy {
-  width: 13px;
-  height: 28px;
-  background: currentColor;
+.stage-range__count {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
   pointer-events: none;
-  /* 只用奖杯图亮度作遮罩，保留轮廓、去掉照片细节 */
-  mask: var(--trophy-mask) center / contain no-repeat;
-  -webkit-mask: var(--trophy-mask) center / contain no-repeat;
-  mask-mode: luminance;
-  -webkit-mask-source-type: luminance;
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  color: inherit;
+  text-shadow:
+    0 0 4px var(--track-bg),
+    0 0 2px var(--track-bg),
+    0 1px 0 var(--track-bg);
+  line-height: 1;
+}
+
+.stage-range__trophy {
+  width: 16px;
+  height: 28px;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.stage-range__trophy-emoji {
+  font-size: 1.1rem;
+  line-height: 1;
+  pointer-events: none;
 }
 
 .stage-range__selection {
