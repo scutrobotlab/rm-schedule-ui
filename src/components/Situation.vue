@@ -1,12 +1,24 @@
 <script setup lang="ts">
 import { useAppStore } from "../stores/app";
 import MatchGraph from "./MatchGraph.vue";
+import StageRangeSelector, { type StageItem, type StageRange } from "./StageRangeSelector.vue";
 import { computed, watch, ref } from "vue";
 import { usePromotionStore } from "../stores/promotion";
 import AnalyzeTeam from "./AnalyzeTeam.vue";
 import { useRoute, useRouter } from "vue-router";
 import { DefaultZoneMap, Part, SeasonList, ZoneMap } from "../constant/zone";
 import AnalyzeMatch from "./AnalyzeMatch.vue";
+
+/** 展示用阶段（仅 UI，不驱动赛事图筛选） */
+const displayStages: StageItem[] = [
+  { label: '小组赛', icon: 4, thick: true },
+  { label: '32强', icon: 6, columns: 2 },
+  { label: '16强', icon: 4 },
+  { label: '四分之一决赛', icon: 2 },
+  { label: '半决赛', icon: 2 },
+  { label: '决赛', icon: 'trophy' },
+]
+const stageRange = ref<StageRange>({ start: 0, end: 1 })
 
 const route = useRoute()
 const router = useRouter()
@@ -301,6 +313,13 @@ const MenuItems = ref(
               </div>
             </v-slide-group>
           </v-sheet>
+
+          <div class="stage-range-wrap">
+            <StageRangeSelector
+              v-model="stageRange"
+              :stages="displayStages"
+            />
+          </div>
         </div>
 
         <div
@@ -446,6 +465,10 @@ const MenuItems = ref(
   position: absolute; /* 绝对定位 */
   z-index: 4; /* 确保在 v-carousel 上方 */
   width: 100%; /* 占满宽度 */
+}
+
+.stage-range-wrap {
+  padding: 4px 0 8px;
 }
 
 .v-carousel {
