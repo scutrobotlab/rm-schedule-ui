@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { computeKnockoutLayout } from './bracket_tree_layout'
+import { computeKnockoutLayout, shiftLayoutToAnchor } from './bracket_tree_layout'
 import type { BracketColumn, BracketConnection } from '../types/bracket'
 
 function col(index: number, ids: string[]): BracketColumn {
@@ -51,5 +51,26 @@ describe('computeKnockoutLayout', () => {
 
     expect(tops['#5'] + H / 2).toBeCloseTo((c1 + c2) / 2)
     expect(tops['#6'] + H / 2).toBeCloseTo((c3 + c4) / 2)
+  })
+
+  it('锚点列贴顶后最上节点 top 为 0，相对关系保持', () => {
+    const columns = [col(0, ['#1', '#2', '#3', '#4']), col(1, ['#5', '#6'])]
+    const connections: BracketConnection[] = [
+      { fromNodeId: '#1', toNodeId: '#5' },
+      { fromNodeId: '#2', toNodeId: '#5' },
+      { fromNodeId: '#3', toNodeId: '#6' },
+      { fromNodeId: '#4', toNodeId: '#6' },
+    ]
+    const H = 40
+    const gap = 8
+    const heights = Object.fromEntries(
+      ['#1', '#2', '#3', '#4', '#5', '#6'].map((id) => [id, H]),
+    )
+    const raw = computeKnockoutLayout({ columns, connections, heights, gap })
+    const { tops } = shiftLayoutToAnchor(raw, 1, columns, heights)
+
+    expect(Math.min(tops['#5'], tops['#6'])).toBeCloseTo(0)
+    expect(tops['#6'] - tops['#5']).toBeCloseTo(raw.tops['#6'] - raw.tops['#5'])
+    expect(tops['#1']).toBeLessThan(0)
   })
 })

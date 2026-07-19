@@ -12,6 +12,8 @@ const props = defineProps<{
   connections: BracketConnection[]
   /** 用于强制在列/阶段变化后重算 */
   layoutKey: string
+  /** 为 true 时每帧跟随节点过渡位置重绘，保证连线与卡片同步缓动 */
+  tracking?: boolean
 }>()
 
 const rootRef = ref<SVGSVGElement | null>(null)
@@ -19,10 +21,18 @@ const paths = ref<ConnectorPath[]>([])
 
 let resizeObserver: ResizeObserver | null = null
 let rafId = 0
+let trackRaf = 0
 
 function laneOfNode(el: HTMLElement): BracketLane {
   if (el.classList.contains('lane-gold')) return 'gold'
   return 'main'
+}
+
+function buildPathD(x1: number, y1: number, x2: number, y2: number): string {
+  const midX = (x1 + x2) / 2
+  return x2 > x1 + 2
+    ? `M ${x1} ${y1} H ${midX} V ${y2} H ${x2}`
+    : `M ${x1} ${y1} C ${x1 + 24} ${y1}, ${x2 - 24} ${y2}, ${x2} ${y2}`
 }
 
 function measure() {
@@ -34,7 +44,6 @@ function measure() {
   }
 
   const boardRect = board.getBoundingClientRect()
-  // 用边框盒尺寸做坐标系，避免 scrollHeight / 绝对定位 SVG 互相撑高可滚动区域
   const width = Math.max(1, board.clientWidth)
   const height = Math.max(1, board.clientHeight)
   svg.setAttribute('viewBox', `0 0 ${width} ${height}`)
@@ -64,20 +73,31 @@ function measure() {
       continue
     }
 
-    // 折点取两节点相对边之间的水平中点，避免固定偏移把竖线推到右侧卡片上
-    const midX = (x1 + x2) / 2
-    const d =
-      x2 > x1 + 2
-        ? `M ${x1} ${y1} H ${midX} V ${y2} H ${x2}`
-        : `M ${x1} ${y1} C ${x1 + 24} ${y1}, ${x2 - 24} ${y2}, ${x2} ${y2}`
-
     const lane = laneOfNode(fromEl) !== 'main' ? laneOfNode(fromEl) : laneOfNode(toEl)
     next.push({
       key: `${conn.fromNodeId}->${conn.toNodeId}`,
-      d,
+      d: buildPathD(x1, y1, x2, y2),
       lane,
     })
   }
+
+  // 动画跟踪：直接写 DOM，与卡片 CSS transition 同帧跟手
+  if (props.tracking) {
+    const pathEls = svg.querySelectorAll(':scope > path')
+    if (pathEls.length === next.length && paths.value.length === next.length) {
+      for (let i = 0; i < next.length; i++) {
+        const el = pathEls[i]
+        const n = next[i]
+        if (el.getAttribute('d') !== n.d) el.setAttribute('d', n.d)
+        const cls = `connector lane-${n.lane}`
+        if (el.getAttribute('class') !== cls) el.setAttribute('class', cls)
+        paths.value[i].d = n.d
+        paths.value[i].lane = n.lane
+      }
+      return
+    }
+  }
+
   paths.value = next
 }
 
@@ -88,11 +108,27 @@ function scheduleMeasure() {
   })
 }
 
+function stopTracking() {
+  cancelAnimationFrame(trackRaf)
+  trackRaf = 0
+}
+
+function startTracking() {
+  stopTracking()
+  const loop = () => {
+    measure()
+    trackRaf = requestAnimationFrame(loop)
+  }
+  trackRaf = requestAnimationFrame(loop)
+}
+
 onMounted(() => {
   scheduleMeasure()
   const board = rootRef.value?.parentElement
   if (board && typeof ResizeObserver !== 'undefined') {
-    resizeObserver = new ResizeObserver(() => scheduleMeasure())
+    resizeObserver = new ResizeObserver(() => {
+      if (!props.tracking) scheduleMeasure()
+    })
     resizeObserver.observe(board)
   }
   window.addEventListener('resize', scheduleMeasure)
@@ -100,14 +136,28 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   cancelAnimationFrame(rafId)
+  stopTracking()
   resizeObserver?.disconnect()
   window.removeEventListener('resize', scheduleMeasure)
 })
 
 watch(
-  () => [props.connections, props.layoutKey],
-  () => scheduleMeasure(),
+  () => [props.connections, props.layoutKey] as const,
+  () => {
+    if (!props.tracking) scheduleMeasure()
+  },
   { deep: true },
+)
+
+watch(
+  () => props.tracking,
+  (on) => {
+    if (on) startTracking()
+    else {
+      stopTracking()
+      measure()
+    }
+  },
 )
 </script>
 
@@ -124,6 +174,7 @@ watch(
       :class="`lane-${path.lane}`"
       :d="path.d"
       fill="none"
+      vector-effect="non-scaling-stroke"
     />
   </svg>
 </template>

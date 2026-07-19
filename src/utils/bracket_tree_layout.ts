@@ -77,6 +77,47 @@ export function computeKnockoutLayout(input: KnockoutLayoutInput): KnockoutLayou
   return { tops, columnHeights }
 }
 
+/**
+ * 将锚点列（当前视口最左列）的最上节点顶对齐到 0，整树一起上移。
+ * 左侧不可见列可能出现负 top，由 board overflow 裁切即可。
+ */
+export function shiftLayoutToAnchor(
+  result: KnockoutLayoutResult,
+  anchorColumnIndex: number,
+  columns: BracketColumn[],
+  heights: Record<string, number>,
+): KnockoutLayoutResult {
+  const col =
+    columns.find((c) => c.index === anchorColumnIndex) ?? columns[anchorColumnIndex]
+  if (!col?.items.length) return result
+
+  let minTop = Infinity
+  for (const item of col.items) {
+    const t = result.tops[item.nodeId]
+    if (t != null && t < minTop) minTop = t
+  }
+  if (!Number.isFinite(minTop) || Math.abs(minTop) < 0.5) return result
+
+  const tops: Record<string, number> = {}
+  for (const [id, t] of Object.entries(result.tops)) {
+    tops[id] = t - minTop
+  }
+
+  const columnHeights: Record<number, number> = {}
+  for (const c of columns) {
+    let maxBottom = 0
+    for (const item of c.items) {
+      const t = tops[item.nodeId] ?? 0
+      const h = Math.max(0, heights[item.nodeId] ?? 0)
+      const bottom = t + h
+      if (bottom > maxBottom) maxBottom = bottom
+    }
+    columnHeights[c.index] = Math.max(0, maxBottom)
+  }
+
+  return { tops, columnHeights }
+}
+
 /** 优先取上一列的 feeder；凑不满 2 个再取更左侧已布局节点 */
 function resolveParents(
   nodeId: string,

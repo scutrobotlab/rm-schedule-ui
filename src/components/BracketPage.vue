@@ -90,25 +90,48 @@ function beginSettleMotion() {
   }, SETTLE_MS)
 }
 
+/** 吸附后的整数最左列；淘汰赛树形以此列贴顶 */
+const layoutAnchorColumn = ref(0)
+
 function syncWindowFromRange(range: StageRange) {
   const nextLeft = range.start
   const nextRight = range.end + 1
   if (nextLeft === windowLeft.value && nextRight === windowRight.value) {
     windowMotion.value = 'idle'
+    layoutAnchorColumn.value = nextLeft
     return
   }
-  // 跟手结束后的整数提交 → 下一帧开缓动；分组重置等 → 瞬切
-  if (windowMotion.value === 'live') {
+  // 跟手结束后的整数提交 / 点击切换 → 缓动；避免瞬切
+  const shouldAnimate =
+    windowMotion.value === 'live' ||
+    Math.abs(nextLeft - windowLeft.value) > 0.001 ||
+    Math.abs(nextRight - windowRight.value) > 0.001
+
+  if (shouldAnimate) {
     requestAnimationFrame(() => {
       beginSettleMotion()
       windowLeft.value = nextLeft
       windowRight.value = nextRight
+      layoutAnchorColumn.value = nextLeft
+      scrollBracketToTop(true)
     })
     return
   }
   windowMotion.value = 'idle'
   windowLeft.value = nextLeft
   windowRight.value = nextRight
+  layoutAnchorColumn.value = nextLeft
+  scrollBracketToTop(false)
+}
+
+function scrollBracketToTop(smooth = true) {
+  const el = bracketViewportRef.value
+  if (!el || el.scrollTop === 0) return
+  if (smooth && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    el.scrollTo({ top: 0, behavior: 'smooth' })
+  } else {
+    el.scrollTop = 0
+  }
 }
 
 function setWindowEdges(left: number, right: number, rubberBand = false) {
@@ -148,6 +171,8 @@ function snapWindowToNearest() {
 
   if (already) {
     windowMotion.value = 'idle'
+    layoutAnchorColumn.value = snappedLeft
+    scrollBracketToTop()
     commitRange()
     return
   }
@@ -158,6 +183,8 @@ function snapWindowToNearest() {
     beginSettleMotion()
     windowLeft.value = snappedLeft
     windowRight.value = snappedRight
+    layoutAnchorColumn.value = snappedLeft
+    scrollBracketToTop()
     commitRange()
   })
 }
@@ -690,6 +717,7 @@ onBeforeUnmount(() => {
               v-if="bracketModel"
               :model="bracketModel"
               :visible-span="windowSpan"
+              :layout-anchor-column="layoutAnchorColumn"
             />
           </div>
         </div>
