@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import StageRangeSelector, { type StageItem, type StageRange } from './StageRangeSelector.vue'
+import StageRangeSelector, {
+  type StageItem,
+  type StageRange,
+  type StageRangeEdges,
+} from './StageRangeSelector.vue'
 import BracketBoard from './bracket/BracketBoard.vue'
 import AnalyzeTeam from './AnalyzeTeam.vue'
 import AnalyzeMatch from './AnalyzeMatch.vue'
@@ -23,6 +27,9 @@ import {
 import type { BracketViewModel } from '../types/bracket'
 
 const stageRange = ref<StageRange>({ start: 0, end: 1 })
+/** 视口左右边缘（右开区间，允许小数）；渲染与跟手以此为准 */
+const windowLeft = ref(0)
+const windowRight = ref(2)
 
 const route = useRoute()
 const router = useRouter()
@@ -35,6 +42,216 @@ const liveMode = computed(() => route.query.live == '1')
 const selectedGroup = ref(Number(route.query.group ?? -1))
 const routeHasGroup = computed(() => route.query.group !== undefined)
 const viewportWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024)
+
+const bracketViewportRef = ref<HTMLElement | null>(null)
+
+const stageCount = computed(() => displayStages.value.length)
+const windowSpan = computed(() => Math.max(windowRight.value - windowLeft.value, 0.05))
+const visualOverride = computed((): StageRangeEdges => ({
+  left: windowLeft.value,
+  right: windowRight.value,
+}))
+
+const stripStyle = computed(() => {
+  const n = stageCount.value
+  if (n <= 0) return {}
+  const span = windowSpan.value
+  return {
+    width: `${(n / span) * 100}%`,
+    transform: `translate3d(${(-windowLeft.value / n) * 100}%, 0, 0)`,
+  }
+})
+
+/** live=跟手无过渡；settle=吸附缓动；idle=静止 */
+const windowMotion = ref<'live' | 'settle' | 'idle'>('idle')
+const isWindowLive = computed(() => windowMotion.value === 'live')
+const isStripSettling = computed(() => windowMotion.value === 'settle')
+let settleTimer: ReturnType<typeof setTimeout> | null = null
+const SETTLE_MS = 300
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, value))
+}
+
+function beginLiveMotion() {
+  if (settleTimer) {
+    clearTimeout(settleTimer)
+    settleTimer = null
+  }
+  windowMotion.value = 'live'
+}
+
+function beginSettleMotion() {
+  windowMotion.value = 'settle'
+  if (settleTimer) clearTimeout(settleTimer)
+  settleTimer = setTimeout(() => {
+    settleTimer = null
+    windowMotion.value = 'idle'
+  }, SETTLE_MS)
+}
+
+function syncWindowFromRange(range: StageRange) {
+  const nextLeft = range.start
+  const nextRight = range.end + 1
+  if (nextLeft === windowLeft.value && nextRight === windowRight.value) {
+    windowMotion.value = 'idle'
+    return
+  }
+  // 跟手结束后的整数提交 → 下一帧开缓动；分组重置等 → 瞬切
+  if (windowMotion.value === 'live') {
+    requestAnimationFrame(() => {
+      beginSettleMotion()
+      windowLeft.value = nextLeft
+      windowRight.value = nextRight
+    })
+    return
+  }
+  windowMotion.value = 'idle'
+  windowLeft.value = nextLeft
+  windowRight.value = nextRight
+}
+
+function setWindowEdges(left: number, right: number, rubberBand = false) {
+  const n = stageCount.value
+  if (n <= 0) return
+  const span = Math.max(right - left, 0.05)
+  const maxLeft = Math.max(0, n - span)
+  let nextLeft = left
+  if (rubberBand) {
+    if (nextLeft < 0) nextLeft = nextLeft * 0.35
+    else if (nextLeft > maxLeft) nextLeft = maxLeft + (nextLeft - maxLeft) * 0.35
+  } else {
+    nextLeft = clamp(nextLeft, 0, maxLeft)
+  }
+  windowLeft.value = nextLeft
+  windowRight.value = nextLeft + span
+}
+
+/** 松手/滚轮停顿后吸附到最近整数格，并回写 stageRange */
+function snapWindowToNearest() {
+  const n = stageCount.value
+  if (n <= 0) return
+  const span = Math.max(1, Math.round(windowRight.value - windowLeft.value))
+  const maxLeft = Math.max(0, n - span)
+  const snappedLeft = clamp(Math.round(windowLeft.value), 0, maxLeft)
+  const snappedRight = snappedLeft + span
+  const next = { start: snappedLeft, end: snappedLeft + span - 1 }
+  const already =
+    Math.abs(windowLeft.value - snappedLeft) < 0.001 &&
+    Math.abs(windowRight.value - snappedRight) < 0.001
+
+  const commitRange = () => {
+    if (stageRange.value.start !== next.start || stageRange.value.end !== next.end) {
+      stageRange.value = next
+    }
+  }
+
+  if (already) {
+    windowMotion.value = 'idle'
+    commitRange()
+    return
+  }
+
+  // 当前帧保持无过渡，下一帧再启用缓动并落到目标格
+  windowMotion.value = 'live'
+  requestAnimationFrame(() => {
+    beginSettleMotion()
+    windowLeft.value = snappedLeft
+    windowRight.value = snappedRight
+    commitRange()
+  })
+}
+
+function onStagePreview(edges: StageRangeEdges) {
+  beginLiveMotion()
+  windowLeft.value = edges.left
+  windowRight.value = edges.right
+}
+
+/** —— 赛程区横向跟手手势 —— */
+const panPointerId = ref<number | null>(null)
+const panStartX = ref(0)
+const panStartY = ref(0)
+const panOriginLeft = ref(0)
+const panAxis = ref<'x' | 'y' | null>(null)
+let wheelSnapTimer: ReturnType<typeof setTimeout> | null = null
+
+function onBoardPointerDown(e: PointerEvent) {
+  if (e.button !== 0 || stageCount.value <= 0) return
+  if (wheelSnapTimer) {
+    clearTimeout(wheelSnapTimer)
+    wheelSnapTimer = null
+  }
+  panPointerId.value = e.pointerId
+  panStartX.value = e.clientX
+  panStartY.value = e.clientY
+  panOriginLeft.value = windowLeft.value
+  panAxis.value = null
+}
+
+function onBoardPointerMove(e: PointerEvent) {
+  if (panPointerId.value !== e.pointerId) return
+  const dx = e.clientX - panStartX.value
+  const dy = e.clientY - panStartY.value
+  if (!panAxis.value) {
+    if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return
+    panAxis.value = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y'
+    if (panAxis.value === 'x') {
+      const target = e.currentTarget as HTMLElement
+      target.setPointerCapture(e.pointerId)
+      beginLiveMotion()
+    }
+  }
+  if (panAxis.value !== 'x') return
+  e.preventDefault()
+  const width = bracketViewportRef.value?.clientWidth ?? 1
+  if (width <= 0) return
+  const cellWidth = width / windowSpan.value
+  // 手指右移 → 内容跟手右移 → windowLeft 减小
+  setWindowEdges(
+    panOriginLeft.value - dx / cellWidth,
+    panOriginLeft.value - dx / cellWidth + windowSpan.value,
+    true,
+  )
+}
+
+function onBoardPointerUp(e: PointerEvent) {
+  if (panPointerId.value !== e.pointerId) return
+  const target = e.currentTarget as HTMLElement
+  if (target.hasPointerCapture?.(e.pointerId)) {
+    target.releasePointerCapture(e.pointerId)
+  }
+  if (panAxis.value === 'x') {
+    snapWindowToNearest()
+  }
+  panPointerId.value = null
+  panAxis.value = null
+}
+
+function onBoardWheel(e: WheelEvent) {
+  if (stageCount.value <= 0) return
+  let delta = 0
+  if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+    delta = e.deltaX
+  } else if (e.shiftKey) {
+    delta = e.deltaY
+  } else {
+    return
+  }
+  if (delta === 0) return
+  e.preventDefault()
+  beginLiveMotion()
+  const width = bracketViewportRef.value?.clientWidth ?? 1
+  if (width <= 0) return
+  const cellWidth = width / windowSpan.value
+  const nextLeft = windowLeft.value + delta / cellWidth
+  setWindowEdges(nextLeft, nextLeft + windowSpan.value, false)
+  if (wheelSnapTimer) clearTimeout(wheelSnapTimer)
+  wheelSnapTimer = setTimeout(() => {
+    wheelSnapTimer = null
+    snapWindowToNearest()
+  }, 120)
+}
 
 const zoneId = computed(() => promotionStore.zoneId)
 promotionStore.season = Number(route.params.season)
@@ -174,8 +391,11 @@ watch(
   [selectedGroup, zoneId, () => displayStages.value.length],
   () => {
     const n = displayStages.value.length
-    stageRange.value = { start: 0, end: Math.min(1, Math.max(0, n - 1)) }
+    const next = { start: 0, end: Math.min(1, Math.max(0, n - 1)) }
+    stageRange.value = next
+    syncWindowFromRange(next)
   },
+  { immediate: true },
 )
 
 function partHasStartedMatch(part: Part): boolean {
@@ -255,6 +475,7 @@ const bracketModel = computed((): BracketViewModel | null => {
   const part = currentPart.value
   if (!part) return null
   const ready = scheduleReady.value
+  // 始终渲染全部阶段列；可见窗口由 windowLeft/span + 条带 translate 控制
   return buildBracketViewModel({
     zoneId: zoneId.value,
     part,
@@ -266,7 +487,6 @@ const bracketModel = computed((): BracketViewModel | null => {
         return undefined
       }
     },
-    stageRange: stageRange.value,
   })
 })
 
@@ -278,10 +498,20 @@ onMounted(() => {
   // 晋级图不自动弹出周年公告，仍可通过左下角 Logo 手动打开
   appStore.anniversaryAnnouncementDialog = false
   window.addEventListener('resize', onResize)
+  bracketViewportRef.value?.addEventListener('wheel', onBoardWheel, { passive: false })
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('resize', onResize)
+  bracketViewportRef.value?.removeEventListener('wheel', onBoardWheel)
+  if (wheelSnapTimer) {
+    clearTimeout(wheelSnapTimer)
+    wheelSnapTimer = null
+  }
+  if (settleTimer) {
+    clearTimeout(settleTimer)
+    settleTimer = null
+  }
 })
 </script>
 
@@ -431,15 +661,33 @@ onBeforeUnmount(() => {
             <StageRangeSelector
               v-model="stageRange"
               :stages="displayStages"
+              :visual-override="visualOverride"
+              :suppress-transition="isWindowLive"
+              @preview="onStagePreview"
+              @update:model-value="syncWindowFromRange"
             />
           </div>
         </div>
 
-        <div class="bracket-scroll">
-          <BracketBoard
-            v-if="bracketModel"
-            :model="bracketModel"
-          />
+        <div
+          ref="bracketViewportRef"
+          class="bracket-scroll"
+          @pointerdown="onBoardPointerDown"
+          @pointermove="onBoardPointerMove"
+          @pointerup="onBoardPointerUp"
+          @pointercancel="onBoardPointerUp"
+        >
+          <div
+            class="bracket-strip"
+            :class="{ 'bracket-strip--settle': isStripSettling }"
+            :style="stripStyle"
+          >
+            <BracketBoard
+              v-if="bracketModel"
+              :model="bracketModel"
+              :visible-span="windowSpan"
+            />
+          </div>
         </div>
 
         <div class="corner-brand">
@@ -604,6 +852,20 @@ onBeforeUnmount(() => {
   overflow-x: hidden;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+}
+
+.bracket-strip {
+  position: relative;
+  min-height: 100%;
+  will-change: transform;
+  transform-origin: left top;
+}
+
+.bracket-strip--settle {
+  transition:
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    width 0.28s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .stage-range-wrap {

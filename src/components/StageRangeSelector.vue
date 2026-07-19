@@ -17,14 +17,32 @@ export interface StageRange {
   end: number
 }
 
-const props = defineProps<{
-  stages: StageItem[]
-  modelValue: StageRange
-}>()
+/** 选区左右边缘（右开区间，允许小数） */
+export interface StageRangeEdges {
+  left: number
+  right: number
+}
+
+const props = withDefaults(
+  defineProps<{
+    stages: StageItem[]
+    modelValue: StageRange
+    /** 外部跟手选区；优先于内部 visual，不影响整数 v-model */
+    visualOverride?: StageRangeEdges | null
+    /** 为 true 时关闭选区过渡（外部跟手中）；吸附时请关掉以播放动画 */
+    suppressTransition?: boolean
+  }>(),
+  {
+    visualOverride: null,
+    suppressTransition: false,
+  },
+)
 
 const emit = defineEmits<{
   'update:modelValue': [value: StageRange]
   change: [value: StageRange]
+  /** 拖动中抛出分数边缘（松手仍走整数 v-model） */
+  preview: [value: StageRangeEdges]
 }>()
 
 const trackRef = ref<HTMLElement | null>(null)
@@ -57,11 +75,17 @@ const normalized = computed((): StageRange => {
   return { start, end }
 })
 
+const activeEdges = computed((): StageRangeEdges => {
+  const override = props.visualOverride
+  if (override) return override
+  return { left: visualLeft.value, right: visualRight.value }
+})
+
 const selectionStyle = computed(() => {
   const n = stageCount.value
   if (n <= 0) return { left: '0%', width: '0%' }
-  const left = clamp(visualLeft.value, 0, n)
-  const right = clamp(visualRight.value, left + 0.05, n)
+  const left = clamp(activeEdges.value.left, 0, n)
+  const right = clamp(activeEdges.value.right, left + 0.05, n)
   return {
     left: `${(left / n) * 100}%`,
     width: `${((right - left) / n) * 100}%`,
@@ -96,7 +120,7 @@ function rangeFromEdges(left: number, right: number): StageRange {
 }
 
 function isActive(index: number): boolean {
-  const { start, end } = rangeFromEdges(visualLeft.value, visualRight.value)
+  const { start, end } = rangeFromEdges(activeEdges.value.left, activeEdges.value.right)
   return index >= start && index <= end
 }
 
@@ -154,8 +178,8 @@ function applyVisual(left: number, right: number) {
   const nextRight = clamp(right, nextLeft + 1, n)
   visualLeft.value = nextLeft
   visualRight.value = nextRight
-  const { start, end } = rangeFromEdges(nextLeft, nextRight)
-  emitRange(start, end)
+  // 拖动中只抛 preview；松手/点击再提交整数 v-model（兼容 Situation）
+  emit('preview', { left: nextLeft, right: nextRight })
 }
 
 function onPointerDown(mode: DragMode, e: PointerEvent) {
@@ -167,8 +191,15 @@ function onPointerDown(mode: DragMode, e: PointerEvent) {
   dragMode.value = mode
   dragPointerId.value = e.pointerId
   dragOriginX.value = e.clientX
-  dragOriginLeft.value = visualLeft.value
-  dragOriginRight.value = visualRight.value
+  // 外部跟手停在半列时，从 override 边缘起拖
+  const edges = props.visualOverride ?? {
+    left: visualLeft.value,
+    right: visualRight.value,
+  }
+  visualLeft.value = edges.left
+  visualRight.value = edges.right
+  dragOriginLeft.value = edges.left
+  dragOriginRight.value = edges.right
   didDrag.value = false
 }
 
@@ -302,7 +333,10 @@ function barsStyle(stage: StageItem): Record<string, string> {
 <template>
   <div
     class="stage-range"
-    :class="{ 'stage-range--dragging': isDragging }"
+    :class="{
+      'stage-range--dragging': isDragging,
+      'stage-range--override': suppressTransition,
+    }"
     :style="{ '--stage-count': Math.max(stageCount, 1) }"
   >
     <div class="stage-range__labels">
@@ -643,8 +677,12 @@ function barsStyle(stage: StageItem): Record<string, string> {
   transition: background-color 0.2s ease;
 }
 
-.stage-range--dragging .stage-range__selection {
+.stage-range--dragging .stage-range__selection,
+.stage-range--override .stage-range__selection {
   transition: none;
+}
+
+.stage-range--dragging .stage-range__selection {
   cursor: grabbing;
 }
 

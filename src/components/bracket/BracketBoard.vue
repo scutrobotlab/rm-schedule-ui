@@ -7,15 +7,21 @@ import BracketConnectors from './BracketConnectors.vue'
 
 const props = defineProps<{
   model: BracketViewModel
+  /** 视口内可见跨度（可小数）；密度按取整后的 span 计算 */
+  visibleSpan?: number
 }>()
 
 const columnCount = computed(() => props.model.columns.length)
-const density = computed(() => resolveBracketDensity(columnCount.value))
+const spanForDensity = computed(() => {
+  const span = props.visibleSpan ?? columnCount.value
+  return Math.max(1, Math.round(span))
+})
+const density = computed(() => resolveBracketDensity(spanForDensity.value))
 
 const layoutKey = computed(() => {
   const cols = props.model.columns.map((c) => `${c.index}:${c.items.length}`).join('|')
   const conns = props.model.connections.map((c) => `${c.fromNodeId}>${c.toNodeId}`).join('|')
-  return `${cols}::${conns}::${density.value}`
+  return `${cols}::${conns}::${density.value}::${spanForDensity.value}`
 })
 </script>
 
@@ -46,8 +52,7 @@ const layoutKey = computed(() => {
   width: 100%;
   min-height: 100%;
   padding: 12px 10px 24px;
-  overflow-x: hidden;
-  overflow-y: visible;
+  overflow: visible;
   background:
     radial-gradient(ellipse at 20% 0%, rgba(40, 90, 140, 0.22) 0%, transparent 55%),
     radial-gradient(ellipse at 80% 100%, rgba(30, 70, 110, 0.18) 0%, transparent 50%),
