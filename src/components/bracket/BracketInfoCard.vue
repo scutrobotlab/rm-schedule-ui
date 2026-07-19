@@ -113,7 +113,7 @@ const showScore = computed(() => props.density !== 'compact')
 }
 
 .info-card.node-promote {
-  background: rgba(40, 28, 8, 0.24);
+  background: rgba(40, 28, 8, 0.22);
   border-color: rgba(220, 170, 90, 0.28);
 }
 
