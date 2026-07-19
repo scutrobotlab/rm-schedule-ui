@@ -35,6 +35,8 @@ const dragPointerId = ref<number | null>(null)
 const dragOriginX = ref(0)
 const dragOriginLeft = ref(0)
 const dragOriginRight = ref(0)
+/** 本次拖动是否产生位移；用于区分点击与拖拽 */
+const didDrag = ref(false)
 
 /** 选区左右边界（以阶段格为单位，右边界为开区间） */
 const visualLeft = ref(0)
@@ -119,6 +121,33 @@ function emitRange(start: number, end: number) {
   emit('change', value)
 }
 
+/** 点击阶段：保持当前窗口宽度，以该阶段为起点（末端贴边时左移） */
+function selectStageAt(index: number) {
+  const n = stageCount.value
+  if (n <= 0) return
+  const max = n - 1
+  const idx = clamp(Math.round(index), 0, max)
+  const span = Math.max(1, normalized.value.end - normalized.value.start + 1)
+  let start = idx
+  let end = Math.min(max, start + span - 1)
+  if (end - start + 1 < span) {
+    start = Math.max(0, end - span + 1)
+  }
+  visualLeft.value = start
+  visualRight.value = end + 1
+  emitRange(start, end)
+}
+
+function indexFromClientX(clientX: number): number {
+  const track = trackRef.value
+  const n = stageCount.value
+  if (!track || n <= 0) return 0
+  const rect = track.getBoundingClientRect()
+  if (rect.width <= 0) return 0
+  const ratio = (clientX - rect.left) / rect.width
+  return clamp(Math.floor(ratio * n), 0, n - 1)
+}
+
 function applyVisual(left: number, right: number) {
   const n = stageCount.value
   const nextLeft = clamp(left, 0, n - 1)
@@ -140,6 +169,7 @@ function onPointerDown(mode: DragMode, e: PointerEvent) {
   dragOriginX.value = e.clientX
   dragOriginLeft.value = visualLeft.value
   dragOriginRight.value = visualRight.value
+  didDrag.value = false
 }
 
 function onPointerMove(e: PointerEvent) {
@@ -151,6 +181,9 @@ function onPointerMove(e: PointerEvent) {
   if (cellWidth <= 0) return
 
   const deltaCells = (e.clientX - dragOriginX.value) / cellWidth
+  if (!didDrag.value && Math.abs(e.clientX - dragOriginX.value) > 4) {
+    didDrag.value = true
+  }
   const n = stageCount.value
   const span = dragOriginRight.value - dragOriginLeft.value
 
@@ -188,13 +221,35 @@ function onPointerUp(e: PointerEvent) {
   if (target.hasPointerCapture(e.pointerId)) {
     target.releasePointerCapture(e.pointerId)
   }
+  const mode = dragMode.value
+  const wasClick = !didDrag.value
   dragMode.value = null
   dragPointerId.value = null
+
+  if (wasClick && mode === 'range') {
+    selectStageAt(indexFromClientX(e.clientX))
+    didDrag.value = false
+    return
+  }
 
   const { start, end } = rangeFromEdges(visualLeft.value, visualRight.value)
   visualLeft.value = start
   visualRight.value = end + 1
   emitRange(start, end)
+  didDrag.value = false
+}
+
+function onTrackClick(e: MouseEvent) {
+  // 选区/把手上的点击由 pointer 逻辑处理，避免重复
+  const target = e.target as HTMLElement | null
+  if (target?.closest('.stage-range__selection, .stage-range__handle')) return
+  if (didDrag.value) return
+  selectStageAt(indexFromClientX(e.clientX))
+}
+
+function onLabelClick(index: number) {
+  if (isDragging.value) return
+  selectStageAt(index)
 }
 
 watch(
@@ -250,22 +305,25 @@ function barsStyle(stage: StageItem): Record<string, string> {
     :class="{ 'stage-range--dragging': isDragging }"
     :style="{ '--stage-count': Math.max(stageCount, 1) }"
   >
-    <div class="stage-range__labels" aria-hidden="true">
-      <div
+    <div class="stage-range__labels">
+      <button
         v-for="(stage, index) in stages"
         :key="`label-${index}`"
+        type="button"
         class="stage-range__label"
         :class="{
           'stage-range__label--active': isActive(index),
           'stage-range__label--wrap': labelLines(stage.label).length > 1,
         }"
+        :aria-label="`切换到${stage.label}`"
+        @click="onLabelClick(index)"
       >
         <span
           v-for="(line, lineIndex) in labelLines(stage.label)"
           :key="lineIndex"
           class="stage-range__label-line"
         >{{ line }}</span>
-      </div>
+      </button>
     </div>
 
     <div
@@ -275,6 +333,7 @@ function barsStyle(stage: StageItem): Record<string, string> {
       :aria-valuemin="0"
       :aria-valuemax="Math.max(stageCount - 1, 0)"
       :aria-valuetext="`${stages[normalized.start]?.label ?? ''} – ${stages[normalized.end]?.label ?? ''}`"
+      @click="onTrackClick"
     >
       <div class="stage-range__icons">
         <div
@@ -378,7 +437,10 @@ function barsStyle(stage: StageItem): Record<string, string> {
 .stage-range__label {
   min-height: 2.4em;
   padding: 0 2px;
+  border: 0;
+  background: transparent;
   color: var(--label-inactive);
+  font: inherit;
   font-size: clamp(11px, 2.4vw, 14px);
   font-weight: 500;
   line-height: 1.2;
@@ -387,7 +449,14 @@ function barsStyle(stage: StageItem): Record<string, string> {
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
+  cursor: pointer;
   transition: color 0.28s var(--snap-ease);
+}
+
+.stage-range__label:focus-visible {
+  outline: 2px solid rgba(140, 180, 255, 0.7);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 .stage-range__label--wrap {
@@ -410,6 +479,7 @@ function barsStyle(stage: StageItem): Record<string, string> {
   background: var(--track-bg);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
   overflow: hidden;
+  cursor: pointer;
 }
 
 .stage-range__icons {
