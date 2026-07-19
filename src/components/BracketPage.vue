@@ -90,15 +90,63 @@ function beginSettleMotion() {
   }, SETTLE_MS)
 }
 
-/** 吸附后的整数最左列；淘汰赛树形以此列贴顶 */
-const layoutAnchorColumn = ref(0)
+/** 吸附后：仅当最左列节点 ≤ 2 时，滚动视口使该列最上节点贴顶（不改树形 Y） */
+function leftmostColumnNodeCount(colIndex: number): number {
+  const cols = bracketModel.value?.columns
+  if (!cols?.length) return 0
+  const col = cols.find((c) => c.index === colIndex) ?? cols[colIndex]
+  return col?.items.length ?? 0
+}
+
+function shouldPinTopAfterSnap(colIndex: number): boolean {
+  const n = leftmostColumnNodeCount(colIndex)
+  return n > 0 && n <= 2
+}
+
+function pinLeftColumnToViewportTop(colIndex: number, smooth = true) {
+  if (!shouldPinTopAfterSnap(colIndex)) return
+  const viewport = bracketViewportRef.value
+  if (!viewport) return
+
+  requestAnimationFrame(() => {
+    const col = viewport.querySelector(
+      `[data-column-index="${colIndex}"]`,
+    ) as HTMLElement | null
+    if (!col) return
+    const nodes = col.querySelectorAll<HTMLElement>('[data-node-id]')
+    if (!nodes.length) return
+
+    let topEl: HTMLElement | null = null
+    let minTop = Infinity
+    nodes.forEach((el) => {
+      const t = el.getBoundingClientRect().top
+      if (t < minTop) {
+        minTop = t
+        topEl = el
+      }
+    })
+    if (!topEl) return
+
+    const vRect = viewport.getBoundingClientRect()
+    const nRect = topEl.getBoundingClientRect()
+    const delta = nRect.top - vRect.top - 8
+    if (Math.abs(delta) < 1) return
+
+    const nextScroll = Math.max(0, viewport.scrollTop + delta)
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (smooth && !reduceMotion) {
+      viewport.scrollTo({ top: nextScroll, behavior: 'smooth' })
+    } else {
+      viewport.scrollTop = nextScroll
+    }
+  })
+}
 
 function syncWindowFromRange(range: StageRange) {
   const nextLeft = range.start
   const nextRight = range.end + 1
   if (nextLeft === windowLeft.value && nextRight === windowRight.value) {
     windowMotion.value = 'idle'
-    layoutAnchorColumn.value = nextLeft
     return
   }
   // 跟手结束后的整数提交 / 点击切换 → 缓动；避免瞬切
@@ -112,26 +160,14 @@ function syncWindowFromRange(range: StageRange) {
       beginSettleMotion()
       windowLeft.value = nextLeft
       windowRight.value = nextRight
-      layoutAnchorColumn.value = nextLeft
-      scrollBracketToTop(true)
+      pinLeftColumnToViewportTop(nextLeft, true)
     })
     return
   }
   windowMotion.value = 'idle'
   windowLeft.value = nextLeft
   windowRight.value = nextRight
-  layoutAnchorColumn.value = nextLeft
-  scrollBracketToTop(false)
-}
-
-function scrollBracketToTop(smooth = true) {
-  const el = bracketViewportRef.value
-  if (!el || el.scrollTop === 0) return
-  if (smooth && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    el.scrollTo({ top: 0, behavior: 'smooth' })
-  } else {
-    el.scrollTop = 0
-  }
+  pinLeftColumnToViewportTop(nextLeft, false)
 }
 
 function setWindowEdges(left: number, right: number, rubberBand = false) {
@@ -171,8 +207,7 @@ function snapWindowToNearest() {
 
   if (already) {
     windowMotion.value = 'idle'
-    layoutAnchorColumn.value = snappedLeft
-    scrollBracketToTop()
+    pinLeftColumnToViewportTop(snappedLeft, true)
     commitRange()
     return
   }
@@ -183,8 +218,7 @@ function snapWindowToNearest() {
     beginSettleMotion()
     windowLeft.value = snappedLeft
     windowRight.value = snappedRight
-    layoutAnchorColumn.value = snappedLeft
-    scrollBracketToTop()
+    pinLeftColumnToViewportTop(snappedLeft, true)
     commitRange()
   })
 }
@@ -717,7 +751,6 @@ onBeforeUnmount(() => {
               v-if="bracketModel"
               :model="bracketModel"
               :visible-span="windowSpan"
-              :layout-anchor-column="layoutAnchorColumn"
             />
           </div>
         </div>

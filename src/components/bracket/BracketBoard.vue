@@ -3,26 +3,19 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { BracketViewModel } from '../../types/bracket'
 import { resolveBracketDensity } from '../../utils/bracket_density'
 import { bracketColumnGap } from '../../utils/bracket_column_gap'
-import { computeKnockoutLayout, shiftLayoutToAnchor } from '../../utils/bracket_tree_layout'
+import { computeKnockoutLayout } from '../../utils/bracket_tree_layout'
 import BracketColumn from './BracketColumn.vue'
 import BracketConnectors from './BracketConnectors.vue'
-
-const TREE_MOTION_MS = 300
 
 const props = defineProps<{
   model: BracketViewModel
   /** 视口内可见跨度（可小数）；密度按取整后的 span 计算 */
   visibleSpan?: number
-  /** 吸附后的最左列下标；该列最上节点贴顶 */
-  layoutAnchorColumn?: number
 }>()
 
 const boardRef = ref<HTMLElement | null>(null)
 const nodeTops = ref<Record<string, number>>({})
 const columnHeights = ref<Record<number, number>>({})
-/** 首帧布局后才允许 top 过渡，避免初次挂载瞬移感 */
-const treeMotionReady = ref(false)
-const treeAnimating = ref(false)
 
 const columnCount = computed(() => props.model.columns.length)
 const spanForDensity = computed(() => {
@@ -31,9 +24,6 @@ const spanForDensity = computed(() => {
 })
 const density = computed(() => resolveBracketDensity(spanForDensity.value))
 const isKnockout = computed(() => props.model.partType === 'knockout')
-const anchorColumn = computed(() =>
-  Math.max(0, Math.floor(props.layoutAnchorColumn ?? 0)),
-)
 
 const layoutKey = computed(() => {
   const cols = props.model.columns.map((c) => `${c.index}:${c.items.length}`).join('|')
@@ -42,13 +32,11 @@ const layoutKey = computed(() => {
 })
 
 const connectorLayoutKey = computed(
-  () => `${layoutKey.value}::${anchorColumn.value}::${JSON.stringify(nodeTops.value)}`,
+  () => `${layoutKey.value}::${JSON.stringify(nodeTops.value)}`,
 )
 
 let resizeObserver: ResizeObserver | null = null
 let rafId = 0
-let motionTimer: ReturnType<typeof setTimeout> | null = null
-let lastAnchor = -1
 
 function gapPx(): number {
   const wide = typeof window !== 'undefined' && window.innerWidth >= 900
@@ -58,18 +46,6 @@ function gapPx(): number {
 function clearTreeLayout() {
   nodeTops.value = {}
   columnHeights.value = {}
-  treeMotionReady.value = false
-  treeAnimating.value = false
-}
-
-function beginTreeMotion() {
-  if (!treeMotionReady.value) return
-  treeAnimating.value = true
-  if (motionTimer) clearTimeout(motionTimer)
-  motionTimer = setTimeout(() => {
-    motionTimer = null
-    treeAnimating.value = false
-  }, TREE_MOTION_MS)
 }
 
 function measureAndLayout() {
@@ -87,29 +63,19 @@ function measureAndLayout() {
     heights[id] = el.offsetHeight
   })
 
-  const raw = computeKnockoutLayout({
+  // 固定树形坐标，横向吸附不改 Y，避免滑列时整体上下抽动
+  const result = computeKnockoutLayout({
     columns: props.model.columns,
     connections: props.model.connections,
     heights,
     gap: gapPx(),
   })
-  const result = shiftLayoutToAnchor(
-    raw,
-    anchorColumn.value,
-    props.model.columns,
-    heights,
-  )
 
-  const topsChanged = !recordsEqual(nodeTops.value, result.tops)
-  const heightsChanged = !recordsEqual(columnHeights.value, result.columnHeights)
-  if (topsChanged) nodeTops.value = result.tops
-  if (heightsChanged) columnHeights.value = result.columnHeights
-
-  if (!treeMotionReady.value && Object.keys(result.tops).length > 0) {
-    nextTick(() => {
-      treeMotionReady.value = true
-      lastAnchor = anchorColumn.value
-    })
+  if (!recordsEqual(nodeTops.value, result.tops)) {
+    nodeTops.value = result.tops
+  }
+  if (!recordsEqual(columnHeights.value, result.columnHeights)) {
+    columnHeights.value = result.columnHeights
   }
 }
 
@@ -138,27 +104,11 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   cancelAnimationFrame(rafId)
-  if (motionTimer) clearTimeout(motionTimer)
   resizeObserver?.disconnect()
   window.removeEventListener('resize', scheduleLayout)
 })
 
 watch(layoutKey, () => scheduleLayout())
-
-watch(anchorColumn, (next) => {
-  if (!treeMotionReady.value) {
-    lastAnchor = next
-    scheduleLayout()
-    return
-  }
-  if (next === lastAnchor) {
-    scheduleLayout()
-    return
-  }
-  lastAnchor = next
-  beginTreeMotion()
-  scheduleLayout()
-})
 </script>
 
 <template>
@@ -171,7 +121,6 @@ watch(anchorColumn, (next) => {
     <BracketConnectors
       :connections="model.connections"
       :layout-key="connectorLayoutKey"
-      :tracking="treeAnimating"
     />
     <div class="bracket-grid">
       <BracketColumn
@@ -181,7 +130,6 @@ watch(anchorColumn, (next) => {
         :density="density"
         :tree-tops="isKnockout ? nodeTops : null"
         :tree-height="isKnockout ? columnHeights[column.index] : null"
-        :animate-tree="treeAnimating"
       />
     </div>
   </div>

@@ -79,6 +79,7 @@ export function computeKnockoutLayout(input: KnockoutLayoutInput): KnockoutLayou
 
 /**
  * 将锚点列（当前视口最左列）的最上节点顶对齐到 0，整树一起上移。
+ * 仅当该列节点数 ≤ 2 时生效（半决赛/决赛等稀疏列）；节点更多时保持原树形位置。
  * 左侧不可见列可能出现负 top，由 board overflow 裁切即可。
  */
 export function shiftLayoutToAnchor(
@@ -90,6 +91,8 @@ export function shiftLayoutToAnchor(
   const col =
     columns.find((c) => c.index === anchorColumnIndex) ?? columns[anchorColumnIndex]
   if (!col?.items.length) return result
+  // 最左列节点较多时不贴顶上移，避免大段树形被整体抽动
+  if (col.items.length > 2) return result
 
   let minTop = Infinity
   for (const item of col.items) {

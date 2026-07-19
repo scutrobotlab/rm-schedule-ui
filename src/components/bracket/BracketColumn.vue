@@ -11,8 +11,6 @@ const props = defineProps<{
   /** 淘汰赛树形布局：节点 offsetTop；null 表示普通堆叠 */
   treeTops?: Record<string, number> | null
   treeHeight?: number | null
-  /** 锚点切换时过渡 top / height */
-  animateTree?: boolean
 }>()
 
 const useTree = computed(
@@ -39,13 +37,7 @@ function isMatch(item: BracketMatchCard | BracketInfoCard): item is BracketMatch
 <template>
   <section
     class="bracket-column"
-    :class="[
-      `density-${density}`,
-      {
-        'bracket-column--tree': useTree,
-        'bracket-column--tree-animate': useTree && animateTree,
-      },
-    ]"
+    :class="[`density-${density}`, { 'bracket-column--tree': useTree }]"
     :data-column-index="column.index"
   >
     <header class="column-header">
@@ -117,21 +109,6 @@ function isMatch(item: BracketMatchCard | BracketInfoCard): item is BracketMatch
   position: absolute;
   left: 0;
   right: 0;
-}
-
-.bracket-column--tree-animate .column-items {
-  transition: height 0.28s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.bracket-column--tree-animate .column-item {
-  transition: top 0.28s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .bracket-column--tree-animate .column-items,
-  .bracket-column--tree-animate .column-item {
-    transition: none;
-  }
 }
 
 .density-normal .column-header {

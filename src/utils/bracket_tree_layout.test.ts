@@ -73,4 +73,22 @@ describe('computeKnockoutLayout', () => {
     expect(tops['#6'] - tops['#5']).toBeCloseTo(raw.tops['#6'] - raw.tops['#5'])
     expect(tops['#1']).toBeLessThan(0)
   })
+
+  it('最左列节点数 > 2 时不贴顶上移', () => {
+    const columns = [col(0, ['#1', '#2', '#3', '#4']), col(1, ['#5', '#6'])]
+    const connections: BracketConnection[] = [
+      { fromNodeId: '#1', toNodeId: '#5' },
+      { fromNodeId: '#2', toNodeId: '#5' },
+      { fromNodeId: '#3', toNodeId: '#6' },
+      { fromNodeId: '#4', toNodeId: '#6' },
+    ]
+    const H = 40
+    const gap = 8
+    const heights = Object.fromEntries(
+      ['#1', '#2', '#3', '#4', '#5', '#6'].map((id) => [id, H]),
+    )
+    const raw = computeKnockoutLayout({ columns, connections, heights, gap })
+    const shifted = shiftLayoutToAnchor(raw, 0, columns, heights)
+    expect(shifted.tops).toEqual(raw.tops)
+  })
 })
