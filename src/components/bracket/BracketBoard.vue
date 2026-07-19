@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { BracketViewModel } from '../../types/bracket'
 import { resolveBracketDensity } from '../../utils/bracket_density'
+import { bracketColumnGap } from '../../utils/bracket_column_gap'
+import { computeKnockoutLayout } from '../../utils/bracket_tree_layout'
 import BracketColumn from './BracketColumn.vue'
 import BracketConnectors from './BracketConnectors.vue'
 
@@ -11,29 +13,114 @@ const props = defineProps<{
   visibleSpan?: number
 }>()
 
+const boardRef = ref<HTMLElement | null>(null)
+const nodeTops = ref<Record<string, number>>({})
+const columnHeights = ref<Record<number, number>>({})
+
 const columnCount = computed(() => props.model.columns.length)
 const spanForDensity = computed(() => {
   const span = props.visibleSpan ?? columnCount.value
   return Math.max(1, Math.round(span))
 })
 const density = computed(() => resolveBracketDensity(spanForDensity.value))
+const isKnockout = computed(() => props.model.partType === 'knockout')
 
 const layoutKey = computed(() => {
   const cols = props.model.columns.map((c) => `${c.index}:${c.items.length}`).join('|')
   const conns = props.model.connections.map((c) => `${c.fromNodeId}>${c.toNodeId}`).join('|')
-  return `${cols}::${conns}::${density.value}::${spanForDensity.value}`
+  return `${cols}::${conns}::${density.value}::${spanForDensity.value}::${props.model.partType}`
 })
+
+const connectorLayoutKey = computed(
+  () => `${layoutKey.value}::${JSON.stringify(nodeTops.value)}`,
+)
+
+let resizeObserver: ResizeObserver | null = null
+let rafId = 0
+
+function gapPx(): number {
+  const wide = typeof window !== 'undefined' && window.innerWidth >= 900
+  return bracketColumnGap(density.value, wide)
+}
+
+function clearTreeLayout() {
+  nodeTops.value = {}
+  columnHeights.value = {}
+}
+
+function measureAndLayout() {
+  if (!isKnockout.value) {
+    clearTreeLayout()
+    return
+  }
+  const board = boardRef.value
+  if (!board) return
+
+  const heights: Record<string, number> = {}
+  board.querySelectorAll<HTMLElement>('[data-node-id]').forEach((el) => {
+    const id = el.dataset.nodeId
+    if (!id) return
+    // 量测卡片本身高度（忽略绝对定位后的外层）
+    const card = el
+    heights[id] = card.offsetHeight
+  })
+
+  const result = computeKnockoutLayout({
+    columns: props.model.columns,
+    connections: props.model.connections,
+    heights,
+    gap: gapPx(),
+  })
+  if (!recordsEqual(nodeTops.value, result.tops)) {
+    nodeTops.value = result.tops
+  }
+  if (!recordsEqual(columnHeights.value, result.columnHeights)) {
+    columnHeights.value = result.columnHeights
+  }
+}
+
+function recordsEqual(a: Record<string | number, number>, b: Record<string | number, number>): boolean {
+  const ak = Object.keys(a)
+  const bk = Object.keys(b)
+  if (ak.length !== bk.length) return false
+  return ak.every((k) => a[k as keyof typeof a] === b[k as keyof typeof b])
+}
+
+function scheduleLayout() {
+  cancelAnimationFrame(rafId)
+  rafId = requestAnimationFrame(() => {
+    nextTick(() => measureAndLayout())
+  })
+}
+
+onMounted(() => {
+  scheduleLayout()
+  if (typeof ResizeObserver !== 'undefined' && boardRef.value) {
+    resizeObserver = new ResizeObserver(() => scheduleLayout())
+    resizeObserver.observe(boardRef.value)
+  }
+  window.addEventListener('resize', scheduleLayout)
+})
+
+onBeforeUnmount(() => {
+  cancelAnimationFrame(rafId)
+  resizeObserver?.disconnect()
+  window.removeEventListener('resize', scheduleLayout)
+})
+
+watch(layoutKey, () => scheduleLayout())
 </script>
 
 <template>
   <div
+    ref="boardRef"
     class="bracket-board"
-    :class="`density-${density}`"
+    :class="[`density-${density}`, { 'bracket-board--knockout': isKnockout }]"
     :style="{ '--bracket-cols': String(Math.max(columnCount, 1)) }"
   >
     <BracketConnectors
       :connections="model.connections"
-      :layout-key="layoutKey"
+      :layout-key="connectorLayoutKey"
     />
     <div class="bracket-grid">
       <BracketColumn
@@ -41,6 +128,8 @@ const layoutKey = computed(() => {
         :key="`${column.index}-${column.x}`"
         :column="column"
         :density="density"
+        :tree-tops="isKnockout ? nodeTops : null"
+        :tree-height="isKnockout ? columnHeights[column.index] : null"
       />
     </div>
   </div>
