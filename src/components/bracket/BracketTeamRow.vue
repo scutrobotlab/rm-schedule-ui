@@ -27,6 +27,18 @@ function logoSrc(url: string | undefined): string | undefined {
       [`density-${density}`]: true,
     }"
   >
+    <span
+      v-if="team.groupRank != null"
+      class="rank-badge"
+    >{{ team.groupRank }}</span>
+    <span
+      v-else-if="team.sourceKind !== 'team'"
+      class="source-badge"
+      :class="team.sourceKind"
+    >
+      {{ team.sourceKind === 'rank' ? '种子' : '来源' }}
+    </span>
+
     <img
       v-if="team.sourceKind === 'team' && team.collegeLogo"
       class="team-logo"
@@ -40,13 +52,6 @@ function logoSrc(url: string | undefined): string | undefined {
       :src="schoolGrey"
       alt=""
     />
-    <span
-      v-else
-      class="source-badge"
-      :class="team.sourceKind"
-    >
-      {{ team.sourceKind === 'rank' ? '种子' : '来源' }}
-    </span>
 
     <span
       class="team-name"
@@ -109,6 +114,20 @@ function logoSrc(url: string | undefined): string | undefined {
   color: #9ec8ff;
 }
 
+.rank-badge {
+  flex: 0 0 1.75em;
+  width: 1.75em;
+  box-sizing: border-box;
+  padding: 1px 0;
+  border-radius: 3px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  color: #fff;
+  background: #e7a662;
+}
+
 .team-name {
   flex: 1 1 auto;
   min-width: 0;
@@ -144,6 +163,12 @@ function logoSrc(url: string | undefined): string | undefined {
   display: none;
 }
 
+.density-normal .rank-badge {
+  flex-basis: 1.6em;
+  width: 1.6em;
+  font-size: 0.6rem;
+}
+
 .density-compact {
   min-height: 24px;
   padding: 2px 5px;
@@ -165,6 +190,12 @@ function logoSrc(url: string | undefined): string | undefined {
 
 .density-compact .source-badge {
   display: none;
+}
+
+.density-compact .rank-badge {
+  flex-basis: 1.5em;
+  width: 1.5em;
+  font-size: 0.56rem;
 }
 
 @media (min-width: 900px) {

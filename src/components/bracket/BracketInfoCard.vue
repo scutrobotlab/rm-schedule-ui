@@ -139,6 +139,11 @@ const showScore = computed(() => props.density !== 'compact')
   border-color: rgba(120, 120, 130, 0.25);
 }
 
+.info-card.node-eliminate :deep(.rank-badge) {
+  background: #6b6f76;
+  color: rgba(255, 255, 255, 0.85);
+}
+
 .info-card.density-normal {
   padding: 6px;
 }

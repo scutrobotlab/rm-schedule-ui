@@ -7,6 +7,10 @@ import { DefaultZoneMap, Part, SeasonList, ZoneMap } from '../constant/zone'
 import { usePromotionStore } from '../stores/promotion'
 import { getStageTeamCounts } from '../utils/stage_teams'
 import { buildBracketViewModel } from '../utils/bracket_adapter'
+import {
+  resolveBracketParts,
+  type BracketPart,
+} from '../utils/bracket_part_merge'
 import type { BracketViewModel } from '../types/bracket'
 
 const stageRange = ref<StageRange>({ start: 0, end: 1 })
@@ -15,6 +19,7 @@ const route = useRoute()
 const router = useRouter()
 const promotionStore = usePromotionStore()
 
+/** 原始 zone.parts 下标（与 ?group= 兼容） */
 const selectedGroup = ref(Number(route.query.group ?? -1))
 const routeHasGroup = computed(() => route.query.group !== undefined)
 const viewportWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024)
@@ -24,7 +29,26 @@ promotionStore.season = Number(route.params.season)
 promotionStore.zoneId = Number(route.params.zoneId)
 const season = computed(() => promotionStore.season)
 const zone = computed(() => ZoneMap[season.value]?.find((z) => z.id == zoneId.value))
-const currentPart = computed(() => zone.value?.parts[selectedGroup.value])
+
+/** 前后段合并后的分组列表，仅 BracketPage 使用 */
+const bracketParts = computed(() => (zone.value ? resolveBracketParts(zone.value) : []))
+
+/** slide-group 用合并项下标；读写时映射到/自原始 part 下标 */
+const selectedBracketIndex = computed({
+  get() {
+    if (!bracketParts.value.length) return 0
+    const idx = bracketParts.value.findIndex((bp) =>
+      bp.sourceIndices.includes(selectedGroup.value),
+    )
+    return idx >= 0 ? idx : 0
+  },
+  set(bracketIndex: number) {
+    const bp = bracketParts.value[bracketIndex]
+    if (bp) selectedGroup.value = bp.sourceIndices[0]
+  },
+})
+
+const currentPart = computed(() => bracketParts.value[selectedBracketIndex.value]?.part)
 
 const displayStages = computed(() => {
   const part = currentPart.value
@@ -143,6 +167,13 @@ function partHasStartedMatch(part: Part): boolean {
   })
 }
 
+function bracketPartHasStartedMatch(bp: BracketPart): boolean {
+  return bp.sourceIndices.some((i) => {
+    const part = zone.value?.parts[i]
+    return part ? partHasStartedMatch(part) : false
+  })
+}
+
 watch(
   () => promotionStore.season,
   async () => {
@@ -238,12 +269,13 @@ onBeforeUnmount(() => {
           >
             <v-slide-group
               class="ml-2"
-              v-model="selectedGroup"
+              v-model="selectedBracketIndex"
               mandatory="force"
             >
               <v-slide-group-item
-                v-for="part in zone.parts"
-                :key="part.name"
+                v-for="(bp, index) in bracketParts"
+                :key="bp.part.name"
+                :value="index"
                 v-slot="{ isSelected, toggle }"
               >
                 <v-btn
@@ -254,9 +286,9 @@ onBeforeUnmount(() => {
                   size="small"
                   @click="toggle"
                 >
-                  {{ part.name }}
+                  {{ bp.part.name }}
                   <span
-                    v-if="partHasStartedMatch(part)"
+                    v-if="bracketPartHasStartedMatch(bp)"
                     class="group-live-dot"
                   />
                 </v-btn>

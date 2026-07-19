@@ -24,6 +24,8 @@ export interface BracketTeamSlot {
   collegeName?: string
   collegeLogo?: string
   playerId?: string
+  /** 小组内名次（晋级列 1–16 等） */
+  groupRank?: number
   isWinner: boolean
   isLoser: boolean
 }

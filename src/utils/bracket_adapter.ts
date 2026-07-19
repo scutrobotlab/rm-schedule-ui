@@ -288,6 +288,9 @@ function buildInfoCard(args: {
   })
 
   const slots = buildInfoSlots(zone, zoneId, planGameCount, getMatchByOrder)
+  if (nodeType === 'promote' || nodeType === 'eliminate') {
+    applyGroupRanks(slots, zone)
+  }
 
   return {
     kind: 'info',
@@ -300,6 +303,16 @@ function buildInfoCard(args: {
     slots,
     matches,
   }
+}
+
+/** 晋级/淘汰席位：结构名次兜底，完赛后优先用球员小组名次，并按名次排序 */
+function applyGroupRanks(slots: BracketTeamSlot[], zone: ZoneZoneData): void {
+  for (let i = 0; i < slots.length; i++) {
+    if (slots[i].groupRank == null && zone.groupRank?.[i] != null) {
+      slots[i].groupRank = zone.groupRank[i]
+    }
+  }
+  slots.sort((a, b) => (a.groupRank ?? 999) - (b.groupRank ?? 999))
 }
 
 function resolveInfoNodeType(node: ZoneNodeJsonData, zone: ZoneZoneData): BracketInfoNodeType {
@@ -322,14 +335,26 @@ function buildInfoSlots(
     const match = getMatchByOrder(zoneId, zone.winners[i], planGameCount)
     const player = resolveWinner(match)
     const fallback = zone.text[slots.length]
-    slots.push(playerToSlot(player, fallback, false, false))
+    const structural = zone.groupRank?.[slots.length]
+    slots.push(
+      playerToSlot(player, fallback, false, false, {
+        matchDone: match?.status === 'DONE',
+        structuralRank: structural,
+      }),
+    )
   }
 
   for (let i = 0; i < zone.losers.length; i++) {
     const match = getMatchByOrder(zoneId, zone.losers[i], planGameCount)
     const player = resolveLoser(match)
     const fallback = zone.text[slots.length]
-    slots.push(playerToSlot(player, fallback, false, false))
+    const structural = zone.groupRank?.[slots.length]
+    slots.push(
+      playerToSlot(player, fallback, false, false, {
+        matchDone: match?.status === 'DONE',
+        structuralRank: structural,
+      }),
+    )
   }
 
   // 瑞士轮第一轮等：winners/losers 为空，队伍直接挂在本轮 matches 上
@@ -384,7 +409,9 @@ function playerToSlot(
   sourceText: string | undefined,
   isWinner: boolean,
   isLoser: boolean,
+  rankOpts?: { matchDone?: boolean; structuralRank?: number },
 ): BracketTeamSlot {
+  const groupRank = resolveSlotGroupRank(player, rankOpts)
   const team = player?.team
   if (team?.collegeName || team?.name) {
     return {
@@ -394,19 +421,29 @@ function playerToSlot(
       collegeName: team.collegeName,
       collegeLogo: team.collegeLogo,
       playerId: player?.id,
+      groupRank,
       isWinner,
       isLoser,
     }
   }
-  return sourceSlot(sourceText)
+  return sourceSlot(sourceText, groupRank)
 }
 
-function sourceSlot(sourceText: string | undefined): BracketTeamSlot {
+function resolveSlotGroupRank(
+  player: Player | null | undefined,
+  rankOpts?: { matchDone?: boolean; structuralRank?: number },
+): number | undefined {
+  if (rankOpts?.matchDone && player && player.rank > 0) return player.rank
+  return rankOpts?.structuralRank
+}
+
+function sourceSlot(sourceText: string | undefined, groupRank?: number): BracketTeamSlot {
   const label = formatSourceLabel(sourceText)
   if (!label) {
     return {
       displayName: '',
       sourceKind: 'empty',
+      groupRank,
       isWinner: false,
       isLoser: false,
     }
@@ -416,6 +453,7 @@ function sourceSlot(sourceText: string | undefined): BracketTeamSlot {
     displayName: label,
     sourceLabel: (sourceText ?? '').trim() || label,
     sourceKind: kind,
+    groupRank,
     isWinner: false,
     isLoser: false,
   }
