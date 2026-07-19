@@ -179,12 +179,20 @@ function comparePromoteByRecord(a: ZoneNodeJsonData, b: ZoneNodeJsonData): numbe
 
   const ra = parseWinLossRecord(a.text)
   const rb = parseWinLossRecord(b.text)
+
+  // 淘汰：无「x-y」文案（如「淘汰」）视为更晚出局，高于「淘汰 1-2」
+  if (a.data.type === 'eliminate' && b.data.type === 'eliminate') {
+    if (!ra && rb) return -1
+    if (ra && !rb) return 1
+  } else {
+    if (ra && !rb) return -1
+    if (!ra && rb) return 1
+  }
+
   if (ra && rb) {
     if (ra.wins !== rb.wins) return rb.wins - ra.wins
     return ra.losses - rb.losses
   }
-  if (ra && !rb) return -1
-  if (!ra && rb) return 1
   return 0
 }
 

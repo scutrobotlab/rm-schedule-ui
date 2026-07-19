@@ -171,7 +171,7 @@ describe('resolveBracketParts', () => {
     expect(ranks.every((r) => r == null)).toBe(true)
   })
 
-  it('复活赛第二赛段：晋级全国赛置顶', () => {
+  it('复活赛第二赛段：晋级全国赛置顶，淘汰高于淘汰 1-2', () => {
     const zone = ZoneMap[2025]?.find((z) => z.name === '复活赛第二赛段')
     expect(zone).toBeTruthy()
 
@@ -180,8 +180,12 @@ describe('resolveBracketParts', () => {
       .filter((n) => n.data.type === 'promote' || n.data.type === 'eliminate')
       .sort((a, b) => a.y - b.y)
 
-    expect(promoteLike[0]?.text).toBe('晋级全国赛')
-    expect(promoteLike.slice(1).every((n) => n.data.type === 'eliminate')).toBe(true)
+    expect(promoteLike.map((n) => n.text)).toEqual([
+      '晋级全国赛',
+      '淘汰',
+      '淘汰 1-2',
+      '淘汰 0-2',
+    ])
   })
 
   it('孤立前后段名称不合并', () => {
