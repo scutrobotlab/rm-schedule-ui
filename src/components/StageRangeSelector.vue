@@ -98,6 +98,20 @@ function isActive(index: number): boolean {
   return index >= start && index <= end
 }
 
+/** 超过 8 个字时按语义断句（如 16进8败者组 / 第一轮） */
+const LABEL_BREAK_SUFFIXES = ['第一轮', '第二轮', '第三轮', '第四轮', '第五轮', '胜者组', '败者组'] as const
+
+function labelLines(label: string): string[] {
+  if (label.length <= 8) return [label]
+  for (const suffix of LABEL_BREAK_SUFFIXES) {
+    if (label.endsWith(suffix) && label.length > suffix.length) {
+      return [label.slice(0, -suffix.length), suffix]
+    }
+  }
+  const mid = Math.ceil(label.length / 2)
+  return [label.slice(0, mid), label.slice(mid)]
+}
+
 function emitRange(start: number, end: number) {
   if (start === props.modelValue.start && end === props.modelValue.end) return
   const value = { start, end }
@@ -241,9 +255,16 @@ function barsStyle(stage: StageItem): Record<string, string> {
         v-for="(stage, index) in stages"
         :key="`label-${index}`"
         class="stage-range__label"
-        :class="{ 'stage-range__label--active': isActive(index) }"
+        :class="{
+          'stage-range__label--active': isActive(index),
+          'stage-range__label--wrap': labelLines(stage.label).length > 1,
+        }"
       >
-        {{ stage.label }}
+        <span
+          v-for="(line, lineIndex) in labelLines(stage.label)"
+          :key="lineIndex"
+          class="stage-range__label-line"
+        >{{ line }}</span>
       </div>
     </div>
 
@@ -363,9 +384,19 @@ function barsStyle(stage: StageItem): Record<string, string> {
   line-height: 1.2;
   text-align: center;
   display: flex;
-  align-items: flex-end;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
   transition: color 0.28s var(--snap-ease);
+}
+
+.stage-range__label--wrap {
+  gap: 0;
+}
+
+.stage-range__label-line {
+  display: block;
+  white-space: nowrap;
 }
 
 .stage-range__label--active {
