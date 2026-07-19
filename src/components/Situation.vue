@@ -1,16 +1,12 @@
 <script setup lang="ts">
 import { useAppStore } from "../stores/app";
 import MatchGraph from "./MatchGraph.vue";
-import StageRangeSelector, { type StageItem, type StageRange } from "./StageRangeSelector.vue";
 import { computed, watch, ref } from "vue";
 import { usePromotionStore } from "../stores/promotion";
 import AnalyzeTeam from "./AnalyzeTeam.vue";
 import { useRoute, useRouter } from "vue-router";
 import { DefaultZoneMap, Part, SeasonList, ZoneMap } from "../constant/zone";
 import AnalyzeMatch from "./AnalyzeMatch.vue";
-import { getStageTeamCounts } from "../utils/stage_teams";
-
-const stageRange = ref<StageRange>({ start: 0, end: 1 })
 
 const route = useRoute()
 const router = useRouter()
@@ -27,40 +23,7 @@ promotionStore.season = Number(route.params.season)
 promotionStore.zoneId = Number(route.params.zoneId)
 const season = computed(() => promotionStore.season)
 const zone = computed(() => ZoneMap[season.value].find((zone) => zone.id == zoneId.value))
-const currentPart = computed(() => zone.value?.parts[selectedGroup.value])
-/** 展示用阶段（仅 UI，不驱动赛事图筛选） */
-const displayStages = computed(() => {
-  const part = currentPart.value
-  if (!part) return []
-  const labels = part.jsonData.stages ?? []
-  const teamCounts = getStageTeamCounts(part.jsonData, part)
-  return labels.map((label, index, list) =>
-    toStageItem(label, index, list.length, teamCounts[index] ?? 0)
-  )
-})
 let needsRouteNormalize = false
-
-function toStageItem(label: string, index: number, length: number, teams: number): StageItem {
-  const isLast = index === length - 1
-  const isTrophy =
-    isLast &&
-    label.includes('决赛') &&
-    !label.includes('半决赛') &&
-    !label.includes('四分之一')
-
-  if (isTrophy) {
-    // 仅全国赛决赛用自定义奖杯图，赛区决赛用表情
-    const icon = zone.value?.name === '全国赛' ? 'trophy' : 'trophyEmoji'
-    return { label, icon }
-  }
-  const count = Math.max(teams, 1)
-  return {
-    label,
-    icon: count,
-    thick: count <= 4,
-    columns: count >= 8 ? 2 : 1,
-  }
-}
 
 // 如果 Season 不存在，则自动选择最后一个可用的 Season
 if (!Object.keys(ZoneMap).includes(String(promotionStore.season))) {
@@ -129,13 +92,6 @@ function toggleLiveMode() {
 
 watch(zoneId, updateQuery)
 watch(selectedGroup, updateQuery)
-watch(
-  [selectedGroup, zoneId, () => displayStages.value.length],
-  () => {
-    const n = displayStages.value.length
-    stageRange.value = { start: 0, end: Math.min(1, Math.max(0, n - 1)) }
-  },
-)
 
 function badgeTab(zoneId: number): boolean {
   if (!promotionStore.selectedPlayer) return false
@@ -345,13 +301,6 @@ const MenuItems = ref(
               </div>
             </v-slide-group>
           </v-sheet>
-
-          <div v-if="displayStages.length >= 2" class="stage-range-wrap">
-            <StageRangeSelector
-              v-model="stageRange"
-              :stages="displayStages"
-            />
-          </div>
         </div>
 
         <div
@@ -497,10 +446,6 @@ const MenuItems = ref(
   position: absolute; /* 绝对定位 */
   z-index: 4; /* 确保在 v-carousel 上方 */
   width: 100%; /* 占满宽度 */
-}
-
-.stage-range-wrap {
-  padding: 4px 0 8px;
 }
 
 .v-carousel {
