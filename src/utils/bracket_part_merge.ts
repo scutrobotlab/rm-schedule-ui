@@ -80,8 +80,12 @@ export function mergeFrontBackJsonData(front: ZoneJsonData, back: ZoneJsonData):
 /**
  * 把分散的晋级/淘汰节点收到最后一列，stages = 比赛轮次… +「晋级」。
  * 例如：前段晋级 / 第五轮旁的 3-1 / 后段晋级 → 统一「晋级」列。
+ * 比赛轮次标签尽量沿用原 stages（去掉含「晋级/淘汰」的列名）。
  */
-function consolidatePromoteDisplay(data: ZoneJsonData): ZoneJsonData {
+function consolidatePromoteDisplay(
+  data: ZoneJsonData,
+  options: { assignGroupRank?: boolean } = {},
+): ZoneJsonData {
   const nodes = data.nodes.map((n) => ({ ...n }))
   const promoteLike = nodes.filter(isPromoteLike)
   const matchLike = nodes.filter((n) => !isPromoteLike(n))
@@ -101,16 +105,16 @@ function consolidatePromoteDisplay(data: ZoneJsonData): ZoneJsonData {
     matchXs.length >= 2 ? Math.abs(matchXs[1]! - matchXs[0]!) : 435
   const promoteX = trailingPromoteX ?? lastMatchX + gap
 
-  const ordered = [...promoteLike].sort(
-    (a, b) => promoteDisplayRank(a) - promoteDisplayRank(b),
-  )
+  const ordered = [...promoteLike].sort(comparePromoteByRecord)
   const yStep = 160
   const yStart =
     ordered.length > 0
       ? Math.min(...ordered.map((n) => n.y))
       : 0
 
-  /** 各 zones 槽独立累计名次（A/B 组各自 1–16） */
+  const assignGroupRank = options.assignGroupRank !== false
+
+  /** 各 zones 槽独立累计名次（A/B 组各自 1–16）；名额争夺等不赋名次 */
   const nextRankByZone: number[] = []
   ordered.forEach((node, index) => {
     node.x = promoteX
@@ -118,6 +122,11 @@ function consolidatePromoteDisplay(data: ZoneJsonData): ZoneJsonData {
     node.data = {
       ...node.data,
       zones: node.data.zones.map((zone, zi) => {
+        if (!assignGroupRank) {
+          const next = { ...zone }
+          delete next.groupRank
+          return next
+        }
         const seats = promoteZoneSeatCount(zone)
         const start = nextRankByZone[zi] ?? 1
         nextRankByZone[zi] = start + seats
@@ -129,9 +138,23 @@ function consolidatePromoteDisplay(data: ZoneJsonData): ZoneJsonData {
     }
   })
 
-  const roundLabels = ['第一轮', '第二轮', '第三轮', '第四轮', '第五轮', '第六轮', '第七轮']
+  const fallbackRoundLabels = [
+    '第一轮',
+    '第二轮',
+    '第三轮',
+    '第四轮',
+    '第五轮',
+    '第六轮',
+    '第七轮',
+  ]
+  const preservedMatchLabels = (data.stages ?? []).filter(
+    (label) => !/晋级|淘汰/.test(label),
+  )
   const stages = [
-    ...matchXs.map((_, i) => roundLabels[i] ?? `第${i + 1}轮`),
+    ...matchXs.map(
+      (_, i) =>
+        preservedMatchLabels[i] ?? fallbackRoundLabels[i] ?? `第${i + 1}轮`,
+    ),
     '晋级',
   ]
 
@@ -148,14 +171,37 @@ function promoteZoneSeatCount(zone: { winners: number[]; losers: number[]; text:
   return Math.max(zone.text.length, 0)
 }
 
-/** 晋级列从上到下：3-0 → 3-1 → 3-2 → 2-3 → 1-3 → 0-3 */
-const PROMOTE_DISPLAY_ORDER = ['3-0', '3-1', '3-2', '2-3', '1-3', '0-3'] as const
+/** 晋级列排序：晋级全国赛置顶 → 其它晋级 → 淘汰；同组内按胜负场 */
+function comparePromoteByRecord(a: ZoneNodeJsonData, b: ZoneNodeJsonData): number {
+  const tierA = promoteDisplayTier(a)
+  const tierB = promoteDisplayTier(b)
+  if (tierA !== tierB) return tierA - tierB
 
-function promoteDisplayRank(node: ZoneNodeJsonData): number {
-  const record = node.text.match(/(\d-\d)/)?.[1]
-  if (!record) return PROMOTE_DISPLAY_ORDER.length
-  const idx = PROMOTE_DISPLAY_ORDER.indexOf(record as (typeof PROMOTE_DISPLAY_ORDER)[number])
-  return idx >= 0 ? idx : PROMOTE_DISPLAY_ORDER.length
+  const ra = parseWinLossRecord(a.text)
+  const rb = parseWinLossRecord(b.text)
+  if (ra && rb) {
+    if (ra.wins !== rb.wins) return rb.wins - ra.wins
+    return ra.losses - rb.losses
+  }
+  if (ra && !rb) return -1
+  if (!ra && rb) return 1
+  return 0
+}
+
+function promoteDisplayTier(node: ZoneNodeJsonData): number {
+  const text = `${node.text}${node.data.title ?? ''}`
+  if (text.includes('晋级全国赛')) return 0
+  if (node.data.type === 'promote') return 1
+  return 2
+}
+
+function parseWinLossRecord(text: string): { wins: number; losses: number } | null {
+  const match = text.match(/(\d)\s*[-:]\s*(\d)/)
+  if (!match) return null
+  const wins = Number(match[1])
+  const losses = Number(match[2])
+  if (!Number.isFinite(wins) || !Number.isFinite(losses)) return null
+  return { wins, losses }
 }
 
 function isPromoteLike(node: ZoneNodeJsonData): boolean {
@@ -168,6 +214,7 @@ function uniqueSorted(values: number[]): number[] {
 
 /**
  * 仅供 BracketPage：将 Zone.parts 中的「X组前段/后段」合并为「X组」，其余原样。
+ * 所有非淘汰赛都会把晋级/淘汰收到末列，前面只保留对阵。
  */
 export function resolveBracketParts(zone: Zone): BracketPart[] {
   const { parts } = zone
@@ -207,10 +254,25 @@ export function resolveBracketParts(zone: Zone): BracketPart[] {
     }
 
     used.add(i)
-    result.push({ part, sourceIndices: [i] })
+    result.push({
+      part: normalizeNonKnockoutPart(part),
+      sourceIndices: [i],
+    })
   }
 
   return result
+}
+
+/** 非淘汰赛：晋级/淘汰收拢末列；淘汰赛原样 */
+function normalizeNonKnockoutPart(part: Part): Part {
+  if (part.type === 'knockout') return part
+  return {
+    ...part,
+    jsonData: consolidatePromoteDisplay(part.jsonData, {
+      // 名额争夺按战绩分桶，没有小组名次语义
+      assignGroupRank: !part.name.includes('名额争夺'),
+    }),
+  }
 }
 
 function mergeBracketPart(front: Part, back: Part, sourceIndices: number[]): BracketPart {

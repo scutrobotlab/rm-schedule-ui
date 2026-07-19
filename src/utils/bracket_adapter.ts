@@ -42,6 +42,7 @@ export function buildBracketViewModel(options: BuildBracketOptions): BracketView
   const planGameCount = part.group === 'QW' ? 2 : 3
 
   const xValues = uniqueSorted(jsonData.nodes.map((n) => n.x))
+  const suppressGroupRank = part.name.includes('名额争夺')
   const columns: BracketColumn[] = xValues.map((x, index) => {
     const nodes = jsonData.nodes
       .filter((n) => n.x === x)
@@ -59,6 +60,7 @@ export function buildBracketViewModel(options: BuildBracketOptions): BracketView
           zoneId,
           planGameCount,
           getMatchByOrder,
+          suppressGroupRank,
         })
         if (item) items.push(item)
       }
@@ -198,8 +200,9 @@ function toBracketItem(args: {
   zoneId: number
   planGameCount: number
   getMatchByOrder: GetMatchByOrder
+  suppressGroupRank?: boolean
 }): BracketItem | null {
-  const { node, zone, zoneIndex, zoneId, planGameCount, getMatchByOrder } = args
+  const { node, zone, zoneIndex, zoneId, planGameCount, getMatchByOrder, suppressGroupRank } = args
   const lane = detectLane(node)
   const type = node.data.type
 
@@ -226,6 +229,7 @@ function toBracketItem(args: {
     zoneId,
     planGameCount,
     getMatchByOrder,
+    suppressGroupRank,
   })
 }
 
@@ -269,8 +273,18 @@ function buildInfoCard(args: {
   zoneId: number
   planGameCount: number
   getMatchByOrder: GetMatchByOrder
+  suppressGroupRank?: boolean
 }): BracketInfoCard {
-  const { node, zone, zoneIndex, lane, zoneId, planGameCount, getMatchByOrder } = args
+  const {
+    node,
+    zone,
+    zoneIndex,
+    lane,
+    zoneId,
+    planGameCount,
+    getMatchByOrder,
+    suppressGroupRank,
+  } = args
   const nodeType = resolveInfoNodeType(node, zone)
 
   const matches: BracketMatchSummary[] = zone.matches.map((orderNumber, i) => {
@@ -286,8 +300,10 @@ function buildInfoCard(args: {
     }
   })
 
-  const slots = buildInfoSlots(zone, zoneId, planGameCount, getMatchByOrder)
-  if (nodeType === 'promote' || nodeType === 'eliminate') {
+  const slots = buildInfoSlots(zone, zoneId, planGameCount, getMatchByOrder, {
+    suppressGroupRank,
+  })
+  if (!suppressGroupRank && (nodeType === 'promote' || nodeType === 'eliminate')) {
     applyGroupRanks(slots, zone)
   }
 
@@ -327,17 +343,19 @@ function buildInfoSlots(
   zoneId: number,
   planGameCount: number,
   getMatchByOrder: GetMatchByOrder,
+  options: { suppressGroupRank?: boolean } = {},
 ): BracketTeamSlot[] {
   const slots: BracketTeamSlot[] = []
+  const suppressGroupRank = Boolean(options.suppressGroupRank)
 
   for (let i = 0; i < zone.winners.length; i++) {
     const match = getMatchByOrder(zoneId, zone.winners[i], planGameCount)
     const player = resolveWinner(match)
     const fallback = zone.text[slots.length]
-    const structural = zone.groupRank?.[slots.length]
+    const structural = suppressGroupRank ? undefined : zone.groupRank?.[slots.length]
     slots.push(
       playerToSlot(player, fallback, false, false, {
-        matchDone: match?.status === 'DONE',
+        matchDone: suppressGroupRank ? false : match?.status === 'DONE',
         structuralRank: structural,
       }),
     )
@@ -347,10 +365,10 @@ function buildInfoSlots(
     const match = getMatchByOrder(zoneId, zone.losers[i], planGameCount)
     const player = resolveLoser(match)
     const fallback = zone.text[slots.length]
-    const structural = zone.groupRank?.[slots.length]
+    const structural = suppressGroupRank ? undefined : zone.groupRank?.[slots.length]
     slots.push(
       playerToSlot(player, fallback, false, false, {
-        matchDone: match?.status === 'DONE',
+        matchDone: suppressGroupRank ? false : match?.status === 'DONE',
         structuralRank: structural,
       }),
     )
@@ -370,7 +388,7 @@ function buildInfoSlots(
   if (slots.length === 0 && zone.groupRank?.length) {
     for (let i = 0; i < zone.groupRank.length; i++) {
       const label = zone.text[i] ?? `${zone.group ?? ''}${zone.groupRank[i]}`
-      slots.push(sourceSlot(label))
+      slots.push(sourceSlot(label, suppressGroupRank ? undefined : zone.groupRank[i]))
     }
     return slots
   }

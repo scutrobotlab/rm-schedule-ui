@@ -27,12 +27,41 @@ const timeText = computed(() => {
   const m = moment(props.item.planStartedAt)
   return m.isValid() ? m.format('M/D HH:mm') : ''
 })
+
+/** 冠军争夺战 → 冠/亚；季军争夺战 → 季 */
+const podiumKind = computed<'champion' | 'third' | null>(() => {
+  const title = props.item.title || ''
+  if (title.includes('季军')) return 'third'
+  if (title.includes('冠军')) return 'champion'
+  return null
+})
+
+const podiumTag = computed(() => {
+  if (podiumKind.value === 'third') return '季军'
+  if (podiumKind.value === 'champion') return '冠军'
+  return null
+})
+
+function slotMedal(
+  slot: { isWinner: boolean; isLoser: boolean },
+): 'gold' | 'silver' | 'bronze' | null {
+  if (podiumKind.value === 'champion') {
+    if (slot.isWinner) return 'gold'
+    if (slot.isLoser) return 'silver'
+  }
+  if (podiumKind.value === 'third' && slot.isWinner) return 'bronze'
+  return null
+}
 </script>
 
 <template>
   <article
     class="match-card"
-    :class="[`lane-${item.lane}`, `density-${density}`]"
+    :class="[
+      `lane-${item.lane}`,
+      `density-${density}`,
+      podiumKind ? `podium-${podiumKind}` : null,
+    ]"
     :data-node-id="item.nodeId"
   >
     <div
@@ -40,6 +69,10 @@ const timeText = computed(() => {
       class="card-head"
     >
       <span class="card-title">{{ item.title || `第${item.orderNumber}场` }}</span>
+      <span
+        v-if="podiumTag"
+        class="type-tag"
+      >{{ podiumTag }}</span>
     </div>
 
     <div class="slot-stack">
@@ -49,6 +82,7 @@ const timeText = computed(() => {
         :density="density"
         :show-score="true"
         :show-name="showTeamName"
+        :medal="slotMedal(item.slots[0])"
       />
       <BracketTeamRow
         :team="item.slots[1]"
@@ -56,6 +90,7 @@ const timeText = computed(() => {
         :density="density"
         :show-score="true"
         :show-name="showTeamName"
+        :medal="slotMedal(item.slots[1])"
       />
     </div>
 
@@ -85,7 +120,37 @@ const timeText = computed(() => {
 }
 
 .match-card.lane-gold {
-  border-left-color: rgba(220, 180, 90, 0.95);
+  background: rgba(40, 28, 8, 0.22);
+  border-color: rgba(220, 170, 90, 0.28);
+  border-left-color: #ffc857;
+}
+
+.match-card.lane-gold .card-title {
+  color: #ffd56a;
+  opacity: 1;
+  font-weight: 600;
+}
+
+.match-card.podium-champion .type-tag {
+  color: #1a1408;
+  background: #ffd56a;
+  opacity: 1;
+  font-weight: 700;
+}
+
+.match-card.podium-third {
+  border-left-color: #c8895a;
+}
+
+.match-card.podium-third .card-title {
+  color: #e0a878;
+}
+
+.match-card.podium-third .type-tag {
+  color: #1a120c;
+  background: #c8895a;
+  opacity: 1;
+  font-weight: 700;
 }
 
 .match-card.density-normal {
@@ -106,18 +171,29 @@ const timeText = computed(() => {
 .card-head {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 6px;
+  flex-wrap: wrap;
+  gap: 4px 6px;
   margin-bottom: 6px;
 }
 
 .card-title {
+  flex: 1 1 auto;
   min-width: 0;
   font-size: 0.72rem;
   opacity: 0.72;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.type-tag {
+  flex: 0 0 auto;
+  font-size: 0.58rem;
+  padding: 1px 5px;
+  border-radius: 999px;
+  letter-spacing: 0.04em;
+  background: rgba(255, 255, 255, 0.08);
+  opacity: 0.8;
 }
 
 .card-meta {

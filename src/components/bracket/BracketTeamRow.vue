@@ -12,8 +12,10 @@ withDefaults(
     showScore: boolean
     /** ≥6 列时为 false */
     showName?: boolean
+    /** 冠亚季：金 / 银 / 铜（覆盖默认绿色胜者） */
+    medal?: 'gold' | 'silver' | 'bronze' | null
   }>(),
-  { showName: true },
+  { showName: true, medal: null },
 )
 
 function logoSrc(url: string | undefined): string | undefined {
@@ -26,9 +28,10 @@ function logoSrc(url: string | undefined): string | undefined {
   <div
     class="team-row"
     :class="{
-      winner: team.isWinner,
-      loser: team.isLoser,
+      winner: team.isWinner && !medal,
+      loser: team.isLoser && !medal,
       pending: team.sourceKind !== 'team',
+      [`medal-${medal}`]: Boolean(medal),
       [`density-${density}`]: true,
     }"
   >
@@ -94,6 +97,80 @@ function logoSrc(url: string | undefined): string | undefined {
 
 .team-row.loser {
   opacity: 0.52;
+}
+
+.team-row.medal-gold {
+  background: rgba(212, 160, 48, 0.48);
+  box-shadow: inset 0 0 0 1px rgba(255, 213, 106, 0.35);
+  animation: medal-shimmer-gold 3.6s ease-in-out infinite;
+}
+
+.team-row.medal-silver {
+  background: rgba(160, 172, 188, 0.42);
+  box-shadow: inset 0 0 0 1px rgba(210, 220, 235, 0.35);
+  animation: medal-shimmer-silver 3.6s ease-in-out infinite;
+}
+
+.team-row.medal-bronze {
+  background: rgba(176, 112, 64, 0.46);
+  box-shadow: inset 0 0 0 1px rgba(224, 168, 120, 0.35);
+  animation: medal-shimmer-bronze 3.6s ease-in-out infinite;
+}
+
+@keyframes medal-shimmer-gold {
+  0%,
+  100% {
+    background: rgba(212, 160, 48, 0.4);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 213, 106, 0.28),
+      0 0 0 0 rgba(255, 213, 106, 0);
+  }
+  50% {
+    background: rgba(240, 190, 70, 0.62);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 230, 150, 0.55),
+      0 0 10px 1px rgba(255, 200, 80, 0.35);
+  }
+}
+
+@keyframes medal-shimmer-silver {
+  0%,
+  100% {
+    background: rgba(160, 172, 188, 0.36);
+    box-shadow:
+      inset 0 0 0 1px rgba(210, 220, 235, 0.28),
+      0 0 0 0 rgba(200, 210, 225, 0);
+  }
+  50% {
+    background: rgba(200, 210, 225, 0.58);
+    box-shadow:
+      inset 0 0 0 1px rgba(235, 240, 250, 0.55),
+      0 0 10px 1px rgba(200, 215, 235, 0.32);
+  }
+}
+
+@keyframes medal-shimmer-bronze {
+  0%,
+  100% {
+    background: rgba(176, 112, 64, 0.38);
+    box-shadow:
+      inset 0 0 0 1px rgba(224, 168, 120, 0.28),
+      0 0 0 0 rgba(200, 130, 70, 0);
+  }
+  50% {
+    background: rgba(200, 135, 80, 0.58);
+    box-shadow:
+      inset 0 0 0 1px rgba(235, 185, 140, 0.55),
+      0 0 10px 1px rgba(200, 130, 70, 0.3);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .team-row.medal-gold,
+  .team-row.medal-silver,
+  .team-row.medal-bronze {
+    animation: none;
+  }
 }
 
 .team-row.pending {

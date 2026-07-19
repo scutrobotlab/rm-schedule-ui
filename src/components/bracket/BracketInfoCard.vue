@@ -115,12 +115,32 @@ const showMatchCount = computed(
 }
 
 .info-card.lane-gold {
-  border-left-color: rgba(220, 180, 90, 0.9);
+  border-left-color: #ffc857;
+}
+
+.info-card.lane-gold .card-title {
+  color: #ffd56a;
+  opacity: 1;
+  font-weight: 600;
 }
 
 .info-card.node-promote {
   background: rgba(40, 28, 8, 0.22);
   border-color: rgba(220, 170, 90, 0.28);
+  border-left-color: #ffc857;
+}
+
+.info-card.node-promote .card-title {
+  color: #ffd56a;
+  opacity: 1;
+  font-weight: 600;
+}
+
+.info-card.node-promote .type-tag {
+  color: #1a1408;
+  background: #ffd56a;
+  opacity: 1;
+  font-weight: 700;
 }
 
 .info-card.node-eliminate {

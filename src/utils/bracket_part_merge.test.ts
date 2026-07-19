@@ -103,6 +103,87 @@ describe('resolveBracketParts', () => {
     expect(resolved.map((bp) => bp.part.name)).toEqual(zone!.parts.map((p) => p.name))
   })
 
+  it('无前后段的小组赛：晋级/淘汰收拢到末列，前面只保留对阵', () => {
+    const zone = ZoneMap[2024]?.find((z) => z.name === '东部赛区')
+    expect(zone).toBeTruthy()
+
+    const aGroup = resolveBracketParts(zone!).find((bp) => bp.part.name === 'A组')!
+    expect(aGroup.part.type).toBe('group')
+    expect(aGroup.part.jsonData.stages).toEqual([
+      '第一轮',
+      '第二轮',
+      '第三轮',
+      '晋级',
+    ])
+
+    const promoteLike = aGroup.part.jsonData.nodes.filter(
+      (n) => n.data.type === 'promote' || n.data.type === 'eliminate',
+    )
+    const matchLike = aGroup.part.jsonData.nodes.filter(
+      (n) => n.data.type !== 'promote' && n.data.type !== 'eliminate',
+    )
+    expect(promoteLike.length).toBeGreaterThan(0)
+    expect(new Set(promoteLike.map((n) => n.x)).size).toBe(1)
+    const promoteX = promoteLike[0]!.x
+    expect(Math.max(...matchLike.map((n) => n.x))).toBeLessThan(promoteX)
+  })
+
+  it('淘汰赛不做晋级收拢', () => {
+    const zone = ZoneMap[2024]?.find((z) => z.name === '东部赛区')
+    expect(zone).toBeTruthy()
+
+    const knockout = resolveBracketParts(zone!).find((bp) => bp.part.name === '淘汰赛')!
+    const raw = zone!.parts.find((p) => p.name === '淘汰赛')!
+    expect(knockout.part.jsonData.stages).toEqual(raw.jsonData.stages)
+    expect(knockout.part.jsonData.nodes).toEqual(raw.jsonData.nodes)
+  })
+
+  it('全国赛名额争夺战：按胜负排序且不赋名次', () => {
+    // 2025 东部 · QuotaCompetition_9_5：晋级桶含 3-0 / 2-1 / 1-1 / 0-2
+    const zone = ZoneMap[2025]?.find((z) => z.name === '东部赛区')
+    expect(zone).toBeTruthy()
+
+    const quota = resolveBracketParts(zone!).find((bp) => bp.part.name === '全国赛名额争夺战')
+    expect(quota).toBeTruthy()
+
+    const promoteLike = quota!.part.jsonData.nodes
+      .filter((n) => n.data.type === 'promote' || n.data.type === 'eliminate')
+      .sort((a, b) => a.y - b.y)
+
+    // 胜场多在上；同胜场则负场少在上；晋级全国赛优先于晋级复活赛/淘汰
+    expect(promoteLike.map((n) => n.text.match(/(\d-\d)/)?.[1])).toEqual([
+      '3-0',
+      '2-1',
+      '1-1',
+      '0-2',
+    ])
+    expect(promoteLike.every((n) => n.data.zones.every((z) => z.groupRank == null))).toBe(true)
+
+    const model = buildBracketViewModel({
+      zoneId: zone!.id,
+      part: quota!.part,
+      getMatchByOrder: () => undefined,
+    })
+    const last = model.columns[model.columns.length - 1]!
+    const ranks = last.items
+      .filter((i): i is Extract<typeof i, { kind: 'info' }> => i.kind === 'info')
+      .flatMap((i) => i.slots.map((s) => s.groupRank))
+    expect(ranks.every((r) => r == null)).toBe(true)
+  })
+
+  it('复活赛第二赛段：晋级全国赛置顶', () => {
+    const zone = ZoneMap[2025]?.find((z) => z.name === '复活赛第二赛段')
+    expect(zone).toBeTruthy()
+
+    const part = resolveBracketParts(zone!)[0]!.part
+    const promoteLike = part.jsonData.nodes
+      .filter((n) => n.data.type === 'promote' || n.data.type === 'eliminate')
+      .sort((a, b) => a.y - b.y)
+
+    expect(promoteLike[0]?.text).toBe('晋级全国赛')
+    expect(promoteLike.slice(1).every((n) => n.data.type === 'eliminate')).toBe(true)
+  })
+
   it('孤立前后段名称不合并', () => {
     const zone: Zone = {
       id: 1,
