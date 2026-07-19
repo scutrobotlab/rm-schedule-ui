@@ -13,6 +13,7 @@ declare module 'vue' {
     AnniversaryAnnouncement: typeof import('./components/AnniversaryAnnouncement.vue')['default']
     AppFooter: typeof import('./components/AppFooter.vue')['default']
     CompleteFormRank: typeof import('./components/CompleteFormRank.vue')['default']
+    ForecastPoster: typeof import('./components/ForecastPoster.vue')['default']
     GraphComment: typeof import('./components/GraphComment.vue')['default']
     GroupMatchData: typeof import('./components/GroupMatchData.vue')['default']
     HelloWorld: typeof import('./components/HelloWorld.vue')['default']

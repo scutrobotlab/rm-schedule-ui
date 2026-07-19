@@ -1,0 +1,31 @@
+/** 与后端 CurrentMatchForecastResp 对齐（snake_case JSON）。 */
+export interface CurrentMatchForecastResp {
+  publish_time: string
+  has_match: boolean
+  zone_name: string
+  zone_id: number
+  order_number: number
+  /** schedule 透传；分组赛常见为 null。 */
+  slug: string | null
+  match_id: number
+  /** 东八区，精确到秒；上游未查到时可能为空串。 */
+  support_rate_deadline: string
+  red_side: ForecastSide
+  blue_side: ForecastSide
+}
+
+export interface ForecastSide {
+  team_info: ForecastTeamInfo
+  /** 0~1；不可用时为 -1。 */
+  support_rate: number
+  /** 0~100；不可用时为 -1。不得把 -1 渲染成 0%。 */
+  support_rate_percent: number
+}
+
+export interface ForecastTeamInfo {
+  team_id: string
+  team_name: string
+  /** 绝对 URL，或本服务相对路径（如 /api/static/...）。 */
+  college_logo: string
+  college_name: string
+}
