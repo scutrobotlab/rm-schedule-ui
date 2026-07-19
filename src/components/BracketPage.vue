@@ -523,6 +523,10 @@ onBeforeUnmount(() => {
       :src="promotionStore.backgroundImage"
       alt=""
     />
+    <div
+      class="background-dim"
+      aria-hidden="true"
+    />
 
     <SearchPlayer :zone-id="zoneId" />
     <About />
@@ -744,7 +748,8 @@ onBeforeUnmount(() => {
   position: fixed;
   left: 0;
   bottom: 0;
-  z-index: 10;
+  /* 压在背景之上、赛程卡片之下，便于节点毛玻璃虚化 Logo */
+  z-index: 2;
   width: 120px;
   height: 120px;
   pointer-events: none;
@@ -781,6 +786,17 @@ onBeforeUnmount(() => {
   object-fit: cover;
   z-index: 1;
   pointer-events: none;
+}
+
+.background-dim {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(40, 90, 140, 0.18) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 100%, rgba(20, 50, 90, 0.16) 0%, transparent 50%),
+    linear-gradient(180deg, rgba(4, 12, 26, 0.58) 0%, rgba(6, 16, 32, 0.72) 100%);
 }
 
 .content {
@@ -854,10 +870,8 @@ onBeforeUnmount(() => {
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
   overscroll-behavior-y: none;
-  background:
-    radial-gradient(ellipse at 20% 0%, rgba(40, 90, 140, 0.22) 0%, transparent 55%),
-    radial-gradient(ellipse at 80% 100%, rgba(30, 70, 110, 0.18) 0%, transparent 50%),
-    linear-gradient(180deg, rgba(4, 14, 28, 0.78) 0%, rgba(6, 18, 34, 0.9) 100%);
+  /* 透明，让左下 Logo 透到卡片毛玻璃下方被虚化 */
+  background: transparent;
 }
 
 .bracket-strip {

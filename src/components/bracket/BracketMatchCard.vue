@@ -70,10 +70,12 @@ const timeText = computed(() => {
   z-index: 1;
   padding: 8px;
   border-radius: 8px;
-  background: rgba(0, 8, 20, 0.55);
+  background: rgba(4, 12, 28, 0.28);
   border: 1px solid rgba(120, 170, 220, 0.22);
   border-left-width: 3px;
   border-left-color: rgba(120, 170, 220, 0.6);
+  backdrop-filter: blur(10px) saturate(1.15);
+  -webkit-backdrop-filter: blur(10px) saturate(1.15);
 }
 
 .match-card.lane-gold {

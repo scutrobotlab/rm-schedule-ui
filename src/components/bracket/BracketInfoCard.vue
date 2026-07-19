@@ -100,10 +100,12 @@ const showScore = computed(() => props.density !== 'compact')
   z-index: 1;
   padding: 8px;
   border-radius: 8px;
-  background: rgba(0, 8, 20, 0.5);
+  background: rgba(4, 12, 28, 0.24);
   border: 1px solid rgba(120, 170, 220, 0.18);
   border-left-width: 3px;
   border-left-color: rgba(120, 170, 220, 0.45);
+  backdrop-filter: blur(10px) saturate(1.15);
+  -webkit-backdrop-filter: blur(10px) saturate(1.15);
 }
 
 .info-card.lane-gold {
@@ -111,12 +113,12 @@ const showScore = computed(() => props.density !== 'compact')
 }
 
 .info-card.node-promote {
-  background: rgba(40, 28, 8, 0.45);
+  background: rgba(40, 28, 8, 0.24);
   border-color: rgba(220, 170, 90, 0.28);
 }
 
 .info-card.node-eliminate {
-  background: rgba(18, 18, 22, 0.5);
+  background: rgba(18, 18, 22, 0.24);
   border-color: rgba(120, 120, 130, 0.25);
 }
 

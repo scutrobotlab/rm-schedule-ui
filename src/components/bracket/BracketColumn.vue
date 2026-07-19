@@ -58,7 +58,10 @@ function isMatch(item: BracketMatchCard | BracketInfoCard): item is BracketMatch
   letter-spacing: 0.02em;
   text-align: center;
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(8, 18, 36, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(8px) saturate(1.1);
+  -webkit-backdrop-filter: blur(8px) saturate(1.1);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
