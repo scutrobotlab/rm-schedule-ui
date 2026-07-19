@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import championIcon from '@/assets/champion.png'
 
 export interface StageItem {
   label: string
@@ -261,7 +262,13 @@ function barsStyle(stage: StageItem): Record<string, string> {
           class="stage-range__icon-cell"
           :class="{ 'stage-range__icon-cell--active': isActive(index) }"
         >
-          <div v-if="stage.icon === 'trophy'" class="stage-range__trophy" />
+          <div
+            v-if="stage.icon === 'trophy'"
+            class="stage-range__trophy"
+            :style="{ '--trophy-mask': `url(${championIcon})` }"
+            role="img"
+            aria-label="冠军"
+          />
           <div
             v-else
             class="stage-range__bars"
@@ -389,7 +396,7 @@ function barsStyle(stage: StageItem): Record<string, string> {
 .stage-range__icon-cell--active {
   color: var(--icon-active);
   opacity: 1;
-  transform: scale(1.06);
+  transform: scale(1.22);
 }
 
 .stage-range__bars {
@@ -465,13 +472,15 @@ function barsStyle(stage: StageItem): Record<string, string> {
 }
 
 .stage-range__trophy {
-  width: 16px;
-  height: 16px;
+  width: 13px;
+  height: 28px;
   background: currentColor;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 4h10v2h2.2c.7 0 1.3.6 1.3 1.3V9c0 2.3-1.6 4.2-3.8 4.7-.7 1.4-1.9 2.5-3.4 3V19h3v2H7v-2h3v-2.3c-1.5-.5-2.7-1.6-3.4-3C4.4 13.2 2.8 11.3 2.8 9V7.3C2.8 6.6 3.4 6 4.1 6H7V4zm0 4H4.8v1c0 1.4.9 2.6 2.2 3V8zm12.2 0H17v4c1.3-.4 2.2-1.6 2.2-3V8z'/%3E%3C/svg%3E")
-    center / contain no-repeat;
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 4h10v2h2.2c.7 0 1.3.6 1.3 1.3V9c0 2.3-1.6 4.2-3.8 4.7-.7 1.4-1.9 2.5-3.4 3V19h3v2H7v-2h3v-2.3c-1.5-.5-2.7-1.6-3.4-3C4.4 13.2 2.8 11.3 2.8 9V7.3C2.8 6.6 3.4 6 4.1 6H7V4zm0 4H4.8v1c0 1.4.9 2.6 2.2 3V8zm12.2 0H17v4c1.3-.4 2.2-1.6 2.2-3V8z'/%3E%3C/svg%3E")
-    center / contain no-repeat;
+  pointer-events: none;
+  /* 只用奖杯图亮度作遮罩，保留轮廓、去掉照片细节 */
+  mask: var(--trophy-mask) center / contain no-repeat;
+  -webkit-mask: var(--trophy-mask) center / contain no-repeat;
+  mask-mode: luminance;
+  -webkit-mask-source-type: luminance;
 }
 
 .stage-range__selection {
