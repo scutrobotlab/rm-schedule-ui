@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import axios from 'axios'
 import type { CurrentMatchForecastResp, ForecastSide } from '../types/current_match_forecast'
 import {
   fetchCurrentMatchForecast,
@@ -10,6 +11,11 @@ import {
 } from '../utils/current_match_forecast'
 import { StaticCDN } from '../utils/cdn'
 import { forecastAssets } from '@/assets/forecast'
+
+const FORECAST_IMAGE_URL = '/api/current_match_forecast_image'
+const FORECAST_IMAGE_FILENAME = 'current-match-forecast.png'
+/** chromedp 渲染可能较慢，下载超时放宽到 120s */
+const FORECAST_IMAGE_TIMEOUT_MS = 120_000
 
 const { backgroundUrl, schoolRedUrl, schoolBlueUrl } = forecastAssets
 
@@ -44,6 +50,8 @@ const posterRef = ref<HTMLElement | null>(null)
 const status = ref<PosterStatus>('pending')
 const errorMessage = ref('')
 const forecast = ref<CurrentMatchForecastResp | null>(null)
+const downloading = ref(false)
+const downloadError = ref('')
 
 const isRenderMode = computed(() => String(route.query.render ?? '') === '1')
 const hasMatch = computed(() => Boolean(forecast.value?.has_match))
@@ -139,6 +147,43 @@ function barWidth(side: ForecastSide): string {
 function setError(message: string) {
   status.value = 'error'
   errorMessage.value = message
+}
+
+async function downloadPng() {
+  if (downloading.value) return
+  downloading.value = true
+  downloadError.value = ''
+  try {
+    const response = await axios.get<Blob>(FORECAST_IMAGE_URL, {
+      responseType: 'blob',
+      timeout: FORECAST_IMAGE_TIMEOUT_MS,
+    })
+    const contentType = String(response.headers['content-type'] ?? '')
+    if (!contentType.includes('image/png')) {
+      const text = await response.data.text()
+      throw new Error(text || '下载失败：响应不是 PNG')
+    }
+    const objectUrl = URL.createObjectURL(response.data)
+    const anchor = document.createElement('a')
+    anchor.href = objectUrl
+    anchor.download = FORECAST_IMAGE_FILENAME
+    anchor.click()
+    URL.revokeObjectURL(objectUrl)
+  } catch (err) {
+    if (axios.isAxiosError(err)) {
+      if (err.code === 'ECONNABORTED') {
+        downloadError.value = `下载超时（${FORECAST_IMAGE_TIMEOUT_MS / 1000}s）`
+      } else if (err.response?.data instanceof Blob) {
+        downloadError.value = (await err.response.data.text()) || `下载失败（HTTP ${err.response.status}）`
+      } else {
+        downloadError.value = err.message || '下载失败'
+      }
+    } else {
+      downloadError.value = err instanceof Error ? err.message : String(err)
+    }
+  } finally {
+    downloading.value = false
+  }
 }
 
 function wait(ms: number): Promise<void> {
@@ -255,8 +300,23 @@ onMounted(async () => {
 <template>
   <div class="forecast-page" :class="{ 'is-render': isRenderMode }">
     <div v-if="!isRenderMode" class="forecast-chrome">
-      <div class="forecast-chrome__title">王牌预言家 · 海报预览</div>
-      <div class="forecast-chrome__hint">画幅 1920×1080 · 导出 PNG 为 3840×2160 · 状态 {{ status }}</div>
+      <div class="forecast-chrome__row">
+        <div class="forecast-chrome__copy">
+          <div class="forecast-chrome__title">王牌预言家 · 海报预览</div>
+          <div class="forecast-chrome__hint">
+            画幅 1920×1080 · 导出 PNG 为 3840×2160 · 状态 {{ status }}
+          </div>
+        </div>
+        <button
+          type="button"
+          class="forecast-chrome__download"
+          :disabled="downloading"
+          @click="downloadPng"
+        >
+          {{ downloading ? '生成中…' : '下载 PNG' }}
+        </button>
+      </div>
+      <div v-if="downloadError" class="forecast-chrome__error">{{ downloadError }}</div>
     </div>
 
     <div
@@ -369,6 +429,17 @@ onMounted(async () => {
   color: #c5ccd8;
   font-family: 'Noto Sans SC', sans-serif;
 
+  &__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  &__copy {
+    min-width: 0;
+  }
+
   &__title {
     font-size: 18px;
     font-weight: 600;
@@ -379,6 +450,33 @@ onMounted(async () => {
     margin-top: 4px;
     font-size: 13px;
     opacity: 0.8;
+  }
+
+  &__download {
+    flex: 0 0 auto;
+    padding: 10px 18px;
+    border: 1px solid #5ec8e8;
+    border-radius: 6px;
+    background: rgba(94, 200, 232, 0.12);
+    color: #5ec8e8;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+      background: rgba(94, 200, 232, 0.22);
+    }
+
+    &:disabled {
+      opacity: 0.55;
+      cursor: wait;
+    }
+  }
+
+  &__error {
+    margin-top: 8px;
+    color: #ff8f8f;
+    font-size: 13px;
   }
 }
 
