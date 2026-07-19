@@ -133,6 +133,13 @@ export function zonesForPart(node: ZoneNodeJsonData, part: Part): ZoneZoneData[]
   return node.data.zones
 }
 
+/**
+ * 节点标题去掉末尾「第N场」，如「16进8第一轮 第1场」→「16进8第一轮」。
+ */
+export function formatBracketTitle(raw: string | undefined | null): string {
+  return (raw ?? '').replace(/\s*第\d+场\s*$/u, '').trim()
+}
+
 /** 冠军 / 季军统一金色边框；其余对阵无特殊标记 */
 export function detectLane(node: ZoneNodeJsonData): BracketLane {
   const text = `${node.text}${node.data.title ?? ''}`
@@ -295,7 +302,7 @@ function buildMatchCard(args: {
     kind: 'match',
     id: `${node.id}:${zoneIndex}:${orderNumber}`,
     nodeId: node.id,
-    title: node.data.title || node.text,
+    title: formatBracketTitle(node.data.title || node.text),
     orderNumber,
     status: toMatchStatus(match),
     lane,
@@ -354,7 +361,7 @@ function buildInfoCard(args: {
     kind: 'info',
     id: `${node.id}:${zoneIndex}:info`,
     nodeId: node.id,
-    title: node.data.title || node.text,
+    title: formatBracketTitle(node.data.title || node.text),
     nodeType,
     lane,
     y: node.y,

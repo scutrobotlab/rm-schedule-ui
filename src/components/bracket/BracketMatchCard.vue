@@ -70,10 +70,13 @@ function slotMedal(
     :data-node-id="item.nodeId"
   >
     <div
-      v-if="density !== 'compact'"
+      v-if="density !== 'compact' && (item.title || podiumTag || destinationTag)"
       class="card-head"
     >
-      <span class="card-title">{{ item.title || `第${item.orderNumber}场` }}</span>
+      <span
+        v-if="item.title"
+        class="card-title"
+      >{{ item.title }}</span>
       <span
         v-if="podiumTag"
         class="type-tag"

@@ -6,6 +6,7 @@ import {
   buildBracketViewModel,
   detectLane,
   filterBracketByStageRange,
+  formatBracketTitle,
   formatSourceLabel,
   resolveLoser,
   resolveWinner,
@@ -290,6 +291,15 @@ describe('formatSourceLabel', () => {
 
   it('保留无法解析的来源文案，不退回空待定', () => {
     expect(formatSourceLabel('半决赛胜者')).toBe('半决赛胜者')
+  })
+})
+
+describe('formatBracketTitle', () => {
+  it('去掉末尾第N场', () => {
+    expect(formatBracketTitle('16进8第一轮 第1场')).toBe('16进8第一轮')
+    expect(formatBracketTitle('半决赛 第2场')).toBe('半决赛')
+    expect(formatBracketTitle('冠军争夺战')).toBe('冠军争夺战')
+    expect(formatBracketTitle('第3场')).toBe('')
   })
 })
 
