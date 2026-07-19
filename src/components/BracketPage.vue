@@ -3,8 +3,17 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import StageRangeSelector, { type StageItem, type StageRange } from './StageRangeSelector.vue'
 import BracketBoard from './bracket/BracketBoard.vue'
+import AnalyzeTeam from './AnalyzeTeam.vue'
+import AnalyzeMatch from './AnalyzeMatch.vue'
+import SearchPlayer from './SearchPlayer.vue'
+import About from './About.vue'
+import GraphComment from './GraphComment.vue'
+import UpdateAnnouncement from './UpdateAnnouncement.vue'
+import AnniversaryAnnouncement from './AnniversaryAnnouncement.vue'
+import logoUrl from '@/assets/logo.png'
 import { DefaultZoneMap, Part, SeasonList, ZoneMap } from '../constant/zone'
 import { usePromotionStore } from '../stores/promotion'
+import { useAppStore } from '../stores/app'
 import { getStageTeamCounts } from '../utils/stage_teams'
 import { buildBracketViewModel } from '../utils/bracket_adapter'
 import {
@@ -17,7 +26,10 @@ const stageRange = ref<StageRange>({ start: 0, end: 1 })
 
 const route = useRoute()
 const router = useRouter()
+const appStore = useAppStore()
 const promotionStore = usePromotionStore()
+
+const liveMode = computed(() => route.query.live == '1')
 
 /** 原始 zone.parts 下标（与 ?group= 兼容） */
 const selectedGroup = ref(Number(route.query.group ?? -1))
@@ -146,6 +158,16 @@ function updateHref(newSeason: number) {
   window.location.href = `${bracketPath(newSeason, defaultZone)}${queryString ? `?${queryString}` : ''}`
 }
 
+function toggleLiveMode() {
+  const query = { ...route.query }
+  if (liveMode.value) {
+    delete query.live
+  } else {
+    query.live = '1'
+  }
+  router.replace({ path: route.path, query })
+}
+
 watch(zoneId, updateQuery)
 watch(selectedGroup, updateQuery)
 watch(
@@ -175,6 +197,47 @@ function bracketPartHasStartedMatch(bp: BracketPart): boolean {
     return part ? partHasStartedMatch(part) : false
   })
 }
+
+const MenuItems = ref([
+  {
+    title: '分析队伍',
+    icon: 'mdi-google-analytics',
+    disabled: () => !promotionStore.selectedPlayer,
+    action: () => {
+      appStore.analysisDialog = true
+    },
+  },
+  {
+    title: '查看注释',
+    icon: 'mdi-comment-text',
+    disabled: () => false,
+    action: () => {
+      appStore.commentDialog = true
+    },
+  },
+  {
+    title: () => (liveMode.value ? '关闭直播' : '直播模式'),
+    icon: 'mdi-broadcast',
+    disabled: () => false,
+    action: toggleLiveMode,
+  },
+  {
+    title: '更新公告',
+    icon: 'mdi-update',
+    disabled: () => false,
+    action: () => {
+      appStore.updateAnnouncementDialog = true
+    },
+  },
+  {
+    title: '关于软件',
+    icon: 'mdi-information',
+    disabled: () => false,
+    action: () => {
+      appStore.aboutDialog = true
+    },
+  },
+])
 
 watch(
   () => promotionStore.season,
@@ -212,6 +275,8 @@ function onResize() {
 }
 
 onMounted(() => {
+  // 晋级图不自动弹出周年公告，仍可通过左下角 Logo 手动打开
+  appStore.anniversaryAnnouncementDialog = false
   window.addEventListener('resize', onResize)
 })
 
@@ -228,6 +293,12 @@ onBeforeUnmount(() => {
       :src="promotionStore.backgroundImage"
       alt=""
     />
+
+    <SearchPlayer :zone-id="zoneId" />
+    <About />
+    <GraphComment />
+    <UpdateAnnouncement />
+    <AnniversaryAnnouncement />
 
     <div class="container">
       <div class="content">
@@ -257,11 +328,55 @@ onBeforeUnmount(() => {
               @update:model-value="updateQuery"
             />
             <v-spacer />
+
             <div class="top-right-actions text-right ml-4 mr-2 mt-1">
-              <span
-                v-if="viewportWidth >= 800"
-                class="page-label"
-              >晋级图</span>
+              <button
+                class="header-brand"
+                type="button"
+                @click="appStore.aboutDialog = true"
+              >
+                <v-img
+                  class="header-logo"
+                  src="@/assets/rm_schedule_logo.png"
+                  alt="RM Schedule"
+                />
+                <span
+                  v-if="viewportWidth >= 800"
+                  class="header-logo-text"
+                >
+                  RM Schedule
+                </span>
+              </button>
+
+              <v-btn
+                class="mx-1"
+                variant="flat"
+                color="transparent"
+                icon="mdi-magnify"
+                @click="appStore.searchDialog = true"
+              />
+
+              <v-menu>
+                <template #activator="{ props }">
+                  <v-btn
+                    variant="flat"
+                    color="transparent"
+                    icon="mdi-more"
+                    v-bind="props"
+                  />
+                </template>
+                <v-list>
+                  <v-list-item
+                    v-for="(item, index) in MenuItems"
+                    :key="index"
+                    :value="index"
+                    :prepend-icon="item.icon"
+                    :title="typeof item.title === 'function' ? item.title() : item.title"
+                    :disabled="item.disabled()"
+                    @click="item.action"
+                  />
+                </v-list>
+              </v-menu>
             </div>
           </v-tabs>
 
@@ -295,6 +410,17 @@ onBeforeUnmount(() => {
                   />
                 </v-btn>
               </v-slide-group-item>
+
+              <v-spacer />
+
+              <div class="text-right mr-4 live-mode-indicator-container">
+                <span
+                  v-if="liveMode"
+                  class="live-mode-indicator"
+                >
+                  直播模式
+                </span>
+              </div>
             </v-slide-group>
           </v-sheet>
 
@@ -313,6 +439,32 @@ onBeforeUnmount(() => {
           v-if="bracketModel"
           :model="bracketModel"
         />
+
+        <div class="corner-brand">
+          <img
+            class="corner-logo"
+            :src="logoUrl"
+            alt="华南虎"
+            @click="appStore.anniversaryAnnouncementDialog = true"
+          />
+          <p class="corner-copyright">
+            华南理工大学 华南虎
+          </p>
+        </div>
+
+        <v-bottom-sheet v-model="appStore.analysisDialog">
+          <AnalyzeTeam
+            :zone-id="zoneId"
+            :player="promotionStore.selectedPlayer"
+          />
+        </v-bottom-sheet>
+
+        <v-bottom-sheet v-model="appStore.matchAnalysisDialog">
+          <AnalyzeMatch
+            :zone-id="zoneId"
+            :match="promotionStore.selectedMatch"
+          />
+        </v-bottom-sheet>
       </div>
     </div>
   </div>
@@ -331,6 +483,39 @@ onBeforeUnmount(() => {
   /* 纵向随内容增高，禁止裁切对阵列表 */
   overflow-x: hidden;
   overflow-y: visible;
+}
+
+.corner-brand {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  z-index: 10;
+  width: 120px;
+  height: 120px;
+  pointer-events: none;
+}
+
+.corner-logo {
+  position: absolute;
+  bottom: 28px;
+  left: 0;
+  display: block;
+  width: 120px;
+  height: auto;
+  opacity: 0.5;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.corner-copyright {
+  position: absolute;
+  bottom: 16px;
+  left: 8px;
+  margin: 0;
+  opacity: 0.5;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  pointer-events: none;
 }
 
 .background-image {
@@ -361,10 +546,31 @@ onBeforeUnmount(() => {
   align-items: center;
 }
 
-.page-label {
-  opacity: 0.75;
-  letter-spacing: 0.08em;
-  font-size: 0.85rem;
+.header-brand {
+  display: flex;
+  align-items: center;
+  color: inherit;
+  cursor: pointer;
+}
+
+.header-logo {
+  flex: 0 0 auto;
+  width: 48px;
+  height: 40px;
+}
+
+.header-logo-text {
+  margin-left: 8px;
+  white-space: nowrap;
+}
+
+.live-mode-indicator-container {
+  display: flex;
+  align-items: center;
+}
+
+.live-mode-indicator {
+  white-space: nowrap;
 }
 
 .glass-sheet {
