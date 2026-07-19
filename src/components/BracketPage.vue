@@ -435,10 +435,12 @@ onBeforeUnmount(() => {
           </div>
         </div>
 
-        <BracketBoard
-          v-if="bracketModel"
-          :model="bracketModel"
-        />
+        <div class="bracket-scroll">
+          <BracketBoard
+            v-if="bracketModel"
+            :model="bracketModel"
+          />
+        </div>
 
         <div class="corner-brand">
           <img
@@ -472,17 +474,22 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .bracket-page {
+  position: fixed;
+  inset: 0;
   color: #e8eef5;
-  min-height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .container {
   position: relative;
   width: 100%;
-  min-height: 100vh;
-  /* 纵向随内容增高，禁止裁切对阵列表 */
-  overflow-x: hidden;
-  overflow-y: visible;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .corner-brand {
@@ -533,7 +540,10 @@ onBeforeUnmount(() => {
   z-index: 3;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  flex: 1 1 auto;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .row {
@@ -581,9 +591,19 @@ onBeforeUnmount(() => {
 
 .floating-container {
   position: relative;
-  z-index: 4;
+  z-index: 5;
   width: 100%;
   flex: 0 0 auto;
+}
+
+.bracket-scroll {
+  position: relative;
+  z-index: 3;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .stage-range-wrap {

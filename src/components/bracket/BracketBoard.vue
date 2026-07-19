@@ -44,9 +44,8 @@ const layoutKey = computed(() => {
 .bracket-board {
   position: relative;
   width: 100%;
-  flex: 1 1 auto;
+  min-height: 100%;
   padding: 12px 10px 24px;
-  /* 横向可裁切；纵向永不截断，内容随页面自然增高 */
   overflow-x: hidden;
   overflow-y: visible;
   background:
