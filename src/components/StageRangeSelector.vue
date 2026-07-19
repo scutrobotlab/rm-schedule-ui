@@ -138,11 +138,35 @@ function labelLines(label: string): string[] {
   return [label.slice(0, mid), label.slice(mid)]
 }
 
-function emitRange(start: number, end: number) {
-  if (start === props.modelValue.start && end === props.modelValue.end) return
+function emitRange(start: number, end: number, force = false) {
+  if (
+    !force &&
+    start === props.modelValue.start &&
+    end === props.modelValue.end
+  ) {
+    return
+  }
   const value = { start, end }
   emit('update:modelValue', value)
   emit('change', value)
+}
+
+/** 缩放松手：左右边缘就近取整，保证整数列宽（不会停在 2.5 列） */
+function snapResizeEdges(
+  left: number,
+  right: number,
+  mode: 'start' | 'end',
+): StageRangeEdges {
+  const n = stageCount.value
+  let start = Math.round(left)
+  let endExclusive = Math.round(right)
+  if (endExclusive <= start) {
+    if (mode === 'start') start = endExclusive - 1
+    else endExclusive = start + 1
+  }
+  start = clamp(start, 0, n - 1)
+  endExclusive = clamp(endExclusive, start + 1, n)
+  return { left: start, right: endExclusive }
 }
 
 /** 点击阶段：保持当前窗口宽度，以该阶段为起点（末端贴边时左移） */
@@ -263,10 +287,21 @@ function onPointerUp(e: PointerEvent) {
     return
   }
 
-  const { start, end } = rangeFromEdges(visualLeft.value, visualRight.value)
-  visualLeft.value = start
-  visualRight.value = end + 1
-  emitRange(start, end)
+  let nextLeft: number
+  let nextRight: number
+  if (mode === 'start' || mode === 'end') {
+    const snapped = snapResizeEdges(visualLeft.value, visualRight.value, mode)
+    nextLeft = snapped.left
+    nextRight = snapped.right
+  } else {
+    const { start, end } = rangeFromEdges(visualLeft.value, visualRight.value)
+    nextLeft = start
+    nextRight = end + 1
+  }
+  visualLeft.value = nextLeft
+  visualRight.value = nextRight
+  // 强制回写：即使整数范围未变，也要让父级从 2.5 列等分数窗口吸附回去
+  emitRange(nextLeft, nextRight - 1, true)
   didDrag.value = false
 }
 

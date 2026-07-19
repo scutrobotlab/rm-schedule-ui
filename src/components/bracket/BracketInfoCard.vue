@@ -4,10 +4,14 @@ import type { BracketInfoCard as InfoCard } from '../../types/bracket'
 import type { BracketDensity } from '../../utils/bracket_density'
 import BracketTeamRow from './BracketTeamRow.vue'
 
-const props = defineProps<{
-  item: InfoCard
-  density: BracketDensity
-}>()
+const props = withDefaults(
+  defineProps<{
+    item: InfoCard
+    density: BracketDensity
+    showTeamName?: boolean
+  }>(),
+  { showTeamName: true },
+)
 
 const nodeTypeLabel: Record<string, string> = {
   promote: '晋级',
@@ -24,7 +28,6 @@ const showAsMatches = computed(
 const showMatchCount = computed(
   () => props.density !== 'compact' && props.item.matches.length > 1,
 )
-const showScore = computed(() => props.density !== 'compact')
 </script>
 
 <template>
@@ -60,13 +63,15 @@ const showScore = computed(() => props.density !== 'compact')
           :team="m.slots[0]"
           :score="m.redWinGames"
           :density="density"
-          :show-score="showScore"
+          :show-score="true"
+          :show-name="showTeamName"
         />
         <BracketTeamRow
           :team="m.slots[1]"
           :score="m.blueWinGames"
           :density="density"
-          :show-score="showScore"
+          :show-score="true"
+          :show-name="showTeamName"
         />
       </div>
     </div>
@@ -82,6 +87,7 @@ const showScore = computed(() => props.density !== 'compact')
         :score="null"
         :density="density"
         :show-score="false"
+        :show-name="showTeamName"
       />
     </div>
 

@@ -4,12 +4,17 @@ import type { BracketDensity } from '../../utils/bracket_density'
 import { StaticCDN } from '../../utils/cdn'
 import schoolGrey from '@/assets/school_grey.png'
 
-defineProps<{
-  team: BracketTeamSlot
-  score: number | null
-  density: BracketDensity
-  showScore: boolean
-}>()
+withDefaults(
+  defineProps<{
+    team: BracketTeamSlot
+    score: number | null
+    density: BracketDensity
+    showScore: boolean
+    /** ≥6 列时为 false */
+    showName?: boolean
+  }>(),
+  { showName: true },
+)
 
 function logoSrc(url: string | undefined): string | undefined {
   if (!url) return undefined
@@ -54,9 +59,15 @@ function logoSrc(url: string | undefined): string | undefined {
     />
 
     <span
+      v-if="showName"
       class="team-name"
       :title="team.sourceLabel || team.displayName"
     >{{ team.displayName || '—' }}</span>
+    <span
+      v-else
+      class="team-name-spacer"
+      :title="team.sourceLabel || team.displayName"
+    />
 
     <span
       v-if="showScore && score != null"
@@ -137,11 +148,22 @@ function logoSrc(url: string | undefined): string | undefined {
   text-overflow: ellipsis;
 }
 
+.team-name-spacer {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
 .team-score {
   flex: 0 0 auto;
+  flex-shrink: 0;
+  min-width: 1.1em;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   font-size: 0.9rem;
+  line-height: 1;
+  text-align: right;
+  /* 缩放/紧凑密度下也保证比分完整可读，不被挤掉 */
+  overflow: visible;
 }
 
 .density-normal .team-logo {
@@ -157,6 +179,10 @@ function logoSrc(url: string | undefined): string | undefined {
 
 .density-normal .team-name {
   font-size: 0.76rem;
+}
+
+.density-normal .team-score {
+  font-size: 0.88rem;
 }
 
 .density-normal .source-badge {
@@ -185,7 +211,8 @@ function logoSrc(url: string | undefined): string | undefined {
 }
 
 .density-compact .team-score {
-  font-size: 0.72rem;
+  /* 紧凑时仍保持可读字号，保证比分完整显示 */
+  font-size: 0.86rem;
 }
 
 .density-compact .source-badge {

@@ -5,10 +5,14 @@ import type { BracketMatchCard as MatchCard } from '../../types/bracket'
 import type { BracketDensity } from '../../utils/bracket_density'
 import BracketTeamRow from './BracketTeamRow.vue'
 
-const props = defineProps<{
-  item: MatchCard
-  density: BracketDensity
-}>()
+const props = withDefaults(
+  defineProps<{
+    item: MatchCard
+    density: BracketDensity
+    showTeamName?: boolean
+  }>(),
+  { showTeamName: true },
+)
 
 const statusLabel: Record<string, string> = {
   STARTED: '进行中',
@@ -44,12 +48,14 @@ const timeText = computed(() => {
         :score="item.redWinGames"
         :density="density"
         :show-score="true"
+        :show-name="showTeamName"
       />
       <BracketTeamRow
         :team="item.slots[1]"
         :score="item.blueWinGames"
         :density="density"
         :show-score="true"
+        :show-name="showTeamName"
       />
     </div>
 

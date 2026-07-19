@@ -8,6 +8,8 @@ import BracketInfoCardView from './BracketInfoCard.vue'
 const props = defineProps<{
   column: BracketColumn
   density: BracketDensity
+  /** ≥6 列时为 false，隐藏校名 */
+  showTeamName?: boolean
   /** 淘汰赛树形布局：节点 offsetTop；null 表示普通堆叠 */
   treeTops?: Record<string, number> | null
   treeHeight?: number | null
@@ -57,11 +59,13 @@ function isMatch(item: BracketMatchCard | BracketInfoCard): item is BracketMatch
           v-if="isMatch(item)"
           :item="item"
           :density="density"
+          :show-team-name="showTeamName !== false"
         />
         <BracketInfoCardView
           v-else
           :item="item"
           :density="density"
+          :show-team-name="showTeamName !== false"
         />
       </div>
     </div>

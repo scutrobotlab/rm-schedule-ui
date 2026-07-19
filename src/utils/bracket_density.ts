@@ -9,3 +9,8 @@ export function resolveBracketDensity(columnCount: number): BracketDensity {
   if (columnCount <= 4) return 'normal'
   return 'compact'
 }
+
+/** ≥6 列时隐藏校名，仅保留校徽与比分 */
+export function shouldShowBracketTeamName(columnCount: number): boolean {
+  return columnCount < 6
+}

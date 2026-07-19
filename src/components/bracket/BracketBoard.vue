@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { BracketViewModel } from '../../types/bracket'
-import { resolveBracketDensity } from '../../utils/bracket_density'
+import {
+  resolveBracketDensity,
+  shouldShowBracketTeamName,
+} from '../../utils/bracket_density'
 import { bracketColumnGap } from '../../utils/bracket_column_gap'
 import { computeKnockoutLayout } from '../../utils/bracket_tree_layout'
 import BracketColumn from './BracketColumn.vue'
@@ -23,6 +26,7 @@ const spanForDensity = computed(() => {
   return Math.max(1, Math.round(span))
 })
 const density = computed(() => resolveBracketDensity(spanForDensity.value))
+const showTeamName = computed(() => shouldShowBracketTeamName(spanForDensity.value))
 const isKnockout = computed(() => props.model.partType === 'knockout')
 
 const layoutKey = computed(() => {
@@ -128,6 +132,7 @@ watch(layoutKey, () => scheduleLayout())
         :key="`${column.index}-${column.x}`"
         :column="column"
         :density="density"
+        :show-team-name="showTeamName"
         :tree-tops="isKnockout ? nodeTops : null"
         :tree-height="isKnockout ? columnHeights[column.index] : null"
       />
