@@ -491,7 +491,9 @@ function barsStyle(stage: StageItem): Record<string, string> {
   width: 100%;
   max-width: 720px;
   margin: 0 auto;
-  padding: 0 12px;
+  /* 左右留白，降低全面屏边缘滑动返回误触 */
+  padding-left: max(24px, env(safe-area-inset-left, 0px));
+  padding-right: max(24px, env(safe-area-inset-right, 0px));
   user-select: none;
   touch-action: none;
 }
@@ -776,7 +778,8 @@ function barsStyle(stage: StageItem): Record<string, string> {
 @media (max-width: 600px) {
   .stage-range {
     max-width: 100%;
-    padding: 0 8px;
+    padding-left: max(28px, env(safe-area-inset-left, 0px));
+    padding-right: max(28px, env(safe-area-inset-right, 0px));
   }
 
   .stage-range__track {
