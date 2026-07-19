@@ -312,13 +312,18 @@ describe('resolveWinner / resolveLoser', () => {
 })
 
 describe('detectLane', () => {
-  it('识别胜者组 / 败者组 / 季军泳道', () => {
-    expect(detectLane(doubleElimJson.nodes[0])).toBe('losers')
-    expect(detectLane(singleElimJson.nodes[3])).toBe('third')
+  it('冠军与季军统一金色标记；其余为普通对阵', () => {
+    expect(detectLane(doubleElimJson.nodes[0])).toBe('main')
+    expect(detectLane(singleElimJson.nodes[2])).toBe('gold')
+    expect(detectLane(singleElimJson.nodes[3])).toBe('gold')
     expect(detectLane({
       ...singleElimJson.nodes[0],
-      text: '16进8胜者组 第1场',
-    })).toBe('winners')
+      text: '冠军争夺战',
+    })).toBe('gold')
+    expect(detectLane({
+      ...singleElimJson.nodes[0],
+      text: '半决赛 第1场',
+    })).toBe('main')
   })
 })
 
@@ -370,7 +375,7 @@ describe('buildBracketViewModel — 单败 + 季军', () => {
     const third = model.columns[1].items.find((i) => i.nodeId === '#4')
     expect(third?.kind).toBe('match')
     if (third?.kind === 'match') {
-      expect(third.lane).toBe('third')
+      expect(third.lane).toBe('gold')
       expect(third.slots[0].displayName).toBe('半决赛败者')
     }
   })
@@ -477,14 +482,14 @@ describe('buildBracketViewModel — 瑞士轮 / 分组', () => {
 })
 
 describe('buildBracketViewModel — 双败败者组', () => {
-  it('标记 losers 泳道并保留阶段连线', () => {
+  it('败者组按普通对阵处理并保留阶段连线', () => {
     const model = buildBracketViewModel({
       zoneId: 1,
       part: partOf(doubleElimJson),
       getMatchByOrder: () => undefined,
     })
-    expect(model.columns[0].items[0].lane).toBe('losers')
-    expect(model.columns[1].items[0].lane).toBe('losers')
+    expect(model.columns[0].items[0].lane).toBe('main')
+    expect(model.columns[1].items[0].lane).toBe('main')
     expect(model.connections).toEqual([{ fromNodeId: '#1', toNodeId: '#2' }])
   })
 })

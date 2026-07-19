@@ -127,12 +127,11 @@ export function zonesForPart(node: ZoneNodeJsonData, part: Part): ZoneZoneData[]
   return node.data.zones
 }
 
-/** 双败泳道 / 季军标记 */
+/** 冠军 / 季军统一金色边框；其余对阵无特殊标记 */
 export function detectLane(node: ZoneNodeJsonData): BracketLane {
   const text = `${node.text}${node.data.title ?? ''}`
-  if (text.includes('季军')) return 'third'
-  if (text.includes('败者组')) return 'losers'
-  if (text.includes('胜者组')) return 'winners'
+  if (text.includes('季军') || text.includes('冠军')) return 'gold'
+  if (text.includes('决赛') && !text.includes('半决赛')) return 'gold'
   return 'main'
 }
 

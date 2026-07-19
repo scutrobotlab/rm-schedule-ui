@@ -16,18 +16,11 @@ const nodeTypeLabel: Record<string, string> = {
   matchGroup: '对阵',
 }
 
-const laneLabel: Record<string, string> = {
-  winners: '胜者组',
-  losers: '败者组',
-  third: '季军',
-}
-
 /** 多场对阵按场次完整展示；纵向席位/场次一律不截断 */
 const showAsMatches = computed(
   () => props.item.nodeType === 'matchGroup' && props.item.matches.length > 0,
 )
 
-const showLane = computed(() => props.item.lane !== 'main' && props.density !== 'compact')
 const showMatchCount = computed(
   () => props.density !== 'compact' && props.item.matches.length > 1,
 )
@@ -46,10 +39,6 @@ const showScore = computed(() => props.density !== 'compact')
         v-if="density !== 'compact'"
         class="type-tag"
       >{{ nodeTypeLabel[item.nodeType] || '说明' }}</span>
-      <span
-        v-if="showLane"
-        class="lane-tag"
-      >{{ laneLabel[item.lane] }}</span>
     </div>
 
     <div
@@ -117,15 +106,7 @@ const showScore = computed(() => props.density !== 'compact')
   border-left-color: rgba(120, 170, 220, 0.45);
 }
 
-.info-card.lane-winners {
-  border-left-color: rgba(90, 190, 140, 0.85);
-}
-
-.info-card.lane-losers {
-  border-left-color: rgba(210, 110, 110, 0.85);
-}
-
-.info-card.lane-third {
+.info-card.lane-gold {
   border-left-color: rgba(220, 180, 90, 0.9);
 }
 
@@ -171,8 +152,7 @@ const showScore = computed(() => props.density !== 'compact')
   text-overflow: ellipsis;
 }
 
-.type-tag,
-.lane-tag {
+.type-tag {
   flex: 0 0 auto;
   font-size: 0.58rem;
   padding: 1px 5px;
@@ -180,18 +160,6 @@ const showScore = computed(() => props.density !== 'compact')
   letter-spacing: 0.04em;
   background: rgba(255, 255, 255, 0.08);
   opacity: 0.8;
-}
-
-.lane-winners .lane-tag {
-  color: #8fd9b0;
-}
-
-.lane-losers .lane-tag {
-  color: #f0a0a0;
-}
-
-.lane-third .lane-tag {
-  color: #f0d48a;
 }
 
 .match-list,

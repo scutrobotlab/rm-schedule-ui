@@ -1,7 +1,7 @@
 import type { GroupType } from './zone'
 
 /** 双败 / 季军等泳道标记 */
-export type BracketLane = 'main' | 'winners' | 'losers' | 'third'
+export type BracketLane = 'main' | 'gold'
 
 export type BracketMatchStatus = 'UNKNOWN' | 'PENDING' | 'STARTED' | 'DONE'
 

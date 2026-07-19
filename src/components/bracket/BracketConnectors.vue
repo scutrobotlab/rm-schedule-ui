@@ -21,9 +21,7 @@ let resizeObserver: ResizeObserver | null = null
 let rafId = 0
 
 function laneOfNode(el: HTMLElement): BracketLane {
-  if (el.classList.contains('lane-winners')) return 'winners'
-  if (el.classList.contains('lane-losers')) return 'losers'
-  if (el.classList.contains('lane-third')) return 'third'
+  if (el.classList.contains('lane-gold')) return 'gold'
   return 'main'
 }
 
@@ -145,15 +143,7 @@ watch(
   stroke-linejoin: round;
 }
 
-.connector.lane-winners {
-  stroke: rgba(90, 190, 140, 0.55);
-}
-
-.connector.lane-losers {
-  stroke: rgba(210, 110, 110, 0.55);
-}
-
-.connector.lane-third {
+.connector.lane-gold {
   stroke: rgba(220, 180, 90, 0.6);
 }
 

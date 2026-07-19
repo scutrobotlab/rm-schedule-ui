@@ -10,12 +10,6 @@ const props = defineProps<{
   density: BracketDensity
 }>()
 
-const laneLabel: Record<string, string> = {
-  winners: '胜者组',
-  losers: '败者组',
-  third: '季军',
-}
-
 const statusLabel: Record<string, string> = {
   STARTED: '进行中',
   DONE: '已结束',
@@ -24,7 +18,6 @@ const statusLabel: Record<string, string> = {
 }
 
 const showMeta = computed(() => props.density === 'comfortable')
-const showLane = computed(() => props.item.lane !== 'main' && props.density !== 'compact')
 const timeText = computed(() => {
   if (!props.item.planStartedAt) return ''
   const m = moment(props.item.planStartedAt)
@@ -43,10 +36,6 @@ const timeText = computed(() => {
       class="card-head"
     >
       <span class="card-title">{{ item.title || `第${item.orderNumber}场` }}</span>
-      <span
-        v-if="showLane"
-        class="lane-tag"
-      >{{ laneLabel[item.lane] }}</span>
     </div>
 
     <div class="slot-stack">
@@ -87,15 +76,7 @@ const timeText = computed(() => {
   border-left-color: rgba(120, 170, 220, 0.6);
 }
 
-.match-card.lane-winners {
-  border-left-color: rgba(90, 190, 140, 0.9);
-}
-
-.match-card.lane-losers {
-  border-left-color: rgba(210, 110, 110, 0.9);
-}
-
-.match-card.lane-third {
+.match-card.lane-gold {
   border-left-color: rgba(220, 180, 90, 0.95);
 }
 
@@ -129,28 +110,6 @@ const timeText = computed(() => {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.lane-tag {
-  flex: 0 0 auto;
-  font-size: 0.58rem;
-  padding: 1px 5px;
-  border-radius: 999px;
-  letter-spacing: 0.04em;
-  background: rgba(255, 255, 255, 0.08);
-  opacity: 0.8;
-}
-
-.lane-winners .lane-tag {
-  color: #8fd9b0;
-}
-
-.lane-losers .lane-tag {
-  color: #f0a0a0;
-}
-
-.lane-third .lane-tag {
-  color: #f0d48a;
 }
 
 .card-meta {
