@@ -5,19 +5,13 @@ import type { CurrentMatchForecastResp, ForecastSide } from '../types/current_ma
 import {
   fetchCurrentMatchForecast,
   formatMatchMeta,
+  formatMatchMetaEmpty,
   hasValidSupportRate,
 } from '../utils/current_match_forecast'
 import { StaticCDN } from '../utils/cdn'
 import { forecastAssets } from '@/assets/forecast'
 
-const {
-  backgroundUrl,
-  headerUrl,
-  footerBannerUrl,
-  qrCodeUrl,
-  schoolRedUrl,
-  schoolBlueUrl,
-} = forecastAssets
+const { backgroundUrl, schoolRedUrl, schoolBlueUrl } = forecastAssets
 
 const READY_TIMEOUT_MS = 12_000
 
@@ -56,7 +50,7 @@ const hasMatch = computed(() => Boolean(forecast.value?.has_match))
 
 const matchMeta = computed(() => {
   if (!forecast.value) return '加载中…'
-  if (!forecast.value.has_match) return '<< 暂无进行中比赛'
+  if (!forecast.value.has_match) return formatMatchMetaEmpty(forecast.value.zone_id)
   return formatMatchMeta(forecast.value)
 })
 
@@ -273,7 +267,6 @@ onMounted(async () => {
       :data-error="errorMessage || undefined"
     >
       <img class="forecast-poster__bg" :src="backgroundUrl" alt="" draggable="false" />
-      <img class="forecast-poster__header" :src="headerUrl" alt="" draggable="false" />
 
       <div class="forecast-poster__meta">
         <div
@@ -345,11 +338,6 @@ onMounted(async () => {
         </div>
       </div>
 
-      <div class="forecast-poster__footer">
-        <img class="forecast-poster__footer-banner" :src="footerBannerUrl" alt="" draggable="false" />
-        <img class="forecast-poster__qr" :src="qrCodeUrl" alt="" draggable="false" />
-      </div>
-
       <div v-if="status === 'error'" class="forecast-poster__error">{{ errorMessage }}</div>
     </div>
   </div>
@@ -406,9 +394,6 @@ onMounted(async () => {
   transform-origin: top left;
 
   &__bg,
-  &__header,
-  &__footer-banner,
-  &__qr,
   &__logo {
     display: block;
     user-select: none;
@@ -423,21 +408,11 @@ onMounted(async () => {
     object-fit: cover;
   }
 
-  &__header {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 1920px;
-    height: 220px;
-    object-fit: fill;
-    pointer-events: none;
-  }
-
   &__meta {
     position: absolute;
     top: 200px;
     left: 72px;
-    right: 72px;
+    right: 140px;
     z-index: 2;
     text-align: right;
   }
@@ -462,9 +437,10 @@ onMounted(async () => {
     color: #d7dde8;
     font-size: 28px;
     font-weight: 500;
+    opacity: 0.8;
 
     &--empty {
-      opacity: 0.75;
+      opacity: 0.4;
     }
   }
 
@@ -490,36 +466,6 @@ onMounted(async () => {
     margin-bottom: -16px;
     width: 100%;
     text-align: center;
-  }
-
-  &__footer {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 220px;
-    z-index: 2;
-  }
-
-  &__footer-banner {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: fill;
-  }
-
-  &__qr {
-    position: absolute;
-    right: 72px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 168px;
-    height: 168px;
-    border-radius: 50%;
-    object-fit: cover;
-    background: #fff;
-    box-shadow: 0 0 0 6px #fff;
   }
 
   &__error {

@@ -1,5 +1,6 @@
 import axios, { type AxiosResponse } from 'axios'
 import type { CurrentMatchForecastResp } from '../types/current_match_forecast'
+import { SeasonList, ZoneMap } from '../constant/zone'
 
 /** 竞猜接口超时；配合海报 12s 资源上限，避免拖到后端全局渲染超时。 */
 export const FORECAST_API_TIMEOUT_MS = 10_000
@@ -59,16 +60,36 @@ function normalizeSide(side: CurrentMatchForecastResp['red_side']) {
   }
 }
 
-/** 拼装页眉比赛元信息；slug 为 null 时省略阶段文字。 */
-export function formatMatchMeta(data: Pick<CurrentMatchForecastResp, 'zone_name' | 'slug' | 'order_number'>): string {
-  const zone = (data.zone_name || '').trim()
+/** 由 zone_id 反查赛季；未知时取 SeasonList 最新一年。 */
+export function resolveForecastSeason(zoneId?: number): number {
+  if (Number.isFinite(zoneId) && zoneId! > 0) {
+    for (const season of SeasonList) {
+      const zones = ZoneMap[season]
+      if (zones?.some((z) => z.id === zoneId)) return season
+    }
+  }
+  return SeasonList[SeasonList.length - 1] ?? new Date().getFullYear()
+}
+
+/**
+ * 拼装页眉比赛元信息。
+ * 格式：`<< RMUC {赛季} {赛区} ｜ {阶段} 第{N}场`；slug 为 null 时省略阶段文字。
+ */
+export function formatMatchMeta(
+  data: Pick<CurrentMatchForecastResp, 'zone_name' | 'slug' | 'order_number' | 'zone_id'>,
+): string {
+  const season = resolveForecastSeason(data.zone_id)
+  const zone = (data.zone_name || '').trim() || '未知赛区'
   const stage = data.slug
   const order = Number.isFinite(data.order_number) ? data.order_number : 0
-  const parts: string[] = []
-  if (zone) parts.push(zone)
-  if (stage) parts.push(`${stage} 第${order}场`)
-  else parts.push(`第${order}场`)
-  return `<< ${parts.join(' | ')}`
+  const tail = stage ? `${stage} 第${order}场` : `第${order}场`
+  return `<< RMUC ${season} ${zone} ｜ ${tail}`
+}
+
+/** 无进行中比赛时的元信息占位。 */
+export function formatMatchMetaEmpty(zoneId?: number): string {
+  const season = resolveForecastSeason(zoneId)
+  return `<< RMUC ${season} ｜ 暂无进行中比赛`
 }
 
 /** 支持率是否可用于展示（不可用时不得显示 0%）。 */
