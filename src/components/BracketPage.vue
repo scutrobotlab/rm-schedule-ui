@@ -853,11 +853,16 @@ onBeforeUnmount(() => {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
+  overscroll-behavior-y: none;
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(40, 90, 140, 0.22) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 100%, rgba(30, 70, 110, 0.18) 0%, transparent 50%),
+    linear-gradient(180deg, rgba(4, 14, 28, 0.78) 0%, rgba(6, 18, 34, 0.9) 100%);
 }
 
 .bracket-strip {
   position: relative;
-  min-height: 100%;
+  height: fit-content;
   will-change: transform;
   transform-origin: left top;
 }

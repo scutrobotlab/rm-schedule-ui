@@ -34,8 +34,9 @@ function measure() {
   }
 
   const boardRect = board.getBoundingClientRect()
-  const width = Math.max(board.scrollWidth, board.clientWidth)
-  const height = Math.max(board.scrollHeight, board.clientHeight)
+  // 用边框盒尺寸做坐标系，避免 scrollHeight / 绝对定位 SVG 互相撑高可滚动区域
+  const width = Math.max(1, board.clientWidth)
+  const height = Math.max(1, board.clientHeight)
   svg.setAttribute('viewBox', `0 0 ${width} ${height}`)
   svg.setAttribute('width', String(width))
   svg.setAttribute('height', String(height))
@@ -54,10 +55,10 @@ function measure() {
 
     const from = fromEl.getBoundingClientRect()
     const to = toEl.getBoundingClientRect()
-    const x1 = from.right - boardRect.left + board.scrollLeft
-    const y1 = from.top + from.height / 2 - boardRect.top + board.scrollTop
-    const x2 = to.left - boardRect.left + board.scrollLeft
-    const y2 = to.top + to.height / 2 - boardRect.top + board.scrollTop
+    const x1 = from.right - boardRect.left
+    const y1 = from.top + from.height / 2 - boardRect.top
+    const x2 = to.left - boardRect.left
+    const y2 = to.top + to.height / 2 - boardRect.top
 
     if (!Number.isFinite(x1) || !Number.isFinite(y1) || !Number.isFinite(x2) || !Number.isFinite(y2)) {
       continue
@@ -130,10 +131,13 @@ watch(
 <style scoped>
 .bracket-connectors {
   position: absolute;
-  inset: 0;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
   z-index: 0;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .connector {

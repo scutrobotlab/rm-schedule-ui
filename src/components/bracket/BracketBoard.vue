@@ -50,13 +50,10 @@ const layoutKey = computed(() => {
 .bracket-board {
   position: relative;
   width: 100%;
-  min-height: 100%;
-  padding: 12px 10px 24px;
-  overflow: visible;
-  background:
-    radial-gradient(ellipse at 20% 0%, rgba(40, 90, 140, 0.22) 0%, transparent 55%),
-    radial-gradient(ellipse at 80% 100%, rgba(30, 70, 110, 0.18) 0%, transparent 50%),
-    linear-gradient(180deg, rgba(4, 14, 28, 0.78) 0%, rgba(6, 18, 34, 0.9) 100%);
+  height: fit-content;
+  padding: 12px 10px 16px;
+  overflow: hidden;
+  background: transparent;
 }
 
 .bracket-grid {
@@ -79,7 +76,7 @@ const layoutKey = computed(() => {
 
 @media (min-width: 900px) {
   .bracket-board {
-    padding: 16px 20px 32px;
+    padding: 16px 20px 20px;
   }
 
   .density-comfortable .bracket-grid {
