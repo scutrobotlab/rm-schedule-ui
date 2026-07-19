@@ -4,8 +4,8 @@ import championIcon from '@/assets/champion.png'
 
 export interface StageItem {
   label: string
-  /** 轨道内缩略图：横线条数 / 全国赛奖杯图 / 普通决赛表情 */
-  icon: number | 'trophy' | 'trophyEmoji'
+  /** 轨道内缩略图：横线条数（本轮比赛数） / 结果旗 / 全国赛奖杯图 / 普通决赛表情 */
+  icon: number | 'result' | 'trophy' | 'trophyEmoji'
   /** 粗横条（如小组赛） */
   thick?: boolean
   /** 双列排布（如 32 强） */
@@ -423,6 +423,12 @@ function barsStyle(stage: StageItem): Record<string, string> {
             role="img"
             aria-label="冠军"
           >🏆</span>
+          <span
+            v-else-if="stage.icon === 'result'"
+            class="stage-range__result"
+            role="img"
+            aria-label="结果"
+          >🏁</span>
           <div
             v-else
             class="stage-range__bars"
@@ -684,6 +690,14 @@ function barsStyle(stage: StageItem): Record<string, string> {
   font-size: 1.1rem;
   line-height: 1;
   pointer-events: none;
+}
+
+.stage-range__result {
+  font-size: 0.95rem;
+  line-height: 1;
+  pointer-events: none;
+  filter: grayscale(0.15);
+  opacity: 0.95;
 }
 
 .stage-range__selection {

@@ -5,7 +5,7 @@ import {
 } from '../constant/group_zone'
 import { ZoneMap, type Part } from '../constant/zone'
 import { resolveBracketParts } from './bracket_part_merge'
-import { getStageTeamCounts } from './stage_teams'
+import { getStageMatchCounts, getStageTeamCounts } from './stage_teams'
 
 function partOf(jsonData: Part['jsonData'], overrides: Partial<Part> = {}): Part {
   return {
@@ -54,6 +54,30 @@ describe('getStageTeamCounts', () => {
       group: 'Knockout',
     })
     const counts = getStageTeamCounts(part.jsonData, part)
+    expect(counts[0]).toBe(8)
+    expect(counts[1]).toBe(4)
+    expect(counts[2]).toBe(2)
+  })
+})
+
+describe('getStageMatchCounts', () => {
+  it('合并 A 组：横线按本轮比赛数', () => {
+    const zone = ZoneMap[2026]?.find((z) => z.name === '南部赛区')
+    expect(zone).toBeTruthy()
+    const aGroup = resolveBracketParts(zone!).find((bp) => bp.part.name === 'A组')!.part
+
+    const counts = getStageMatchCounts(aGroup.jsonData, aGroup)
+    // 8 / 8 / 8 / 6 / 3 / 0（晋级列无对阵）
+    expect(counts).toEqual([8, 8, 8, 6, 3, 0])
+  })
+
+  it('淘汰赛：场数逐轮减半', () => {
+    const part = partOf(GetGroupZoneKnockoutJsonData(614), {
+      name: '淘汰赛',
+      type: 'knockout',
+      group: 'Knockout',
+    })
+    const counts = getStageMatchCounts(part.jsonData, part)
     expect(counts[0]).toBe(8)
     expect(counts[1]).toBe(4)
     expect(counts[2]).toBe(2)

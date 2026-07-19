@@ -211,3 +211,22 @@ export function getStageTeamCounts(jsonData: ZoneJsonData, part: Part): number[]
   while (counts.length < stageCount) counts.push(1)
   return counts
 }
+
+/**
+ * 各阶段本轮比赛场数（与 stages 从左到右对齐）。
+ * 无对阵的晋级/结果列为 0。
+ */
+export function getStageMatchCounts(jsonData: ZoneJsonData, part: Part): number[] {
+  const stageCount = jsonData.stages?.length ?? 0
+  if (stageCount === 0) return []
+
+  const { cols } = buildColumnStats(jsonData, part)
+  // matchWinners 即 zone.matches.length 累加，等于本列比赛数
+  const counts = cols.map((col) => col.matchWinners)
+
+  if (counts.length === stageCount) return counts
+  if (counts.length > stageCount) return counts.slice(0, stageCount)
+
+  while (counts.length < stageCount) counts.push(0)
+  return counts
+}

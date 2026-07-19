@@ -18,7 +18,7 @@ import logoUrl from '@/assets/logo.png'
 import { DefaultZoneMap, Part, SeasonList, ZoneMap } from '../constant/zone'
 import { usePromotionStore } from '../stores/promotion'
 import { useAppStore } from '../stores/app'
-import { getStageTeamCounts } from '../utils/stage_teams'
+import { getStageMatchCounts } from '../utils/stage_teams'
 import { buildBracketViewModel } from '../utils/bracket_adapter'
 import {
   resolveBracketParts,
@@ -355,15 +355,15 @@ const displayStages = computed(() => {
   const part = currentPart.value
   if (!part) return []
   const labels = part.jsonData.stages ?? []
-  const teamCounts = getStageTeamCounts(part.jsonData, part)
+  const matchCounts = getStageMatchCounts(part.jsonData, part)
   return labels.map((label, index, list) =>
-    toStageItem(label, index, list.length, teamCounts[index] ?? 0),
+    toStageItem(label, index, list.length, matchCounts[index] ?? 0),
   )
 })
 
 let needsRouteNormalize = false
 
-function toStageItem(label: string, index: number, length: number, teams: number): StageItem {
+function toStageItem(label: string, index: number, length: number, matches: number): StageItem {
   const isLast = index === length - 1
   const isTrophy =
     isLast &&
@@ -376,12 +376,14 @@ function toStageItem(label: string, index: number, length: number, teams: number
     const icon = zone.value?.name === '全国赛' ? 'trophy' : 'trophyEmoji'
     return { label, icon }
   }
-  const count = Math.max(teams, 1)
+  if (matches <= 0) {
+    return { label, icon: 'result' }
+  }
   return {
     label,
-    icon: count,
-    thick: count <= 4,
-    columns: count >= 8 ? 2 : 1,
+    icon: matches,
+    thick: matches <= 4,
+    columns: matches >= 8 ? 2 : 1,
   }
 }
 
