@@ -90,7 +90,7 @@ function beginSettleMotion() {
   }, SETTLE_MS)
 }
 
-/** 吸附后：仅当最左列节点 ≤ 2 时，滚动视口使该列最上节点贴顶（不改树形 Y） */
+/** 吸附后：仅 Knockout 且最左列节点 ≤ 2 时，滚动视口使该列最上节点贴顶（不改树形 Y） */
 function leftmostColumnNodeCount(colIndex: number): number {
   const cols = bracketModel.value?.columns
   if (!cols?.length) return 0
@@ -99,6 +99,7 @@ function leftmostColumnNodeCount(colIndex: number): number {
 }
 
 function shouldPinTopAfterSnap(colIndex: number): boolean {
+  if (currentPart.value?.type !== 'knockout') return false
   const n = leftmostColumnNodeCount(colIndex)
   return n > 0 && n <= 2
 }
@@ -237,6 +238,14 @@ const panOriginLeft = ref(0)
 const panAxis = ref<'x' | 'y' | null>(null)
 let wheelSnapTimer: ReturnType<typeof setTimeout> | null = null
 
+/** 轴向阈值（px）：越小越容易进入轴向判定 */
+const PAN_AXIS_SLOP = 3
+/** 水平偏向：dx 达到 dy 的该比例即判为横向（>1 更易触发左右滑） */
+const PAN_X_BIAS = 1.35
+/** 跟手增益：同位移下窗口滑动更快 */
+const PAN_GAIN = 1.35
+const WHEEL_GAIN = 1.25
+
 function onBoardPointerDown(e: PointerEvent) {
   if (e.button !== 0 || stageCount.value <= 0) return
   if (wheelSnapTimer) {
@@ -255,8 +264,9 @@ function onBoardPointerMove(e: PointerEvent) {
   const dx = e.clientX - panStartX.value
   const dy = e.clientY - panStartY.value
   if (!panAxis.value) {
-    if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return
-    panAxis.value = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y'
+    if (Math.abs(dx) < PAN_AXIS_SLOP && Math.abs(dy) < PAN_AXIS_SLOP) return
+    // 偏向横向：斜向滑动也更容易进入左右跟手
+    panAxis.value = Math.abs(dx) * PAN_X_BIAS >= Math.abs(dy) ? 'x' : 'y'
     if (panAxis.value === 'x') {
       const target = e.currentTarget as HTMLElement
       target.setPointerCapture(e.pointerId)
@@ -269,9 +279,10 @@ function onBoardPointerMove(e: PointerEvent) {
   if (width <= 0) return
   const cellWidth = width / windowSpan.value
   // 手指右移 → 内容跟手右移 → windowLeft 减小
+  const deltaCells = (dx / cellWidth) * PAN_GAIN
   setWindowEdges(
-    panOriginLeft.value - dx / cellWidth,
-    panOriginLeft.value - dx / cellWidth + windowSpan.value,
+    panOriginLeft.value - deltaCells,
+    panOriginLeft.value - deltaCells + windowSpan.value,
     true,
   )
 }
@@ -292,7 +303,7 @@ function onBoardPointerUp(e: PointerEvent) {
 function onBoardWheel(e: WheelEvent) {
   if (stageCount.value <= 0) return
   let delta = 0
-  if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+  if (Math.abs(e.deltaX) * PAN_X_BIAS >= Math.abs(e.deltaY)) {
     delta = e.deltaX
   } else if (e.shiftKey) {
     delta = e.deltaY
@@ -305,13 +316,13 @@ function onBoardWheel(e: WheelEvent) {
   const width = bracketViewportRef.value?.clientWidth ?? 1
   if (width <= 0) return
   const cellWidth = width / windowSpan.value
-  const nextLeft = windowLeft.value + delta / cellWidth
+  const nextLeft = windowLeft.value + (delta / cellWidth) * WHEEL_GAIN
   setWindowEdges(nextLeft, nextLeft + windowSpan.value, false)
   if (wheelSnapTimer) clearTimeout(wheelSnapTimer)
   wheelSnapTimer = setTimeout(() => {
     wheelSnapTimer = null
     snapWindowToNearest()
-  }, 120)
+  }, 100)
 }
 
 const zoneId = computed(() => promotionStore.zoneId)
