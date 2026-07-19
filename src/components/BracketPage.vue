@@ -148,6 +148,10 @@ function syncWindowFromRange(range: StageRange) {
   const nextRight = range.end + 1
   if (nextLeft === windowLeft.value && nextRight === windowRight.value) {
     windowMotion.value = 'idle'
+    // 选区拖到左右边界时，preview 已经把窗口钳到最终整数位置；
+    // 松手虽会强制提交同一范围，但不能因早退跳过左列的 Y 锚定。
+    // immediate watcher 运行时 bracketModel 仍在初始化，延后一帧再读取它。
+    requestAnimationFrame(() => pinLeftColumnToViewportTop(nextLeft, true))
     return
   }
   // 跟手结束后的整数提交 / 点击切换 → 缓动；避免瞬切
