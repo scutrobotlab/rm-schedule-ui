@@ -508,7 +508,7 @@ onMounted(async () => {
 
   &__meta {
     position: absolute;
-    top: 200px;
+    top: 248px;
     left: 72px;
     right: 140px;
     z-index: 2;
@@ -552,7 +552,7 @@ onMounted(async () => {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 44px;
+    gap: 96px;
     width: min(1480px, calc(100% - 160px));
     transform: translateX(-50%);
   }
@@ -561,7 +561,7 @@ onMounted(async () => {
     color: #c5a35a;
     font-size: 24px;
     font-weight: 600;
-    margin-bottom: -16px;
+    margin-bottom: -32px;
     width: 100%;
     text-align: center;
   }
@@ -584,13 +584,13 @@ onMounted(async () => {
 
 .forecast-team {
   display: grid;
-  grid-template-columns: 96px 260px 800px 120px;
+  grid-template-columns: 112px 280px 800px 120px;
   align-items: center;
   justify-content: center;
   column-gap: 28px;
   width: 100%;
   max-width: 1360px;
-  min-height: 96px;
+  min-height: 112px;
 
   &.is-placeholder {
     .forecast-team__college,
@@ -600,13 +600,13 @@ onMounted(async () => {
   }
 
   &__logo-wrap {
-    width: 96px;
-    height: 96px;
+    width: 112px;
+    height: 112px;
   }
 
   &__logo {
-    width: 96px;
-    height: 96px;
+    width: 112px;
+    height: 112px;
     border-radius: 50%;
     object-fit: contain;
     background: #fff;
@@ -617,7 +617,7 @@ onMounted(async () => {
   }
 
   &__college {
-    font-size: 30px;
+    font-size: 34px;
     font-weight: 700;
     line-height: 1.25;
     white-space: nowrap;
@@ -626,8 +626,8 @@ onMounted(async () => {
   }
 
   &__team {
-    margin-top: 4px;
-    font-size: 24px;
+    margin-top: 6px;
+    font-size: 26px;
     color: #b7c0cf;
     white-space: nowrap;
     overflow: hidden;
