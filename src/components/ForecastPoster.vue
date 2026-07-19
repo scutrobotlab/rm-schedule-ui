@@ -470,20 +470,26 @@ onMounted(async () => {
 
   &__teams {
     position: absolute;
-    top: 340px;
-    left: 120px;
-    right: 120px;
+    top: 280px;
+    bottom: 240px;
+    left: 50%;
     z-index: 2;
     display: flex;
     flex-direction: column;
-    gap: 56px;
+    justify-content: center;
+    align-items: center;
+    gap: 44px;
+    width: min(1480px, calc(100% - 160px));
+    transform: translateX(-50%);
   }
 
   &__rate-unavailable {
     color: #c5a35a;
-    font-size: 28px;
+    font-size: 24px;
     font-weight: 600;
-    margin-bottom: -24px;
+    margin-bottom: -16px;
+    width: 100%;
+    text-align: center;
   }
 
   &__footer {
@@ -534,10 +540,13 @@ onMounted(async () => {
 
 .forecast-team {
   display: grid;
-  grid-template-columns: 120px 320px 1fr 160px;
+  grid-template-columns: 96px 260px 800px 120px;
   align-items: center;
-  column-gap: 36px;
-  min-height: 120px;
+  justify-content: center;
+  column-gap: 28px;
+  width: 100%;
+  max-width: 1360px;
+  min-height: 96px;
 
   &.is-placeholder {
     .forecast-team__college,
@@ -547,13 +556,13 @@ onMounted(async () => {
   }
 
   &__logo-wrap {
-    width: 120px;
-    height: 120px;
+    width: 96px;
+    height: 96px;
   }
 
   &__logo {
-    width: 120px;
-    height: 120px;
+    width: 96px;
+    height: 96px;
     border-radius: 50%;
     object-fit: contain;
     background: #fff;
@@ -564,7 +573,7 @@ onMounted(async () => {
   }
 
   &__college {
-    font-size: 36px;
+    font-size: 30px;
     font-weight: 700;
     line-height: 1.25;
     white-space: nowrap;
@@ -573,8 +582,8 @@ onMounted(async () => {
   }
 
   &__team {
-    margin-top: 6px;
-    font-size: 28px;
+    margin-top: 4px;
+    font-size: 24px;
     color: #b7c0cf;
     white-space: nowrap;
     overflow: hidden;
@@ -582,11 +591,15 @@ onMounted(async () => {
   }
 
   &__bar-track {
+    --bar-cut: 34px;
     position: relative;
-    height: 28px;
-    border-radius: 4px;
+    width: 800px;
+    height: 34px;
     background: #3a4252;
     overflow: hidden;
+    justify-self: center;
+    /* 右下角切角直至上边：从右上角斜切到下边 */
+    clip-path: polygon(0 0, 100% 0, calc(100% - var(--bar-cut)) 100%, 0 100%);
 
     &.is-unavailable {
       display: flex;
@@ -600,7 +613,8 @@ onMounted(async () => {
     height: 100%;
     width: 0;
     background: #f0c94d;
-    border-radius: 4px;
+    /* 与底轨同切角尺寸/角度，斜边落在当前进度右端 */
+    clip-path: polygon(0 0, 100% 0, calc(100% - var(--bar-cut)) 100%, 0 100%);
 
     &.is-animated {
       transition: width 0.6s ease;
@@ -608,20 +622,20 @@ onMounted(async () => {
   }
 
   &__bar-unavailable {
-    font-size: 18px;
+    font-size: 16px;
     color: #8b93a3;
     letter-spacing: 2px;
   }
 
   &__percent {
     text-align: right;
-    font-size: 48px;
+    font-size: 40px;
     font-weight: 700;
     font-variant-numeric: tabular-nums;
     color: #f2f4f7;
 
     &.is-unavailable {
-      font-size: 36px;
+      font-size: 30px;
       color: #8b93a3;
       font-weight: 600;
     }
