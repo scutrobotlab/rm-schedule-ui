@@ -1,4 +1,7 @@
-/** 按可见列数控制晋级图信息密度 */
+/**
+ * 按可见列数控制晋级图信息密度。
+ * 仅收缩字号/内边距/次要元信息；纵向对阵与席位永不截断。
+ */
 export type BracketDensity = 'comfortable' | 'normal' | 'compact'
 
 export function resolveBracketDensity(columnCount: number): BracketDensity {

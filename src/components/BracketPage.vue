@@ -294,16 +294,19 @@ onBeforeUnmount(() => {
   position: relative;
   width: 100%;
   min-height: 100vh;
-  overflow: hidden;
+  /* 纵向随内容增高，禁止裁切对阵列表 */
+  overflow-x: hidden;
+  overflow-y: visible;
 }
 
 .background-image {
-  position: absolute;
+  position: fixed;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   z-index: 1;
+  pointer-events: none;
 }
 
 .content {

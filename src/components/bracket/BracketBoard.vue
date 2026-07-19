@@ -44,9 +44,11 @@ const layoutKey = computed(() => {
 .bracket-board {
   position: relative;
   width: 100%;
+  flex: 1 1 auto;
   padding: 12px 10px 24px;
+  /* 横向可裁切；纵向永不截断，内容随页面自然增高 */
   overflow-x: hidden;
-  overflow-y: auto;
+  overflow-y: visible;
   background:
     radial-gradient(ellipse at 20% 0%, rgba(40, 90, 140, 0.22) 0%, transparent 55%),
     radial-gradient(ellipse at 80% 100%, rgba(30, 70, 110, 0.18) 0%, transparent 50%),

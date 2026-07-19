@@ -332,6 +332,16 @@ function buildInfoSlots(
     slots.push(playerToSlot(player, fallback, false, false))
   }
 
+  // 瑞士轮第一轮等：winners/losers 为空，队伍直接挂在本轮 matches 上
+  if (slots.length === 0 && zone.matches.length > 0) {
+    for (let i = 0; i < zone.matches.length; i++) {
+      const match = getMatchByOrder(zoneId, zone.matches[i], planGameCount)
+      const [red, blue] = buildPairSlots(match, zone.text[i * 2], zone.text[i * 2 + 1])
+      slots.push(red, blue)
+    }
+    return slots
+  }
+
   // 未填满的席位用来源文案补齐（含 groupLoop 的 text / groupRank）
   if (slots.length === 0 && zone.groupRank?.length) {
     for (let i = 0; i < zone.groupRank.length; i++) {

@@ -22,17 +22,16 @@ const laneLabel: Record<string, string> = {
   third: '季军',
 }
 
-const maxSlots = computed(() => {
-  if (props.density === 'comfortable') return 12
-  if (props.density === 'normal') return 8
-  return 6
-})
+/** 多场对阵按场次完整展示；纵向席位/场次一律不截断 */
+const showAsMatches = computed(
+  () => props.item.nodeType === 'matchGroup' && props.item.matches.length > 0,
+)
 
-const visibleSlots = computed(() => props.item.slots.slice(0, maxSlots.value))
 const showLane = computed(() => props.item.lane !== 'main' && props.density !== 'compact')
 const showMatchCount = computed(
-  () => props.density === 'comfortable' && props.item.matches.length > 1,
+  () => props.density !== 'compact' && props.item.matches.length > 1,
 )
+const showScore = computed(() => props.density !== 'compact')
 </script>
 
 <template>
@@ -53,9 +52,42 @@ const showMatchCount = computed(
       >{{ laneLabel[item.lane] }}</span>
     </div>
 
-    <div class="slot-list">
+    <div
+      v-if="showAsMatches"
+      class="match-list"
+    >
+      <div
+        v-for="(m, mi) in item.matches"
+        :key="`${item.id}-match-${m.orderNumber}-${mi}`"
+        class="mini-match"
+      >
+        <div
+          v-if="density === 'comfortable'"
+          class="mini-match-label"
+        >
+          第{{ m.orderNumber }}场
+        </div>
+        <BracketTeamRow
+          :team="m.slots[0]"
+          :score="m.redWinGames"
+          :density="density"
+          :show-score="showScore"
+        />
+        <BracketTeamRow
+          :team="m.slots[1]"
+          :score="m.blueWinGames"
+          :density="density"
+          :show-score="showScore"
+        />
+      </div>
+    </div>
+
+    <div
+      v-else
+      class="slot-list"
+    >
       <BracketTeamRow
-        v-for="(slot, si) in visibleSlots"
+        v-for="(slot, si) in item.slots"
         :key="`${item.id}-slot-${si}`"
         :team="slot"
         :score="null"
@@ -157,10 +189,42 @@ const showMatchCount = computed(
   color: #f0d48a;
 }
 
+.match-list,
 .slot-list {
   display: flex;
   flex-direction: column;
   gap: 3px;
+}
+
+.match-list {
+  gap: 6px;
+}
+
+.mini-match {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.mini-match-label {
+  font-size: 0.6rem;
+  opacity: 0.5;
+  padding: 0 2px 2px;
+}
+
+.density-normal .match-list {
+  gap: 5px;
+}
+
+.density-compact .match-list {
+  gap: 4px;
+}
+
+.density-compact .mini-match {
+  padding: 2px;
 }
 
 .card-meta {
@@ -180,6 +244,10 @@ const showMatchCount = computed(
 @media (min-width: 900px) {
   .density-comfortable {
     padding: 10px;
+  }
+
+  .density-comfortable .match-list {
+    gap: 8px;
   }
 }
 </style>

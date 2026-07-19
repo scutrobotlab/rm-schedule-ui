@@ -413,6 +413,7 @@ describe('buildBracketViewModel — 瑞士轮 / 分组', () => {
     if (round1.kind === 'info') {
       expect(round1.nodeType).toBe('matchGroup')
       expect(round1.matches).toHaveLength(2)
+      // 无赛程时回退到 text 种子占位
       expect(round1.slots[0].displayName).toBe('A1')
       expect(round1.slots[1].displayName).toBe('A9')
     }
@@ -434,6 +435,43 @@ describe('buildBracketViewModel — 瑞士轮 / 分组', () => {
     if (bRound.kind === 'info') {
       expect(bRound.slots[0].displayName).toBe('B1')
       expect(bRound.matches[0].orderNumber).toBe(11)
+    }
+  })
+
+  it('第一轮 winners 为空时从 matches 读取实时对阵队伍', () => {
+    const schedule = new Map<number, MatchNode>([
+      [1, match({
+        orderNumber: 1,
+        status: 'DONE',
+        red: player('p1', '东南大学'),
+        blue: player('p2', '深圳大学'),
+        redWins: 2,
+        blueWins: 1,
+      })],
+      [2, match({
+        orderNumber: 2,
+        status: 'STARTED',
+        red: player('p3', '华南理工'),
+        blue: player('p4', '大连理工'),
+        redWins: 1,
+        blueWins: 0,
+      })],
+    ])
+
+    const model = buildBracketViewModel({
+      zoneId: 1,
+      part: partOf(swissJson, { type: 'group', group: 'A', name: 'A组' }),
+      getMatchByOrder: (_z, order) => schedule.get(order),
+    })
+    const round1 = model.columns[0].items[0]
+    expect(round1.kind).toBe('info')
+    if (round1.kind === 'info') {
+      expect(round1.slots[0].displayName).toBe('东南大学')
+      expect(round1.slots[0].sourceKind).toBe('team')
+      expect(round1.slots[0].isWinner).toBe(true)
+      expect(round1.slots[1].displayName).toBe('深圳大学')
+      expect(round1.slots[2].displayName).toBe('华南理工')
+      expect(round1.slots[3].displayName).toBe('大连理工')
     }
   })
 })
