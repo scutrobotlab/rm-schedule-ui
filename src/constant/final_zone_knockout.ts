@@ -8,6 +8,7 @@ const KnockoutYOffset = 50;
 
 export const FinalZoneKnockoutJsonData: ZoneJsonData = {
   rootId: '#18',
+  stages: ['16进8第一轮', '16进8胜者组', '8进4胜者组', '半决赛', '决赛'],
   nodes: [
     // 67 B1 A8
     // 68 B5 A4
@@ -453,6 +454,7 @@ export const FinalZoneKnockoutTitleData: TitleData[] = [
 
 export const FinalZoneKnockoutLoserJsonData: ZoneJsonData = {
   rootId: '#18',
+  stages: ['16进8败者组第一轮', '16进8败者组第二轮', '8进4败者组第一轮', '8进4败者组第二轮'],
   nodes: [
     {
       id: '#1',
@@ -746,6 +748,7 @@ export const FinalZoneKnockoutLoserTitleData: TitleData[] = [
 
 export const FinalZoneKnockoutJsonData2025: ZoneJsonData = {
   rootId: '#18',
+  stages: ['16进8第一轮', '16进8胜者组', '8进4胜者组', '半决赛', '决赛'],
   nodes: [
     // 67 B1 A8
     // 68 B5 A4
@@ -1191,6 +1194,7 @@ export const FinalZoneKnockoutTitleData2025: TitleData[] = [
 
 export const FinalZoneKnockoutLoserJsonData2025: ZoneJsonData = {
   rootId: '#18',
+  stages: ['16进8败者组第一轮', '16进8败者组第二轮', '8进4败者组第一轮', '8进4败者组第二轮'],
   nodes: [
     {
       id: '#1',

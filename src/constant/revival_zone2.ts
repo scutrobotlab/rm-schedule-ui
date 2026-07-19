@@ -7,6 +7,7 @@ const xOffset = 435;
 
 export const RevivalZone2GroupJsonData: ZoneJsonData = {
   rootId: '#1',
+  stages: ['第一轮', '第二轮', '第三轮', '第四轮', '晋级结果'],
   nodes: [
     {
       id: '#1',
@@ -312,6 +313,7 @@ export const RevivalZone2ImageData: ImageData[] = [
 
 export const RevivalZone2GroupJsonData2025: ZoneJsonData = {
   rootId: '#1',
+  stages: ['第一轮', '第二轮', '第三轮', '名额争夺', '晋级结果'],
   nodes: [
     {
       id: '#1',

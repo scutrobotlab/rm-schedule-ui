@@ -7,6 +7,7 @@ const xOffset = 435;
 
 export const RevivalZoneGroupJsonData: ZoneJsonData = {
   rootId: '#1',
+  stages: ['第一轮', '第二轮', '第三轮', '晋级结果'],
   nodes: [
     {
       id: '#1',
@@ -320,6 +321,7 @@ export const RevivalZoneRoundOrder = {
 
 export const GlobalZoneJsonData: ZoneJsonData = {
   rootId: '#1',
+  stages: ['海外小组赛', '海外淘汰赛', '晋级第二赛段'],
   nodes: [
     {
       id: '#1',

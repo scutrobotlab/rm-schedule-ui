@@ -9,15 +9,6 @@ import { useRoute, useRouter } from "vue-router";
 import { DefaultZoneMap, Part, SeasonList, ZoneMap } from "../constant/zone";
 import AnalyzeMatch from "./AnalyzeMatch.vue";
 
-/** 展示用阶段（仅 UI，不驱动赛事图筛选） */
-const displayStages: StageItem[] = [
-  { label: '小组赛', icon: 4, thick: true },
-  { label: '32强', icon: 6, columns: 2 },
-  { label: '16强', icon: 4 },
-  { label: '四分之一决赛', icon: 2 },
-  { label: '半决赛', icon: 2 },
-  { label: '决赛', icon: 'trophy' },
-]
 const stageRange = ref<StageRange>({ start: 0, end: 1 })
 
 const route = useRoute()
@@ -35,7 +26,31 @@ promotionStore.season = Number(route.params.season)
 promotionStore.zoneId = Number(route.params.zoneId)
 const season = computed(() => promotionStore.season)
 const zone = computed(() => ZoneMap[season.value].find((zone) => zone.id == zoneId.value))
+const currentPart = computed(() => zone.value?.parts[selectedGroup.value])
+/** 展示用阶段（仅 UI，不驱动赛事图筛选） */
+const displayStages = computed(() =>
+  (currentPart.value?.jsonData.stages ?? []).map((label, index, list) =>
+    toStageItem(label, index, list.length)
+  )
+)
 let needsRouteNormalize = false
+
+function toStageItem(label: string, index: number, length: number): StageItem {
+  const isLast = index === length - 1
+  const isTrophy =
+    isLast &&
+    label.includes('决赛') &&
+    !label.includes('半决赛') &&
+    !label.includes('四分之一')
+
+  if (isTrophy) {
+    return { label, icon: 'trophy' }
+  }
+  if (index === 0) {
+    return { label, icon: Math.max(4, length), thick: true }
+  }
+  return { label, icon: Math.max(2, length - index) }
+}
 
 // 如果 Season 不存在，则自动选择最后一个可用的 Season
 if (!Object.keys(ZoneMap).includes(String(promotionStore.season))) {
@@ -104,6 +119,13 @@ function toggleLiveMode() {
 
 watch(zoneId, updateQuery)
 watch(selectedGroup, updateQuery)
+watch(
+  [selectedGroup, zoneId, () => displayStages.value.length],
+  () => {
+    const n = displayStages.value.length
+    stageRange.value = { start: 0, end: Math.min(1, Math.max(0, n - 1)) }
+  },
+)
 
 function badgeTab(zoneId: number): boolean {
   if (!promotionStore.selectedPlayer) return false
@@ -314,7 +336,7 @@ const MenuItems = ref(
             </v-slide-group>
           </v-sheet>
 
-          <div class="stage-range-wrap">
+          <div v-if="displayStages.length >= 2" class="stage-range-wrap">
             <StageRangeSelector
               v-model="stageRange"
               :stages="displayStages"

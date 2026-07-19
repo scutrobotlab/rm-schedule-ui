@@ -4,6 +4,8 @@ export interface ZoneJsonData {
   rootId: string;
   nodes: ZoneNodeJsonData[];
   lines: ZoneLineJsonData[];
+  /** 阶段范围选择器展示用标签（从左到右） */
+  stages?: string[];
 }
 
 export interface ZoneNodeJsonData {
