@@ -198,7 +198,7 @@ function barList(stage: StageItem): number[] {
 
 function barColumns(stage: StageItem): 1 | 2 {
   if (typeof stage.icon !== 'number') return 1
-  if ((stage.columns ?? 1) > 1 || stage.icon > 8) return 2
+  if ((stage.columns ?? 1) > 1 || stage.icon >= 8) return 2
   return 1
 }
 
@@ -209,11 +209,14 @@ function barRows(stage: StageItem): number {
 
 function barsClass(stage: StageItem): Record<string, boolean> {
   const rows = barRows(stage)
+  const cols = barColumns(stage)
   return {
-    'stage-range__bars--thick': Boolean(stage.thick) && rows <= 4,
+    'stage-range__bars--thick': Boolean(stage.thick) && rows <= 4 && cols === 1,
     'stage-range__bars--thin': rows > 6 && rows <= 8,
     'stage-range__bars--xthin': rows > 8,
-    'stage-range__bars--cols': barColumns(stage) > 1,
+    'stage-range__bars--cols': cols > 1,
+    // 双列且行数不多时加高，避免 8 条看起来比 4 条单列更扁
+    'stage-range__bars--cols-roomy': cols > 1 && rows <= 5,
   }
 }
 
@@ -355,7 +358,7 @@ function barsStyle(stage: StageItem): Record<string, string> {
 
 .stage-range__track {
   position: relative;
-  height: 44px;
+  height: 48px;
   border-radius: var(--bar-radius);
   background: var(--track-bg);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
@@ -422,6 +425,11 @@ function barsStyle(stage: StageItem): Record<string, string> {
   gap: 2px 4px;
 }
 
+.stage-range__bars--cols-roomy {
+  gap: 3.5px 5px;
+  padding: 2px 0;
+}
+
 .stage-range__bar {
   display: block;
   width: 18px;
@@ -448,7 +456,12 @@ function barsStyle(stage: StageItem): Record<string, string> {
 }
 
 .stage-range__bars--cols .stage-range__bar {
-  width: 10px;
+  width: 11px;
+}
+
+.stage-range__bars--cols-roomy .stage-range__bar {
+  width: 12px;
+  height: 2.5px;
 }
 
 .stage-range__trophy {
@@ -553,7 +566,7 @@ function barsStyle(stage: StageItem): Record<string, string> {
   }
 
   .stage-range__track {
-    height: 40px;
+    height: 44px;
   }
 
   .stage-range__selection {

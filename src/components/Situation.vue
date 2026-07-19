@@ -56,7 +56,7 @@ function toStageItem(label: string, index: number, length: number, teams: number
     label,
     icon: count,
     thick: count <= 4,
-    columns: count > 8 ? 2 : 1,
+    columns: count >= 8 ? 2 : 1,
   }
 }
 
