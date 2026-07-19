@@ -65,9 +65,10 @@ function measure() {
       continue
     }
 
-    const midX = x1 + Math.max(12, (x2 - x1) / 2)
+    // 折点取两节点相对边之间的水平中点，避免固定偏移把竖线推到右侧卡片上
+    const midX = (x1 + x2) / 2
     const d =
-      x2 >= x1
+      x2 > x1 + 2
         ? `M ${x1} ${y1} H ${midX} V ${y2} H ${x2}`
         : `M ${x1} ${y1} C ${x1 + 24} ${y1}, ${x2 - 24} ${y2}, ${x2} ${y2}`
 
