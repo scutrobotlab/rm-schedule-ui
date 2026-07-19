@@ -12,10 +12,15 @@ import backgroundUrl from './background.svg'
 import headerUrl from './header.svg'
 import footerBannerUrl from './footer-banner.svg'
 import qrCodeUrl from './qr-code.jpg'
+import schoolRedUrl from '../school_red.png'
+import schoolBlueUrl from '../school_blue.png'
 
 export const forecastAssets = {
   backgroundUrl,
   headerUrl,
   footerBannerUrl,
   qrCodeUrl,
+  /** 无比赛 / 缺校徽时的红蓝默认占位校徽 */
+  schoolRedUrl,
+  schoolBlueUrl,
 } as const

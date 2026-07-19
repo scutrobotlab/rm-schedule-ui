@@ -10,11 +10,40 @@ import {
 import { StaticCDN } from '../utils/cdn'
 import { forecastAssets } from '@/assets/forecast'
 
-const { backgroundUrl, headerUrl, footerBannerUrl, qrCodeUrl } = forecastAssets
+const {
+  backgroundUrl,
+  headerUrl,
+  footerBannerUrl,
+  qrCodeUrl,
+  schoolRedUrl,
+  schoolBlueUrl,
+} = forecastAssets
 
 const READY_TIMEOUT_MS = 12_000
 
 type PosterStatus = 'pending' | 'ready' | 'error'
+type TeamRowKey = 'red' | 'blue'
+
+interface TeamRow {
+  key: TeamRowKey
+  side: ForecastSide
+  /** 无真实比赛数据时的骨架占位行 */
+  placeholder: boolean
+  logoUrl: string
+  collegeName: string
+  teamName: string
+}
+
+const PLACEHOLDER_SIDE: ForecastSide = {
+  support_rate: -1,
+  support_rate_percent: -1,
+  team_info: {
+    team_id: '',
+    team_name: '',
+    college_logo: '',
+    college_name: '',
+  },
+}
 
 const route = useRoute()
 const posterRef = ref<HTMLElement | null>(null)
@@ -23,14 +52,17 @@ const errorMessage = ref('')
 const forecast = ref<CurrentMatchForecastResp | null>(null)
 
 const isRenderMode = computed(() => String(route.query.render ?? '') === '1')
+const hasMatch = computed(() => Boolean(forecast.value?.has_match))
 
 const matchMeta = computed(() => {
-  if (!forecast.value?.has_match) return ''
+  if (!forecast.value) return '加载中…'
+  if (!forecast.value.has_match) return '<< 暂无进行中比赛'
   return formatMatchMeta(forecast.value)
 })
 
 const deadlineText = computed(() => {
-  const raw = forecast.value?.support_rate_deadline?.trim() ?? ''
+  if (!forecast.value?.has_match) return ''
+  const raw = forecast.value.support_rate_deadline?.trim() ?? ''
   if (!raw) return ''
   // 展示到分钟，与参考海报一致
   return raw.length >= 16 ? raw.slice(0, 16) : raw
@@ -46,18 +78,48 @@ const supportRatesAvailable = computed(() => {
   )
 })
 
-const emptyStateText = computed(() => {
-  if (!forecast.value) return '加载中…'
-  if (!forecast.value.has_match) return '暂无进行中比赛'
-  return ''
-})
+const teamRows = computed((): TeamRow[] => {
+  const defaultLogo = (key: TeamRowKey) => (key === 'red' ? schoolRedUrl : schoolBlueUrl)
 
-const teamRows = computed(() => {
-  if (!forecast.value?.has_match) return [] as Array<{ key: 'red' | 'blue'; side: ForecastSide }>
-  return [
-    { key: 'red' as const, side: forecast.value.red_side },
-    { key: 'blue' as const, side: forecast.value.blue_side },
-  ]
+  if (!forecast.value?.has_match) {
+    return ([
+      {
+        key: 'red',
+        side: PLACEHOLDER_SIDE,
+        placeholder: true,
+        logoUrl: schoolRedUrl,
+        collegeName: '红方学校',
+        teamName: '红方战队',
+      },
+      {
+        key: 'blue',
+        side: PLACEHOLDER_SIDE,
+        placeholder: true,
+        logoUrl: schoolBlueUrl,
+        collegeName: '蓝方学校',
+        teamName: '蓝方战队',
+      },
+    ] satisfies TeamRow[])
+  }
+
+  return ([
+    {
+      key: 'red',
+      side: forecast.value.red_side,
+      placeholder: false,
+      logoUrl: logoSrc(forecast.value.red_side.team_info.college_logo) || defaultLogo('red'),
+      collegeName: forecast.value.red_side.team_info.college_name || '红方学校',
+      teamName: forecast.value.red_side.team_info.team_name || '红方战队',
+    },
+    {
+      key: 'blue',
+      side: forecast.value.blue_side,
+      placeholder: false,
+      logoUrl: logoSrc(forecast.value.blue_side.team_info.college_logo) || defaultLogo('blue'),
+      collegeName: forecast.value.blue_side.team_info.college_name || '蓝方学校',
+      teamName: forecast.value.blue_side.team_info.team_name || '蓝方战队',
+    },
+  ] satisfies TeamRow[])
 })
 
 function logoSrc(url: string): string {
@@ -214,71 +276,73 @@ onMounted(async () => {
       <img class="forecast-poster__header" :src="headerUrl" alt="" draggable="false" />
 
       <div class="forecast-poster__meta">
-        <template v-if="forecast?.has_match">
-          <div class="forecast-poster__match">{{ matchMeta }}</div>
-          <div v-if="deadlineText" class="forecast-poster__deadline">
-            数据截止时间：{{ deadlineText }}
-          </div>
-          <div v-else class="forecast-poster__deadline forecast-poster__deadline--empty">
-            数据截止时间：暂无
-          </div>
-        </template>
-        <div v-else class="forecast-poster__empty">{{ emptyStateText }}</div>
+        <div
+          class="forecast-poster__match"
+          :class="{ 'is-placeholder': !hasMatch }"
+        >
+          {{ matchMeta }}
+        </div>
+        <div
+          v-if="deadlineText"
+          class="forecast-poster__deadline"
+        >
+          数据截止时间：{{ deadlineText }}
+        </div>
+        <div
+          v-else
+          class="forecast-poster__deadline forecast-poster__deadline--empty"
+        >
+          数据截止时间：暂无
+        </div>
       </div>
 
       <div class="forecast-poster__teams">
-        <template v-if="forecast?.has_match">
-          <div
-            v-if="!supportRatesAvailable"
-            class="forecast-poster__rate-unavailable"
-          >
-            支持率暂不可用
+        <div
+          v-if="forecast && (!hasMatch || !supportRatesAvailable)"
+          class="forecast-poster__rate-unavailable"
+        >
+          {{ hasMatch ? '支持率暂不可用' : '暂无进行中比赛' }}
+        </div>
+        <div
+          v-for="row in teamRows"
+          :key="row.key"
+          class="forecast-team"
+          :class="[
+            `forecast-team--${row.key}`,
+            { 'is-placeholder': row.placeholder },
+          ]"
+        >
+          <div class="forecast-team__logo-wrap">
+            <img
+              class="forecast-team__logo"
+              :src="row.logoUrl"
+              alt=""
+              draggable="false"
+            />
+          </div>
+          <div class="forecast-team__names">
+            <div class="forecast-team__college">{{ row.collegeName }}</div>
+            <div class="forecast-team__team">{{ row.teamName }}</div>
           </div>
           <div
-            v-for="row in teamRows"
-            :key="row.key"
-            class="forecast-team"
-            :class="`forecast-team--${row.key}`"
+            class="forecast-team__bar-track"
+            :class="{ 'is-unavailable': !sideHasRate(row.side) }"
           >
-            <div class="forecast-team__logo-wrap">
-              <img
-                v-if="row.side.team_info.college_logo"
-                class="forecast-team__logo"
-                :src="logoSrc(row.side.team_info.college_logo)"
-                alt=""
-                draggable="false"
-              />
-              <div v-else class="forecast-team__logo forecast-team__logo--placeholder" />
-            </div>
-            <div class="forecast-team__names">
-              <div class="forecast-team__college">
-                {{ row.side.team_info.college_name || '—' }}
-              </div>
-              <div class="forecast-team__team">
-                {{ row.side.team_info.team_name || '—' }}
-              </div>
-            </div>
             <div
-              class="forecast-team__bar-track"
-              :class="{ 'is-unavailable': !sideHasRate(row.side) }"
-            >
-              <div
-                v-if="sideHasRate(row.side)"
-                class="forecast-team__bar-fill"
-                :class="{ 'is-animated': !isRenderMode }"
-                :style="{ width: barWidth(row.side) }"
-              />
-              <span v-else class="forecast-team__bar-unavailable">暂无</span>
-            </div>
-            <div
-              class="forecast-team__percent"
-              :class="{ 'is-unavailable': !sideHasRate(row.side) }"
-            >
-              {{ percentLabel(row.side) }}
-            </div>
+              v-if="sideHasRate(row.side)"
+              class="forecast-team__bar-fill"
+              :class="{ 'is-animated': !isRenderMode }"
+              :style="{ width: barWidth(row.side) }"
+            />
+            <span v-else class="forecast-team__bar-unavailable">暂无</span>
           </div>
-        </template>
-        <div v-else class="forecast-poster__teams-empty">{{ emptyStateText }}</div>
+          <div
+            class="forecast-team__percent"
+            :class="{ 'is-unavailable': !sideHasRate(row.side) }"
+          >
+            {{ percentLabel(row.side) }}
+          </div>
+        </div>
       </div>
 
       <div class="forecast-poster__footer">
@@ -375,6 +439,7 @@ onMounted(async () => {
     left: 72px;
     right: 72px;
     z-index: 2;
+    text-align: right;
   }
 
   &__match {
@@ -386,6 +451,10 @@ onMounted(async () => {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+
+    &.is-placeholder {
+      color: #9aa3b2;
+    }
   }
 
   &__deadline {
@@ -397,11 +466,6 @@ onMounted(async () => {
     &--empty {
       opacity: 0.75;
     }
-  }
-
-  &__empty {
-    color: #9aa3b2;
-    font-size: 32px;
   }
 
   &__teams {
@@ -420,13 +484,6 @@ onMounted(async () => {
     font-size: 28px;
     font-weight: 600;
     margin-bottom: -24px;
-  }
-
-  &__teams-empty {
-    color: #9aa3b2;
-    font-size: 40px;
-    padding: 80px 0;
-    text-align: center;
   }
 
   &__footer {
@@ -482,6 +539,13 @@ onMounted(async () => {
   column-gap: 36px;
   min-height: 120px;
 
+  &.is-placeholder {
+    .forecast-team__college,
+    .forecast-team__team {
+      color: #8b93a3;
+    }
+  }
+
   &__logo-wrap {
     width: 120px;
     height: 120px;
@@ -493,11 +557,6 @@ onMounted(async () => {
     border-radius: 50%;
     object-fit: contain;
     background: #fff;
-
-    &--placeholder {
-      background: #2a3140;
-      border: 2px solid #3a4458;
-    }
   }
 
   &__names {
