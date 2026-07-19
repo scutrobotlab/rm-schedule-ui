@@ -42,6 +42,11 @@ const podiumTag = computed(() => {
   return null
 })
 
+const destinationTag = computed(() => {
+  if (podiumTag.value) return null
+  return props.item.winnerDestination || null
+})
+
 function slotMedal(
   slot: { isWinner: boolean; isLoser: boolean },
 ): 'gold' | 'silver' | 'bronze' | null {
@@ -73,6 +78,10 @@ function slotMedal(
         v-if="podiumTag"
         class="type-tag"
       >{{ podiumTag }}</span>
+      <span
+        v-else-if="destinationTag"
+        class="type-tag dest-tag"
+      >{{ destinationTag }}</span>
     </div>
 
     <div class="slot-stack">
@@ -194,6 +203,13 @@ function slotMedal(
   letter-spacing: 0.04em;
   background: rgba(255, 255, 255, 0.08);
   opacity: 0.8;
+}
+
+.dest-tag {
+  color: #9fd9bc;
+  background: rgba(93, 206, 160, 0.18);
+  opacity: 1;
+  font-weight: 600;
 }
 
 .card-meta {
