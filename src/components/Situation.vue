@@ -8,6 +8,7 @@ import AnalyzeTeam from "./AnalyzeTeam.vue";
 import { useRoute, useRouter } from "vue-router";
 import { DefaultZoneMap, Part, SeasonList, ZoneMap } from "../constant/zone";
 import AnalyzeMatch from "./AnalyzeMatch.vue";
+import { getStageTeamCounts } from "../utils/stage_teams";
 
 const stageRange = ref<StageRange>({ start: 0, end: 1 })
 
@@ -28,14 +29,18 @@ const season = computed(() => promotionStore.season)
 const zone = computed(() => ZoneMap[season.value].find((zone) => zone.id == zoneId.value))
 const currentPart = computed(() => zone.value?.parts[selectedGroup.value])
 /** 展示用阶段（仅 UI，不驱动赛事图筛选） */
-const displayStages = computed(() =>
-  (currentPart.value?.jsonData.stages ?? []).map((label, index, list) =>
-    toStageItem(label, index, list.length)
+const displayStages = computed(() => {
+  const part = currentPart.value
+  if (!part) return []
+  const labels = part.jsonData.stages ?? []
+  const teamCounts = getStageTeamCounts(part.jsonData, part)
+  return labels.map((label, index, list) =>
+    toStageItem(label, index, list.length, teamCounts[index] ?? 0)
   )
-)
+})
 let needsRouteNormalize = false
 
-function toStageItem(label: string, index: number, length: number): StageItem {
+function toStageItem(label: string, index: number, length: number, teams: number): StageItem {
   const isLast = index === length - 1
   const isTrophy =
     isLast &&
@@ -46,10 +51,13 @@ function toStageItem(label: string, index: number, length: number): StageItem {
   if (isTrophy) {
     return { label, icon: 'trophy' }
   }
-  if (index === 0) {
-    return { label, icon: Math.max(4, length), thick: true }
+  const count = Math.max(teams, 1)
+  return {
+    label,
+    icon: count,
+    thick: count <= 4,
+    columns: count > 8 ? 2 : 1,
   }
-  return { label, icon: Math.max(2, length - index) }
 }
 
 // 如果 Season 不存在，则自动选择最后一个可用的 Season

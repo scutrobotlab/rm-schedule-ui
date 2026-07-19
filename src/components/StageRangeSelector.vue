@@ -195,6 +195,35 @@ function barList(stage: StageItem): number[] {
   if (typeof stage.icon !== 'number') return []
   return Array.from({ length: stage.icon }, (_, i) => i)
 }
+
+function barColumns(stage: StageItem): 1 | 2 {
+  if (typeof stage.icon !== 'number') return 1
+  if ((stage.columns ?? 1) > 1 || stage.icon > 8) return 2
+  return 1
+}
+
+function barRows(stage: StageItem): number {
+  const count = typeof stage.icon === 'number' ? stage.icon : 1
+  return Math.ceil(Math.max(count, 1) / barColumns(stage))
+}
+
+function barsClass(stage: StageItem): Record<string, boolean> {
+  const rows = barRows(stage)
+  return {
+    'stage-range__bars--thick': Boolean(stage.thick) && rows <= 4,
+    'stage-range__bars--thin': rows > 6 && rows <= 8,
+    'stage-range__bars--xthin': rows > 8,
+    'stage-range__bars--cols': barColumns(stage) > 1,
+  }
+}
+
+function barsStyle(stage: StageItem): Record<string, string> {
+  const count = typeof stage.icon === 'number' ? stage.icon : 1
+  return {
+    '--bar-count': String(Math.max(count, 1)),
+    '--bar-rows': String(barRows(stage)),
+  }
+}
 </script>
 
 <template>
@@ -233,10 +262,8 @@ function barList(stage: StageItem): number[] {
           <div
             v-else
             class="stage-range__bars"
-            :class="{
-              'stage-range__bars--thick': stage.thick,
-              'stage-range__bars--cols': (stage.columns ?? 1) > 1,
-            }"
+            :class="barsClass(stage)"
+            :style="barsStyle(stage)"
           >
             <span
               v-for="barIndex in barList(stage)"
@@ -363,23 +390,36 @@ function barList(stage: StageItem): number[] {
 }
 
 .stage-range__bars {
+  --bar-count: 4;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 3px;
+  max-height: 100%;
+  padding: 4px 0;
+  box-sizing: border-box;
 }
 
 .stage-range__bars--thick {
   gap: 4px;
 }
 
+.stage-range__bars--thin {
+  gap: 1.5px;
+}
+
+.stage-range__bars--xthin {
+  gap: 1px;
+}
+
 .stage-range__bars--cols {
+  --bar-rows: 4;
   display: grid;
   grid-template-columns: repeat(2, auto);
   grid-auto-flow: column;
-  grid-template-rows: repeat(3, auto);
-  gap: 3px 4px;
+  grid-template-rows: repeat(var(--bar-rows), auto);
+  gap: 2px 4px;
 }
 
 .stage-range__bar {
@@ -388,11 +428,23 @@ function barList(stage: StageItem): number[] {
   height: 2px;
   border-radius: 1px;
   background: currentColor;
+  flex-shrink: 0;
 }
 
 .stage-range__bars--thick .stage-range__bar {
   width: 20px;
   height: 3px;
+}
+
+.stage-range__bars--thin .stage-range__bar {
+  width: 16px;
+  height: 1.5px;
+}
+
+.stage-range__bars--xthin .stage-range__bar {
+  width: 14px;
+  height: 1px;
+  border-radius: 0.5px;
 }
 
 .stage-range__bars--cols .stage-range__bar {
