@@ -127,8 +127,8 @@ function slotMedal(
   border: 1px solid rgba(120, 170, 220, 0.22);
   border-left-width: 3px;
   border-left-color: rgba(120, 170, 220, 0.6);
-  backdrop-filter: blur(10px) saturate(1.15);
-  -webkit-backdrop-filter: blur(10px) saturate(1.15);
+  backdrop-filter: blur(18px) saturate(1.15);
+  -webkit-backdrop-filter: blur(18px) saturate(1.15);
 }
 
 .match-card.lane-gold {

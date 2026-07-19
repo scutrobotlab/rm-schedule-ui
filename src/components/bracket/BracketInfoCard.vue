@@ -123,8 +123,8 @@ function hasMatchMeta(m: BracketMatchSummary): boolean {
   border: 1px solid rgba(120, 170, 220, 0.18);
   border-left-width: 3px;
   border-left-color: rgba(120, 170, 220, 0.45);
-  backdrop-filter: blur(10px) saturate(1.15);
-  -webkit-backdrop-filter: blur(10px) saturate(1.15);
+  backdrop-filter: blur(18px) saturate(1.15);
+  -webkit-backdrop-filter: blur(18px) saturate(1.15);
 }
 
 .info-card.lane-gold {

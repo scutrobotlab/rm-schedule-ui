@@ -777,12 +777,17 @@ onBeforeUnmount(() => {
             class="corner-logo"
             :src="logoUrl"
             alt="华南虎"
-            @click="appStore.anniversaryAnnouncementDialog = true"
           />
           <p class="corner-copyright">
             华南理工大学 华南虎
           </p>
         </div>
+        <button
+          class="corner-logo-trigger"
+          type="button"
+          aria-label="打开三周年公告"
+          @click="appStore.anniversaryAnnouncementDialog = true"
+        />
 
         <v-bottom-sheet v-model="appStore.analysisDialog">
           <AnalyzeTeam
@@ -826,7 +831,7 @@ onBeforeUnmount(() => {
   position: fixed;
   left: 0;
   bottom: 0;
-  /* 压在背景之上、赛程卡片之下，便于节点毛玻璃虚化 Logo */
+  /* 保持在卡片下方，让赛程节点的毛玻璃柔化背景 Logo。 */
   z-index: 2;
   width: 120px;
   height: 120px;
@@ -841,8 +846,20 @@ onBeforeUnmount(() => {
   width: 120px;
   height: auto;
   opacity: 0.5;
+}
+
+/* 点击层独立于可见 Logo，避免提升 Logo 本身的层级而压住赛程文字。 */
+.corner-logo-trigger {
+  position: fixed;
+  left: 0;
+  bottom: 28px;
+  z-index: 4;
+  width: 120px;
+  height: 120px;
+  padding: 0;
+  border: 0;
+  background: transparent;
   cursor: pointer;
-  pointer-events: auto;
 }
 
 .corner-copyright {
