@@ -1,8 +1,8 @@
 <template>
   <v-app>
     <v-main>
-      <AnniversaryAnnouncement v-if="!isForecastRoute"/>
-      <UpdateAnnouncement v-if="!isForecastRoute"/>
+      <AnniversaryAnnouncement v-if="!hideGlobalAnnouncements"/>
+      <UpdateAnnouncement v-if="!hideGlobalAnnouncements"/>
       <router-view/>
     </v-main>
   </v-app>
@@ -18,8 +18,11 @@ import UpdateAnnouncement from "./components/UpdateAnnouncement.vue";
 const route = useRoute()
 const appStore = useAppStore()
 
-/** 竞猜海报路由不挂载全局公告，避免遮罩进入 chromedp 截图 */
-const isForecastRoute = computed(() => route.path === '/forecast')
+/** 竞猜海报 / 晋级图不挂载全局公告，避免遮罩干扰全屏浏览或截图 */
+const hideGlobalAnnouncements = computed(() => {
+  const path = route.path
+  return path === '/forecast' || path === '/bracket' || path.endsWith('/bracket')
+})
 
 appStore.initStore()
 </script>

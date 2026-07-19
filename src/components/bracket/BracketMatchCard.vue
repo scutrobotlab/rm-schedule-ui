@@ -1,0 +1,182 @@
+<script setup lang="ts">
+import { computed } from 'vue'
+import moment from 'moment'
+import type { BracketMatchCard as MatchCard } from '../../types/bracket'
+import type { BracketDensity } from '../../utils/bracket_density'
+import BracketTeamRow from './BracketTeamRow.vue'
+
+const props = defineProps<{
+  item: MatchCard
+  density: BracketDensity
+}>()
+
+const laneLabel: Record<string, string> = {
+  winners: '胜者组',
+  losers: '败者组',
+  third: '季军',
+}
+
+const statusLabel: Record<string, string> = {
+  STARTED: '进行中',
+  DONE: '已结束',
+  PENDING: '',
+  UNKNOWN: '',
+}
+
+const showMeta = computed(() => props.density === 'comfortable')
+const showLane = computed(() => props.item.lane !== 'main' && props.density !== 'compact')
+const timeText = computed(() => {
+  if (!props.item.planStartedAt) return ''
+  const m = moment(props.item.planStartedAt)
+  return m.isValid() ? m.format('M/D HH:mm') : ''
+})
+</script>
+
+<template>
+  <article
+    class="match-card"
+    :class="[`lane-${item.lane}`, `density-${density}`]"
+    :data-node-id="item.nodeId"
+  >
+    <div
+      v-if="density !== 'compact'"
+      class="card-head"
+    >
+      <span class="card-title">{{ item.title || `第${item.orderNumber}场` }}</span>
+      <span
+        v-if="showLane"
+        class="lane-tag"
+      >{{ laneLabel[item.lane] }}</span>
+    </div>
+
+    <div class="slot-stack">
+      <BracketTeamRow
+        :team="item.slots[0]"
+        :score="item.redWinGames"
+        :density="density"
+        :show-score="true"
+      />
+      <BracketTeamRow
+        :team="item.slots[1]"
+        :score="item.blueWinGames"
+        :density="density"
+        :show-score="true"
+      />
+    </div>
+
+    <div
+      v-if="showMeta && (statusLabel[item.status] || item.orderNumber || timeText)"
+      class="card-meta"
+    >
+      <span v-if="statusLabel[item.status]">{{ statusLabel[item.status] }}</span>
+      <span v-if="item.orderNumber">第{{ item.orderNumber }}场</span>
+      <span v-if="timeText">{{ timeText }}</span>
+    </div>
+  </article>
+</template>
+
+<style scoped>
+.match-card {
+  position: relative;
+  z-index: 1;
+  padding: 8px;
+  border-radius: 8px;
+  background: rgba(0, 8, 20, 0.55);
+  border: 1px solid rgba(120, 170, 220, 0.22);
+  border-left-width: 3px;
+  border-left-color: rgba(120, 170, 220, 0.6);
+}
+
+.match-card.lane-winners {
+  border-left-color: rgba(90, 190, 140, 0.9);
+}
+
+.match-card.lane-losers {
+  border-left-color: rgba(210, 110, 110, 0.9);
+}
+
+.match-card.lane-third {
+  border-left-color: rgba(220, 180, 90, 0.95);
+}
+
+.match-card.density-normal {
+  padding: 6px;
+}
+
+.match-card.density-compact {
+  padding: 4px;
+  border-radius: 6px;
+}
+
+.slot-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.card-title {
+  min-width: 0;
+  font-size: 0.72rem;
+  opacity: 0.72;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lane-tag {
+  flex: 0 0 auto;
+  font-size: 0.58rem;
+  padding: 1px 5px;
+  border-radius: 999px;
+  letter-spacing: 0.04em;
+  background: rgba(255, 255, 255, 0.08);
+  opacity: 0.8;
+}
+
+.lane-winners .lane-tag {
+  color: #8fd9b0;
+}
+
+.lane-losers .lane-tag {
+  color: #f0a0a0;
+}
+
+.lane-third .lane-tag {
+  color: #f0d48a;
+}
+
+.card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 0.66rem;
+  opacity: 0.55;
+}
+
+.density-normal .card-head {
+  margin-bottom: 4px;
+}
+
+.density-normal .card-title {
+  font-size: 0.66rem;
+}
+
+@media (min-width: 900px) {
+  .density-comfortable {
+    padding: 10px;
+  }
+
+  .density-comfortable .card-title {
+    font-size: 0.78rem;
+  }
+}
+</style>
