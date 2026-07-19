@@ -52,6 +52,7 @@ export interface BracketMatchSummary {
   slots: [BracketTeamSlot, BracketTeamSlot]
   redWinGames: number | null
   blueWinGames: number | null
+  planStartedAt?: string
 }
 
 export interface BracketInfoCard {

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { BracketInfoCard as InfoCard } from '../../types/bracket'
+import moment from 'moment'
+import type { BracketInfoCard as InfoCard, BracketMatchSummary } from '../../types/bracket'
 import type { BracketDensity } from '../../utils/bracket_density'
 import BracketTeamRow from './BracketTeamRow.vue'
 
@@ -20,14 +21,29 @@ const nodeTypeLabel: Record<string, string> = {
   matchGroup: '对阵',
 }
 
+const statusLabel: Record<string, string> = {
+  STARTED: '进行中',
+  DONE: '已结束',
+  PENDING: '',
+  UNKNOWN: '',
+}
+
 /** 多场对阵按场次完整展示；纵向席位/场次一律不截断 */
 const showAsMatches = computed(
   () => props.item.nodeType === 'matchGroup' && props.item.matches.length > 0,
 )
 
-const showMatchCount = computed(
-  () => props.density !== 'compact' && props.item.matches.length > 1,
-)
+const showMeta = computed(() => props.density === 'comfortable')
+
+function matchTimeText(m: BracketMatchSummary): string {
+  if (!m.planStartedAt) return ''
+  const parsed = moment(m.planStartedAt)
+  return parsed.isValid() ? parsed.format('M/D HH:mm') : ''
+}
+
+function hasMatchMeta(m: BracketMatchSummary): boolean {
+  return Boolean(statusLabel[m.status] || m.orderNumber || matchTimeText(m))
+}
 </script>
 
 <template>
@@ -53,26 +69,30 @@ const showMatchCount = computed(
         :key="`${item.id}-match-${m.orderNumber}-${mi}`"
         class="mini-match"
       >
-        <div
-          v-if="density === 'comfortable'"
-          class="mini-match-label"
-        >
-          第{{ m.orderNumber }}场
+        <div class="slot-stack">
+          <BracketTeamRow
+            :team="m.slots[0]"
+            :score="m.redWinGames"
+            :density="density"
+            :show-score="true"
+            :show-name="showTeamName"
+          />
+          <BracketTeamRow
+            :team="m.slots[1]"
+            :score="m.blueWinGames"
+            :density="density"
+            :show-score="true"
+            :show-name="showTeamName"
+          />
         </div>
-        <BracketTeamRow
-          :team="m.slots[0]"
-          :score="m.redWinGames"
-          :density="density"
-          :show-score="true"
-          :show-name="showTeamName"
-        />
-        <BracketTeamRow
-          :team="m.slots[1]"
-          :score="m.blueWinGames"
-          :density="density"
-          :show-score="true"
-          :show-name="showTeamName"
-        />
+        <div
+          v-if="showMeta && hasMatchMeta(m)"
+          class="card-meta"
+        >
+          <span v-if="statusLabel[m.status]">{{ statusLabel[m.status] }}</span>
+          <span v-if="m.orderNumber">第{{ m.orderNumber }}场</span>
+          <span v-if="matchTimeText(m)">{{ matchTimeText(m) }}</span>
+        </div>
       </div>
     </div>
 
@@ -89,13 +109,6 @@ const showMatchCount = computed(
         :show-score="false"
         :show-name="showTeamName"
       />
-    </div>
-
-    <div
-      v-if="showMatchCount"
-      class="card-meta"
-    >
-      {{ item.matches.length }} 场对阵
     </div>
   </article>
 </template>
@@ -197,41 +210,54 @@ const showMatchCount = computed(
   gap: 3px;
 }
 
+/* 多场纵向分割：仅用上下间距与分隔线，不挤占水平内容区 */
 .match-list {
-  gap: 6px;
+  gap: 0;
 }
 
 .mini-match {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: 4px;
-  border-radius: 5px;
-  background: rgba(255, 255, 255, 0.03);
+  padding: 8px 0;
 }
 
-.mini-match-label {
-  font-size: 0.6rem;
-  opacity: 0.5;
-  padding: 0 2px 2px;
+.mini-match:first-child {
+  padding-top: 0;
 }
 
-.density-normal .match-list {
-  gap: 5px;
+.mini-match:last-child {
+  padding-bottom: 0;
 }
 
-.density-compact .match-list {
-  gap: 4px;
+.mini-match + .mini-match {
+  border-top: 1px solid rgba(120, 170, 220, 0.2);
 }
 
-.density-compact .mini-match {
-  padding: 2px;
+.slot-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 
 .card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
   margin-top: 6px;
   font-size: 0.66rem;
   opacity: 0.55;
+}
+
+.density-normal .mini-match {
+  padding: 6px 0;
+}
+
+.density-compact .mini-match {
+  padding: 5px 0;
+}
+
+.density-compact .mini-match + .mini-match {
+  border-top-color: rgba(120, 170, 220, 0.14);
 }
 
 .density-compact .card-head {
@@ -247,8 +273,8 @@ const showMatchCount = computed(
     padding: 10px;
   }
 
-  .density-comfortable .match-list {
-    gap: 8px;
+  .density-comfortable .mini-match {
+    padding: 10px 0;
   }
 }
 </style>

@@ -297,6 +297,7 @@ function buildInfoCard(args: {
       slots: buildPairSlots(match, redText, blueText),
       redWinGames: match ? match.redSideWinGameCount : null,
       blueWinGames: match ? match.blueSideWinGameCount : null,
+      planStartedAt: match?.planStartedAt,
     }
   })
 

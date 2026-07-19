@@ -477,6 +477,10 @@ describe('buildBracketViewModel — 瑞士轮 / 分组', () => {
       expect(round1.slots[1].displayName).toBe('深圳大学')
       expect(round1.slots[2].displayName).toBe('华南理工')
       expect(round1.slots[3].displayName).toBe('大连理工')
+      expect(round1.matches[0].status).toBe('DONE')
+      expect(round1.matches[0].planStartedAt).toBe('2026-07-01T10:00:00Z')
+      expect(round1.matches[1].status).toBe('STARTED')
+      expect(round1.matches[1].planStartedAt).toBe('2026-07-01T10:00:00Z')
     }
   })
 })
