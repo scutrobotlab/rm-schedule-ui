@@ -76,6 +76,7 @@ function hasMatchMeta(m: BracketMatchSummary): boolean {
             :density="density"
             :show-score="true"
             :show-name="showTeamName"
+            side="red"
           />
           <BracketTeamRow
             :team="m.slots[1]"
@@ -83,6 +84,7 @@ function hasMatchMeta(m: BracketMatchSummary): boolean {
             :density="density"
             :show-score="true"
             :show-name="showTeamName"
+            side="blue"
           />
         </div>
         <div

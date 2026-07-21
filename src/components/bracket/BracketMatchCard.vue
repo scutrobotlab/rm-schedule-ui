@@ -94,6 +94,7 @@ function slotMedal(
         :density="density"
         :show-score="true"
         :show-name="showTeamName"
+        :side="podiumKind ? null : 'red'"
         :medal="slotMedal(item.slots[0])"
       />
       <BracketTeamRow
@@ -102,6 +103,7 @@ function slotMedal(
         :density="density"
         :show-score="true"
         :show-name="showTeamName"
+        :side="podiumKind ? null : 'blue'"
         :medal="slotMedal(item.slots[1])"
       />
     </div>

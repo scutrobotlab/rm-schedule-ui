@@ -12,10 +12,12 @@ withDefaults(
     showScore: boolean
     /** ≥6 列时为 false */
     showName?: boolean
+    /** 对阵红蓝方；排名席位等非对阵不传 */
+    side?: 'red' | 'blue' | null
     /** 冠亚季：金 / 银 / 铜（覆盖默认绿色胜者） */
     medal?: 'gold' | 'silver' | 'bronze' | null
   }>(),
-  { showName: true, medal: null },
+  { showName: true, side: null, medal: null },
 )
 
 function logoSrc(url: string | undefined): string | undefined {
@@ -31,6 +33,7 @@ function logoSrc(url: string | undefined): string | undefined {
       winner: team.isWinner && !medal,
       loser: team.isLoser && !medal,
       pending: team.sourceKind !== 'team',
+      [`side-${side}`]: Boolean(side),
       [`medal-${medal}`]: Boolean(medal),
       [`density-${density}`]: true,
     }"
@@ -91,12 +94,28 @@ function logoSrc(url: string | undefined): string | undefined {
   background: rgba(255, 255, 255, 0.05);
 }
 
+.team-row.side-red {
+  border-left: 3px solid #e53935;
+}
+
+.team-row.side-blue {
+  border-left: 3px solid #1e88e5;
+}
+
 .team-row.winner {
   background: rgba(46, 120, 88, 0.42);
 }
 
 .team-row.loser {
   opacity: 0.52;
+}
+
+.team-row.loser.side-red {
+  border-left-color: #8a4a48;
+}
+
+.team-row.loser.side-blue {
+  border-left-color: #4a6a8a;
 }
 
 .team-row.medal-gold {
@@ -254,6 +273,11 @@ function logoSrc(url: string | undefined): string | undefined {
   gap: 5px;
 }
 
+.density-normal.side-red,
+.density-normal.side-blue {
+  border-left-width: 2px;
+}
+
 .density-normal .team-name {
   font-size: 0.76rem;
 }
@@ -276,6 +300,11 @@ function logoSrc(url: string | undefined): string | undefined {
   min-height: 24px;
   padding: 2px 5px;
   gap: 4px;
+}
+
+.density-compact.side-red,
+.density-compact.side-blue {
+  border-left-width: 2px;
 }
 
 .density-compact .team-logo {
