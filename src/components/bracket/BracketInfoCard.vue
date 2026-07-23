@@ -2,17 +2,21 @@
 import { computed } from 'vue'
 import moment from 'moment'
 import type { BracketInfoCard as InfoCard, BracketMatchSummary } from '../../types/bracket'
-import type { BracketDensity } from '../../utils/bracket_density'
+import {
+  shortenBracketTitle,
+  type BracketDensity,
+} from '../../utils/bracket_density'
 import BracketTeamRow from './BracketTeamRow.vue'
 
 const props = withDefaults(
   defineProps<{
     item: InfoCard
     density: BracketDensity
+    shortenTitle?: boolean
     showTeamName?: boolean
     showTypeTag?: boolean
   }>(),
-  { showTeamName: true, showTypeTag: true },
+  { shortenTitle: false, showTeamName: true, showTypeTag: true },
 )
 
 const nodeTypeLabel: Record<string, string> = {
@@ -35,6 +39,9 @@ const showAsMatches = computed(
 )
 
 const showMeta = computed(() => props.density === 'comfortable')
+const displayTitle = computed(() => (
+  props.shortenTitle ? shortenBracketTitle(props.item.title) : props.item.title
+))
 
 function matchTimeText(m: BracketMatchSummary): string {
   if (!m.planStartedAt) return ''
@@ -54,7 +61,7 @@ function hasMatchMeta(m: BracketMatchSummary): boolean {
     :data-node-id="item.nodeId"
   >
     <div class="card-head">
-      <span class="card-title">{{ item.title }}</span>
+      <span class="card-title">{{ displayTitle }}</span>
       <span
         v-if="showTypeTag"
         class="type-tag"

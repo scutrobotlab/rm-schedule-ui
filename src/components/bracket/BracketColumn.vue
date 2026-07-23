@@ -8,6 +8,8 @@ import BracketInfoCardView from './BracketInfoCard.vue'
 const props = defineProps<{
   column: BracketColumn
   density: BracketDensity
+  /** ≥3 个可见列时，对超过 6 单位的标题应用语义缩减 */
+  shortenTitle?: boolean
   /** ≥6 列时为 false，隐藏校名 */
   showTeamName?: boolean
   /** ≥4 列时为 false，隐藏右上角类型/去向标签 */
@@ -58,6 +60,7 @@ function isMatch(item: BracketMatchCard | BracketInfoCard): item is BracketMatch
           v-if="isMatch(item)"
           :item="item"
           :density="density"
+          :shorten-title="shortenTitle === true"
           :show-team-name="showTeamName !== false"
           :show-type-tag="showTypeTag !== false"
         />
@@ -65,6 +68,7 @@ function isMatch(item: BracketMatchCard | BracketInfoCard): item is BracketMatch
           v-else
           :item="item"
           :density="density"
+          :shorten-title="shortenTitle === true"
           :show-team-name="showTeamName !== false"
           :show-type-tag="showTypeTag !== false"
         />

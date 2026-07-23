@@ -2,17 +2,21 @@
 import { computed } from 'vue'
 import moment from 'moment'
 import type { BracketMatchCard as MatchCard } from '../../types/bracket'
-import type { BracketDensity } from '../../utils/bracket_density'
+import {
+  shortenBracketTitle,
+  type BracketDensity,
+} from '../../utils/bracket_density'
 import BracketTeamRow from './BracketTeamRow.vue'
 
 const props = withDefaults(
   defineProps<{
     item: MatchCard
     density: BracketDensity
+    shortenTitle?: boolean
     showTeamName?: boolean
     showTypeTag?: boolean
   }>(),
-  { showTeamName: true, showTypeTag: true },
+  { shortenTitle: false, showTeamName: true, showTypeTag: true },
 )
 
 const statusLabel: Record<string, string> = {
@@ -23,6 +27,9 @@ const statusLabel: Record<string, string> = {
 }
 
 const showMeta = computed(() => props.density === 'comfortable')
+const displayTitle = computed(() => (
+  props.shortenTitle ? shortenBracketTitle(props.item.title) : props.item.title
+))
 const timeText = computed(() => {
   if (!props.item.planStartedAt) return ''
   const m = moment(props.item.planStartedAt)
@@ -71,13 +78,13 @@ function slotMedal(
     :data-node-id="item.nodeId"
   >
     <div
-      v-if="density !== 'compact' && (item.title || (showTypeTag && (podiumTag || destinationTag)))"
+      v-if="density !== 'compact' && (displayTitle || (showTypeTag && (podiumTag || destinationTag)))"
       class="card-head"
     >
       <span
-        v-if="item.title"
+        v-if="displayTitle"
         class="card-title"
-      >{{ item.title }}</span>
+      >{{ displayTitle }}</span>
       <span
         v-if="showTypeTag && podiumTag"
         class="type-tag"
