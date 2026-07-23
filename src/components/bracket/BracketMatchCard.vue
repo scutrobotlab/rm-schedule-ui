@@ -78,7 +78,7 @@ function slotMedal(
     :data-node-id="item.nodeId"
   >
     <div
-      v-if="density !== 'compact' && (displayTitle || (showTypeTag && (podiumTag || destinationTag)))"
+      v-if="displayTitle || (showTypeTag && (podiumTag || destinationTag))"
       class="card-head"
     >
       <span
@@ -243,6 +243,14 @@ function slotMedal(
 
 .density-normal .card-title {
   font-size: 0.66rem;
+}
+
+.density-compact .card-head {
+  margin-bottom: 4px;
+}
+
+.density-compact .card-title {
+  font-size: 0.64rem;
 }
 
 @media (min-width: 900px) {
