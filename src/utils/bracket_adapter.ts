@@ -23,10 +23,17 @@ export type GetMatchByOrder = (
   planGameCount?: number,
 ) => MatchNode | undefined
 
+/** 按小组名 + 名次取实时排名席位（海外小组赛 groupLoop 等） */
+export type GetGroupPlayerByRank = (
+  groupName: string,
+  rank: number,
+) => Player | null | undefined
+
 export interface BuildBracketOptions {
   zoneId: number
   part: Part
   getMatchByOrder: GetMatchByOrder
+  getGroupPlayerByRank?: GetGroupPlayerByRank
   /** 闭区间；省略则返回全部列 */
   stageRange?: BracketStageRange
 }
@@ -36,7 +43,7 @@ export interface BuildBracketOptions {
  * 列按节点固定 x 坐标分组，与 stages 从左到右对齐。
  */
 export function buildBracketViewModel(options: BuildBracketOptions): BracketViewModel {
-  const { zoneId, part, getMatchByOrder, stageRange } = options
+  const { zoneId, part, getMatchByOrder, getGroupPlayerByRank, stageRange } = options
   const jsonData = part.jsonData
   const stages = jsonData.stages ?? []
   const planGameCount = part.group === 'QW' ? 2 : 3
@@ -60,6 +67,7 @@ export function buildBracketViewModel(options: BuildBracketOptions): BracketView
           zoneId,
           planGameCount,
           getMatchByOrder,
+          getGroupPlayerByRank,
           suppressGroupRank,
         })
         if (item) items.push(item)
@@ -249,9 +257,19 @@ function toBracketItem(args: {
   zoneId: number
   planGameCount: number
   getMatchByOrder: GetMatchByOrder
+  getGroupPlayerByRank?: GetGroupPlayerByRank
   suppressGroupRank?: boolean
 }): BracketItem | null {
-  const { node, zone, zoneIndex, zoneId, planGameCount, getMatchByOrder, suppressGroupRank } = args
+  const {
+    node,
+    zone,
+    zoneIndex,
+    zoneId,
+    planGameCount,
+    getMatchByOrder,
+    getGroupPlayerByRank,
+    suppressGroupRank,
+  } = args
   const lane = detectLane(node)
   const type = node.data.type
 
@@ -278,6 +296,7 @@ function toBracketItem(args: {
     zoneId,
     planGameCount,
     getMatchByOrder,
+    getGroupPlayerByRank,
     suppressGroupRank,
   })
 }
@@ -322,6 +341,7 @@ function buildInfoCard(args: {
   zoneId: number
   planGameCount: number
   getMatchByOrder: GetMatchByOrder
+  getGroupPlayerByRank?: GetGroupPlayerByRank
   suppressGroupRank?: boolean
 }): BracketInfoCard {
   const {
@@ -332,6 +352,7 @@ function buildInfoCard(args: {
     zoneId,
     planGameCount,
     getMatchByOrder,
+    getGroupPlayerByRank,
     suppressGroupRank,
   } = args
   const nodeType = resolveInfoNodeType(node, zone)
@@ -352,6 +373,7 @@ function buildInfoCard(args: {
 
   const slots = buildInfoSlots(zone, zoneId, planGameCount, getMatchByOrder, {
     suppressGroupRank,
+    getGroupPlayerByRank,
   })
   if (!suppressGroupRank && (nodeType === 'promote' || nodeType === 'eliminate')) {
     applyGroupRanks(slots, zone)
@@ -393,10 +415,14 @@ function buildInfoSlots(
   zoneId: number,
   planGameCount: number,
   getMatchByOrder: GetMatchByOrder,
-  options: { suppressGroupRank?: boolean } = {},
+  options: {
+    suppressGroupRank?: boolean
+    getGroupPlayerByRank?: GetGroupPlayerByRank
+  } = {},
 ): BracketTeamSlot[] {
   const slots: BracketTeamSlot[] = []
   const suppressGroupRank = Boolean(options.suppressGroupRank)
+  const getGroupPlayerByRank = options.getGroupPlayerByRank
 
   for (let i = 0; i < zone.winners.length; i++) {
     const match = getMatchByOrder(zoneId, zone.winners[i], planGameCount)
@@ -434,11 +460,24 @@ function buildInfoSlots(
     return slots
   }
 
-  // 未填满的席位用来源文案补齐（含 groupLoop 的 text / groupRank）
+  // 海外小组赛等 groupLoop：按 group + groupRank 解析实时排名队伍
   if (slots.length === 0 && zone.groupRank?.length) {
+    const displayRanks = resolveGroupLoopDisplayRanks(zone, getGroupPlayerByRank)
     for (let i = 0; i < zone.groupRank.length; i++) {
-      const label = zone.text[i] ?? `${zone.group ?? ''}${zone.groupRank[i]}`
-      slots.push(sourceSlot(label, suppressGroupRank ? undefined : zone.groupRank[i]))
+      const structuralRank = zone.groupRank[i]
+      const label = zone.text[i] ?? `${zone.group ?? ''}${structuralRank}`
+      const player = (
+        zone.group && getGroupPlayerByRank
+          ? getGroupPlayerByRank(zone.group, structuralRank)
+          : undefined
+      ) ?? null
+      const displayRank = suppressGroupRank ? undefined : displayRanks[i]
+      slots.push(
+        playerToSlot(player, label, false, false, {
+          matchDone: Boolean(player && player.score !== 0),
+          structuralRank: displayRank,
+        }),
+      )
     }
     return slots
   }
@@ -448,6 +487,29 @@ function buildInfoSlots(
   }
 
   return slots
+}
+
+/**
+ * 与旧 MatchGraph.groupTrulyRank 对齐：小组尚未开打（全员 score=0）时名次统一显示 1，
+ * 否则按结构名次 1/2/3… 展示。
+ */
+function resolveGroupLoopDisplayRanks(
+  zone: ZoneZoneData,
+  getGroupPlayerByRank?: GetGroupPlayerByRank,
+): number[] {
+  const ranks = zone.groupRank ?? []
+  if (!zone.group || !getGroupPlayerByRank || ranks.length === 0) return ranks
+
+  let anyPlayer = false
+  let allZero = true
+  for (const rank of ranks) {
+    const player = getGroupPlayerByRank(zone.group, rank)
+    if (!player) continue
+    anyPlayer = true
+    if (player.score !== 0) allZero = false
+  }
+  if (anyPlayer && allZero) return ranks.map(() => 1)
+  return ranks
 }
 
 function buildPairSlots(

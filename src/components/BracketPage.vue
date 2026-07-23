@@ -565,6 +565,16 @@ const bracketModel = computed((): BracketViewModel | null => {
         return undefined
       }
     },
+    getGroupPlayerByRank: (groupName, rank) => {
+      if (!ready) return undefined
+      try {
+        const zone = promotionStore.getZone(zoneId.value)
+        const group = zone?.groups?.nodes?.find((g) => g.name === groupName)
+        return group?.players?.nodes?.find((p) => p.rank === rank) ?? null
+      } catch {
+        return undefined
+      }
+    },
   })
 })
 

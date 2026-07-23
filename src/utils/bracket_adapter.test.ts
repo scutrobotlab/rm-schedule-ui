@@ -533,6 +533,123 @@ describe('buildBracketViewModel — 双败败者组', () => {
   })
 })
 
+describe('buildBracketViewModel — 海外小组赛 groupLoop', () => {
+  const overseasJson: ZoneJsonData = {
+    rootId: '#1',
+    stages: ['海外小组赛', '海外淘汰赛'],
+    nodes: [
+      {
+        id: '#1',
+        text: 'Q组海外队伍小组赛',
+        x: 0,
+        y: 0,
+        data: {
+          title: 'Q组海外队伍小组赛',
+          titleColor: '#fff',
+          round: 1,
+          type: 'groupLoop',
+          zones: [{
+            matches: [],
+            winners: [],
+            losers: [],
+            text: ['Q1', 'Q2', 'Q3'],
+            group: 'Q',
+            groupRank: [1, 2, 3],
+          }],
+        },
+      },
+      {
+        id: '#2',
+        text: '海外队伍淘汰赛',
+        x: 100,
+        y: 0,
+        data: {
+          title: '海外队伍淘汰赛',
+          titleColor: '#fff',
+          round: 2,
+          type: 'match',
+          zones: [{
+            matches: [7, 8],
+            winners: [],
+            losers: [],
+            text: ['Q组 第1名', 'W组 第2名', 'W组 第1名', 'Q组 第2名'],
+          }],
+        },
+      },
+    ],
+    lines: [{ from: '#1', to: '#2' }],
+  }
+
+  it('无赛程时回退到 Q1/Q2/Q3 占位', () => {
+    const model = buildBracketViewModel({
+      zoneId: 524,
+      part: partOf(overseasJson, { type: 'group', group: 'QW', name: '港澳台及海外赛区' }),
+      getMatchByOrder: () => undefined,
+    })
+    const card = model.columns[0].items[0]
+    expect(card.kind).toBe('info')
+    if (card.kind === 'info') {
+      expect(card.nodeType).toBe('groupLoop')
+      expect(card.slots.map((s) => s.displayName)).toEqual(['Q1', 'Q2', 'Q3'])
+      expect(card.slots.map((s) => s.groupRank)).toEqual([1, 2, 3])
+    }
+  })
+
+  it('按 group + groupRank 解析实时排名队伍', () => {
+    const byRank = new Map<number, Player>([
+      [1, { ...player('q1', '香港科技大学'), rank: 1, score: 6 }],
+      [2, { ...player('q2', '香港大学'), rank: 2, score: 3 }],
+      [3, { ...player('q3', '澳门大学'), rank: 3, score: 0 }],
+    ])
+
+    const model = buildBracketViewModel({
+      zoneId: 524,
+      part: partOf(overseasJson, { type: 'group', group: 'QW', name: '港澳台及海外赛区' }),
+      getMatchByOrder: () => undefined,
+      getGroupPlayerByRank: (groupName, rank) => (
+        groupName === 'Q' ? byRank.get(rank) : null
+      ),
+    })
+    const card = model.columns[0].items[0]
+    expect(card.kind).toBe('info')
+    if (card.kind === 'info') {
+      expect(card.slots[0].displayName).toBe('香港科技大学')
+      expect(card.slots[0].sourceKind).toBe('team')
+      expect(card.slots[0].groupRank).toBe(1)
+      expect(card.slots[1].displayName).toBe('香港大学')
+      expect(card.slots[2].displayName).toBe('澳门大学')
+      expect(card.slots[2].groupRank).toBe(3)
+    }
+  })
+
+  it('全员未开打时名次统一显示 1', () => {
+    const byRank = new Map<number, Player>([
+      [1, { ...player('q1', '香港科技大学'), rank: 1 }],
+      [2, { ...player('q2', '香港大学'), rank: 2 }],
+      [3, { ...player('q3', '澳门大学'), rank: 3 }],
+    ])
+
+    const model = buildBracketViewModel({
+      zoneId: 524,
+      part: partOf(overseasJson, { type: 'group', group: 'QW', name: '港澳台及海外赛区' }),
+      getMatchByOrder: () => undefined,
+      getGroupPlayerByRank: (groupName, rank) => (
+        groupName === 'Q' ? byRank.get(rank) : null
+      ),
+    })
+    const card = model.columns[0].items[0]
+    expect(card.kind).toBe('info')
+    if (card.kind === 'info') {
+      expect(card.slots.map((s) => s.displayName)).toEqual([
+        '香港科技大学',
+        '香港大学',
+        '澳门大学',
+      ])
+      expect(card.slots.map((s) => s.groupRank)).toEqual([1, 1, 1])
+    }
+  })
+})
+
 describe('resolveBracketDensity', () => {
   it('按可见列数分级', () => {
     expect(resolveBracketDensity(1)).toBe('comfortable')
