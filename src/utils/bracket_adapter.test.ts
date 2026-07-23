@@ -12,7 +12,7 @@ import {
   resolveWinner,
   resolveWinnerDestination,
 } from './bracket_adapter'
-import { resolveBracketDensity } from './bracket_density'
+import { resolveBracketDensity, shouldShowBracketTypeTag } from './bracket_density'
 
 function team(name: string, logo = 'https://example.com/logo.png'): Team {
   return {
@@ -540,5 +540,14 @@ describe('resolveBracketDensity', () => {
     expect(resolveBracketDensity(3)).toBe('normal')
     expect(resolveBracketDensity(4)).toBe('normal')
     expect(resolveBracketDensity(5)).toBe('compact')
+  })
+})
+
+describe('shouldShowBracketTypeTag', () => {
+  it('≥4 列时隐藏右上角标签', () => {
+    expect(shouldShowBracketTypeTag(1)).toBe(true)
+    expect(shouldShowBracketTypeTag(3)).toBe(true)
+    expect(shouldShowBracketTypeTag(4)).toBe(false)
+    expect(shouldShowBracketTypeTag(6)).toBe(false)
   })
 })

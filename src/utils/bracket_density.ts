@@ -10,6 +10,11 @@ export function resolveBracketDensity(columnCount: number): BracketDensity {
   return 'compact'
 }
 
+/** ≥4 列时隐藏节点右上角类型/去向标签 */
+export function shouldShowBracketTypeTag(columnCount: number): boolean {
+  return columnCount < 4
+}
+
 /** ≥6 列时隐藏校名，仅保留校徽与比分 */
 export function shouldShowBracketTeamName(columnCount: number): boolean {
   return columnCount < 6

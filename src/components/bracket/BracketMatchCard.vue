@@ -10,8 +10,9 @@ const props = withDefaults(
     item: MatchCard
     density: BracketDensity
     showTeamName?: boolean
+    showTypeTag?: boolean
   }>(),
-  { showTeamName: true },
+  { showTeamName: true, showTypeTag: true },
 )
 
 const statusLabel: Record<string, string> = {
@@ -70,7 +71,7 @@ function slotMedal(
     :data-node-id="item.nodeId"
   >
     <div
-      v-if="density !== 'compact' && (item.title || podiumTag || destinationTag)"
+      v-if="density !== 'compact' && (item.title || (showTypeTag && (podiumTag || destinationTag)))"
       class="card-head"
     >
       <span
@@ -78,11 +79,11 @@ function slotMedal(
         class="card-title"
       >{{ item.title }}</span>
       <span
-        v-if="podiumTag"
+        v-if="showTypeTag && podiumTag"
         class="type-tag"
       >{{ podiumTag }}</span>
       <span
-        v-else-if="destinationTag"
+        v-else-if="showTypeTag && destinationTag"
         class="type-tag dest-tag"
       >{{ destinationTag }}</span>
     </div>

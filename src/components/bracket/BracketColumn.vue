@@ -10,6 +10,8 @@ const props = defineProps<{
   density: BracketDensity
   /** ≥6 列时为 false，隐藏校名 */
   showTeamName?: boolean
+  /** ≥4 列时为 false，隐藏右上角类型/去向标签 */
+  showTypeTag?: boolean
   /** 淘汰赛树形布局：节点 offsetTop；null 表示普通堆叠 */
   treeTops?: Record<string, number> | null
   treeHeight?: number | null
@@ -57,12 +59,14 @@ function isMatch(item: BracketMatchCard | BracketInfoCard): item is BracketMatch
           :item="item"
           :density="density"
           :show-team-name="showTeamName !== false"
+          :show-type-tag="showTypeTag !== false"
         />
         <BracketInfoCardView
           v-else
           :item="item"
           :density="density"
           :show-team-name="showTeamName !== false"
+          :show-type-tag="showTypeTag !== false"
         />
       </div>
     </div>

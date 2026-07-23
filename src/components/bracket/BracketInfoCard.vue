@@ -10,8 +10,9 @@ const props = withDefaults(
     item: InfoCard
     density: BracketDensity
     showTeamName?: boolean
+    showTypeTag?: boolean
   }>(),
-  { showTeamName: true },
+  { showTeamName: true, showTypeTag: true },
 )
 
 const nodeTypeLabel: Record<string, string> = {
@@ -55,7 +56,7 @@ function hasMatchMeta(m: BracketMatchSummary): boolean {
     <div class="card-head">
       <span class="card-title">{{ item.title }}</span>
       <span
-        v-if="density !== 'compact'"
+        v-if="showTypeTag"
         class="type-tag"
       >{{ nodeTypeLabel[item.nodeType] || '说明' }}</span>
     </div>

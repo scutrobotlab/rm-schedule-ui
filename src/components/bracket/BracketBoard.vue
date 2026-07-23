@@ -4,6 +4,7 @@ import type { BracketViewModel } from '../../types/bracket'
 import {
   resolveBracketDensity,
   shouldShowBracketTeamName,
+  shouldShowBracketTypeTag,
 } from '../../utils/bracket_density'
 import { bracketColumnGap } from '../../utils/bracket_column_gap'
 import { computeKnockoutLayout } from '../../utils/bracket_tree_layout'
@@ -27,6 +28,7 @@ const spanForDensity = computed(() => {
 })
 const density = computed(() => resolveBracketDensity(spanForDensity.value))
 const showTeamName = computed(() => shouldShowBracketTeamName(spanForDensity.value))
+const showTypeTag = computed(() => shouldShowBracketTypeTag(spanForDensity.value))
 const isKnockout = computed(() => props.model.partType === 'knockout')
 
 const layoutKey = computed(() => {
@@ -133,6 +135,7 @@ watch(layoutKey, () => scheduleLayout())
         :column="column"
         :density="density"
         :show-team-name="showTeamName"
+        :show-type-tag="showTypeTag"
         :tree-tops="isKnockout ? nodeTops : null"
         :tree-height="isKnockout ? columnHeights[column.index] : null"
       />
