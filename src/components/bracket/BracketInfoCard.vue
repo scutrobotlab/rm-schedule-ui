@@ -190,7 +190,9 @@ function hasMatchMeta(m: BracketMatchSummary): boolean {
   align-items: center;
   flex-wrap: wrap;
   gap: 4px 6px;
+  max-height: 1rem;
   margin-bottom: 6px;
+  overflow: hidden;
 }
 
 .card-title {
@@ -209,6 +211,7 @@ function hasMatchMeta(m: BracketMatchSummary): boolean {
   padding: 1px 5px;
   border-radius: 999px;
   letter-spacing: 0.04em;
+  white-space: nowrap;
   background: rgba(255, 255, 255, 0.08);
   opacity: 0.8;
 }
