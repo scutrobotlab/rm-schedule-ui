@@ -3,6 +3,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { BracketViewModel } from '../../types/bracket'
 import {
   resolveBracketDensity,
+  shouldExtraShortenBracketTitle,
   shouldShortenBracketTitle,
   shouldShowBracketTeamName,
   shouldShowBracketTypeTag,
@@ -29,6 +30,7 @@ const spanForDensity = computed(() => {
 })
 const density = computed(() => resolveBracketDensity(spanForDensity.value))
 const shortenTitle = computed(() => shouldShortenBracketTitle(spanForDensity.value))
+const extraShortenTitle = computed(() => shouldExtraShortenBracketTitle(spanForDensity.value))
 const showTeamName = computed(() => shouldShowBracketTeamName(spanForDensity.value))
 const showTypeTag = computed(() => shouldShowBracketTypeTag(spanForDensity.value))
 const isKnockout = computed(() => props.model.partType === 'knockout')
@@ -137,6 +139,7 @@ watch(layoutKey, () => scheduleLayout())
         :column="column"
         :density="density"
         :shorten-title="shortenTitle"
+        :extra-shorten-title="extraShortenTitle"
         :show-team-name="showTeamName"
         :show-type-tag="showTypeTag"
         :tree-tops="isKnockout ? nodeTops : null"

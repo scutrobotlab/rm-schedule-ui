@@ -13,10 +13,11 @@ const props = withDefaults(
     item: MatchCard
     density: BracketDensity
     shortenTitle?: boolean
+    extraShortenTitle?: boolean
     showTeamName?: boolean
     showTypeTag?: boolean
   }>(),
-  { shortenTitle: false, showTeamName: true, showTypeTag: true },
+  { shortenTitle: false, extraShortenTitle: false, showTeamName: true, showTypeTag: true },
 )
 
 const statusLabel: Record<string, string> = {
@@ -28,7 +29,9 @@ const statusLabel: Record<string, string> = {
 
 const showMeta = computed(() => props.density === 'comfortable')
 const displayTitle = computed(() => (
-  props.shortenTitle ? shortenBracketTitle(props.item.title) : props.item.title
+  props.shortenTitle
+    ? shortenBracketTitle(props.item.title, { extra: props.extraShortenTitle })
+    : props.item.title
 ))
 const timeText = computed(() => {
   if (!props.item.planStartedAt) return ''

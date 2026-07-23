@@ -13,10 +13,11 @@ const props = withDefaults(
     item: InfoCard
     density: BracketDensity
     shortenTitle?: boolean
+    extraShortenTitle?: boolean
     showTeamName?: boolean
     showTypeTag?: boolean
   }>(),
-  { shortenTitle: false, showTeamName: true, showTypeTag: true },
+  { shortenTitle: false, extraShortenTitle: false, showTeamName: true, showTypeTag: true },
 )
 
 const nodeTypeLabel: Record<string, string> = {
@@ -40,7 +41,9 @@ const showAsMatches = computed(
 
 const showMeta = computed(() => props.density === 'comfortable')
 const displayTitle = computed(() => (
-  props.shortenTitle ? shortenBracketTitle(props.item.title) : props.item.title
+  props.shortenTitle
+    ? shortenBracketTitle(props.item.title, { extra: props.extraShortenTitle })
+    : props.item.title
 ))
 
 function matchTimeText(m: BracketMatchSummary): string {

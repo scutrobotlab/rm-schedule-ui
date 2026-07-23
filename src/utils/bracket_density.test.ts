@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   bracketDisplayUnits,
   shortenBracketTitle,
+  shouldExtraShortenBracketTitle,
   shouldShortenBracketTitle,
 } from './bracket_density'
 
@@ -20,6 +21,13 @@ describe('shouldShortenBracketTitle', () => {
   it('仅在至少可见 3 列时开启', () => {
     expect(shouldShortenBracketTitle(2)).toBe(false)
     expect(shouldShortenBracketTitle(3)).toBe(true)
+  })
+})
+
+describe('shouldExtraShortenBracketTitle', () => {
+  it('仅在至少可见 4 列时开启', () => {
+    expect(shouldExtraShortenBracketTitle(3)).toBe(false)
+    expect(shouldExtraShortenBracketTitle(4)).toBe(true)
   })
 })
 
@@ -57,6 +65,24 @@ describe('shortenBracketTitle', () => {
     '晋级淘汰赛 3-0',
   ])('不改写不超过 6 单位的标题 %s', (title) => {
     expect(shortenBracketTitle(title)).toBe(title)
+  })
+
+  it('≥4 列追加档：晋级淘汰赛 3-0 → 晋级 3-0', () => {
+    expect(shortenBracketTitle('晋级淘汰赛 3-0', { extra: true })).toBe('晋级 3-0')
+  })
+
+  it.each([
+    ['晋级全国赛 2-0', '全国赛 2-0'],
+    ['晋级复活赛 1-2', '复活赛 1-2'],
+  ])('≥4 列追加档去掉晋级前缀 %s', (title, expected) => {
+    expect(shortenBracketTitle(title, { extra: true })).toBe(expected)
+  })
+
+  it.each([
+    '晋级全国赛',
+    '晋级复活赛',
+  ])('≥4 列时不缩减无比分去向标题 %s', (title) => {
+    expect(shortenBracketTitle(title, { extra: true })).toBe(title)
   })
 
   it('缩减超长淘汰赛修饰语时保留 N进M', () => {
