@@ -5,6 +5,7 @@ import type { BracketMatchCard as MatchCard } from '../../types/bracket'
 import {
   shortenBracketTitle,
   type BracketDensity,
+  type BracketTitleShortenLevel,
 } from '../../utils/bracket_density'
 import BracketTeamRow from './BracketTeamRow.vue'
 
@@ -12,12 +13,11 @@ const props = withDefaults(
   defineProps<{
     item: MatchCard
     density: BracketDensity
-    shortenTitle?: boolean
-    extraShortenTitle?: boolean
+    titleShortenLevel?: BracketTitleShortenLevel
     showTeamName?: boolean
     showTypeTag?: boolean
   }>(),
-  { shortenTitle: false, extraShortenTitle: false, showTeamName: true, showTypeTag: true },
+  { titleShortenLevel: 0, showTeamName: true, showTypeTag: true },
 )
 
 const statusLabel: Record<string, string> = {
@@ -29,9 +29,7 @@ const statusLabel: Record<string, string> = {
 
 const showMeta = computed(() => props.density === 'comfortable')
 const displayTitle = computed(() => (
-  props.shortenTitle
-    ? shortenBracketTitle(props.item.title, { extra: props.extraShortenTitle })
-    : props.item.title
+  shortenBracketTitle(props.item.title, props.titleShortenLevel)
 ))
 const timeText = computed(() => {
   if (!props.item.planStartedAt) return ''

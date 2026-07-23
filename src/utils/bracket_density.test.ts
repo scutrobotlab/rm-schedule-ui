@@ -1,9 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import {
   bracketDisplayUnits,
+  resolveBracketTitleShortenLevel,
   shortenBracketTitle,
-  shouldExtraShortenBracketTitle,
-  shouldShortenBracketTitle,
 } from './bracket_density'
 
 describe('bracketDisplayUnits', () => {
@@ -17,17 +16,15 @@ describe('bracketDisplayUnits', () => {
   })
 })
 
-describe('shouldShortenBracketTitle', () => {
-  it('仅在至少可见 3 列时开启', () => {
-    expect(shouldShortenBracketTitle(2)).toBe(false)
-    expect(shouldShortenBracketTitle(3)).toBe(true)
-  })
-})
-
-describe('shouldExtraShortenBracketTitle', () => {
-  it('仅在至少可见 4 列时开启', () => {
-    expect(shouldExtraShortenBracketTitle(3)).toBe(false)
-    expect(shouldExtraShortenBracketTitle(4)).toBe(true)
+describe('resolveBracketTitleShortenLevel', () => {
+  it.each([
+    [2, 0],
+    [3, 1],
+    [4, 2],
+    [5, 3],
+    [6, 4],
+  ])('可见 %i 列 → 档位 %i', (columns, level) => {
+    expect(resolveBracketTitleShortenLevel(columns)).toBe(level)
   })
 })
 
@@ -51,8 +48,8 @@ describe('shortenBracketTitle', () => {
     ['Q组海外队伍小组赛', 'Q组小组赛'],
     ['W组海外队伍小组赛', 'W组小组赛'],
     ['海外队伍淘汰赛', '海外淘汰'],
-  ])('按语义缩减 %s', (title, expected) => {
-    expect(shortenBracketTitle(title)).toBe(expected)
+  ])('≥3 列按语义缩减 %s', (title, expected) => {
+    expect(shortenBracketTitle(title, 1)).toBe(expected)
   })
 
   it.each([
@@ -60,33 +57,59 @@ describe('shortenBracketTitle', () => {
     '16进8淘汰赛',
     '8进4淘汰赛',
     '16进8胜者组',
+    '16进8第一轮',
     '冠军争夺战',
     '季军争夺战',
     '晋级淘汰赛 3-0',
-  ])('不改写不超过 6 单位的标题 %s', (title) => {
-    expect(shortenBracketTitle(title)).toBe(title)
+  ])('≥3 列不改写不超过 6 单位的标题 %s', (title) => {
+    expect(shortenBracketTitle(title, 1)).toBe(title)
   })
 
   it('≥4 列追加档：晋级淘汰赛 3-0 → 晋级 3-0', () => {
-    expect(shortenBracketTitle('晋级淘汰赛 3-0', { extra: true })).toBe('晋级 3-0')
+    expect(shortenBracketTitle('晋级淘汰赛 3-0', 2)).toBe('晋级 3-0')
   })
 
   it.each([
     ['晋级全国赛 2-0', '全国赛 2-0'],
     ['晋级复活赛 1-2', '复活赛 1-2'],
   ])('≥4 列追加档去掉晋级前缀 %s', (title, expected) => {
-    expect(shortenBracketTitle(title, { extra: true })).toBe(expected)
+    expect(shortenBracketTitle(title, 2)).toBe(expected)
   })
 
   it.each([
     '晋级全国赛',
     '晋级复活赛',
   ])('≥4 列时不缩减无比分去向标题 %s', (title) => {
-    expect(shortenBracketTitle(title, { extra: true })).toBe(title)
+    expect(shortenBracketTitle(title, 2)).toBe(title)
+  })
+
+  it.each([
+    ['16进8第一轮', '16进8一轮'],
+    ['16进8胜者组', '16进8胜者'],
+  ])('≥5 列压缩 16进8 %s', (title, expected) => {
+    expect(shortenBracketTitle(title, 3)).toBe(expected)
+  })
+
+  it.each([
+    '8进4第一轮',
+    '8进4胜者组',
+  ])('≥5 列不修改 8进4 标题 %s', (title) => {
+    expect(shortenBracketTitle(title, 3)).toBe(title)
+  })
+
+  it.each([
+    ['第一轮 0-0', '0-0'],
+    ['第二轮 1-0', '1-0'],
+    ['第三轮 1-1', '1-1'],
+    ['第四轮 2-1', '2-1'],
+    ['第五轮 2-2', '2-2'],
+    ['瑞士轮第一轮 0-0', '0-0'],
+  ])('≥6 列瑞士轮只留战绩 %s', (title, expected) => {
+    expect(shortenBracketTitle(title, 4)).toBe(expected)
   })
 
   it('缩减超长淘汰赛修饰语时保留 N进M', () => {
-    expect(shortenBracketTitle('1234进5678淘汰赛')).toBe('1234进5678')
-    expect(shortenBracketTitle('1234进5678胜者组第一轮')).toBe('1234进5678胜')
+    expect(shortenBracketTitle('1234进5678淘汰赛', 1)).toBe('1234进5678')
+    expect(shortenBracketTitle('1234进5678胜者组第一轮', 1)).toBe('1234进5678胜')
   })
 })

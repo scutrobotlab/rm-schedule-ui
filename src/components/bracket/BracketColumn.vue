@@ -1,17 +1,18 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { BracketColumn, BracketInfoCard, BracketMatchCard } from '../../types/bracket'
-import type { BracketDensity } from '../../utils/bracket_density'
+import type {
+  BracketDensity,
+  BracketTitleShortenLevel,
+} from '../../utils/bracket_density'
 import BracketMatchCardView from './BracketMatchCard.vue'
 import BracketInfoCardView from './BracketInfoCard.vue'
 
 const props = defineProps<{
   column: BracketColumn
   density: BracketDensity
-  /** ≥3 个可见列时，对超过 6 单位的标题应用语义缩减 */
-  shortenTitle?: boolean
-  /** ≥4 个可见列时，追加更紧的一档标题缩减 */
-  extraShortenTitle?: boolean
+  /** 0=不缩；1=≥3；2=≥4；3=≥5；4=≥6 */
+  titleShortenLevel?: BracketTitleShortenLevel
   /** ≥6 列时为 false，隐藏校名 */
   showTeamName?: boolean
   /** ≥4 列时为 false，隐藏右上角类型/去向标签 */
@@ -62,8 +63,7 @@ function isMatch(item: BracketMatchCard | BracketInfoCard): item is BracketMatch
           v-if="isMatch(item)"
           :item="item"
           :density="density"
-          :shorten-title="shortenTitle === true"
-          :extra-shorten-title="extraShortenTitle === true"
+          :title-shorten-level="titleShortenLevel ?? 0"
           :show-team-name="showTeamName !== false"
           :show-type-tag="showTypeTag !== false"
         />
@@ -71,8 +71,7 @@ function isMatch(item: BracketMatchCard | BracketInfoCard): item is BracketMatch
           v-else
           :item="item"
           :density="density"
-          :shorten-title="shortenTitle === true"
-          :extra-shorten-title="extraShortenTitle === true"
+          :title-shorten-level="titleShortenLevel ?? 0"
           :show-team-name="showTeamName !== false"
           :show-type-tag="showTypeTag !== false"
         />

@@ -4,6 +4,9 @@
  */
 export type BracketDensity = 'comfortable' | 'normal' | 'compact'
 
+/** 0=不缩；1=≥3；2=≥4；3=≥5；4=≥6 */
+export type BracketTitleShortenLevel = 0 | 1 | 2 | 3 | 4
+
 const MAX_BRACKET_TITLE_UNITS = 6
 
 export function resolveBracketDensity(columnCount: number): BracketDensity {
@@ -28,25 +31,37 @@ export function bracketDisplayUnits(title: string): number {
   return units
 }
 
-/** 视口内至少可见 3 列时，允许对超长标题进行语义缩减。 */
-export function shouldShortenBracketTitle(columnCount: number): boolean {
-  return columnCount >= 3
+/** 按可见列数解析标题缩减档位。 */
+export function resolveBracketTitleShortenLevel(
+  columnCount: number,
+): BracketTitleShortenLevel {
+  if (columnCount >= 6) return 4
+  if (columnCount >= 5) return 3
+  if (columnCount >= 4) return 2
+  if (columnCount >= 3) return 1
+  return 0
 }
 
-/** ≥4 列时启用更紧的一档缩减（如去掉「晋级全国赛/晋级复活赛」前缀）。 */
+/** @deprecated 使用 resolveBracketTitleShortenLevel */
+export function shouldShortenBracketTitle(columnCount: number): boolean {
+  return resolveBracketTitleShortenLevel(columnCount) >= 1
+}
+
+/** @deprecated 使用 resolveBracketTitleShortenLevel */
 export function shouldExtraShortenBracketTitle(columnCount: number): boolean {
-  return columnCount >= 4
+  return resolveBracketTitleShortenLevel(columnCount) >= 2
 }
 
 /**
- * 仅缩减超过 6 个显示单位的已格式化标题；每条规则都保留标题语义，
- * 尤其不会移除淘汰赛标题中的 N进M。
- * `extra` 为 true 时再追加 ≥4 列的紧凑规则。
+ * 按档位缩减已格式化标题。
+ * 1：仅 >6 单位时语义缩减；2：≥4 列追加；3：≥5 列仅 16进8；4：≥6 列瑞士轮只留战绩。
  */
 export function shortenBracketTitle(
   title: string,
-  options: { extra?: boolean } = {},
+  level: BracketTitleShortenLevel = 1,
 ): string {
+  if (level <= 0) return title
+
   let shortened = title
 
   if (bracketDisplayUnits(shortened) > MAX_BRACKET_TITLE_UNITS) {
@@ -90,12 +105,26 @@ export function shortenBracketTitle(
     }
   }
 
-  if (options.extra) {
+  if (level >= 2) {
     // ≥4 列：晋级淘汰赛 3-0 -> 晋级 3-0（此时 type-tag 通常已隐藏）
     shortened = shortened.replace(/晋级淘汰赛/g, '晋级')
     // 仅带比分时去掉晋级：晋级全国赛 2-0 / 晋级复活赛 1-2
-    // 「晋级全国赛」「晋级复活赛」单独出现时不缩减
     shortened = shortened.replace(/^晋级(?=(?:全国赛|复活赛)\s+\d+-\d+$)/, '')
+  }
+
+  if (level >= 3) {
+    // ≥5 列：仅压缩 16进8，不改动 8进4
+    shortened = shortened
+      .replace(/^16进8第一轮$/, '16进8一轮')
+      .replace(/^16进8胜者组$/, '16进8胜者')
+  }
+
+  if (level >= 4) {
+    // ≥6 列：第一轮 0-0 / 第二轮 1-0 -> 0-0 / 1-0
+    shortened = shortened.replace(
+      /^第[零一二三四五六七八九十百两\d]+轮\s+(\d+-\d+)$/,
+      '$1',
+    )
   }
 
   return shortened
