@@ -35,6 +35,12 @@ import {
   FinalZoneKnockoutLoserTitleData, FinalZoneKnockoutLoserTitleData2025,
   FinalZoneKnockoutTitleData, FinalZoneKnockoutTitleData2025
 } from "./final_zone_knockout";
+import {
+  RevivalZone2026GroupJsonData,
+  RevivalZone2026KnockoutJsonData,
+  RevivalZone2026KnockoutTitleData,
+  RevivalZone2026RoundOrder,
+} from "./revival_zone_2026";
 
 export interface Part {
   name: string,
@@ -59,7 +65,7 @@ export const SeasonList = [2024, 2025, 2026];
 export const DefaultZoneMap = {
   2024: 526,
   2025: 572,
-  2026: 616,
+  2026: 618,
 }
 
 export const ZoneMap: { [key: number]: Zone[] } = {
@@ -615,6 +621,81 @@ export const ZoneMap: { [key: number]: Zone[] } = {
           extraTitleData: GroupZoneKnockoutTitleData,
           roundOrder: GroupZoneRoundOrder
         }
+      ]
+    },
+    {
+      id: 617, name: '复活赛', disabled: false,
+      defaultGroup: 0,
+      parts: [
+        {
+          name: 'A组',
+          type: 'group',
+          group: 'A',
+          jsonData: RevivalZone2026GroupJsonData,
+          roundOrder: RevivalZone2026RoundOrder,
+        },
+        {
+          name: 'B组',
+          type: 'group',
+          group: 'B',
+          jsonData: RevivalZone2026GroupJsonData,
+          roundOrder: RevivalZone2026RoundOrder,
+        },
+        {
+          name: '淘汰赛',
+          type: 'knockout',
+          group: 'Knockout',
+          jsonData: RevivalZone2026KnockoutJsonData,
+          extraTitleData: RevivalZone2026KnockoutTitleData,
+        },
+      ]
+    },
+    {
+      id: 618, name: '全国赛', disabled: false,
+      defaultGroup: 5,
+      parts: [
+        {
+          name: 'A组前段',
+          type: 'group',
+          group: 'A',
+          jsonData: FinalZoneGroup1JsonData2025,
+          roundOrder: FinalZoneGroup1RoundOrder2025,
+        },
+        {
+          name: 'B组前段',
+          type: 'group',
+          group: 'B',
+          jsonData: FinalZoneGroup1JsonData2025,
+          roundOrder: FinalZoneGroup1RoundOrder2025,
+        },
+        {
+          name: 'A组后段',
+          type: 'group',
+          group: 'A',
+          jsonData: FinalZoneGroup2JsonData2025,
+          roundOrder: FinalZoneGroup2RoundOrder2025,
+        },
+        {
+          name: 'B组后段',
+          type: 'group',
+          group: 'B',
+          jsonData: FinalZoneGroup2JsonData2025,
+          roundOrder: FinalZoneGroup2RoundOrder2025,
+        },
+        {
+          name: '淘汰赛败者组',
+          type: 'knockout',
+          group: 'Knockout',
+          jsonData: FinalZoneKnockoutLoserJsonData2025,
+          extraTitleData: FinalZoneKnockoutLoserTitleData2025,
+        },
+        {
+          name: '淘汰赛胜者组',
+          type: 'knockout',
+          group: 'Knockout',
+          jsonData: FinalZoneKnockoutJsonData2025,
+          extraTitleData: FinalZoneKnockoutTitleData2025,
+        },
       ]
     },
   ]
