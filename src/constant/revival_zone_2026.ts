@@ -1,5 +1,5 @@
 import { RoundOrder } from "../types/round_order";
-import { TitleData, ZoneJsonData } from "../types/zone";
+import { ZoneJsonData } from "../types/zone";
 
 const rx = 0;
 const ry = 0;
@@ -296,213 +296,106 @@ export const RevivalZone2026RoundOrder: RoundOrder = {
   B: [5, 13, 20, 20],
 }
 
-const KnockoutXOffset = 520;
-/** 单场卡片垂直间距 */
-const KnockoutYOffset = 100;
-
 /**
- * 2026 复活赛（617）淘汰赛布局（order 23–32）。
+ * 2026 复活赛（617）名额争夺布局（order 23–32）。
  *
- * 四列：
- * 1. 晋级名额争夺战（23–26）
- * 2. 胜者组（上）+ 败者组第一轮（下），整列垂直居中
- * 3. 败者组第二轮，与败者组第一轮水平对齐（27→32、28→31）
- * 4. 晋级全国赛 + 淘汰，整列垂直居中
+ * 以 group 节点呈现：同一轮、同一组的多场对局合并为一个节点，
+ * 保持和 2025 复活赛第二赛段一致的标题、边框和连线层级。
  */
 export const RevivalZone2026KnockoutJsonData: ZoneJsonData = {
   rootId: '#1',
   stages: ['晋级名额争夺战', '胜负分组', '败者组第二轮', '晋级结果'],
   nodes: [
-    // —— 第1列：晋级名额争夺战（垂直居中）——
     {
       id: '#1',
-      text: '名额争夺 第23场',
-      x: rx - KnockoutXOffset * 3,
-      y: ry - KnockoutYOffset * 1.5,
+      text: '晋级名额争夺战',
+      x: rx - 3 * xOffset,
+      y: ry + 40,
       data: {
-        title: '',
+        title: '晋级名额争夺战',
         titleColor: '#FFFFFF',
+        titleImage: '/static/title_bg.png',
+        borderColor: '#5A879C',
         round: -1,
         type: 'match',
         zones: [{
-          matches: [23],
+          matches: [23, 24, 25, 26],
           winners: [],
           losers: [],
-          text: ['小组赛B组 第1名', '小组赛A组 第4名'],
+          text: [
+            '小组赛B组 第1名', '小组赛A组 第4名',
+            '小组赛A组 第2名', '小组赛B组 第3名',
+            '小组赛A组 第3名', '小组赛B组 第2名',
+            '小组赛B组 第4名', '小组赛A组 第1名',
+          ],
         }],
       },
     },
     {
       id: '#2',
-      text: '名额争夺 第24场',
-      x: rx - KnockoutXOffset * 3,
-      y: ry - KnockoutYOffset * 0.5,
+      text: '胜者组',
+      x: rx - 2 * xOffset,
+      y: ry - 70,
       data: {
-        title: '',
+        title: '胜者组',
         titleColor: '#FFFFFF',
+        titleImage: '/static/title_bg.png',
+        borderColor: '#5A879C',
         round: -1,
         type: 'match',
         zones: [{
-          matches: [24],
-          winners: [],
+          matches: [29, 30],
+          winners: [23, 24, 26, 25],
           losers: [],
-          text: ['小组赛A组 第2名', '小组赛B组 第3名'],
+          text: ['第23场 胜者', '第24场 胜者', '第26场 胜者', '第25场 胜者'],
         }],
       },
     },
     {
       id: '#3',
-      text: '名额争夺 第25场',
-      x: rx - KnockoutXOffset * 3,
-      y: ry + KnockoutYOffset * 0.5,
+      text: '败者组第一轮',
+      x: rx - 2 * xOffset,
+      y: ry + 340,
       data: {
-        title: '',
+        title: '败者组第一轮',
         titleColor: '#FFFFFF',
+        titleImage: '/static/title_bg.png',
+        borderColor: '#5A879C',
         round: -1,
         type: 'match',
         zones: [{
-          matches: [25],
+          matches: [27, 28],
           winners: [],
-          losers: [],
-          text: ['小组赛A组 第3名', '小组赛B组 第2名'],
+          losers: [23, 24, 26, 25],
+          text: ['第23场 败者', '第24场 败者', '第26场 败者', '第25场 败者'],
         }],
       },
     },
     {
       id: '#4',
-      text: '名额争夺 第26场',
-      x: rx - KnockoutXOffset * 3,
-      y: ry + KnockoutYOffset * 1.5,
+      text: '败者组第二轮',
+      x: rx - xOffset,
+      y: ry + 130,
       data: {
-        title: '',
+        title: '败者组第二轮',
         titleColor: '#FFFFFF',
+        titleImage: '/static/title_bg.png',
+        borderColor: '#5A879C',
         round: -1,
         type: 'match',
         zones: [{
-          matches: [26],
-          winners: [],
-          losers: [],
-          text: ['小组赛B组 第4名', '小组赛A组 第1名'],
+          matches: [31, 32],
+          winners: [28, 27],
+          losers: [29, 30],
+          text: ['第29场 败者', '第28场 胜者', '第27场 胜者', '第30场 败者'],
         }],
       },
     },
-    // —— 第2列上：胜者组 ——
     {
       id: '#5',
-      text: '胜者组 第29场',
-      x: rx - KnockoutXOffset * 2,
-      y: ry - KnockoutYOffset * 1.8,
-      data: {
-        title: '',
-        titleColor: '#FFFFFF',
-        round: -1,
-        type: 'match',
-        zones: [{
-          matches: [29],
-          winners: [23, 24],
-          losers: [],
-          text: ['第23场 胜者', '第24场 胜者'],
-        }],
-      },
-    },
-    {
-      id: '#6',
-      text: '胜者组 第30场',
-      x: rx - KnockoutXOffset * 2,
-      y: ry - KnockoutYOffset * 0.8,
-      data: {
-        title: '',
-        titleColor: '#FFFFFF',
-        round: -1,
-        type: 'match',
-        zones: [{
-          matches: [30],
-          winners: [26, 25],
-          losers: [],
-          text: ['第26场 胜者', '第25场 胜者'],
-        }],
-      },
-    },
-    // —— 第2列下：败者组第一轮（与第3列同行）——
-    {
-      id: '#7',
-      text: '败者组 第27场',
-      x: rx - KnockoutXOffset * 2,
-      y: ry + KnockoutYOffset * 0.8,
-      data: {
-        title: '',
-        titleColor: '#FFFFFF',
-        round: -1,
-        type: 'match',
-        zones: [{
-          matches: [27],
-          winners: [],
-          losers: [23, 24],
-          text: ['第23场 败者', '第24场 败者'],
-        }],
-      },
-    },
-    {
-      id: '#8',
-      text: '败者组 第28场',
-      x: rx - KnockoutXOffset * 2,
-      y: ry + KnockoutYOffset * 1.8,
-      data: {
-        title: '',
-        titleColor: '#FFFFFF',
-        round: -1,
-        type: 'match',
-        zones: [{
-          matches: [28],
-          winners: [],
-          losers: [26, 25],
-          text: ['第26场 败者', '第25场 败者'],
-        }],
-      },
-    },
-    // —— 第3列：败者组第二轮（31 上、32 下，与场次编号一致）——
-    {
-      id: '#9',
-      text: '败者组 第31场',
-      x: rx - KnockoutXOffset,
-      y: ry + KnockoutYOffset * 0.2,
-      data: {
-        title: '',
-        titleColor: '#FFFFFF',
-        round: -1,
-        type: 'match',
-        zones: [{
-          matches: [31],
-          winners: [28],
-          losers: [29],
-          text: ['第29场 败者', '第28场 胜者'],
-        }],
-      },
-    },
-    {
-      id: '#10',
-      text: '败者组 第32场',
-      x: rx - KnockoutXOffset,
-      y: ry + KnockoutYOffset * 1.2,
-      data: {
-        title: '',
-        titleColor: '#FFFFFF',
-        round: -1,
-        type: 'match',
-        zones: [{
-          matches: [32],
-          winners: [27],
-          losers: [30],
-          text: ['第27场 胜者', '第30场 败者'],
-        }],
-      },
-    },
-    // —— 第4列：晋级全国赛 + 淘汰（垂直居中）——
-    {
-      id: '#11',
       text: '晋级全国赛',
       x: rx,
-      y: ry - KnockoutYOffset * 2.2,
+      y: ry - 50,
       data: {
         title: '晋级全国赛',
         titleColor: '#FFFFFF',
@@ -521,10 +414,10 @@ export const RevivalZone2026KnockoutJsonData: ZoneJsonData = {
       },
     },
     {
-      id: '#12',
+      id: '#6',
       text: '淘汰',
       x: rx,
-      y: ry + KnockoutYOffset * 1.2,
+      y: ry + 310,
       data: {
         title: '淘汰',
         titleColor: '#FFFFFF',
@@ -544,53 +437,13 @@ export const RevivalZone2026KnockoutJsonData: ZoneJsonData = {
     },
   ],
   lines: [
-    // lineShape 4 = 折线；2/3/5/6 为曲线
-    { from: '#1', to: '#5', lineShape: 4 },
-    { from: '#2', to: '#5', lineShape: 4 },
-    { from: '#3', to: '#6', lineShape: 4 },
-    { from: '#4', to: '#6', lineShape: 4 },
-    { from: '#1', to: '#7', lineShape: 4 },
-    { from: '#2', to: '#7', lineShape: 4 },
-    { from: '#3', to: '#8', lineShape: 4 },
-    { from: '#4', to: '#8', lineShape: 4 },
-    { from: '#5', to: '#11', lineShape: 4 },
-    { from: '#6', to: '#11', lineShape: 4 },
-    { from: '#5', to: '#9', lineShape: 4 },
-    { from: '#6', to: '#10', lineShape: 4 },
-    { from: '#7', to: '#10', lineShape: 4 },
-    { from: '#8', to: '#9', lineShape: 4 },
-    { from: '#9', to: '#11', lineShape: 4 },
-    { from: '#10', to: '#11', lineShape: 4 },
-    { from: '#7', to: '#12', lineShape: 4 },
-    { from: '#8', to: '#12', lineShape: 4 },
-    { from: '#9', to: '#12', lineShape: 4 },
-    { from: '#10', to: '#12', lineShape: 4 },
+    { from: '#1', to: '#2' },
+    { from: '#1', to: '#3' },
+    { from: '#2', to: '#4' },
+    { from: '#2', to: '#5' },
+    { from: '#3', to: '#4' },
+    { from: '#3', to: '#6' },
+    { from: '#4', to: '#5' },
+    { from: '#4', to: '#6' },
   ],
 }
-
-export const RevivalZone2026KnockoutTitleData: TitleData[] = [
-  {
-    left: rx - KnockoutXOffset * 3 + 20,
-    top: ry - KnockoutYOffset * 1.5 - 40,
-    title: '晋级名额争夺战',
-    image: '/static/title_bg.png',
-  },
-  {
-    left: rx - KnockoutXOffset * 2 + 20,
-    top: ry - KnockoutYOffset * 1.8 - 40,
-    title: '胜者组',
-    image: '/static/title_bg.png',
-  },
-  {
-    left: rx - KnockoutXOffset * 2 + 20,
-    top: ry + KnockoutYOffset * 0.8 - 40,
-    title: '败者组第一轮',
-    image: '/static/title_bg.png',
-  },
-  {
-    left: rx - KnockoutXOffset + 20,
-    top: ry + KnockoutYOffset * 0.2 - 40,
-    title: '败者组第二轮',
-    image: '/static/title_bg.png',
-  },
-]

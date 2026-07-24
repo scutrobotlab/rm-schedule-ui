@@ -46,7 +46,7 @@ describe('2026 ZoneMap 注册与默认赛区', () => {
     expect(revival.parts.map((p) => [p.name, p.type, p.group])).toEqual([
       ['A组', 'group', 'A'],
       ['B组', 'group', 'B'],
-      ['淘汰赛', 'knockout', 'Knockout'],
+      ['淘汰赛', 'group', 'Knockout'],
     ])
 
     const final = zones.find((z) => z.id === 618)!
@@ -133,40 +133,36 @@ describe('2026 复活赛 617 小组赛布局', () => {
   })
 })
 
-describe('2026 复活赛 617 淘汰赛 23–32', () => {
+describe('2026 复活赛 617 名额争夺 group 23–32', () => {
   it('场次完整覆盖 23–32，且无小组赛场次混入', () => {
     expect(collectMatchOrders(RevivalZone2026KnockoutJsonData)).toEqual(
       Array.from({ length: 10 }, (_, i) => i + 23),
     )
   })
 
-  it('23–26 产生胜者①–④/败者①–④ 去向：胜者进 29/30，败者进 27/28', () => {
-    expect(knockoutZone('#1').matches).toEqual([23])
-    expect(knockoutZone('#2').matches).toEqual([24])
-    expect(knockoutZone('#3').matches).toEqual([25])
-    expect(knockoutZone('#4').matches).toEqual([26])
+  it('同一组场次合并为一个节点，并保留胜负去向', () => {
+    expect(RevivalZone2026KnockoutJsonData.nodes).toHaveLength(6)
 
-    // 胜者①② → 29；胜者③④（26/25）→ 30
-    expect(knockoutZone('#5').matches).toEqual([29])
-    expect(knockoutZone('#5').winners).toEqual([23, 24])
-    expect(knockoutZone('#5').text).toEqual(['第23场 胜者', '第24场 胜者'])
+    const quota = knockoutZone('#1')
+    expect(quota.matches).toEqual([23, 24, 25, 26])
+    expect(quota.text).toEqual([
+      '小组赛B组 第1名', '小组赛A组 第4名',
+      '小组赛A组 第2名', '小组赛B组 第3名',
+      '小组赛A组 第3名', '小组赛B组 第2名',
+      '小组赛B组 第4名', '小组赛A组 第1名',
+    ])
 
-    expect(knockoutZone('#6').matches).toEqual([30])
-    expect(knockoutZone('#6').winners).toEqual([26, 25])
-    expect(knockoutZone('#6').text).toEqual(['第26场 胜者', '第25场 胜者'])
+    const winners = knockoutZone('#2')
+    expect(winners.matches).toEqual([29, 30])
+    expect(winners.winners).toEqual([23, 24, 26, 25])
 
-    // 败者①② → 27；败者③④ → 28（产生胜者 1/2）
-    expect(knockoutZone('#7').matches).toEqual([27])
-    expect(knockoutZone('#7').losers).toEqual([23, 24])
-    expect(knockoutZone('#7').text).toEqual(['第23场 败者', '第24场 败者'])
-
-    expect(knockoutZone('#8').matches).toEqual([28])
-    expect(knockoutZone('#8').losers).toEqual([26, 25])
-    expect(knockoutZone('#8').text).toEqual(['第26场 败者', '第25场 败者'])
+    const losers = knockoutZone('#3')
+    expect(losers.matches).toEqual([27, 28])
+    expect(losers.losers).toEqual([23, 24, 26, 25])
   })
 
-  it('29–30 产出全国赛席位与败者 I/II；31–32 决出其余席位', () => {
-    const promote = knockoutZone('#11')
+  it('组间收敛后，31–32 决出其余全国赛席位', () => {
+    const promote = knockoutZone('#5')
     expect(promote.winners).toEqual([29, 30, 31, 32])
     expect(promote.text).toEqual([
       '第29场 胜者',
@@ -175,31 +171,26 @@ describe('2026 复活赛 617 淘汰赛 23–32', () => {
       '第32场 胜者',
     ])
 
-    // 败者 I/II：29/30 败者进入 31/32
-    expect(knockoutZone('#9').matches).toEqual([31])
-    expect(knockoutZone('#9').losers).toEqual([29])
-    expect(knockoutZone('#9').winners).toEqual([28])
-    expect(knockoutZone('#9').text).toEqual(['第29场 败者', '第28场 胜者'])
+    const finalLosers = knockoutZone('#4')
+    expect(finalLosers.matches).toEqual([31, 32])
+    expect(finalLosers.losers).toEqual([29, 30])
+    expect(finalLosers.winners).toEqual([28, 27])
+    expect(finalLosers.text).toEqual([
+      '第29场 败者', '第28场 胜者',
+      '第27场 胜者', '第30场 败者',
+    ])
 
-    expect(knockoutZone('#10').matches).toEqual([32])
-    expect(knockoutZone('#10').losers).toEqual([30])
-    expect(knockoutZone('#10').winners).toEqual([27])
-    expect(knockoutZone('#10').text).toEqual(['第27场 胜者', '第30场 败者'])
-
-    const eliminate = knockoutZone('#12')
+    const eliminate = knockoutZone('#6')
     expect(eliminate.losers).toEqual([27, 28, 31, 32])
   })
 
-  it('晋级连线覆盖胜者组、败者组与全国赛出口', () => {
+  it('组节点之间的连线覆盖胜者组、败者组与全国赛出口', () => {
     const lines = new Set(
       RevivalZone2026KnockoutJsonData.lines.map((l) => `${l.from}->${l.to}`),
     )
     for (const edge of [
-      '#1->#5', '#2->#5', '#3->#6', '#4->#6',
-      '#1->#7', '#2->#7', '#3->#8', '#4->#8',
-      '#5->#11', '#6->#11', '#9->#11', '#10->#11',
-      '#5->#9', '#6->#10', '#7->#10', '#8->#9',
-      '#7->#12', '#8->#12', '#9->#12', '#10->#12',
+      '#1->#2', '#1->#3', '#2->#4', '#2->#5',
+      '#3->#4', '#3->#6', '#4->#5', '#4->#6',
     ]) {
       expect(lines.has(edge)).toBe(true)
     }
@@ -210,7 +201,8 @@ describe('2026 复活赛 617 淘汰赛 23–32', () => {
       part: zone.parts[2],
       getMatchByOrder: () => undefined,
     })
-    expect(model.connections.length).toBeGreaterThanOrEqual(16)
+    expect(model.partType).toBe('group')
+    expect(model.connections.length).toBe(8)
     const promote = model.columns.flatMap((c) => c.items).find(
       (i) => i.kind === 'info' && i.nodeType === 'promote',
     )

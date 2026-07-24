@@ -203,6 +203,20 @@ describe('resolveBracketParts', () => {
     expect(resolved).toHaveLength(2)
     expect(resolved[0].part.name).toBe('A组前段')
   })
+
+  it('2026 复活赛名额争夺：保留包含「晋级」的首个对阵 stage', () => {
+    const zone = ZoneMap[2026]?.find((z) => z.id === 617)
+    expect(zone).toBeTruthy()
+
+    const part = resolveBracketParts(zone!).find((bp) => bp.sourceIndices.includes(2))!.part
+    expect(part.type).toBe('group')
+    expect(part.jsonData.stages).toEqual([
+      '晋级名额争夺战',
+      '胜负分组',
+      '败者组第二轮',
+      '晋级',
+    ])
+  })
 })
 
 describe('merge + buildBracketViewModel 冒烟', () => {

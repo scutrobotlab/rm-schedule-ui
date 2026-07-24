@@ -38,7 +38,6 @@ import {
 import {
   RevivalZone2026GroupJsonData,
   RevivalZone2026KnockoutJsonData,
-  RevivalZone2026KnockoutTitleData,
   RevivalZone2026RoundOrder,
 } from "./revival_zone_2026";
 
@@ -643,10 +642,11 @@ export const ZoneMap: { [key: number]: Zone[] } = {
         },
         {
           name: '淘汰赛',
-          type: 'knockout',
+          // 617 的名额争夺赛程由 groupMatches 提供；沿用 2025 复活赛第二赛段的
+          // group 读取方式，布局仍使用专用的晋级图数据。
+          type: 'group',
           group: 'Knockout',
           jsonData: RevivalZone2026KnockoutJsonData,
-          extraTitleData: RevivalZone2026KnockoutTitleData,
         },
       ]
     },

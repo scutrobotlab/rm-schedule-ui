@@ -147,9 +147,16 @@ function consolidatePromoteDisplay(
     '第六轮',
     '第七轮',
   ]
-  const preservedMatchLabels = (data.stages ?? []).filter(
-    (label) => !/晋级|淘汰/.test(label),
-  )
+  const originalStages = data.stages ?? []
+  const allXs = uniqueSorted(nodes.map((n) => n.x))
+  // stages 与原始列一一对应时，按列保留对阵阶段名称。
+  // 不能仅按「晋级/淘汰」文字过滤：例如「晋级名额争夺战」本身就是对阵阶段。
+  const preservedMatchLabels =
+    originalStages.length === allXs.length
+      ? matchXs
+          .map((x) => originalStages[allXs.indexOf(x)])
+          .filter((label): label is string => Boolean(label))
+      : originalStages.filter((label) => !/晋级|淘汰/.test(label))
   const stages = [
     ...matchXs.map(
       (_, i) =>
