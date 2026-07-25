@@ -33,7 +33,7 @@ const props = withDefaults(
     medal?: 'gold' | 'silver' | 'bronze' | null
     /** 仅比赛结束后显示胜负造成的高亮 / 灰化 */
     finalized?: boolean
-    /** 0=完整；1=保留胜/败者；2=进一步去掉「者」 */
+    /** 0=完整；1=保留胜/败者；2=进一步去掉「者」；3=第N名缩为第N */
     matchSourceShortenLevel?: BracketSourceShortenLevel
     /** 是否显示未确定队伍的红蓝 R；真实校徽不受此项影响 */
     showPlaceholderLogo?: boolean

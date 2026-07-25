@@ -3,7 +3,7 @@
  * 仅收缩字号/内边距/次要元信息；纵向对阵与席位永不截断。
  */
 export type BracketDensity = 'comfortable' | 'normal' | 'compact'
-export type BracketSourceShortenLevel = 0 | 1 | 2
+export type BracketSourceShortenLevel = 0 | 1 | 2 | 3
 
 /** 0=不缩；1=≥3；2=≥4；3=≥5；4=≥6 */
 export type BracketTitleShortenLevel = 0 | 1 | 2 | 3 | 4
@@ -177,7 +177,10 @@ export function shortenBracketSourceLabel(
     .replace(/^第(\d+)场\s*败者$/, '$1败者')
   if (matchSourceLevel === 1) return compact
 
-  return compact
+  const extraCompact = compact
     .replace(/^(\d+)胜者$/, '$1胜')
     .replace(/^(\d+)败者$/, '$1败')
+  if (matchSourceLevel === 2) return extraCompact
+
+  return extraCompact.replace(/^第(\d+)名$/, '第$1')
 }

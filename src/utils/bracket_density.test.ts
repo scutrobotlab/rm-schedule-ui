@@ -141,6 +141,12 @@ describe('shortenBracketSourceLabel', () => {
   it('不改写其他来源文案', () => {
     expect(shortenBracketSourceLabel('半决赛胜者', 'normal')).toBe('半决赛胜者')
   })
+
+  it('6 列档位将第N名缩写为第N', () => {
+    expect(shortenBracketSourceLabel('第一轮 第10名', 'compact', 3)).toBe('第10')
+    expect(shortenBracketSourceLabel('第10名', 'compact', 3)).toBe('第10')
+    expect(shortenBracketSourceLabel('第10名', 'compact', 2)).toBe('第10名')
+  })
 })
 
 describe('shouldShowBracketPlaceholderLogo', () => {

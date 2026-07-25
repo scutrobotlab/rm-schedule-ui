@@ -121,7 +121,9 @@ function slotMedal(
         :medal="slotMedal(item.slots[0])"
         :finalized="item.status === 'DONE'"
         :match-source-shorten-level="
-          (titleShortenLevel ?? 0) >= 2 ? 2 : (titleShortenLevel ?? 0) >= 1 ? 1 : 0
+          (titleShortenLevel ?? 0) >= 4 ? 3
+            : (titleShortenLevel ?? 0) >= 2 ? 2
+              : (titleShortenLevel ?? 0) >= 1 ? 1 : 0
         "
         :show-placeholder-logo="showPlaceholderLogo"
       />
@@ -139,7 +141,9 @@ function slotMedal(
         :medal="slotMedal(item.slots[1])"
         :finalized="item.status === 'DONE'"
         :match-source-shorten-level="
-          (titleShortenLevel ?? 0) >= 2 ? 2 : (titleShortenLevel ?? 0) >= 1 ? 1 : 0
+          (titleShortenLevel ?? 0) >= 4 ? 3
+            : (titleShortenLevel ?? 0) >= 2 ? 2
+              : (titleShortenLevel ?? 0) >= 1 ? 1 : 0
         "
         :show-placeholder-logo="showPlaceholderLogo"
       />

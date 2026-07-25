@@ -101,7 +101,9 @@ function hasMatchMeta(m: BracketMatchSummary): boolean {
             side="red"
             :finalized="m.status === 'DONE'"
             :match-source-shorten-level="
-              (titleShortenLevel ?? 0) >= 2 ? 2 : (titleShortenLevel ?? 0) >= 1 ? 1 : 0
+              (titleShortenLevel ?? 0) >= 4 ? 3
+                : (titleShortenLevel ?? 0) >= 2 ? 2
+                  : (titleShortenLevel ?? 0) >= 1 ? 1 : 0
             "
             :show-placeholder-logo="showPlaceholderLogo"
           />
@@ -117,7 +119,9 @@ function hasMatchMeta(m: BracketMatchSummary): boolean {
             side="blue"
             :finalized="m.status === 'DONE'"
             :match-source-shorten-level="
-              (titleShortenLevel ?? 0) >= 2 ? 2 : (titleShortenLevel ?? 0) >= 1 ? 1 : 0
+              (titleShortenLevel ?? 0) >= 4 ? 3
+                : (titleShortenLevel ?? 0) >= 2 ? 2
+                  : (titleShortenLevel ?? 0) >= 1 ? 1 : 0
             "
             :show-placeholder-logo="showPlaceholderLogo"
           />
@@ -147,7 +151,9 @@ function hasMatchMeta(m: BracketMatchSummary): boolean {
         :show-name="showTeamName"
         :show-pending-score="showPendingScore"
         :force-pending-name="forcePendingName"
-        :match-source-shorten-level="(titleShortenLevel ?? 0) >= 2 ? 2 : 0"
+        :match-source-shorten-level="
+          (titleShortenLevel ?? 0) >= 4 ? 3 : (titleShortenLevel ?? 0) >= 2 ? 2 : 0
+        "
         :show-placeholder-logo="showPlaceholderLogo"
       />
     </div>
