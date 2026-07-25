@@ -102,7 +102,7 @@ export function shouldExtraShortenBracketTitle(columnCount: number): boolean {
 
 /**
  * 按档位缩减已格式化标题。
- * 1：仅 >6 单位时语义缩减；2：≥4 列追加；3：≥5 列仅 16进8；4：≥6 列瑞士轮只留战绩。
+ * 1：≥3 列基础语义缩减；2：≥4 列追加；3：≥5 列仅 16进8；4：≥6 列压缩瑞士轮轮次。
  */
 export function shortenBracketTitle(
   title: string,
@@ -111,6 +111,9 @@ export function shortenBracketTitle(
   if (level <= 0) return title
 
   let shortened = title
+
+  // ≥3 列：晋级淘汰赛 3-0 → 晋级 3-0。
+  shortened = shortened.replace(/晋级淘汰赛/g, '晋级')
 
   if (bracketDisplayUnits(shortened) > MAX_BRACKET_TITLE_UNITS) {
     const fits = () => bracketDisplayUnits(shortened) <= MAX_BRACKET_TITLE_UNITS
@@ -154,8 +157,6 @@ export function shortenBracketTitle(
   }
 
   if (level >= 2) {
-    // ≥4 列：晋级淘汰赛 3-0 -> 晋级 3-0（此时 type-tag 通常已隐藏）
-    shortened = shortened.replace(/晋级淘汰赛/g, '晋级')
     // 仅带比分时去掉晋级：晋级全国赛 2-0 / 晋级复活赛 1-2
     shortened = shortened.replace(/^晋级(?=(?:全国赛|复活赛)\s+\d+-\d+$)/, '')
   }
@@ -168,10 +169,10 @@ export function shortenBracketTitle(
   }
 
   if (level >= 4) {
-    // ≥6 列：第一轮 0-0 / 第二轮 1-0 -> 0-0 / 1-0
+    // ≥6 列：第一轮 0-0 / 第二轮 1-0 -> 一轮 0-0 / 二轮 1-0
     shortened = shortened.replace(
-      /^第[零一二三四五六七八九十百两\d]+轮\s+(\d+-\d+)$/,
-      '$1',
+      /^第([零一二三四五六七八九十百两\d]+)轮\s+(\d+-\d+)$/,
+      '$1轮 $2',
     )
   }
 

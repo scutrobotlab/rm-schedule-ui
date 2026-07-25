@@ -122,13 +122,12 @@ describe('shortenBracketTitle', () => {
     '16进8第一轮',
     '冠军争夺战',
     '季军争夺战',
-    '晋级淘汰赛 3-0',
   ])('≥3 列不改写不超过 6 单位的标题 %s', (title) => {
     expect(shortenBracketTitle(title, 1)).toBe(title)
   })
 
-  it('≥4 列追加档：晋级淘汰赛 3-0 → 晋级 3-0', () => {
-    expect(shortenBracketTitle('晋级淘汰赛 3-0', 2)).toBe('晋级 3-0')
+  it('≥3 列：晋级淘汰赛 3-0 → 晋级 3-0', () => {
+    expect(shortenBracketTitle('晋级淘汰赛 3-0', 1)).toBe('晋级 3-0')
   })
 
   it.each([
@@ -160,13 +159,13 @@ describe('shortenBracketTitle', () => {
   })
 
   it.each([
-    ['第一轮 0-0', '0-0'],
-    ['第二轮 1-0', '1-0'],
-    ['第三轮 1-1', '1-1'],
-    ['第四轮 2-1', '2-1'],
-    ['第五轮 2-2', '2-2'],
-    ['瑞士轮第一轮 0-0', '0-0'],
-  ])('≥6 列瑞士轮只留战绩 %s', (title, expected) => {
+    ['第一轮 0-0', '一轮 0-0'],
+    ['第二轮 1-0', '二轮 1-0'],
+    ['第三轮 1-1', '三轮 1-1'],
+    ['第四轮 2-1', '四轮 2-1'],
+    ['第五轮 2-2', '五轮 2-2'],
+    ['瑞士轮第一轮 0-0', '一轮 0-0'],
+  ])('≥6 列压缩瑞士轮轮次 %s', (title, expected) => {
     expect(shortenBracketTitle(title, 4)).toBe(expected)
   })
 
