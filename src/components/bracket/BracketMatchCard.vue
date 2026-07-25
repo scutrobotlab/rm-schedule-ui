@@ -131,13 +131,15 @@ function slotMedal(
         <span :style="{ opacity: 1 - titleTransition.progress }">{{ titleTransition.from }}</span>
         <span :style="{ opacity: titleTransition.progress }">{{ titleTransition.to }}</span>
       </span>
-      <span
-        v-if="showGroupStats"
-        class="group-stats-tools"
-      >
-        <span>胜场</span>
-        <span>对手分</span>
-      </span>
+      <Transition name="group-stats">
+        <span
+          v-if="showGroupStats"
+          class="group-stats-tools"
+        >
+          <span>胜场</span>
+          <span>对手分</span>
+        </span>
+      </Transition>
       <span
         v-if="showGroupStats"
         class="type-tag"
@@ -300,6 +302,19 @@ function slotMedal(
   grid-column: 3;
 }
 
+.group-stats-enter-active,
+.group-stats-leave-active {
+  transition:
+    opacity 220ms ease,
+    transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.group-stats-enter-from,
+.group-stats-leave-to {
+  opacity: 0;
+  transform: translateX(6px);
+}
+
 .card-head {
   display: flex;
   align-items: center;
@@ -368,6 +383,13 @@ function slotMedal(
 
 .card-head {
   margin-bottom: calc(6px - 2px * var(--bracket-normal-progress, 0));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .group-stats-enter-active,
+  .group-stats-leave-active {
+    transition: none;
+  }
 }
 
 @media (min-width: 900px) {

@@ -207,14 +207,18 @@ const isShortMatchSource = computed(() => (
       :title="team.sourceLabel || team.displayName"
     />
 
-    <span
-      v-if="showGroupStats"
-      class="team-stat"
-    >{{ winCount }}</span>
-    <span
-      v-if="showGroupStats"
-      class="team-stat"
-    >{{ opponentScore }}</span>
+    <Transition name="team-stat">
+      <span
+        v-if="showGroupStats"
+        class="team-stat"
+      >{{ winCount }}</span>
+    </Transition>
+    <Transition name="team-stat">
+      <span
+        v-if="showGroupStats"
+        class="team-stat"
+      >{{ opponentScore }}</span>
+    </Transition>
 
     <span
       v-if="shouldShowScore && score != null"
@@ -476,6 +480,8 @@ const isShortMatchSource = computed(() => (
   .support-rate-fill-leave-active,
   .support-rate-text-enter-active,
   .support-rate-text-leave-active,
+  .team-stat-enter-active,
+  .team-stat-leave-active,
   .team-row > .rank-badge,
   .team-row > .team-logo,
   .team-row > .team-name,
@@ -607,6 +613,19 @@ const isShortMatchSource = computed(() => (
 
 .team-stat + .team-stat {
   margin-left: -6px;
+}
+
+.team-stat-enter-active,
+.team-stat-leave-active {
+  transition:
+    opacity 220ms ease,
+    transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.team-stat-enter-from,
+.team-stat-leave-to {
+  opacity: 0;
+  transform: translateX(6px);
 }
 
 .team-row.group-stats .team-score {

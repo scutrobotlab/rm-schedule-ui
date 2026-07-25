@@ -112,13 +112,15 @@ function groupStat(
         <span :style="{ opacity: 1 - titleTransition.progress }">{{ titleTransition.from }}</span>
         <span :style="{ opacity: titleTransition.progress }">{{ titleTransition.to }}</span>
       </span>
-      <span
-        v-if="showGroupStats && showAsMatches"
-        class="group-stats-tools"
-      >
-        <span>胜场</span>
-        <span>对手分</span>
-      </span>
+      <Transition name="group-stats">
+        <span
+          v-if="showGroupStats && showAsMatches"
+          class="group-stats-tools"
+        >
+          <span>胜场</span>
+          <span>对手分</span>
+        </span>
+      </Transition>
       <span
         v-if="showGroupStats && showAsMatches"
         class="type-tag"
@@ -263,6 +265,19 @@ function groupStat(
 
 .group-stats-tools > :nth-child(2) {
   grid-column: 3;
+}
+
+.group-stats-enter-active,
+.group-stats-leave-active {
+  transition:
+    opacity 220ms ease,
+    transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.group-stats-enter-from,
+.group-stats-leave-to {
+  opacity: 0;
+  transform: translateX(6px);
 }
 
 .info-card.lane-gold {
@@ -429,6 +444,13 @@ function groupStat(
 
 .card-head {
   margin-bottom: calc(6px - 2px * var(--bracket-normal-progress, 0));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .group-stats-enter-active,
+  .group-stats-leave-active {
+    transition: none;
+  }
 }
 
 @media (min-width: 900px) {
