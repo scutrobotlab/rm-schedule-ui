@@ -138,22 +138,27 @@ const isShortMatchSource = computed(() => (
       winner: finalized && team.isWinner && !medal,
       loser: finalized && team.isLoser && !medal,
       pending: team.sourceKind !== 'team',
+      'has-support-rate': normalizedSupportRate != null,
       'tight-name-score-gap': tightNameScoreGap,
       [`side-${side}`]: Boolean(side),
       [`medal-${medal}`]: Boolean(medal),
       [`density-${density}`]: true,
     }"
   >
-    <span
-      v-if="normalizedSupportRate != null"
-      class="support-rate-fill"
-      :style="supportRateStyle"
-      aria-hidden="true"
-    />
-    <span
-      v-if="normalizedSupportRate != null"
-      class="support-rate-text"
-    >{{ supportRateText }}</span>
+    <Transition name="support-rate-fill">
+      <span
+        v-if="normalizedSupportRate != null"
+        class="support-rate-fill"
+        :style="supportRateStyle"
+        aria-hidden="true"
+      />
+    </Transition>
+    <Transition name="support-rate-text">
+      <span
+        v-if="normalizedSupportRate != null"
+        class="support-rate-text"
+      >{{ supportRateText }}</span>
+    </Transition>
 
     <span
       v-if="team.groupRank != null"
@@ -246,39 +251,70 @@ const isShortMatchSource = computed(() => (
   inset: 0 auto 0 0;
   border-radius: 0 3px 3px 0;
   opacity: 1;
+  transform: scaleX(1);
   transform-origin: left center;
-  animation: support-rate-grow 480ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform, opacity;
   pointer-events: none;
 }
 
-@keyframes support-rate-grow {
-  from {
-    opacity: 0;
-    transform: scaleX(0);
-  }
-  to {
-    opacity: 1;
-    transform: scaleX(1);
-  }
+.support-rate-fill-enter-active,
+.support-rate-fill-leave-active {
+  transition:
+    transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 240ms ease;
+}
+
+.support-rate-fill-enter-from,
+.support-rate-fill-leave-to {
+  opacity: 0;
+  transform: scaleX(0);
 }
 
 .side-red .support-rate-fill {
-  background: linear-gradient(90deg, rgba(229, 57, 53, 0.34), rgba(229, 57, 53, 0.12));
+  background: linear-gradient(
+    90deg,
+    rgba(var(--side-color), 1) 0,
+    rgba(var(--side-color), 0.58) 8px,
+    rgba(var(--side-color), 0.38) 28px,
+    rgba(var(--side-color), 0.28) 100%
+  );
 }
 
 .side-blue .support-rate-fill {
-  background: linear-gradient(90deg, rgba(30, 136, 229, 0.34), rgba(30, 136, 229, 0.12));
+  background: linear-gradient(
+    90deg,
+    rgba(var(--side-color), 1) 0,
+    rgba(var(--side-color), 0.58) 8px,
+    rgba(var(--side-color), 0.38) 28px,
+    rgba(var(--side-color), 0.28) 100%
+  );
 }
 
 .support-rate-text {
   flex: 0 0 3.4rem;
   width: 3.4rem;
+  max-width: 3.4rem;
+  overflow: hidden;
   font-size: 0.72rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   line-height: 1;
   text-align: left;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  will-change: transform, opacity;
+}
+
+.support-rate-text-enter-active,
+.support-rate-text-leave-active {
+  transition:
+    opacity 220ms ease,
+    transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.support-rate-text-enter-from,
+.support-rate-text-leave-to {
+  opacity: 0;
+  transform: translateX(-6px);
 }
 
 .side-red .support-rate-text {
@@ -290,11 +326,23 @@ const isShortMatchSource = computed(() => (
 }
 
 .team-row.side-red {
-  border-left: 3px solid #e53935;
+  --side-color: 229, 57, 53;
+  border-left: 3px solid rgb(var(--side-color));
 }
 
 .team-row.side-blue {
-  border-left: 3px solid #1e88e5;
+  --side-color: 30, 136, 229;
+  border-left: 3px solid rgb(var(--side-color));
+}
+
+.team-row.has-support-rate.side-red,
+.team-row.has-support-rate.side-blue {
+  border-left: 0;
+  padding-left: calc(
+    11px
+    - 2px * var(--bracket-normal-progress, 0)
+    - 1px * var(--bracket-compact-progress, 0)
+  );
 }
 
 .team-row.winner.side-red {
@@ -310,11 +358,11 @@ const isShortMatchSource = computed(() => (
 }
 
 .team-row.loser.side-red {
-  border-left-color: #8a4a48;
+  --side-color: 138, 74, 72;
 }
 
 .team-row.loser.side-blue {
-  border-left-color: #4a6a8a;
+  --side-color: 74, 106, 138;
 }
 
 .team-row.medal-gold {
@@ -384,8 +432,11 @@ const isShortMatchSource = computed(() => (
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .support-rate-fill {
-    animation: none;
+  .support-rate-fill-enter-active,
+  .support-rate-fill-leave-active,
+  .support-rate-text-enter-active,
+  .support-rate-text-leave-active {
+    transition: none;
   }
 
   .team-row.medal-gold,
