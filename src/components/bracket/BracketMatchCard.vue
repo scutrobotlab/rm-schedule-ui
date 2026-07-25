@@ -105,6 +105,7 @@ function slotMedal(
         :show-name="showTeamName"
         :side="podiumKind ? null : 'red'"
         :medal="slotMedal(item.slots[0])"
+        :finalized="item.status === 'DONE'"
       />
       <BracketTeamRow
         :team="item.slots[1]"
@@ -114,6 +115,7 @@ function slotMedal(
         :show-name="showTeamName"
         :side="podiumKind ? null : 'blue'"
         :medal="slotMedal(item.slots[1])"
+        :finalized="item.status === 'DONE'"
       />
     </div>
 

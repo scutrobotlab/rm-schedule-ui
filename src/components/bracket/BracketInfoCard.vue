@@ -86,6 +86,7 @@ function hasMatchMeta(m: BracketMatchSummary): boolean {
             :show-score="true"
             :show-name="showTeamName"
             side="red"
+            :finalized="m.status === 'DONE'"
           />
           <BracketTeamRow
             :team="m.slots[1]"
@@ -94,6 +95,7 @@ function hasMatchMeta(m: BracketMatchSummary): boolean {
             :show-score="true"
             :show-name="showTeamName"
             side="blue"
+            :finalized="m.status === 'DONE'"
           />
         </div>
         <div

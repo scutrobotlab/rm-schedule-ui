@@ -287,6 +287,8 @@ describe('formatSourceLabel', () => {
     expect(formatSourceLabel('B组 第2名')).toBe('B2')
     expect(formatSourceLabel('第一梯队种子 A1')).toBe('A1')
     expect(formatSourceLabel('抽签结果待定 B9')).toBe('B9')
+    expect(formatSourceLabel('A组 第一轮 第1名')).toBe('第一轮 第1名')
+    expect(formatSourceLabel('小组赛B组 第二轮 第2名')).toBe('第二轮 第2名')
   })
 
   it('保留无法解析的来源文案，不退回空待定', () => {

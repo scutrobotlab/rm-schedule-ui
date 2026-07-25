@@ -247,7 +247,8 @@ export function formatSourceLabel(raw: string | undefined | null): string {
     return embedded[1].toUpperCase()
   }
 
-  return text
+  // 同一 bracket 已明确当前组别，轮次占位无需重复展示「A组 / 小组赛A组」。
+  return text.replace(/^(?:小组赛)?[A-QW]组\s*/i, '')
 }
 
 function toBracketItem(args: {

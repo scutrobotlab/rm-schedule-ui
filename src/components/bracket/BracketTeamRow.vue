@@ -2,7 +2,9 @@
 import type { BracketTeamSlot } from '../../types/bracket'
 import type { BracketDensity } from '../../utils/bracket_density'
 import { StaticCDN } from '../../utils/cdn'
+import schoolBlue from '@/assets/school_blue.png'
 import schoolGrey from '@/assets/school_grey.png'
+import schoolRed from '@/assets/school_red.png'
 
 withDefaults(
   defineProps<{
@@ -16,8 +18,10 @@ withDefaults(
     side?: 'red' | 'blue' | null
     /** 冠亚季：金 / 银 / 铜（覆盖默认绿色胜者） */
     medal?: 'gold' | 'silver' | 'bronze' | null
+    /** 仅比赛结束后显示胜负造成的高亮 / 灰化 */
+    finalized?: boolean
   }>(),
-  { showName: true, side: null, medal: null },
+  { showName: true, side: null, medal: null, finalized: true },
 )
 
 function logoSrc(url: string | undefined): string | undefined {
@@ -30,8 +34,8 @@ function logoSrc(url: string | undefined): string | undefined {
   <div
     class="team-row"
     :class="{
-      winner: team.isWinner && !medal,
-      loser: team.isLoser && !medal,
+      winner: finalized && team.isWinner && !medal,
+      loser: finalized && team.isLoser && !medal,
       pending: team.sourceKind !== 'team',
       [`side-${side}`]: Boolean(side),
       [`medal-${medal}`]: Boolean(medal),
@@ -42,13 +46,6 @@ function logoSrc(url: string | undefined): string | undefined {
       v-if="team.groupRank != null"
       class="rank-badge"
     >{{ team.groupRank }}</span>
-    <span
-      v-else-if="team.sourceKind !== 'team'"
-      class="source-badge"
-      :class="team.sourceKind"
-    >
-      {{ team.sourceKind === 'rank' ? '种子' : '来源' }}
-    </span>
 
     <img
       v-if="team.sourceKind === 'team' && team.collegeLogo"
@@ -61,6 +58,12 @@ function logoSrc(url: string | undefined): string | undefined {
       v-else-if="team.sourceKind === 'team'"
       class="team-logo placeholder"
       :src="schoolGrey"
+      alt=""
+    />
+    <img
+      v-else-if="side"
+      class="team-logo pending-logo"
+      :src="side === 'red' ? schoolRed : schoolBlue"
       alt=""
     />
 
@@ -209,18 +212,6 @@ function logoSrc(url: string | undefined): string | undefined {
   opacity: 0.7;
 }
 
-.source-badge {
-  flex: 0 0 auto;
-  font-size: 0.58rem;
-  letter-spacing: 0.04em;
-  opacity: 0.45;
-  min-width: 1.8em;
-}
-
-.source-badge.rank {
-  color: #9ec8ff;
-}
-
 .rank-badge {
   flex: 0 0 1.75em;
   width: 1.75em;
@@ -286,10 +277,6 @@ function logoSrc(url: string | undefined): string | undefined {
   font-size: 0.88rem;
 }
 
-.density-normal .source-badge {
-  display: none;
-}
-
 .density-normal .rank-badge {
   flex-basis: 1.6em;
   width: 1.6em;
@@ -319,10 +306,6 @@ function logoSrc(url: string | undefined): string | undefined {
 .density-compact .team-score {
   /* 紧凑时仍保持可读字号，保证比分完整显示 */
   font-size: 0.86rem;
-}
-
-.density-compact .source-badge {
-  display: none;
 }
 
 .density-compact .rank-badge {
