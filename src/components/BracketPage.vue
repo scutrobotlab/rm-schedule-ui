@@ -42,8 +42,9 @@ const liveMode = computed(() => route.query.live == '1')
 
 /** 原始 zone.parts 下标（与 ?group= 兼容） */
 const selectedGroup = ref(Number(route.query.group ?? -1))
-/** bracket 内容延后一帧切换，让 group 按钮先完成选中态绘制 */
+/** bracket 内容延后一帧切换，让 zone/group 控件先完成选中态绘制 */
 const renderedGroup = ref(selectedGroup.value)
+const renderedZoneId = ref(Number(route.params.zoneId))
 const routeHasGroup = computed(() => route.query.group !== undefined)
 const viewportWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024)
 
@@ -341,6 +342,12 @@ const zone = computed(() => ZoneMap[season.value]?.find((z) => z.id == zoneId.va
 
 /** 前后段合并后的分组列表，仅 BracketPage 使用 */
 const bracketParts = computed(() => (zone.value ? resolveBracketParts(zone.value) : []))
+const renderedZone = computed(() =>
+  ZoneMap[season.value]?.find((item) => item.id == renderedZoneId.value),
+)
+const renderedBracketParts = computed(() =>
+  renderedZone.value ? resolveBracketParts(renderedZone.value) : [],
+)
 
 function bracketIndexForRawGroup(rawGroup: number): number {
   if (!bracketParts.value.length) return 0
@@ -360,9 +367,13 @@ const selectedBracketIndex = computed({
 })
 
 const currentPart = computed(() => bracketParts.value[selectedBracketIndex.value]?.part)
-const renderedPart = computed(
-  () => bracketParts.value[bracketIndexForRawGroup(renderedGroup.value)]?.part,
-)
+const renderedPart = computed(() => {
+  if (!renderedBracketParts.value.length) return undefined
+  const index = renderedBracketParts.value.findIndex((bp) =>
+    bp.sourceIndices.includes(renderedGroup.value),
+  )
+  return renderedBracketParts.value[index >= 0 ? index : 0]?.part
+})
 
 let groupRenderRaf = 0
 
@@ -380,10 +391,12 @@ function cancelPendingGroupWork() {
   windowMotion.value = 'idle'
 }
 
-function scheduleRenderedGroup(rawGroup: number) {
+function scheduleRenderedBracket(rawGroup: number) {
   cancelPendingGroupWork()
+  const nextZoneId = zoneId.value
   groupRenderRaf = requestAnimationFrame(() => {
     groupRenderRaf = 0
+    renderedZoneId.value = nextZoneId
     renderedGroup.value = rawGroup
   })
 }
@@ -552,10 +565,13 @@ function toggleLiveMode() {
   router.replace({ path: route.path, query })
 }
 
-watch(zoneId, updateQuery)
+watch(zoneId, () => {
+  updateQuery()
+  scheduleRenderedBracket(selectedGroup.value)
+})
 watch(selectedGroup, (rawGroup) => {
   updateQuery()
-  scheduleRenderedGroup(rawGroup)
+  scheduleRenderedBracket(rawGroup)
 })
 watch(
   () => route.query.group,
@@ -570,6 +586,8 @@ watch(
     }
   },
 )
+// 覆盖 setup 期间同步完成的 zone/group 归一化；后续变化仍由上方 watcher 合并调度。
+scheduleRenderedBracket(selectedGroup.value)
 watch(
   [selectedGroup, zoneId, () => displayStages.value.length],
   () => {
@@ -657,7 +675,7 @@ const scheduleReady = computed(
 const scheduleZone = computed(() => {
   if (!scheduleReady.value) return undefined
   return promotionStore.schedule.data.event.zones.nodes.find(
-    (item) => item.id == String(zoneId.value),
+    (item) => item.id == String(renderedZoneId.value),
   )
 })
 
@@ -689,10 +707,10 @@ const bracketModel = computed((): BracketViewModel | null => {
   const ready = scheduleReady.value
   // 始终渲染全部阶段列；可见窗口由 windowLeft/span + 条带 translate 控制
   return buildBracketViewModel({
-    zoneId: zoneId.value,
+    zoneId: renderedZoneId.value,
     part,
     getMatchByOrder: (z, order, plan) => {
-      if (!ready || z !== zoneId.value) return undefined
+      if (!ready || z !== renderedZoneId.value) return undefined
       return matchLookup.value.group.get(`${order}:${plan ?? 3}`)
         ?? matchLookup.value.knockout.get(order)
     },
@@ -902,11 +920,17 @@ onBeforeUnmount(() => {
             :class="{ 'bracket-strip--settle': isStripSettling }"
             :style="stripStyle"
           >
-            <BracketBoard
-              v-if="bracketModel"
-              :model="bracketModel"
-              :visible-span="windowSpan"
-            />
+            <Transition
+              name="bracket-group"
+              mode="out-in"
+            >
+              <BracketBoard
+                v-if="bracketModel"
+                :key="`${renderedZoneId}-${renderedGroup}`"
+                :model="bracketModel"
+                :visible-span="windowSpan"
+              />
+            </Transition>
           </div>
         </div>
 
@@ -1118,6 +1142,28 @@ onBeforeUnmount(() => {
   transition:
     transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
     width 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.bracket-group-enter-active {
+  transition:
+    opacity 0.2s ease-out,
+    transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.bracket-group-leave-active {
+  transition:
+    opacity 0.12s ease-in,
+    transform 0.12s ease-in;
+}
+
+.bracket-group-enter-from {
+  opacity: 0;
+  transform: translate3d(0, 8px, 0);
+}
+
+.bracket-group-leave-to {
+  opacity: 0;
+  transform: translate3d(0, -4px, 0);
 }
 
 .stage-range-wrap {
