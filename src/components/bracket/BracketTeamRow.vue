@@ -45,6 +45,9 @@ const props = withDefaults(
     supportRate?: number | null
     /** 仅由单列 Bracket 开启 */
     showSupportRate?: boolean
+    showGroupStats?: boolean
+    winCount?: string
+    opponentScore?: string
   }>(),
   {
     showName: true,
@@ -59,6 +62,9 @@ const props = withDefaults(
     showPlaceholderLogo: true,
     supportRate: null,
     showSupportRate: false,
+    showGroupStats: false,
+    winCount: '—',
+    opponentScore: '—',
     visibleSpan: undefined,
   },
 )
@@ -139,6 +145,7 @@ const isShortMatchSource = computed(() => (
       loser: finalized && team.isLoser && !medal,
       pending: team.sourceKind !== 'team',
       'has-support-rate': normalizedSupportRate != null,
+      'group-stats': showGroupStats,
       'tight-name-score-gap': tightNameScoreGap,
       [`side-${side}`]: Boolean(side),
       [`medal-${medal}`]: Boolean(medal),
@@ -199,6 +206,15 @@ const isShortMatchSource = computed(() => (
       class="team-name-spacer"
       :title="team.sourceLabel || team.displayName"
     />
+
+    <span
+      v-if="showGroupStats"
+      class="team-stat"
+    >{{ winCount }}</span>
+    <span
+      v-if="showGroupStats"
+      class="team-stat"
+    >{{ opponentScore }}</span>
 
     <span
       v-if="shouldShowScore && score != null"
@@ -295,8 +311,8 @@ const isShortMatchSource = computed(() => (
   z-index: 2;
   top: 50%;
   left: 11px;
-  width: 3.4rem;
-  max-width: 3.4rem;
+  width: 3rem;
+  max-width: 3rem;
   overflow: hidden;
   font-size: 0.72rem;
   font-weight: 700;
@@ -333,7 +349,12 @@ const isShortMatchSource = computed(() => (
 .team-row.has-support-rate > .team-logo,
 .team-row.has-support-rate > .team-name,
 .team-row.has-support-rate > .team-name-spacer {
-  transform: translateX(3.4rem);
+  transform: translateX(3rem);
+}
+
+.team-row.has-support-rate.group-stats > .team-name,
+.team-row.has-support-rate.group-stats > .team-name-spacer {
+  margin-right: 2.2rem;
 }
 
 .side-red .support-rate-text {
@@ -569,6 +590,30 @@ const isShortMatchSource = computed(() => (
   text-align: right;
   /* 缩放/紧凑密度下也保证比分完整可读，不被挤掉 */
   overflow: visible;
+}
+
+.team-stat {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 2rem;
+  width: 2rem;
+  color: rgba(236, 243, 252, 0.88);
+  font-size: 0.76rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  text-align: center;
+}
+
+.team-stat + .team-stat {
+  margin-left: -6px;
+}
+
+.team-row.group-stats .team-score {
+  flex: 0 0 1.8rem;
+  width: 1.8rem;
+  margin-left: -4px;
+  text-align: center;
 }
 
 .team-score.pending-score {

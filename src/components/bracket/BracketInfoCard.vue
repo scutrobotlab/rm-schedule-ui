@@ -11,6 +11,7 @@ import {
 } from '../../utils/bracket_density'
 import BracketTeamRow from './BracketTeamRow.vue'
 import { usePromotionStore } from '../../stores/promotion'
+import { resolveGroupRankStat, type GroupRankStatName } from '../../utils/group_rank'
 
 const props = withDefaults(
   defineProps<{
@@ -23,6 +24,8 @@ const props = withDefaults(
     forcePendingName?: boolean
     showPlaceholderLogo?: boolean
     showTypeTag?: boolean
+    showGroupStats?: boolean
+    groupName?: string
   }>(),
   {
     titleShortenLevel: 0,
@@ -31,6 +34,8 @@ const props = withDefaults(
     forcePendingName: false,
     showPlaceholderLogo: true,
     showTypeTag: true,
+    showGroupStats: false,
+    groupName: '',
   },
 )
 const promotionStore = usePromotionStore()
@@ -79,6 +84,21 @@ function supportRate(m: BracketMatchSummary, side: 'red' | 'blue'): number | nul
   const mpMatch = promotionStore.getMpMatch(m.matchId)
   return mpMatch?.[side === 'red' ? 'redRate' : 'blueRate'] ?? null
 }
+
+function groupStat(
+  m: BracketMatchSummary,
+  side: 'red' | 'blue',
+  itemName: GroupRankStatName,
+): string {
+  const teamName = m.slots[side === 'red' ? 0 : 1].collegeName
+  return resolveGroupRankStat(
+    promotionStore.groupRank,
+    promotionStore.zoneId,
+    props.groupName,
+    teamName,
+    itemName,
+  )
+}
 </script>
 
 <template>
@@ -93,7 +113,18 @@ function supportRate(m: BracketMatchSummary, side: 'red' | 'blue'): number | nul
         <span :style="{ opacity: titleTransition.progress }">{{ titleTransition.to }}</span>
       </span>
       <span
-        v-if="showTypeTag"
+        v-if="showGroupStats && showAsMatches"
+        class="group-stats-tools"
+      >
+        <span>胜场</span>
+        <span>对手分</span>
+      </span>
+      <span
+        v-if="showGroupStats && showAsMatches"
+        class="type-tag"
+      >{{ nodeTypeLabel[item.nodeType] || '说明' }}</span>
+      <span
+        v-else-if="showTypeTag"
         class="type-tag"
       >{{ nodeTypeLabel[item.nodeType] || '说明' }}</span>
     </div>
@@ -128,6 +159,9 @@ function supportRate(m: BracketMatchSummary, side: 'red' | 'blue'): number | nul
             :show-placeholder-logo="showPlaceholderLogo"
             :show-support-rate="showSupportRate"
             :support-rate="supportRate(m, 'red')"
+            :show-group-stats="showGroupStats"
+            :win-count="groupStat(m, 'red', '胜场数')"
+            :opponent-score="groupStat(m, 'red', '对手分')"
           />
           <BracketTeamRow
             :team="m.slots[1]"
@@ -149,6 +183,9 @@ function supportRate(m: BracketMatchSummary, side: 'red' | 'blue'): number | nul
             :show-placeholder-logo="showPlaceholderLogo"
             :show-support-rate="showSupportRate"
             :support-rate="supportRate(m, 'blue')"
+            :show-group-stats="showGroupStats"
+            :win-count="groupStat(m, 'blue', '胜场数')"
+            :opponent-score="groupStat(m, 'blue', '对手分')"
           />
         </div>
         <div
@@ -202,6 +239,30 @@ function supportRate(m: BracketMatchSummary, side: 'red' | 'blue'): number | nul
   border-left-color: rgba(120, 170, 220, 0.45);
   backdrop-filter: blur(18px) saturate(1.15);
   -webkit-backdrop-filter: blur(18px) saturate(1.15);
+}
+
+.group-stats-tools {
+  display: inline-grid;
+  grid-template-columns: 2rem 0 2rem;
+  flex: 0 0 auto;
+  gap: 0;
+  align-items: center;
+  margin-left: auto;
+  margin-right: 2px;
+  color: rgba(220, 232, 246, 0.72);
+  font-size: 0.58rem;
+  font-weight: 600;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.group-stats-tools > :nth-child(1) {
+  grid-column: 1;
+}
+
+.group-stats-tools > :nth-child(2) {
+  grid-column: 3;
 }
 
 .info-card.lane-gold {

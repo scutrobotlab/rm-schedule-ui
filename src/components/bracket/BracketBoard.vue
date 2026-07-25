@@ -41,6 +41,7 @@ const showPlaceholderLogo = computed(
   () => shouldShowBracketPlaceholderLogo(visibleSpan.value),
 )
 const showTypeTag = computed(() => shouldShowBracketTypeTag(visibleSpan.value))
+const showSupportRate = computed(() => Math.abs(visibleSpan.value - 1) < 0.001)
 const isKnockout = computed(() => props.model.partType === 'knockout')
 const boardStyle = computed(() => {
   const progress = resolveBracketVisualProgress(visibleSpan.value)
@@ -164,6 +165,10 @@ watch(layoutKey, () => scheduleLayout())
         :force-pending-name="forcePendingName"
         :show-placeholder-logo="showPlaceholderLogo"
         :show-type-tag="showTypeTag"
+        :show-group-stats="
+          isKnockout === false && model.partGroup !== 'QW' && showSupportRate
+        "
+        :group-name="model.partGroup"
         :tree-tops="isKnockout ? nodeTops : null"
         :tree-height="isKnockout ? columnHeights[column.index] : null"
       />

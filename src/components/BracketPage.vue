@@ -663,6 +663,7 @@ const MenuItems = ref([
 watch(
   () => promotionStore.season,
   async () => {
+    void promotionStore.updateGroupRank().catch(() => undefined)
     await promotionStore.updateSchedule()
   },
   { immediate: true },

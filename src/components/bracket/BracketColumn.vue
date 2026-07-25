@@ -24,6 +24,9 @@ const props = defineProps<{
   showPlaceholderLogo?: boolean
   /** ≥4 列时为 false，隐藏右上角类型/去向标签 */
   showTypeTag?: boolean
+  /** 小组赛单列时展示胜场数 / 对手分 */
+  showGroupStats?: boolean
+  groupName?: string
   /** 淘汰赛树形布局：节点 offsetTop；null 表示普通堆叠 */
   treeTops?: Record<string, number> | null
   treeHeight?: number | null
@@ -77,6 +80,8 @@ function isMatch(item: BracketMatchCard | BracketInfoCard): item is BracketMatch
           :force-pending-name="forcePendingName === true"
           :show-placeholder-logo="showPlaceholderLogo !== false"
           :show-type-tag="showTypeTag !== false"
+          :show-group-stats="showGroupStats === true"
+          :group-name="groupName"
         />
         <BracketInfoCardView
           v-else
@@ -89,6 +94,8 @@ function isMatch(item: BracketMatchCard | BracketInfoCard): item is BracketMatch
           :force-pending-name="forcePendingName === true"
           :show-placeholder-logo="showPlaceholderLogo !== false"
           :show-type-tag="showTypeTag !== false"
+          :show-group-stats="showGroupStats === true"
+          :group-name="groupName"
         />
       </div>
     </div>

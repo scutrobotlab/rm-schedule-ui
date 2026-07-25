@@ -11,6 +11,7 @@ import {
 } from '../../utils/bracket_density'
 import BracketTeamRow from './BracketTeamRow.vue'
 import { usePromotionStore } from '../../stores/promotion'
+import { resolveGroupRankStat, type GroupRankStatName } from '../../utils/group_rank'
 
 const props = withDefaults(
   defineProps<{
@@ -23,6 +24,8 @@ const props = withDefaults(
     forcePendingName?: boolean
     showPlaceholderLogo?: boolean
     showTypeTag?: boolean
+    showGroupStats?: boolean
+    groupName?: string
   }>(),
   {
     titleShortenLevel: 0,
@@ -31,6 +34,8 @@ const props = withDefaults(
     forcePendingName: false,
     showPlaceholderLogo: true,
     showTypeTag: true,
+    showGroupStats: false,
+    groupName: '',
   },
 )
 const promotionStore = usePromotionStore()
@@ -47,6 +52,16 @@ const showSupportRate = computed(() => Math.abs(props.visibleSpan - 1) < 0.001)
 const mpMatch = computed(() => (
   props.item.matchId ? promotionStore.getMpMatch(props.item.matchId) : undefined
 ))
+
+function groupStat(side: 'red' | 'blue', itemName: GroupRankStatName): string {
+  return resolveGroupRankStat(
+    promotionStore.groupRank,
+    promotionStore.zoneId,
+    props.groupName,
+    props.item.slots[side === 'red' ? 0 : 1].collegeName,
+    itemName,
+  )
+}
 const titleTransition = computed(() => resolveBracketTextTransition(
   props.visibleSpan,
   (columns) => shortenBracketTitle(
@@ -102,7 +117,11 @@ function slotMedal(
     :data-node-id="item.nodeId"
   >
     <div
-      v-if="titleTransition.from || (showTypeTag && (podiumTag || destinationTag))"
+      v-if="
+        titleTransition.from ||
+        (showTypeTag && (podiumTag || destinationTag)) ||
+        showGroupStats
+      "
       class="card-head"
     >
       <span
@@ -113,7 +132,18 @@ function slotMedal(
         <span :style="{ opacity: titleTransition.progress }">{{ titleTransition.to }}</span>
       </span>
       <span
-        v-if="showTypeTag && podiumTag"
+        v-if="showGroupStats"
+        class="group-stats-tools"
+      >
+        <span>胜场</span>
+        <span>对手分</span>
+      </span>
+      <span
+        v-if="showGroupStats"
+        class="type-tag"
+      >对阵</span>
+      <span
+        v-else-if="showTypeTag && podiumTag"
         class="type-tag"
       >{{ podiumTag }}</span>
       <span
@@ -145,6 +175,9 @@ function slotMedal(
         :show-placeholder-logo="showPlaceholderLogo"
         :show-support-rate="showSupportRate"
         :support-rate="mpMatch?.redRate"
+        :show-group-stats="showGroupStats"
+        :win-count="groupStat('red', '胜场数')"
+        :opponent-score="groupStat('red', '对手分')"
       />
       <BracketTeamRow
         :team="item.slots[1]"
@@ -168,6 +201,9 @@ function slotMedal(
         :show-placeholder-logo="showPlaceholderLogo"
         :show-support-rate="showSupportRate"
         :support-rate="mpMatch?.blueRate"
+        :show-group-stats="showGroupStats"
+        :win-count="groupStat('blue', '胜场数')"
+        :opponent-score="groupStat('blue', '对手分')"
       />
     </div>
 
@@ -238,6 +274,30 @@ function slotMedal(
   display: flex;
   flex-direction: column;
   gap: 3px;
+}
+
+.group-stats-tools {
+  display: inline-grid;
+  grid-template-columns: 2rem 0 2rem;
+  flex: 0 0 auto;
+  gap: 0;
+  align-items: center;
+  margin-left: auto;
+  margin-right: 2px;
+  color: rgba(220, 232, 246, 0.72);
+  font-size: 0.58rem;
+  font-weight: 600;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.group-stats-tools > :nth-child(1) {
+  grid-column: 1;
+}
+
+.group-stats-tools > :nth-child(2) {
+  grid-column: 3;
 }
 
 .card-head {
