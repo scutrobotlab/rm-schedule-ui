@@ -98,6 +98,10 @@ const shouldShowName = computed(
 const shouldShowScore = computed(
   () => props.showScore && (!isPending.value || props.showPendingScore),
 )
+const isShortMatchSource = computed(() => (
+  isPending.value &&
+  /^\d+[胜败]$/.test(displayName.value.to || displayName.value.from)
+))
 </script>
 
 <template>
@@ -141,6 +145,7 @@ const shouldShowScore = computed(
     <span
       v-if="shouldShowName"
       class="team-name text-transition"
+      :class="{ 'short-match-source': isShortMatchSource }"
       :title="team.sourceLabel || team.displayName"
     >
       <span :style="{ opacity: 1 - displayName.progress }">{{ displayName.from || '—' }}</span>
@@ -344,6 +349,17 @@ const shouldShowScore = computed(
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.team-name.short-match-source {
+  flex: 0 0 auto;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+.team-name.short-match-source > span {
+  overflow: visible;
+  text-overflow: clip;
 }
 
 .text-transition {

@@ -287,6 +287,24 @@ function hasMatchMeta(m: BracketMatchSummary): boolean {
   gap: 3px;
 }
 
+/*
+ * 4→5 列时晋级/淘汰节点优先让出横向空间，确保压缩后的「XX胜/XX败」
+ * 不被条目自身 padding 和图文 gap 挤掉。
+ */
+.info-card.node-promote :deep(.team-row),
+.info-card.node-eliminate :deep(.team-row) {
+  padding-inline: calc(
+    8px
+    - 2px * var(--bracket-normal-progress, 0)
+    - 4px * var(--bracket-compact-progress, 0)
+  );
+  gap: calc(
+    6px
+    - 1px * var(--bracket-normal-progress, 0)
+    - 3px * var(--bracket-compact-progress, 0)
+  );
+}
+
 /* 多场纵向分割：仅用上下间距与分隔线，不挤占水平内容区 */
 .match-list {
   gap: 0;
