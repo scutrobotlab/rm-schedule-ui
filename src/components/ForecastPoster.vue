@@ -356,7 +356,7 @@ onMounted(async () => {
         <button
           type="button"
           class="forecast-chrome__download"
-          :disabled="downloading"
+          :disabled="downloading || !hasMatch"
           @click="downloadPng"
         >
           {{ downloading ? '生成中…' : '下载 PNG' }}
