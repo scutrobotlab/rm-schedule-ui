@@ -1,12 +1,16 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { BracketTeamSlot } from '../../types/bracket'
-import type { BracketDensity } from '../../utils/bracket_density'
+import {
+  shortenBracketSourceLabel,
+  type BracketDensity,
+} from '../../utils/bracket_density'
 import { StaticCDN } from '../../utils/cdn'
 import schoolBlue from '@/assets/school_blue.png'
 import schoolGrey from '@/assets/school_grey.png'
 import schoolRed from '@/assets/school_red.png'
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     team: BracketTeamSlot
     score: number | null
@@ -16,18 +20,38 @@ withDefaults(
     showName?: boolean
     /** 对阵红蓝方；排名席位等非对阵不传 */
     side?: 'red' | 'blue' | null
+    /** 占位 R logo 的颜色，可与奖牌卡的边框阵营样式解耦 */
+    placeholderSide?: 'red' | 'blue' | null
     /** 冠亚季：金 / 银 / 铜（覆盖默认绿色胜者） */
     medal?: 'gold' | 'silver' | 'bronze' | null
     /** 仅比赛结束后显示胜负造成的高亮 / 灰化 */
     finalized?: boolean
+    /** 由父级按“有比分 ≥3 列 / 无比分 ≥4 列”决定是否压缩场次来源 */
+    shortenMatchSource?: boolean
   }>(),
-  { showName: true, side: null, medal: null, finalized: true },
+  {
+    showName: true,
+    side: null,
+    placeholderSide: null,
+    medal: null,
+    finalized: true,
+    shortenMatchSource: false,
+  },
 )
 
 function logoSrc(url: string | undefined): string | undefined {
   if (!url) return undefined
   return StaticCDN(`${url}?process=bg_white`)
 }
+
+const displayName = computed(() => {
+  if (props.team.sourceKind === 'team') return props.team.displayName
+  return shortenBracketSourceLabel(
+    props.team.displayName,
+    props.density,
+    props.shortenMatchSource,
+  )
+})
 </script>
 
 <template>
@@ -61,9 +85,9 @@ function logoSrc(url: string | undefined): string | undefined {
       alt=""
     />
     <img
-      v-else-if="side"
+      v-else-if="placeholderSide || side"
       class="team-logo pending-logo"
-      :src="side === 'red' ? schoolRed : schoolBlue"
+      :src="(placeholderSide || side) === 'red' ? schoolRed : schoolBlue"
       alt=""
     />
 
@@ -71,7 +95,7 @@ function logoSrc(url: string | undefined): string | undefined {
       v-if="showName"
       class="team-name"
       :title="team.sourceLabel || team.displayName"
-    >{{ team.displayName || '—' }}</span>
+    >{{ displayName || '—' }}</span>
     <span
       v-else
       class="team-name-spacer"

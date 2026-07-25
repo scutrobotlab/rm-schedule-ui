@@ -87,6 +87,7 @@ function hasMatchMeta(m: BracketMatchSummary): boolean {
             :show-name="showTeamName"
             side="red"
             :finalized="m.status === 'DONE'"
+            :shorten-match-source="(titleShortenLevel ?? 0) >= 1"
           />
           <BracketTeamRow
             :team="m.slots[1]"
@@ -96,6 +97,7 @@ function hasMatchMeta(m: BracketMatchSummary): boolean {
             :show-name="showTeamName"
             side="blue"
             :finalized="m.status === 'DONE'"
+            :shorten-match-source="(titleShortenLevel ?? 0) >= 1"
           />
         </div>
         <div
@@ -121,6 +123,7 @@ function hasMatchMeta(m: BracketMatchSummary): boolean {
         :density="density"
         :show-score="false"
         :show-name="showTeamName"
+        :shorten-match-source="(titleShortenLevel ?? 0) >= 2"
       />
     </div>
   </article>

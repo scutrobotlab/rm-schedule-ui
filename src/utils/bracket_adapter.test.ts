@@ -294,6 +294,12 @@ describe('formatSourceLabel', () => {
   it('保留无法解析的来源文案，不退回空待定', () => {
     expect(formatSourceLabel('半决赛胜者')).toBe('半决赛胜者')
   })
+
+  it('统一场次胜负来源中的空格', () => {
+    expect(formatSourceLabel('第23场 胜者')).toBe('第23场胜者')
+    expect(formatSourceLabel('第24场 败者')).toBe('第24场败者')
+    expect(formatSourceLabel('第25场胜者')).toBe('第25场胜者')
+  })
 })
 
 describe('formatBracketTitle', () => {

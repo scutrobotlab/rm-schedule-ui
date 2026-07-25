@@ -225,30 +225,33 @@ export function formatSourceLabel(raw: string | undefined | null): string {
   const text = (raw ?? '').trim()
   if (!text) return ''
 
-  if (/^[A-QW]\d{1,2}$/i.test(text)) {
-    return text.toUpperCase()
+  // 历史布局常量混用「第23场 胜者」与「第23场胜者」，在适配边界统一。
+  const normalized = text.replace(/^第(\d+)场\s+(胜者|败者)$/, '第$1场$2')
+
+  if (/^[A-QW]\d{1,2}$/i.test(normalized)) {
+    return normalized.toUpperCase()
   }
 
   // 小组赛B组 第1名 / B组 第1名 / Q组第2名
-  const groupRank = text.match(/(?:小组赛)?([A-QW])组\s*第\s*(\d+)\s*名/i)
+  const groupRank = normalized.match(/(?:小组赛)?([A-QW])组\s*第\s*(\d+)\s*名/i)
   if (groupRank) {
     return `${groupRank[1].toUpperCase()}${groupRank[2]}`
   }
 
   // 第一梯队种子 A1 / 抽签结果待定 B9
-  const trailingCode = text.match(/\b([A-QW]\d{1,2})\s*$/i)
+  const trailingCode = normalized.match(/\b([A-QW]\d{1,2})\s*$/i)
   if (trailingCode) {
     return trailingCode[1].toUpperCase()
   }
 
   // 文案中部嵌入的分组排名码
-  const embedded = text.match(/\b([A-QW]\d{1,2})\b/i)
-  if (embedded && /种子|抽签|待定|排名/.test(text)) {
+  const embedded = normalized.match(/\b([A-QW]\d{1,2})\b/i)
+  if (embedded && /种子|抽签|待定|排名/.test(normalized)) {
     return embedded[1].toUpperCase()
   }
 
   // 同一 bracket 已明确当前组别，轮次占位无需重复展示「A组 / 小组赛A组」。
-  return text.replace(/^(?:小组赛)?[A-QW]组\s*/i, '')
+  return normalized.replace(/^(?:小组赛)?[A-QW]组\s*/i, '')
 }
 
 function toBracketItem(args: {

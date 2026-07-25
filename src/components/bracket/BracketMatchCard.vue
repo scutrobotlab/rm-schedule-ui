@@ -104,8 +104,10 @@ function slotMedal(
         :show-score="true"
         :show-name="showTeamName"
         :side="podiumKind ? null : 'red'"
+        placeholder-side="red"
         :medal="slotMedal(item.slots[0])"
         :finalized="item.status === 'DONE'"
+        :shorten-match-source="(titleShortenLevel ?? 0) >= 1"
       />
       <BracketTeamRow
         :team="item.slots[1]"
@@ -114,8 +116,10 @@ function slotMedal(
         :show-score="true"
         :show-name="showTeamName"
         :side="podiumKind ? null : 'blue'"
+        placeholder-side="blue"
         :medal="slotMedal(item.slots[1])"
         :finalized="item.status === 'DONE'"
+        :shorten-match-source="(titleShortenLevel ?? 0) >= 1"
       />
     </div>
 

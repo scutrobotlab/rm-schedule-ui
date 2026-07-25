@@ -139,3 +139,24 @@ export function shouldShowBracketTypeTag(columnCount: number): boolean {
 export function shouldShowBracketTeamName(columnCount: number): boolean {
   return columnCount < 6
 }
+
+/**
+ * 3 列起省略来源席位的轮次，避免「第一轮 第1名」被截断。
+ */
+export function shortenBracketSourceLabel(
+  label: string,
+  density: BracketDensity,
+  shortenMatchSource = false,
+): string {
+  if (density === 'comfortable') return label
+
+  const rankOnly = label.replace(
+    /^第[零一二三四五六七八九十百两\d]+轮\s*第(\d+)名$/,
+    '第$1名',
+  )
+  if (!shortenMatchSource) return rankOnly
+
+  return rankOnly
+    .replace(/^第(\d+)场\s*胜者$/, '$1胜者')
+    .replace(/^第(\d+)场\s*败者$/, '$1败者')
+}
