@@ -15,9 +15,15 @@ const props = withDefaults(
     density: BracketDensity
     titleShortenLevel?: BracketTitleShortenLevel
     showTeamName?: boolean
+    showPlaceholderLogo?: boolean
     showTypeTag?: boolean
   }>(),
-  { titleShortenLevel: 0, showTeamName: true, showTypeTag: true },
+  {
+    titleShortenLevel: 0,
+    showTeamName: true,
+    showPlaceholderLogo: true,
+    showTypeTag: true,
+  },
 )
 
 const statusLabel: Record<string, string> = {
@@ -107,7 +113,10 @@ function slotMedal(
         placeholder-side="red"
         :medal="slotMedal(item.slots[0])"
         :finalized="item.status === 'DONE'"
-        :shorten-match-source="(titleShortenLevel ?? 0) >= 1"
+        :match-source-shorten-level="
+          (titleShortenLevel ?? 0) >= 2 ? 2 : (titleShortenLevel ?? 0) >= 1 ? 1 : 0
+        "
+        :show-placeholder-logo="showPlaceholderLogo"
       />
       <BracketTeamRow
         :team="item.slots[1]"
@@ -119,7 +128,10 @@ function slotMedal(
         placeholder-side="blue"
         :medal="slotMedal(item.slots[1])"
         :finalized="item.status === 'DONE'"
-        :shorten-match-source="(titleShortenLevel ?? 0) >= 1"
+        :match-source-shorten-level="
+          (titleShortenLevel ?? 0) >= 2 ? 2 : (titleShortenLevel ?? 0) >= 1 ? 1 : 0
+        "
+        :show-placeholder-logo="showPlaceholderLogo"
       />
     </div>
 

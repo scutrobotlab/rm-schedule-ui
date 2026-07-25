@@ -15,9 +15,15 @@ const props = withDefaults(
     density: BracketDensity
     titleShortenLevel?: BracketTitleShortenLevel
     showTeamName?: boolean
+    showPlaceholderLogo?: boolean
     showTypeTag?: boolean
   }>(),
-  { titleShortenLevel: 0, showTeamName: true, showTypeTag: true },
+  {
+    titleShortenLevel: 0,
+    showTeamName: true,
+    showPlaceholderLogo: true,
+    showTypeTag: true,
+  },
 )
 
 const nodeTypeLabel: Record<string, string> = {
@@ -87,7 +93,10 @@ function hasMatchMeta(m: BracketMatchSummary): boolean {
             :show-name="showTeamName"
             side="red"
             :finalized="m.status === 'DONE'"
-            :shorten-match-source="(titleShortenLevel ?? 0) >= 1"
+            :match-source-shorten-level="
+              (titleShortenLevel ?? 0) >= 2 ? 2 : (titleShortenLevel ?? 0) >= 1 ? 1 : 0
+            "
+            :show-placeholder-logo="showPlaceholderLogo"
           />
           <BracketTeamRow
             :team="m.slots[1]"
@@ -97,7 +106,10 @@ function hasMatchMeta(m: BracketMatchSummary): boolean {
             :show-name="showTeamName"
             side="blue"
             :finalized="m.status === 'DONE'"
-            :shorten-match-source="(titleShortenLevel ?? 0) >= 1"
+            :match-source-shorten-level="
+              (titleShortenLevel ?? 0) >= 2 ? 2 : (titleShortenLevel ?? 0) >= 1 ? 1 : 0
+            "
+            :show-placeholder-logo="showPlaceholderLogo"
           />
         </div>
         <div
@@ -123,7 +135,8 @@ function hasMatchMeta(m: BracketMatchSummary): boolean {
         :density="density"
         :show-score="false"
         :show-name="showTeamName"
-        :shorten-match-source="(titleShortenLevel ?? 0) >= 2"
+        :match-source-shorten-level="(titleShortenLevel ?? 0) >= 2 ? 2 : 0"
+        :show-placeholder-logo="showPlaceholderLogo"
       />
     </div>
   </article>

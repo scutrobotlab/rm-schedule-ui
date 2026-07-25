@@ -3,6 +3,7 @@
  * 仅收缩字号/内边距/次要元信息；纵向对阵与席位永不截断。
  */
 export type BracketDensity = 'comfortable' | 'normal' | 'compact'
+export type BracketSourceShortenLevel = 0 | 1 | 2
 
 /** 0=不缩；1=≥3；2=≥4；3=≥5；4=≥6 */
 export type BracketTitleShortenLevel = 0 | 1 | 2 | 3 | 4
@@ -140,13 +141,18 @@ export function shouldShowBracketTeamName(columnCount: number): boolean {
   return columnCount < 6
 }
 
+/** ≥4 列时隐藏未确定队伍的红蓝 R 占位 Logo，真实校徽不受影响。 */
+export function shouldShowBracketPlaceholderLogo(columnCount: number): boolean {
+  return columnCount < 4
+}
+
 /**
  * 3 列起省略来源席位的轮次，避免「第一轮 第1名」被截断。
  */
 export function shortenBracketSourceLabel(
   label: string,
   density: BracketDensity,
-  shortenMatchSource = false,
+  matchSourceLevel: BracketSourceShortenLevel = 0,
 ): string {
   if (density === 'comfortable') return label
 
@@ -154,9 +160,14 @@ export function shortenBracketSourceLabel(
     /^第[零一二三四五六七八九十百两\d]+轮\s*第(\d+)名$/,
     '第$1名',
   )
-  if (!shortenMatchSource) return rankOnly
+  if (matchSourceLevel === 0) return rankOnly
 
-  return rankOnly
+  const compact = rankOnly
     .replace(/^第(\d+)场\s*胜者$/, '$1胜者')
     .replace(/^第(\d+)场\s*败者$/, '$1败者')
+  if (matchSourceLevel === 1) return compact
+
+  return compact
+    .replace(/^(\d+)胜者$/, '$1胜')
+    .replace(/^(\d+)败者$/, '$1败')
 }

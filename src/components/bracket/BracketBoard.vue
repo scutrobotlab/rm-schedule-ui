@@ -4,6 +4,7 @@ import type { BracketViewModel } from '../../types/bracket'
 import {
   resolveBracketDensity,
   resolveBracketTitleShortenLevel,
+  shouldShowBracketPlaceholderLogo,
   shouldShowBracketTeamName,
   shouldShowBracketTypeTag,
 } from '../../utils/bracket_density'
@@ -30,6 +31,9 @@ const spanForDensity = computed(() => {
 const density = computed(() => resolveBracketDensity(spanForDensity.value))
 const titleShortenLevel = computed(() => resolveBracketTitleShortenLevel(spanForDensity.value))
 const showTeamName = computed(() => shouldShowBracketTeamName(spanForDensity.value))
+const showPlaceholderLogo = computed(
+  () => shouldShowBracketPlaceholderLogo(spanForDensity.value),
+)
 const showTypeTag = computed(() => shouldShowBracketTypeTag(spanForDensity.value))
 const isKnockout = computed(() => props.model.partType === 'knockout')
 
@@ -138,6 +142,7 @@ watch(layoutKey, () => scheduleLayout())
         :density="density"
         :title-shorten-level="titleShortenLevel"
         :show-team-name="showTeamName"
+        :show-placeholder-logo="showPlaceholderLogo"
         :show-type-tag="showTypeTag"
         :tree-tops="isKnockout ? nodeTops : null"
         :tree-height="isKnockout ? columnHeights[column.index] : null"

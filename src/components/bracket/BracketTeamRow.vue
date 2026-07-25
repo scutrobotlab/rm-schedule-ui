@@ -4,6 +4,7 @@ import type { BracketTeamSlot } from '../../types/bracket'
 import {
   shortenBracketSourceLabel,
   type BracketDensity,
+  type BracketSourceShortenLevel,
 } from '../../utils/bracket_density'
 import { StaticCDN } from '../../utils/cdn'
 import schoolBlue from '@/assets/school_blue.png'
@@ -26,8 +27,10 @@ const props = withDefaults(
     medal?: 'gold' | 'silver' | 'bronze' | null
     /** 仅比赛结束后显示胜负造成的高亮 / 灰化 */
     finalized?: boolean
-    /** 由父级按“有比分 ≥3 列 / 无比分 ≥4 列”决定是否压缩场次来源 */
-    shortenMatchSource?: boolean
+    /** 0=完整；1=保留胜/败者；2=进一步去掉「者」 */
+    matchSourceShortenLevel?: BracketSourceShortenLevel
+    /** 是否显示未确定队伍的红蓝 R；真实校徽不受此项影响 */
+    showPlaceholderLogo?: boolean
   }>(),
   {
     showName: true,
@@ -35,7 +38,8 @@ const props = withDefaults(
     placeholderSide: null,
     medal: null,
     finalized: true,
-    shortenMatchSource: false,
+    matchSourceShortenLevel: 0,
+    showPlaceholderLogo: true,
   },
 )
 
@@ -49,7 +53,7 @@ const displayName = computed(() => {
   return shortenBracketSourceLabel(
     props.team.displayName,
     props.density,
-    props.shortenMatchSource,
+    props.matchSourceShortenLevel,
   )
 })
 </script>
@@ -85,7 +89,7 @@ const displayName = computed(() => {
       alt=""
     />
     <img
-      v-else-if="placeholderSide || side"
+      v-else-if="showPlaceholderLogo && (placeholderSide || side)"
       class="team-logo pending-logo"
       :src="(placeholderSide || side) === 'red' ? schoolRed : schoolBlue"
       alt=""

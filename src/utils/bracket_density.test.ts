@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   bracketDisplayUnits,
   resolveBracketTitleShortenLevel,
+  shouldShowBracketPlaceholderLogo,
   shortenBracketSourceLabel,
   shortenBracketTitle,
 } from './bracket_density'
@@ -128,14 +129,23 @@ describe('shortenBracketSourceLabel', () => {
 
   it('仅按调用方要求压缩前序场次胜负来源', () => {
     expect(shortenBracketSourceLabel('第41场胜者', 'normal')).toBe('第41场胜者')
-    expect(shortenBracketSourceLabel('第41场胜者', 'normal', true)).toBe('41胜者')
-    expect(shortenBracketSourceLabel('第41场 胜者', 'normal', true)).toBe('41胜者')
-    expect(shortenBracketSourceLabel('第66场败者', 'compact', true)).toBe('66败者')
-    expect(shortenBracketSourceLabel('第66场 败者', 'compact', true)).toBe('66败者')
+    expect(shortenBracketSourceLabel('第41场胜者', 'normal', 1)).toBe('41胜者')
+    expect(shortenBracketSourceLabel('第41场 胜者', 'normal', 1)).toBe('41胜者')
+    expect(shortenBracketSourceLabel('第66场败者', 'compact', 2)).toBe('66败')
+    expect(shortenBracketSourceLabel('第66场 败者', 'compact', 2)).toBe('66败')
     expect(shortenBracketSourceLabel('第41场胜者', 'comfortable')).toBe('第41场胜者')
   })
 
   it('不改写其他来源文案', () => {
     expect(shortenBracketSourceLabel('半决赛胜者', 'normal')).toBe('半决赛胜者')
+  })
+})
+
+describe('shouldShowBracketPlaceholderLogo', () => {
+  it('1–3 列显示，4 列及以上隐藏', () => {
+    expect(shouldShowBracketPlaceholderLogo(1)).toBe(true)
+    expect(shouldShowBracketPlaceholderLogo(3)).toBe(true)
+    expect(shouldShowBracketPlaceholderLogo(4)).toBe(false)
+    expect(shouldShowBracketPlaceholderLogo(6)).toBe(false)
   })
 })
