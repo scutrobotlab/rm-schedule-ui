@@ -324,6 +324,7 @@ function buildMatchCard(args: {
   return {
     kind: 'match',
     id: `${node.id}:${zoneIndex}:${orderNumber}`,
+    matchId: match?.id,
     nodeId: node.id,
     title: formatBracketTitle(node.data.title || node.text),
     orderNumber,
@@ -366,6 +367,7 @@ function buildInfoCard(args: {
     const redText = zone.text[i * 2]
     const blueText = zone.text[i * 2 + 1]
     return {
+      matchId: match?.id,
       orderNumber,
       status: toMatchStatus(match),
       slots: buildPairSlots(match, redText, blueText),

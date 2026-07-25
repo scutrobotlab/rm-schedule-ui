@@ -33,6 +33,8 @@ export interface BracketTeamSlot {
 export interface BracketMatchCard {
   kind: 'match'
   id: string
+  /** 赛程接口中的真实比赛 ID，用于关联小程序支持率 */
+  matchId?: string
   nodeId: string
   title: string
   orderNumber: number
@@ -49,6 +51,8 @@ export interface BracketMatchCard {
 
 /** 多场次节点内的单场摘要（瑞士轮等） */
 export interface BracketMatchSummary {
+  /** 赛程接口中的真实比赛 ID，用于关联小程序支持率 */
+  matchId?: string
   orderNumber: number
   status: BracketMatchStatus
   slots: [BracketTeamSlot, BracketTeamSlot]

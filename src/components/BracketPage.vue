@@ -679,6 +679,30 @@ const scheduleZone = computed(() => {
   )
 })
 
+const mpMatchIds = computed(() => {
+  const ids = new Set<number>()
+  const currentZone = scheduleZone.value
+  if (!currentZone) return []
+  for (const match of [
+    ...currentZone.groupMatches.nodes,
+    ...currentZone.knockoutMatches.nodes,
+  ]) {
+    const id = Number(match.id)
+    if (Number.isFinite(id) && id > 0) ids.add(id)
+  }
+  return [...ids]
+})
+
+watch(
+  mpMatchIds,
+  (ids) => {
+    if (ids.length === 0) return
+    // 支持率是渐进增强数据：不阻塞 Bracket，失败时保持原布局。
+    void promotionStore.updateMpMatch(ids).catch(() => undefined)
+  },
+  { immediate: true },
+)
+
 const matchLookup = computed(() => {
   const group = new Map<string, MatchNode>()
   const knockout = new Map<number, MatchNode>()

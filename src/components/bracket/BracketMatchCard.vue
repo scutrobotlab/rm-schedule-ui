@@ -10,6 +10,7 @@ import {
   type BracketTitleShortenLevel,
 } from '../../utils/bracket_density'
 import BracketTeamRow from './BracketTeamRow.vue'
+import { usePromotionStore } from '../../stores/promotion'
 
 const props = withDefaults(
   defineProps<{
@@ -32,6 +33,7 @@ const props = withDefaults(
     showTypeTag: true,
   },
 )
+const promotionStore = usePromotionStore()
 
 const statusLabel: Record<string, string> = {
   STARTED: '进行中',
@@ -41,6 +43,10 @@ const statusLabel: Record<string, string> = {
 }
 
 const showMeta = computed(() => props.density === 'comfortable')
+const showSupportRate = computed(() => Math.abs(props.visibleSpan - 1) < 0.001)
+const mpMatch = computed(() => (
+  props.item.matchId ? promotionStore.getMpMatch(props.item.matchId) : undefined
+))
 const titleTransition = computed(() => resolveBracketTextTransition(
   props.visibleSpan,
   (columns) => shortenBracketTitle(
@@ -137,6 +143,8 @@ function slotMedal(
               : (titleShortenLevel ?? 0) >= 1 ? 1 : 0
         "
         :show-placeholder-logo="showPlaceholderLogo"
+        :show-support-rate="showSupportRate"
+        :support-rate="mpMatch?.redRate"
       />
       <BracketTeamRow
         :team="item.slots[1]"
@@ -158,6 +166,8 @@ function slotMedal(
               : (titleShortenLevel ?? 0) >= 1 ? 1 : 0
         "
         :show-placeholder-logo="showPlaceholderLogo"
+        :show-support-rate="showSupportRate"
+        :support-rate="mpMatch?.blueRate"
       />
     </div>
 

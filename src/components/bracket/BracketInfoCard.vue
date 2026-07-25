@@ -10,6 +10,7 @@ import {
   type BracketTitleShortenLevel,
 } from '../../utils/bracket_density'
 import BracketTeamRow from './BracketTeamRow.vue'
+import { usePromotionStore } from '../../stores/promotion'
 
 const props = withDefaults(
   defineProps<{
@@ -32,6 +33,7 @@ const props = withDefaults(
     showTypeTag: true,
   },
 )
+const promotionStore = usePromotionStore()
 
 const nodeTypeLabel: Record<string, string> = {
   promote: '晋级',
@@ -53,6 +55,7 @@ const showAsMatches = computed(
 )
 
 const showMeta = computed(() => props.density === 'comfortable')
+const showSupportRate = computed(() => Math.abs(props.visibleSpan - 1) < 0.001)
 const titleTransition = computed(() => resolveBracketTextTransition(
   props.visibleSpan,
   (columns) => shortenBracketTitle(
@@ -69,6 +72,12 @@ function matchTimeText(m: BracketMatchSummary): string {
 
 function hasMatchMeta(m: BracketMatchSummary): boolean {
   return Boolean(statusLabel[m.status] || m.orderNumber || matchTimeText(m))
+}
+
+function supportRate(m: BracketMatchSummary, side: 'red' | 'blue'): number | null {
+  if (!m.matchId) return null
+  const mpMatch = promotionStore.getMpMatch(m.matchId)
+  return mpMatch?.[side === 'red' ? 'redRate' : 'blueRate'] ?? null
 }
 </script>
 
@@ -117,6 +126,8 @@ function hasMatchMeta(m: BracketMatchSummary): boolean {
                   : (titleShortenLevel ?? 0) >= 1 ? 1 : 0
             "
             :show-placeholder-logo="showPlaceholderLogo"
+            :show-support-rate="showSupportRate"
+            :support-rate="supportRate(m, 'red')"
           />
           <BracketTeamRow
             :team="m.slots[1]"
@@ -136,6 +147,8 @@ function hasMatchMeta(m: BracketMatchSummary): boolean {
                   : (titleShortenLevel ?? 0) >= 1 ? 1 : 0
             "
             :show-placeholder-logo="showPlaceholderLogo"
+            :show-support-rate="showSupportRate"
+            :support-rate="supportRate(m, 'blue')"
           />
         </div>
         <div

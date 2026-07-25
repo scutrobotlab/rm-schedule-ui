@@ -41,6 +41,10 @@ const props = withDefaults(
     matchSourceShortenLevel?: BracketSourceShortenLevel
     /** 是否显示未确定队伍的红蓝 R；真实校徽不受此项影响 */
     showPlaceholderLogo?: boolean
+    /** 小程序支持率，范围 0–1；无有效数据时不展示 */
+    supportRate?: number | null
+    /** 仅由单列 Bracket 开启 */
+    showSupportRate?: boolean
   }>(),
   {
     showName: true,
@@ -53,6 +57,8 @@ const props = withDefaults(
     finalized: true,
     matchSourceShortenLevel: 0,
     showPlaceholderLogo: true,
+    supportRate: null,
+    showSupportRate: false,
     visibleSpan: undefined,
   },
 )
@@ -92,6 +98,27 @@ const displayName = computed(() => {
 })
 
 const isPending = computed(() => props.team.sourceKind !== 'team')
+const normalizedSupportRate = computed(() => {
+  if (
+    !props.showSupportRate ||
+    props.medal ||
+    props.team.sourceKind !== 'team' ||
+    typeof props.supportRate !== 'number' ||
+    !Number.isFinite(props.supportRate) ||
+    props.supportRate < 0
+  ) {
+    return null
+  }
+  return Math.min(1, props.supportRate)
+})
+const supportRateStyle = computed(() => ({
+  width: `${(normalizedSupportRate.value ?? 0) * 100}%`,
+}))
+const supportRateText = computed(() => (
+  normalizedSupportRate.value == null
+    ? ''
+    : `${(normalizedSupportRate.value * 100).toFixed(1)}%`
+))
 const shouldShowName = computed(
   () => props.showName || (props.forcePendingName && isPending.value),
 )
@@ -117,6 +144,17 @@ const isShortMatchSource = computed(() => (
       [`density-${density}`]: true,
     }"
   >
+    <span
+      v-if="normalizedSupportRate != null"
+      class="support-rate-fill"
+      :style="supportRateStyle"
+      aria-hidden="true"
+    />
+    <span
+      v-if="normalizedSupportRate != null"
+      class="support-rate-text"
+    >{{ supportRateText }}</span>
+
     <span
       v-if="team.groupRank != null"
       class="rank-badge"
@@ -167,6 +205,7 @@ const isShortMatchSource = computed(() => (
 
 <style scoped>
 .team-row {
+  position: relative;
   display: flex;
   align-items: center;
   gap: calc(
@@ -193,6 +232,61 @@ const isShortMatchSource = computed(() => (
     );
   border-radius: 4px;
   background: rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+}
+
+.team-row > :not(.support-rate-fill) {
+  position: relative;
+  z-index: 1;
+}
+
+.support-rate-fill {
+  position: absolute;
+  z-index: 0;
+  inset: 0 auto 0 0;
+  border-radius: 0 3px 3px 0;
+  opacity: 1;
+  transform-origin: left center;
+  animation: support-rate-grow 480ms cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+@keyframes support-rate-grow {
+  from {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+.side-red .support-rate-fill {
+  background: linear-gradient(90deg, rgba(229, 57, 53, 0.34), rgba(229, 57, 53, 0.12));
+}
+
+.side-blue .support-rate-fill {
+  background: linear-gradient(90deg, rgba(30, 136, 229, 0.34), rgba(30, 136, 229, 0.12));
+}
+
+.support-rate-text {
+  flex: 0 0 3.4rem;
+  width: 3.4rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  text-align: left;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.side-red .support-rate-text {
+  color: #ff8a86;
+}
+
+.side-blue .support-rate-text {
+  color: #77bfff;
 }
 
 .team-row.side-red {
@@ -203,8 +297,12 @@ const isShortMatchSource = computed(() => (
   border-left: 3px solid #1e88e5;
 }
 
-.team-row.winner {
-  background: rgba(46, 120, 88, 0.42);
+.team-row.winner.side-red {
+  background: hsla(2, 36%, 35%, 0.42);
+}
+
+.team-row.winner.side-blue {
+  background: hsla(212, 36%, 35%, 0.42);
 }
 
 .team-row.loser {
@@ -286,6 +384,10 @@ const isShortMatchSource = computed(() => (
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .support-rate-fill {
+    animation: none;
+  }
+
   .team-row.medal-gold,
   .team-row.medal-silver,
   .team-row.medal-bronze {
