@@ -803,7 +803,7 @@ onBeforeUnmount(() => {
               max-width="120px"
               variant="filled"
               :items="SeasonList"
-              v-model="promotionStore.season"
+              :model-value="promotionStore.season"
               @update:model-value="(newSeason: number) => updateHref(newSeason)"
             />
             <v-select
