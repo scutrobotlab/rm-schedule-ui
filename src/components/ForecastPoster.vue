@@ -556,8 +556,8 @@ onMounted(async () => {
   &__match {
     position: absolute;
     top: 330px;
-    left: 180px;
-    right: 180px;
+    left: 154px;
+    right: 206px;
     color: #f5bd3b;
     font-size: 34px;
     font-weight: 700;
@@ -586,14 +586,14 @@ onMounted(async () => {
     position: absolute;
     top: 361px;
     bottom: 299px;
-    left: 50%;
+    left: calc(50% - 26px);
     z-index: 2;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     gap: 76px;
-    width: min(1260px, calc(100% - 320px));
+    width: min(1480px, calc(100% - 200px));
     transform: translateX(-50%);
   }
 
@@ -623,14 +623,26 @@ onMounted(async () => {
 }
 
 .forecast-team {
+  --logo-column-width: 124px;
+  --name-column-width: 336px;
+  --bar-column-width: 700px;
+  --percent-column-width: 100px;
   display: grid;
-  grid-template-columns: 124px 200px 700px 100px;
+  grid-template-columns:
+    var(--logo-column-width)
+    var(--name-column-width)
+    var(--bar-column-width)
+    var(--percent-column-width);
   align-items: center;
   justify-content: center;
   column-gap: 24px;
   width: 100%;
-  max-width: 1196px;
-  min-height: 124px;
+  max-width: 1332px;
+  height: 124px;
+
+  &--red {
+    transform: translateY(20px);
+  }
 
   &.is-placeholder {
     .forecast-team__college,
@@ -640,27 +652,30 @@ onMounted(async () => {
   }
 
   &__logo-wrap {
-    width: 124px;
-    height: 124px;
+    width: var(--logo-column-width);
+    height: var(--logo-column-width);
   }
 
   &__logo {
-    width: 124px;
-    height: 124px;
+    width: var(--logo-column-width);
+    height: var(--logo-column-width);
     border-radius: 50%;
     object-fit: contain;
     background: #fff;
   }
 
   &__names {
-    min-width: 0;
+    width: var(--name-column-width);
+    min-width: var(--name-column-width);
+    max-width: var(--name-column-width);
+    overflow: visible;
   }
 
   &__college {
     font-size: 28px;
     font-weight: 700;
     line-height: 1.25;
-    overflow-wrap: anywhere;
+    white-space: nowrap;
   }
 
   &__team {
@@ -674,7 +689,9 @@ onMounted(async () => {
   &__bar-track {
     --bar-cut: 34px;
     position: relative;
-    width: 700px;
+    width: var(--bar-column-width);
+    min-width: var(--bar-column-width);
+    max-width: var(--bar-column-width);
     height: 42px;
     background: rgba(143, 144, 146, 0.65);
     overflow: hidden;
@@ -709,6 +726,9 @@ onMounted(async () => {
   }
 
   &__percent {
+    width: var(--percent-column-width);
+    min-width: var(--percent-column-width);
+    max-width: var(--percent-column-width);
     text-align: right;
     font-size: 34px;
     font-weight: 500;
