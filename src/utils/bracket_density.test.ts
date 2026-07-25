@@ -14,18 +14,19 @@ import { bracketColumnGapForSpan } from './bracket_column_gap'
 
 describe('resolveBracketVisualProgress', () => {
   it.each([
-    [2, 0, 0, 1, 1],
-    [2.5, 0.5, 0, 1, 1],
-    [3, 1, 0, 1, 1],
-    [4, 1, 0, 0, 1],
-    [4.5, 1, 0.5, 0, 0.5],
-    [5, 1, 1, 0, 0],
+    [2, 0, 0, 1, 1, 1],
+    [2.5, 0.5, 0, 1, 1, 1],
+    [3, 1, 0, 1, 1, 1],
+    [4, 1, 0, 0, 0, 1],
+    [4.5, 1, 0.5, 0, 0, 0.5],
+    [5, 1, 1, 0, 0, 0],
   ])(
     '%s 列返回连续视觉进度',
-    (span, normal, compact, placeholderLogo, pendingScore) => {
+    (span, normal, compact, typeTag, placeholderLogo, pendingScore) => {
       expect(resolveBracketVisualProgress(span)).toEqual({
         normal,
         compact,
+        typeTag,
         placeholderLogo,
         pendingScore,
       })

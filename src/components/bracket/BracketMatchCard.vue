@@ -205,7 +205,7 @@ function slotMedal(
 .match-card.podium-champion .type-tag {
   color: #1a1408;
   background: #ffd56a;
-  opacity: 1;
+  opacity: var(--bracket-type-tag-opacity, 1);
   font-weight: 700;
 }
 
@@ -220,7 +220,7 @@ function slotMedal(
 .match-card.podium-third .type-tag {
   color: #1a120c;
   background: #c8895a;
-  opacity: 1;
+  opacity: var(--bracket-type-tag-opacity, 1);
   font-weight: 700;
 }
 
@@ -233,7 +233,7 @@ function slotMedal(
 .card-head {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 4px 6px;
   max-height: 1rem;
   margin-bottom: 6px;
@@ -267,19 +267,23 @@ function slotMedal(
 
 .type-tag {
   flex: 0 0 auto;
+  max-width: calc(7rem * var(--bracket-type-tag-opacity, 1));
   font-size: 0.58rem;
   padding: 1px 5px;
   border-radius: 999px;
   letter-spacing: 0.04em;
   white-space: nowrap;
   background: rgba(255, 255, 255, 0.08);
-  opacity: 0.8;
+  opacity: var(--bracket-type-tag-opacity, 1);
+  overflow: hidden;
+  transform: scale(var(--bracket-type-tag-opacity, 1));
+  transform-origin: right center;
 }
 
 .dest-tag {
   color: #9fd9bc;
   background: rgba(93, 206, 160, 0.18);
-  opacity: 1;
+  opacity: var(--bracket-type-tag-opacity, 1);
   font-weight: 600;
 }
 

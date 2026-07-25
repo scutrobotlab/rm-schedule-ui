@@ -48,6 +48,7 @@ const boardStyle = computed(() => {
     '--bracket-cols': String(Math.max(columnCount.value, 1)),
     '--bracket-normal-progress': String(progress.normal),
     '--bracket-compact-progress': String(progress.compact),
+    '--bracket-type-tag-opacity': String(progress.typeTag),
     '--bracket-placeholder-opacity': String(progress.placeholderLogo),
     '--bracket-pending-score-opacity': String(progress.pendingScore),
   }
