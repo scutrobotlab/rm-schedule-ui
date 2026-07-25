@@ -1,19 +1,21 @@
 import axios, { type AxiosResponse } from 'axios'
-import type { CurrentMatchForecastResp } from '../types/current_match_forecast'
+import type { MatchForecastResp } from '../types/match_forecast'
 import { SeasonList, ZoneMap } from '../constant/zone'
 
 /** 竞猜接口超时；配合海报 12s 资源上限，避免拖到后端全局渲染超时。 */
 export const FORECAST_API_TIMEOUT_MS = 10_000
 
 /**
- * 单次拉取当前进行中比赛的竞猜预测。
+ * 单次拉取指定比赛或当前进行中比赛的竞猜预测。
+ * matchId 未传时由后端选择当前进行中的比赛。
  * 不做轮询；海报预览/导出各自调用一次即可。
  */
-export async function fetchCurrentMatchForecast(): Promise<CurrentMatchForecastResp> {
+export async function fetchMatchForecast(matchId?: string): Promise<MatchForecastResp> {
   try {
-    const response: AxiosResponse<CurrentMatchForecastResp> = await axios({
+    const response: AxiosResponse<MatchForecastResp> = await axios({
       method: 'GET',
-      url: '/api/current_match_forecast',
+      url: '/api/match_forecast',
+      params: matchId === undefined ? undefined : { match_id: matchId },
       timeout: FORECAST_API_TIMEOUT_MS,
     })
     return normalizeForecastResp(response.data)
@@ -26,7 +28,7 @@ export async function fetchCurrentMatchForecast(): Promise<CurrentMatchForecastR
 }
 
 /** 将 slug 等松散字段规范成前端可用形态。 */
-export function normalizeForecastResp(raw: CurrentMatchForecastResp): CurrentMatchForecastResp {
+export function normalizeForecastResp(raw: MatchForecastResp): MatchForecastResp {
   return {
     ...raw,
     // 后端 slug 为 interface{}，运行时可能非 string
@@ -47,7 +49,7 @@ function normalizeSlug(slug: unknown): string | null {
   return trimmed === '' ? null : trimmed
 }
 
-function normalizeSide(side: CurrentMatchForecastResp['red_side']) {
+function normalizeSide(side: MatchForecastResp['red_side']) {
   return {
     support_rate: Number(side?.support_rate ?? -1),
     support_rate_percent: Number(side?.support_rate_percent ?? -1),
@@ -76,7 +78,7 @@ export function resolveForecastSeason(zoneId?: number): number {
  * 格式：`< RMUC {赛季} {赛区} ｜ {阶段} 第{N}场`；slug 为 null 时省略阶段文字。
  */
 export function formatMatchMeta(
-  data: Pick<CurrentMatchForecastResp, 'zone_name' | 'slug' | 'order_number' | 'zone_id'>,
+  data: Pick<MatchForecastResp, 'zone_name' | 'slug' | 'order_number' | 'zone_id'>,
 ): string {
   const season = resolveForecastSeason(data.zone_id)
   const zone = (data.zone_name || '').trim() || '未知赛区'

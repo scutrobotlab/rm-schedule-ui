@@ -2,17 +2,17 @@
 import { computed, nextTick, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
-import type { CurrentMatchForecastResp, ForecastSide } from '../types/current_match_forecast'
+import type { MatchForecastResp, ForecastSide } from '../types/match_forecast'
 import {
-  fetchCurrentMatchForecast,
+  fetchMatchForecast,
   formatMatchMeta,
   hasValidSupportRate,
-} from '../utils/current_match_forecast'
+} from '../utils/match_forecast'
 import { StaticCDN } from '../utils/cdn'
 import { forecastAssets } from '@/assets/forecast'
 
-const FORECAST_IMAGE_URL = '/api/current_match_forecast_image'
-const FORECAST_IMAGE_FILENAME_FALLBACK = 'current-match-forecast.png'
+const FORECAST_IMAGE_URL = '/api/match_forecast_image'
+const FORECAST_IMAGE_FILENAME_FALLBACK = 'match-forecast.png'
 /** chromedp 渲染可能较慢，下载超时放宽到 120s */
 const FORECAST_IMAGE_TIMEOUT_MS = 120_000
 
@@ -48,16 +48,20 @@ const route = useRoute()
 const posterRef = ref<HTMLElement | null>(null)
 const status = ref<PosterStatus>('pending')
 const errorMessage = ref('')
-const forecast = ref<CurrentMatchForecastResp | null>(null)
+const forecast = ref<MatchForecastResp | null>(null)
 const downloading = ref(false)
 const downloadError = ref('')
 
 const isRenderMode = computed(() => String(route.query.render ?? '') === '1')
+const requestedMatchId = computed(() => {
+  const raw = Array.isArray(route.query.match_id) ? route.query.match_id[0] : route.query.match_id
+  return raw == null ? undefined : String(raw)
+})
 const hasMatch = computed(() => Boolean(forecast.value?.has_match))
 const downloadFilename = computed(() => {
   const matchId = forecast.value?.match_id
   return typeof matchId === 'number' && Number.isFinite(matchId) && matchId > 0
-    ? `current-match-forecast-${matchId}.png`
+    ? `match-forecast-${matchId}.png`
     : FORECAST_IMAGE_FILENAME_FALLBACK
 })
 
@@ -187,6 +191,9 @@ async function downloadPng() {
   downloadError.value = ''
   try {
     const response = await axios.get<Blob>(FORECAST_IMAGE_URL, {
+      params: requestedMatchId.value === undefined
+        ? undefined
+        : { match_id: requestedMatchId.value },
       responseType: 'blob',
       timeout: FORECAST_IMAGE_TIMEOUT_MS,
     })
@@ -318,7 +325,7 @@ async function waitUntilReady(): Promise<void> {
 
 onMounted(async () => {
   try {
-    const data = await fetchCurrentMatchForecast()
+    const data = await fetchMatchForecast(requestedMatchId.value)
     forecast.value = data
     await nextTick()
     await waitUntilReady()

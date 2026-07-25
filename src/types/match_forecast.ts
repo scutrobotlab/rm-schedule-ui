@@ -1,5 +1,5 @@
-/** 与后端 CurrentMatchForecastResp 对齐（snake_case JSON）。 */
-export interface CurrentMatchForecastResp {
+/** 与后端 MatchForecastResp 对齐（snake_case JSON）。 */
+export interface MatchForecastResp {
   publish_time: string
   has_match: boolean
   zone_name: string
@@ -10,6 +10,8 @@ export interface CurrentMatchForecastResp {
   match_id: number
   /** 东八区，精确到秒；上游未查到时可能为空串。 */
   support_rate_deadline: string
+  /** 与当前查询对应的海报 PNG 地址。 */
+  image_url: string
   red_side: ForecastSide
   blue_side: ForecastSide
 }
