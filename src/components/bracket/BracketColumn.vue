@@ -15,6 +15,10 @@ const props = defineProps<{
   titleShortenLevel?: BracketTitleShortenLevel
   /** ≥6 列时为 false，隐藏校名 */
   showTeamName?: boolean
+  /** ≥5 列时为 false，仅隐藏未确定席位的占位比分 */
+  showPendingScore?: boolean
+  /** ≥6 列时为 true，强制展示未确定席位的来源文字 */
+  forcePendingName?: boolean
   /** ≥4 列时为 false，隐藏未确定队伍的红蓝 R */
   showPlaceholderLogo?: boolean
   /** ≥4 列时为 false，隐藏右上角类型/去向标签 */
@@ -67,6 +71,8 @@ function isMatch(item: BracketMatchCard | BracketInfoCard): item is BracketMatch
           :density="density"
           :title-shorten-level="titleShortenLevel ?? 0"
           :show-team-name="showTeamName !== false"
+          :show-pending-score="showPendingScore !== false"
+          :force-pending-name="forcePendingName === true"
           :show-placeholder-logo="showPlaceholderLogo !== false"
           :show-type-tag="showTypeTag !== false"
         />
@@ -76,6 +82,8 @@ function isMatch(item: BracketMatchCard | BracketInfoCard): item is BracketMatch
           :density="density"
           :title-shorten-level="titleShortenLevel ?? 0"
           :show-team-name="showTeamName !== false"
+          :show-pending-score="showPendingScore !== false"
+          :force-pending-name="forcePendingName === true"
           :show-placeholder-logo="showPlaceholderLogo !== false"
           :show-type-tag="showTypeTag !== false"
         />

@@ -15,12 +15,16 @@ const props = withDefaults(
     density: BracketDensity
     titleShortenLevel?: BracketTitleShortenLevel
     showTeamName?: boolean
+    showPendingScore?: boolean
+    forcePendingName?: boolean
     showPlaceholderLogo?: boolean
     showTypeTag?: boolean
   }>(),
   {
     titleShortenLevel: 0,
     showTeamName: true,
+    showPendingScore: true,
+    forcePendingName: false,
     showPlaceholderLogo: true,
     showTypeTag: true,
   },
@@ -109,6 +113,8 @@ function slotMedal(
         :density="density"
         :show-score="true"
         :show-name="showTeamName"
+        :show-pending-score="showPendingScore"
+        :force-pending-name="forcePendingName"
         :side="podiumKind ? null : 'red'"
         placeholder-side="red"
         :medal="slotMedal(item.slots[0])"
@@ -124,6 +130,8 @@ function slotMedal(
         :density="density"
         :show-score="true"
         :show-name="showTeamName"
+        :show-pending-score="showPendingScore"
+        :force-pending-name="forcePendingName"
         :side="podiumKind ? null : 'blue'"
         placeholder-side="blue"
         :medal="slotMedal(item.slots[1])"

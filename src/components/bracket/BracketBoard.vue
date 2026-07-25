@@ -4,6 +4,8 @@ import type { BracketViewModel } from '../../types/bracket'
 import {
   resolveBracketDensity,
   resolveBracketTitleShortenLevel,
+  shouldForceBracketPendingName,
+  shouldShowBracketPendingScore,
   shouldShowBracketPlaceholderLogo,
   shouldShowBracketTeamName,
   shouldShowBracketTypeTag,
@@ -31,6 +33,8 @@ const spanForDensity = computed(() => {
 const density = computed(() => resolveBracketDensity(spanForDensity.value))
 const titleShortenLevel = computed(() => resolveBracketTitleShortenLevel(spanForDensity.value))
 const showTeamName = computed(() => shouldShowBracketTeamName(spanForDensity.value))
+const showPendingScore = computed(() => shouldShowBracketPendingScore(spanForDensity.value))
+const forcePendingName = computed(() => shouldForceBracketPendingName(spanForDensity.value))
 const showPlaceholderLogo = computed(
   () => shouldShowBracketPlaceholderLogo(spanForDensity.value),
 )
@@ -142,6 +146,8 @@ watch(layoutKey, () => scheduleLayout())
         :density="density"
         :title-shorten-level="titleShortenLevel"
         :show-team-name="showTeamName"
+        :show-pending-score="showPendingScore"
+        :force-pending-name="forcePendingName"
         :show-placeholder-logo="showPlaceholderLogo"
         :show-type-tag="showTypeTag"
         :tree-tops="isKnockout ? nodeTops : null"

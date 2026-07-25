@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest'
 import {
   bracketDisplayUnits,
   resolveBracketTitleShortenLevel,
+  shouldForceBracketPendingName,
+  shouldShowBracketPendingScore,
   shouldShowBracketPlaceholderLogo,
   shortenBracketSourceLabel,
   shortenBracketTitle,
@@ -147,5 +149,18 @@ describe('shouldShowBracketPlaceholderLogo', () => {
     expect(shouldShowBracketPlaceholderLogo(3)).toBe(true)
     expect(shouldShowBracketPlaceholderLogo(4)).toBe(false)
     expect(shouldShowBracketPlaceholderLogo(6)).toBe(false)
+  })
+})
+
+describe('未确定席位的高列数展示', () => {
+  it('5 列起隐藏占位比分', () => {
+    expect(shouldShowBracketPendingScore(4)).toBe(true)
+    expect(shouldShowBracketPendingScore(5)).toBe(false)
+    expect(shouldShowBracketPendingScore(6)).toBe(false)
+  })
+
+  it('6 列起强制展示来源文字', () => {
+    expect(shouldForceBracketPendingName(5)).toBe(false)
+    expect(shouldForceBracketPendingName(6)).toBe(true)
   })
 })

@@ -141,6 +141,16 @@ export function shouldShowBracketTeamName(columnCount: number): boolean {
   return columnCount < 6
 }
 
+/** ≥5 列时隐藏未确定席位的占位比分；真实队伍比分不受影响。 */
+export function shouldShowBracketPendingScore(columnCount: number): boolean {
+  return columnCount < 5
+}
+
+/** ≥6 列时仍展示未确定席位的来源文字，避免整行只剩空白。 */
+export function shouldForceBracketPendingName(columnCount: number): boolean {
+  return columnCount >= 6
+}
+
 /** ≥4 列时隐藏未确定队伍的红蓝 R 占位 Logo，真实校徽不受影响。 */
 export function shouldShowBracketPlaceholderLogo(columnCount: number): boolean {
   return columnCount < 4

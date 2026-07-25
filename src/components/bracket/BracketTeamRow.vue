@@ -19,6 +19,10 @@ const props = withDefaults(
     showScore: boolean
     /** ≥6 列时为 false */
     showName?: boolean
+    /** 是否显示未确定席位的占位比分；真实队伍比分不受影响 */
+    showPendingScore?: boolean
+    /** 即使校名被隐藏，也强制显示未确定席位的来源文字 */
+    forcePendingName?: boolean
     /** 对阵红蓝方；排名席位等非对阵不传 */
     side?: 'red' | 'blue' | null
     /** 占位 R logo 的颜色，可与奖牌卡的边框阵营样式解耦 */
@@ -34,6 +38,8 @@ const props = withDefaults(
   }>(),
   {
     showName: true,
+    showPendingScore: true,
+    forcePendingName: false,
     side: null,
     placeholderSide: null,
     medal: null,
@@ -56,6 +62,14 @@ const displayName = computed(() => {
     props.matchSourceShortenLevel,
   )
 })
+
+const isPending = computed(() => props.team.sourceKind !== 'team')
+const shouldShowName = computed(
+  () => props.showName || (props.forcePendingName && isPending.value),
+)
+const shouldShowScore = computed(
+  () => props.showScore && (!isPending.value || props.showPendingScore),
+)
 </script>
 
 <template>
@@ -96,7 +110,7 @@ const displayName = computed(() => {
     />
 
     <span
-      v-if="showName"
+      v-if="shouldShowName"
       class="team-name"
       :title="team.sourceLabel || team.displayName"
     >{{ displayName || '—' }}</span>
@@ -107,7 +121,7 @@ const displayName = computed(() => {
     />
 
     <span
-      v-if="showScore && score != null"
+      v-if="shouldShowScore && score != null"
       class="team-score"
     >{{ score }}</span>
   </div>
