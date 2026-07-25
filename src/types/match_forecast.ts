@@ -8,7 +8,7 @@ export interface MatchForecastResp {
   /** schedule 透传；分组赛常见为 null。 */
   slug: string | null
   match_id: number
-  /** 东八区，精确到秒；上游未查到时可能为空串。 */
+  /** 东八区，精确到分钟；上游未查到时可能为空串。 */
   support_rate_deadline: string
   /** 与当前查询对应的海报 PNG 地址。 */
   image_url: string

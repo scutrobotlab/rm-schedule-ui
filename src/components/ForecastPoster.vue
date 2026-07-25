@@ -190,10 +190,12 @@ async function downloadPng() {
   downloading.value = true
   downloadError.value = ''
   try {
-    const response = await axios.get<Blob>(FORECAST_IMAGE_URL, {
-      params: requestedMatchId.value === undefined
+    const response = await axios.get<Blob>(forecast.value?.image_url || FORECAST_IMAGE_URL, {
+      params: forecast.value?.image_url
         ? undefined
-        : { match_id: requestedMatchId.value },
+        : requestedMatchId.value === undefined
+          ? undefined
+          : { match_id: requestedMatchId.value },
       responseType: 'blob',
       timeout: FORECAST_IMAGE_TIMEOUT_MS,
     })
