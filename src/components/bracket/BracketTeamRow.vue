@@ -290,8 +290,11 @@ const isShortMatchSource = computed(() => (
   );
 }
 
-.support-rate-text {
-  flex: 0 0 3.4rem;
+.team-row > .support-rate-text {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 11px;
   width: 3.4rem;
   max-width: 3.4rem;
   overflow: hidden;
@@ -301,6 +304,7 @@ const isShortMatchSource = computed(() => (
   line-height: 1;
   text-align: left;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  transform: translateY(-50%);
   will-change: transform, opacity;
 }
 
@@ -314,7 +318,22 @@ const isShortMatchSource = computed(() => (
 .support-rate-text-enter-from,
 .support-rate-text-leave-to {
   opacity: 0;
-  transform: translateX(-6px);
+  transform: translate(-6px, -50%);
+}
+
+.team-row > .rank-badge,
+.team-row > .team-logo,
+.team-row > .team-name,
+.team-row > .team-name-spacer {
+  transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.team-row.has-support-rate > .rank-badge,
+.team-row.has-support-rate > .team-logo,
+.team-row.has-support-rate > .team-name,
+.team-row.has-support-rate > .team-name-spacer {
+  transform: translateX(3.4rem);
 }
 
 .side-red .support-rate-text {
@@ -435,7 +454,11 @@ const isShortMatchSource = computed(() => (
   .support-rate-fill-enter-active,
   .support-rate-fill-leave-active,
   .support-rate-text-enter-active,
-  .support-rate-text-leave-active {
+  .support-rate-text-leave-active,
+  .team-row > .rank-badge,
+  .team-row > .team-logo,
+  .team-row > .team-name,
+  .team-row > .team-name-spacer {
     transition: none;
   }
 
