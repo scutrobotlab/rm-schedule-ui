@@ -1,11 +1,17 @@
-import {ZoneJsonData} from "../types/zone";
+import { RoundOrder } from "../types/round_order";
+import { ZoneJsonData } from "../types/zone";
 
 const rx = 0;
 const ry = 0;
 
 const xOffset = 435;
 
-export const RevivalZoneGroupJsonData: ZoneJsonData = {
+/**
+ * 2026 复活赛（617）小组赛布局。
+ * 与往年 RevivalZone 的差异：第三轮 1-1 配对（A: 3v6/4v5，B: 6v3/5v4），
+ * 以及前四名统一晋级「名额争夺」而非全国赛/第二赛段分流。
+ */
+export const RevivalZone2026GroupJsonData: ZoneJsonData = {
   rootId: '#1',
   stages: ['第一轮', '第二轮', '第三轮', '晋级结果'],
   nodes: [
@@ -56,8 +62,8 @@ export const RevivalZoneGroupJsonData: ZoneJsonData = {
             losers: [],
             text: ['A组 第一轮 第1名', 'A组 第一轮 第2名', 'A组 第一轮 第3名', 'A组 第一轮 第4名'],
             forecasts: [
-              {red: 1, blue: 2},
-              {red: 3, blue: 4},
+              { red: 1, blue: 2 },
+              { red: 3, blue: 4 },
             ]
           },
           {
@@ -66,8 +72,8 @@ export const RevivalZoneGroupJsonData: ZoneJsonData = {
             losers: [],
             text: ['B组 第一轮 第2名', 'B组 第一轮 第1名', 'B组 第一轮 第4名', 'B组 第一轮 第3名'],
             forecasts: [
-              {red: 2, blue: 1},
-              {red: 4, blue: 3},
+              { red: 2, blue: 1 },
+              { red: 4, blue: 3 },
             ]
           }
         ]
@@ -92,8 +98,8 @@ export const RevivalZoneGroupJsonData: ZoneJsonData = {
             losers: [1, 2, 3, 4],
             text: ['A组 第一轮 第6名', 'A组 第一轮 第5名', 'A组 第一轮 第8名', 'A组 第一轮 第7名'],
             forecasts: [
-              {red: 6, blue: 5},
-              {red: 8, blue: 7},
+              { red: 6, blue: 5 },
+              { red: 8, blue: 7 },
             ]
           },
           {
@@ -102,8 +108,8 @@ export const RevivalZoneGroupJsonData: ZoneJsonData = {
             losers: [5, 6, 7, 8],
             text: ['B组 第一轮 第5名', 'B组 第一轮 第6名', 'B组 第一轮 第7名', 'B组 第一轮 第8名'],
             forecasts: [
-              {red: 5, blue: 6},
-              {red: 7, blue: 8},
+              { red: 5, blue: 6 },
+              { red: 7, blue: 8 },
             ]
           }
         ]
@@ -128,7 +134,7 @@ export const RevivalZoneGroupJsonData: ZoneJsonData = {
             losers: [],
             text: ['A组 第二轮 第1名', 'A组 第二轮 第2名'],
             forecasts: [
-              {red: 1, blue: 2},
+              { red: 1, blue: 2 },
             ]
           },
           {
@@ -137,7 +143,7 @@ export const RevivalZoneGroupJsonData: ZoneJsonData = {
             losers: [],
             text: ['B组 第二轮 第2名', 'B组 第二轮 第1名'],
             forecasts: [
-              {red: 2, blue: 1},
+              { red: 2, blue: 1 },
             ]
           }
         ]
@@ -157,23 +163,25 @@ export const RevivalZoneGroupJsonData: ZoneJsonData = {
         type: 'match',
         zones: [
           {
+            // 官方：18 Ⅲ-A3 vs Ⅲ-A6，19 Ⅲ-A4 vs Ⅲ-A5
             matches: [18, 19],
             winners: [11, 12],
             losers: [9, 10],
-            text: ['A组 第二轮 第3名', 'A组 第二轮 第4名', 'A组 第二轮 第6名', 'A组 第二轮 第5名'],
+            text: ['A组 第二轮 第3名', 'A组 第二轮 第6名', 'A组 第二轮 第4名', 'A组 第二轮 第5名'],
             forecasts: [
-              {red: 3, blue: 4},
-              {red: 6, blue: 5},
+              { red: 3, blue: 6 },
+              { red: 4, blue: 5 },
             ]
           },
           {
+            // 官方：21 Ⅲ-B6 vs Ⅲ-B3，22 Ⅲ-B5 vs Ⅲ-B4
             matches: [21, 22],
             winners: [15, 16],
             losers: [13, 14],
-            text: ['B组 第二轮 第4名', 'B组 第二轮 第3名', 'B组 第二轮 第5名', 'B组 第二轮 第6名'],
+            text: ['B组 第二轮 第6名', 'B组 第二轮 第3名', 'B组 第二轮 第5名', 'B组 第二轮 第4名'],
             forecasts: [
-              {red: 4, blue: 3},
-              {red: 5, blue: 6},
+              { red: 6, blue: 3 },
+              { red: 5, blue: 4 },
             ]
           }
         ]
@@ -211,11 +219,11 @@ export const RevivalZoneGroupJsonData: ZoneJsonData = {
     },
     {
       id: '#7',
-      text: '晋级 3-0',
+      text: '晋级名额争夺',
       x: 0,
-      y: 0,
+      y: ry - 40,
       data: {
-        title: '晋级全国赛',
+        title: '晋级名额争夺',
         titleColor: '#FFFFFF',
         titleImage: '/static/title_winner_bg.png',
         borderColor: '#E7A662',
@@ -226,51 +234,21 @@ export const RevivalZoneGroupJsonData: ZoneJsonData = {
         zones: [
           {
             matches: [],
-            winners: [17],
-            losers: [],
-            text: ['A组 第1名']
+            winners: [17, 18, 19],
+            losers: [17],
+            text: ['A组 第1名', 'A组 第2名', 'A组 第3名', 'A组 第4名']
           },
           {
             matches: [],
-            winners: [20],
-            losers: [],
-            text: ['B组 第1名']
+            winners: [20, 21, 22],
+            losers: [20],
+            text: ['B组 第1名', 'B组 第2名', 'B组 第3名', 'B组 第4名']
           }
         ]
       }
     },
     {
       id: '#8',
-      text: '第三轮 2-1',
-      x: rx,
-      y: ry + 165,
-      data: {
-        title: '晋级第二赛段',
-        titleColor: '#FFFFFF',
-        titleImage: '/static/title_winner_bg.png',
-        borderColor: '#E7A662',
-        collegeNameColor: '#FFB553',
-        rankColor: '#FFA500',
-        round: 4,
-        type: 'promote',
-        zones: [
-          {
-            matches: [],
-            winners: [18, 19],
-            losers: [17],
-            text: ['A组 第2名', 'A组 第3名', 'A组 第4名']
-          },
-          {
-            matches: [],
-            winners: [21, 22],
-            losers: [20],
-            text: ['B组 第2名', 'B组 第3名', 'B组 第4名']
-          }
-        ]
-      }
-    },
-    {
-      id: '#9',
       text: '淘汰 1-2',
       x: rx,
       y: ry + 440,
@@ -301,133 +279,171 @@ export const RevivalZoneGroupJsonData: ZoneJsonData = {
     },
   ],
   lines: [
-    {from: '#1', to: '#2',},
-    {from: '#1', to: '#3',},
-    {from: '#2', to: '#4',},
-    {from: '#2', to: '#5',},
-    {from: '#3', to: '#5',},
-    {from: '#3', to: '#6',},
-    {from: '#4', to: '#7',},
-    {from: '#4', to: '#8',},
-    {from: '#5', to: '#8',},
-    {from: '#5', to: '#9',},
+    { from: '#1', to: '#2' },
+    { from: '#1', to: '#3' },
+    { from: '#2', to: '#4' },
+    { from: '#2', to: '#5' },
+    { from: '#3', to: '#5' },
+    { from: '#3', to: '#6' },
+    { from: '#4', to: '#7' },
+    { from: '#5', to: '#7' },
+    { from: '#5', to: '#8' },
   ],
 }
 
-export const RevivalZoneRoundOrder = {
-  'A': [1, 9, 17, 17],
-  'B': [5, 13, 20, 20],
+export const RevivalZone2026RoundOrder: RoundOrder = {
+  A: [1, 9, 17, 17],
+  B: [5, 13, 20, 20],
 }
 
-export const GlobalZoneJsonData: ZoneJsonData = {
+/**
+ * 2026 复活赛（617）名额争夺布局（order 23–32）。
+ *
+ * 以 group 节点呈现：同一轮、同一组的多场对局合并为一个节点，
+ * 保持和 2025 复活赛第二赛段一致的标题、边框和连线层级。
+ */
+export const RevivalZone2026KnockoutJsonData: ZoneJsonData = {
   rootId: '#1',
-  stages: ['海外小组赛', '海外淘汰赛', '晋级第二赛段'],
+  stages: ['晋级名额争夺战', '胜负分组', '败者组第二轮', '晋级结果'],
   nodes: [
     {
       id: '#1',
-      text: 'Q组海外队伍小组赛',
-      x: rx - 2 * xOffset,
-      y: ry - 120,
+      text: '晋级名额争夺战',
+      x: rx - 3 * xOffset,
+      y: ry + 40,
       data: {
-        title: 'Q组海外队伍小组赛',
+        title: '晋级名额争夺战',
         titleColor: '#FFFFFF',
         titleImage: '/static/title_bg.png',
         borderColor: '#5A879C',
-        rankColor: '#FFA500',
-        round: 1,
-        type: 'groupLoop',
-        zones: [
-          {
-            matches: [],
-            winners: [],
-            losers: [],
-            text: ['Q1', 'Q2', 'Q3'],
-            group: 'Q',
-            groupRank: [1, 2, 3]
-          },
-        ]
-      }
+        round: -1,
+        type: 'match',
+        zones: [{
+          matches: [23, 24, 25, 26],
+          winners: [],
+          losers: [],
+          text: [
+            '小组赛B组 第1名', '小组赛A组 第4名',
+            '小组赛A组 第2名', '小组赛B组 第3名',
+            '小组赛A组 第3名', '小组赛B组 第2名',
+            '小组赛B组 第4名', '小组赛A组 第1名',
+          ],
+        }],
+      },
     },
     {
       id: '#2',
-      text: 'W组海外队伍小组赛',
+      text: '胜者组',
       x: rx - 2 * xOffset,
-      y: ry + 180,
+      y: ry - 70,
       data: {
-        title: 'W组海外队伍小组赛',
+        title: '胜者组',
         titleColor: '#FFFFFF',
         titleImage: '/static/title_bg.png',
         borderColor: '#5A879C',
-        rankColor: '#FFA500',
-        round: 1,
-        type: 'groupLoop',
-        zones: [
-          {
-            matches: [],
-            winners: [],
-            losers: [],
-            text: ['W1', 'W2', 'W3'],
-            group: 'W',
-            groupRank: [1, 2, 3]
-          },
-        ]
-      }
+        round: -1,
+        type: 'match',
+        zones: [{
+          matches: [29, 30],
+          winners: [23, 24, 26, 25],
+          losers: [],
+          text: ['第23场 胜者', '第24场 胜者', '第26场 胜者', '第25场 胜者'],
+        }],
+      },
     },
     {
       id: '#3',
-      text: '海外队伍淘汰赛',
-      x: rx - xOffset,
-      y: ry,
+      text: '败者组第一轮',
+      x: rx - 2 * xOffset,
+      y: ry + 340,
       data: {
-        title: '海外队伍淘汰赛',
+        title: '败者组第一轮',
         titleColor: '#FFFFFF',
         titleImage: '/static/title_bg.png',
         borderColor: '#5A879C',
-        round: 2,
+        round: -1,
         type: 'match',
-        zones: [
-          {
-            matches: [7, 8],
-            winners: [],
-            losers: [],
-            text: ['Q组 第1名', 'W组 第2名', 'W组 第1名', 'Q组 第2名'],
-          },
-        ]
-      }
+        zones: [{
+          matches: [27, 28],
+          winners: [],
+          losers: [23, 24, 26, 25],
+          text: ['第23场 败者', '第24场 败者', '第26场 败者', '第25场 败者'],
+        }],
+      },
     },
     {
       id: '#4',
-      text: '晋级第二赛段',
-      x: 0,
-      y: 48,
+      text: '败者组第二轮',
+      x: rx - xOffset,
+      y: ry + 130,
       data: {
-        title: '晋级第二赛段',
+        title: '败者组第二轮',
+        titleColor: '#FFFFFF',
+        titleImage: '/static/title_bg.png',
+        borderColor: '#5A879C',
+        round: -1,
+        type: 'match',
+        zones: [{
+          matches: [31, 32],
+          winners: [28, 27],
+          losers: [29, 30],
+          text: ['第29场 败者', '第28场 胜者', '第27场 胜者', '第30场 败者'],
+        }],
+      },
+    },
+    {
+      id: '#5',
+      text: '晋级全国赛',
+      x: rx,
+      y: ry - 50,
+      data: {
+        title: '晋级全国赛',
         titleColor: '#FFFFFF',
         titleImage: '/static/title_winner_bg.png',
         borderColor: '#E7A662',
         collegeNameColor: '#FFB553',
         rankColor: '#FFA500',
-        round: 3,
+        round: -1,
         type: 'promote',
-        zones: [
-          {
-            matches: [],
-            winners: [7, 8],
-            losers: [],
-            text: ['第7场胜者', '第8场胜者'],
-          }
-        ]
-      }
-    }
+        zones: [{
+          matches: [],
+          winners: [29, 30, 31, 32],
+          losers: [],
+          text: ['第29场 胜者', '第30场 胜者', '第31场 胜者', '第32场 胜者'],
+        }],
+      },
+    },
+    {
+      id: '#6',
+      text: '淘汰',
+      x: rx,
+      y: ry + 310,
+      data: {
+        title: '淘汰',
+        titleColor: '#FFFFFF',
+        titleImage: '/static/title_loser_bg.png',
+        borderColor: '#3E484D',
+        collegeNameColor: '#9D9F9F',
+        rankColor: '#4F4F4F',
+        round: -1,
+        type: 'eliminate',
+        zones: [{
+          matches: [],
+          winners: [],
+          losers: [27, 28, 31, 32],
+          text: ['第27场 败者', '第28场 败者', '第31场 败者', '第32场 败者'],
+        }],
+      },
+    },
   ],
   lines: [
-    {from: '#1', to: '#3',},
-    {from: '#2', to: '#3',},
-    {from: '#3', to: '#4',},
+    { from: '#1', to: '#2' },
+    { from: '#1', to: '#3' },
+    { from: '#2', to: '#4' },
+    { from: '#2', to: '#5' },
+    { from: '#3', to: '#4' },
+    { from: '#3', to: '#6' },
+    { from: '#4', to: '#5' },
+    { from: '#4', to: '#6' },
   ],
-}
-
-
-export const GlobalZoneRoundOrder = {
-  'QW': [1, 7, 7],
 }

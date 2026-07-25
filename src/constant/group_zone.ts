@@ -7,6 +7,7 @@ const groupXOffset = 435;
 
 export const GroupZoneGroup1JsonData: ZoneJsonData = {
   rootId: '#1',
+  stages: ['第一轮', '第二轮', '第三轮', '前段晋级', '第四轮'],
   nodes: [
     {
       id: '#1',
@@ -398,6 +399,7 @@ export const GroupZoneGroup1RoundOrder = {
 
 export const GroupZoneGroup2JsonData: ZoneJsonData = {
   rootId: '#1',
+  stages: ['第四轮', '第五轮', '后段晋级'],
   nodes: [
     {
       id: '#1',
@@ -683,6 +685,7 @@ export const GroupZoneGroup2RoundOrder = {
 
 export const GroupZoneGroupJsonData: ZoneJsonData = {
   rootId: '#1',
+  stages: ['第一轮', '第二轮', '第三轮', '晋级结果'],
   nodes: [
     {
       id: '#1',
@@ -1012,6 +1015,7 @@ const quotaCompetitionXOffset = 435;
 
 export const QuotaCompetition_11_5_JsonData: ZoneJsonData = {
   rootId: '#1',
+  stages: ['第一轮', '第二轮', '第三轮', '晋级结果'],
   nodes: [
     {
       id: '#1',
@@ -1188,6 +1192,7 @@ export const QuotaCompetition_11_5_JsonData: ZoneJsonData = {
 
 export const QuotaCompetition_8_6_JsonData: ZoneJsonData = {
   rootId: '#1',
+  stages: ['第一轮', '第二轮', '晋级结果'],
   nodes: [
     {
       id: '#1',
@@ -1316,6 +1321,7 @@ export const QuotaCompetition_8_6_JsonData: ZoneJsonData = {
 
 export const QuotaCompetition_9_5_JsonData: ZoneJsonData = {
   rootId: '#1',
+  stages: ['第一轮', '第二轮', '第三轮', '晋级结果'],
   nodes: [
     {
       id: '#1',
@@ -1516,6 +1522,7 @@ export const QuotaCompetition_9_5_JsonData: ZoneJsonData = {
 
 export const QuotaCompetition_10_6_JsonData: ZoneJsonData = {
   rootId: '#1',
+  stages: ['第一轮', '第二轮', '晋级结果'],
   nodes: [
     {
       id: '#1',
@@ -1644,6 +1651,7 @@ export const QuotaCompetition_10_6_JsonData: ZoneJsonData = {
 
 export const QuotaCompetition_10_4_JsonData: ZoneJsonData = {
   rootId: '#1',
+  stages: ['第一轮', '第二轮', '晋级结果'],
   nodes: [
     {
       id: '#1',
@@ -1890,6 +1898,7 @@ export const GroupZoneKnockoutTitleData: TitleData[] = [
 export const GetGroupZoneKnockoutJsonData = (zoneId: number): ZoneJsonData => {
   return <ZoneJsonData>{
     rootId: '#16',
+    stages: ['16进8', '8进4', '半决赛', '决赛'],
     nodes: [
       {
         id: '#1',

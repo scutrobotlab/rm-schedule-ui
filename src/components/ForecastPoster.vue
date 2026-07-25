@@ -6,14 +6,13 @@ import type { CurrentMatchForecastResp, ForecastSide } from '../types/current_ma
 import {
   fetchCurrentMatchForecast,
   formatMatchMeta,
-  formatMatchMetaEmpty,
   hasValidSupportRate,
 } from '../utils/current_match_forecast'
 import { StaticCDN } from '../utils/cdn'
 import { forecastAssets } from '@/assets/forecast'
 
 const FORECAST_IMAGE_URL = '/api/current_match_forecast_image'
-const FORECAST_IMAGE_FILENAME = 'current-match-forecast.png'
+const FORECAST_IMAGE_FILENAME_FALLBACK = 'current-match-forecast.png'
 /** chromedp 渲染可能较慢，下载超时放宽到 120s */
 const FORECAST_IMAGE_TIMEOUT_MS = 120_000
 
@@ -55,10 +54,15 @@ const downloadError = ref('')
 
 const isRenderMode = computed(() => String(route.query.render ?? '') === '1')
 const hasMatch = computed(() => Boolean(forecast.value?.has_match))
+const downloadFilename = computed(() => {
+  const matchId = forecast.value?.match_id
+  return typeof matchId === 'number' && Number.isFinite(matchId) && matchId > 0
+    ? `current-match-forecast-${matchId}.png`
+    : FORECAST_IMAGE_FILENAME_FALLBACK
+})
 
 const matchMeta = computed(() => {
-  if (!forecast.value) return '加载中…'
-  if (!forecast.value.has_match) return formatMatchMetaEmpty(forecast.value.zone_id)
+  if (!forecast.value?.has_match) return ''
   return formatMatchMeta(forecast.value)
 })
 
@@ -78,6 +82,36 @@ const supportRatesAvailable = computed(() => {
     hasValidSupportRate(forecast.value.red_side.support_rate_percent) &&
     hasValidSupportRate(forecast.value.blue_side.support_rate_percent)
   )
+})
+
+const displayPercentByTeam = computed<Record<TeamRowKey, number | null>>(() => {
+  if (!forecast.value?.has_match || !supportRatesAvailable.value) {
+    return { red: null, blue: null }
+  }
+
+  const red = forecast.value.red_side
+  const blue = forecast.value.blue_side
+  const displayed = {
+    red: red.support_rate_percent,
+    blue: blue.support_rate_percent,
+  }
+  const sum = displayed.red + displayed.blue
+  if (sum === 100) return displayed
+
+  const adjustment = sum < 100 ? 1 : -1
+  const redAdjustmentError =
+    Math.abs(displayed.red + adjustment - red.support_rate * 100) +
+    Math.abs(displayed.blue - blue.support_rate * 100)
+  const blueAdjustmentError =
+    Math.abs(displayed.red - red.support_rate * 100) +
+    Math.abs(displayed.blue + adjustment - blue.support_rate * 100)
+
+  if (redAdjustmentError <= blueAdjustmentError) {
+    displayed.red += adjustment
+  } else {
+    displayed.blue += adjustment
+  }
+  return displayed
 })
 
 const teamRows = computed((): TeamRow[] => {
@@ -129,11 +163,9 @@ function logoSrc(url: string): string {
   return StaticCDN(url)
 }
 
-function percentLabel(side: ForecastSide): string {
+function percentLabel(key: TeamRowKey, side: ForecastSide): string {
   if (!hasValidSupportRate(side.support_rate_percent)) return '暂无'
-  const n = side.support_rate_percent
-  // 整数不显示小数，避免 71.0% 噪音；仍保留一位精度（如 62.3）
-  return Number.isInteger(n) ? `${n}%` : `${n.toFixed(1)}%`
+  return `${displayPercentByTeam.value[key] ?? side.support_rate_percent}%`
 }
 
 function sideHasRate(side: ForecastSide): boolean {
@@ -166,7 +198,7 @@ async function downloadPng() {
     const objectUrl = URL.createObjectURL(response.data)
     const anchor = document.createElement('a')
     anchor.href = objectUrl
-    anchor.download = FORECAST_IMAGE_FILENAME
+    anchor.download = downloadFilename.value
     anchor.click()
     URL.revokeObjectURL(objectUrl)
   } catch (err) {
@@ -327,14 +359,9 @@ onMounted(async () => {
       :data-error="errorMessage || undefined"
     >
       <img class="forecast-poster__bg" :src="backgroundUrl" alt="" draggable="false" />
+      <div class="forecast-poster__panel-clarifier" aria-hidden="true" />
 
       <div class="forecast-poster__meta">
-        <div
-          class="forecast-poster__match"
-          :class="{ 'is-placeholder': !hasMatch }"
-        >
-          {{ matchMeta }}
-        </div>
         <div
           v-if="deadlineText"
           class="forecast-poster__deadline"
@@ -342,19 +369,19 @@ onMounted(async () => {
           数据截止时间：{{ deadlineText }}
         </div>
         <div
-          v-else
-          class="forecast-poster__deadline forecast-poster__deadline--empty"
+          v-if="matchMeta"
+          class="forecast-poster__match"
         >
-          数据截止时间：暂无
+          {{ matchMeta }}
         </div>
       </div>
 
       <div class="forecast-poster__teams">
         <div
-          v-if="forecast && (!hasMatch || !supportRatesAvailable)"
+          v-if="forecast && hasMatch && !supportRatesAvailable"
           class="forecast-poster__rate-unavailable"
         >
-          {{ hasMatch ? '支持率暂不可用' : '暂无进行中比赛' }}
+          支持率暂不可用
         </div>
         <div
           v-for="row in teamRows"
@@ -393,7 +420,7 @@ onMounted(async () => {
             class="forecast-team__percent"
             :class="{ 'is-unavailable': !sideHasRate(row.side) }"
           >
-            {{ percentLabel(row.side) }}
+            {{ percentLabel(row.key, row.side) }}
           </div>
         </div>
       </div>
@@ -506,54 +533,67 @@ onMounted(async () => {
     object-fit: cover;
   }
 
+  &__panel-clarifier {
+    position: absolute;
+    top: 280px;
+    right: 212px;
+    bottom: 280px;
+    left: 160px;
+    z-index: 1;
+    border-radius: 36px;
+    background: rgba(255, 255, 255, 0.015);
+    backdrop-filter: brightness(1.08);
+    pointer-events: none;
+  }
+
   &__meta {
     position: absolute;
-    top: 248px;
-    left: 72px;
-    right: 140px;
+    inset: 0;
     z-index: 2;
-    text-align: right;
+    pointer-events: none;
   }
 
   &__match {
-    color: #5ec8e8;
+    position: absolute;
+    top: 330px;
+    left: 180px;
+    right: 180px;
+    color: #f5bd3b;
     font-size: 34px;
-    font-weight: 600;
+    font-weight: 700;
     letter-spacing: 1px;
     line-height: 1.3;
+    text-align: center;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-
-    &.is-placeholder {
-      color: #9aa3b2;
-    }
   }
 
   &__deadline {
-    margin-top: 10px;
+    position: absolute;
+    top: 197px;
+    left: 980px;
+    right: 180px;
     color: #d7dde8;
-    font-size: 28px;
+    font-size: 32px;
     font-weight: 500;
-    opacity: 0.8;
-
-    &--empty {
-      opacity: 0.4;
-    }
+    line-height: 1.3;
+    text-align: right;
+    white-space: nowrap;
   }
 
   &__teams {
     position: absolute;
-    top: 280px;
-    bottom: 240px;
+    top: 361px;
+    bottom: 299px;
     left: 50%;
     z-index: 2;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 96px;
-    width: min(1480px, calc(100% - 160px));
+    gap: 76px;
+    width: min(1260px, calc(100% - 320px));
     transform: translateX(-50%);
   }
 
@@ -584,13 +624,13 @@ onMounted(async () => {
 
 .forecast-team {
   display: grid;
-  grid-template-columns: 112px 280px 800px 120px;
+  grid-template-columns: 124px 200px 700px 100px;
   align-items: center;
   justify-content: center;
-  column-gap: 28px;
+  column-gap: 24px;
   width: 100%;
-  max-width: 1360px;
-  min-height: 112px;
+  max-width: 1196px;
+  min-height: 124px;
 
   &.is-placeholder {
     .forecast-team__college,
@@ -600,13 +640,13 @@ onMounted(async () => {
   }
 
   &__logo-wrap {
-    width: 112px;
-    height: 112px;
+    width: 124px;
+    height: 124px;
   }
 
   &__logo {
-    width: 112px;
-    height: 112px;
+    width: 124px;
+    height: 124px;
     border-radius: 50%;
     object-fit: contain;
     background: #fff;
@@ -617,29 +657,26 @@ onMounted(async () => {
   }
 
   &__college {
-    font-size: 34px;
+    font-size: 28px;
     font-weight: 700;
     line-height: 1.25;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    overflow-wrap: anywhere;
   }
 
   &__team {
     margin-top: 6px;
-    font-size: 26px;
+    font-size: 25px;
     color: #b7c0cf;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
   }
 
   &__bar-track {
     --bar-cut: 34px;
     position: relative;
-    width: 800px;
-    height: 34px;
-    background: #3a4252;
+    width: 700px;
+    height: 42px;
+    background: rgba(143, 144, 146, 0.65);
     overflow: hidden;
     justify-self: center;
     /* 右下角切角直至上边：从右上角斜切到下边 */
@@ -656,7 +693,7 @@ onMounted(async () => {
   &__bar-fill {
     height: 100%;
     width: 0;
-    background: #f0c94d;
+    background: rgba(245, 189, 59, 0.9);
     /* 与底轨同切角尺寸/角度，斜边落在当前进度右端 */
     clip-path: polygon(0 0, 100% 0, calc(100% - var(--bar-cut)) 100%, 0 100%);
 
@@ -673,8 +710,8 @@ onMounted(async () => {
 
   &__percent {
     text-align: right;
-    font-size: 40px;
-    font-weight: 700;
+    font-size: 34px;
+    font-weight: 500;
     font-variant-numeric: tabular-nums;
     color: #f2f4f7;
 

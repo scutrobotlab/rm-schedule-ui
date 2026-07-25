@@ -7,6 +7,7 @@ const groupXOffset = 435;
 
 export const FinalZoneGroup1JsonData: ZoneJsonData = {
   rootId: '#1',
+  stages: ['第一轮', '第二轮', '第三轮', '前段晋级', '第四轮'],
   nodes: [
     {
       id: '#1',
@@ -398,6 +399,7 @@ export const FinalZoneGroup1RoundOrder = {
 
 export const FinalZoneGroup2JsonData: ZoneJsonData = {
   rootId: '#1',
+  stages: ['第四轮', '第五轮', '后段晋级'],
   nodes: [
     {
       id: '#1',
@@ -681,6 +683,7 @@ export const FinalZoneGroup2RoundOrder = {
 
 export const FinalZoneGroup1JsonData2025: ZoneJsonData = {
   rootId: '#1',
+  stages: ['第一轮', '第二轮', '第三轮', '前段晋级', '第四轮'],
   nodes: [
     {
       id: '#1',
@@ -1072,6 +1075,7 @@ export const FinalZoneGroup1RoundOrder2025 = {
 
 export const FinalZoneGroup2JsonData2025: ZoneJsonData = {
   rootId: '#1',
+  stages: ['第四轮', '第五轮', '后段晋级'],
   nodes: [
     {
       id: '#1',
