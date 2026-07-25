@@ -19,7 +19,7 @@ import { DefaultZoneMap, Part, SeasonList, ZoneMap } from '../constant/zone'
 import { usePromotionStore } from '../stores/promotion'
 import { useAppStore } from '../stores/app'
 import { getStageMatchCounts } from '../utils/stage_teams'
-import { buildBracketViewModel } from '../utils/bracket_adapter'
+import { buildBracketViewModel, zonesForPart } from '../utils/bracket_adapter'
 import {
   resolveBracketParts,
   type BracketPart,
@@ -679,30 +679,6 @@ const scheduleZone = computed(() => {
   )
 })
 
-const mpMatchIds = computed(() => {
-  const ids = new Set<number>()
-  const currentZone = scheduleZone.value
-  if (!currentZone) return []
-  for (const match of [
-    ...currentZone.groupMatches.nodes,
-    ...currentZone.knockoutMatches.nodes,
-  ]) {
-    const id = Number(match.id)
-    if (Number.isFinite(id) && id > 0) ids.add(id)
-  }
-  return [...ids]
-})
-
-watch(
-  mpMatchIds,
-  (ids) => {
-    if (ids.length === 0) return
-    // 支持率是渐进增强数据：不阻塞 Bracket，失败时保持原布局。
-    void promotionStore.updateMpMatch(ids).catch(() => undefined)
-  },
-  { immediate: true },
-)
-
 const matchLookup = computed(() => {
   const group = new Map<string, MatchNode>()
   const knockout = new Map<number, MatchNode>()
@@ -714,6 +690,38 @@ const matchLookup = computed(() => {
   }
   return { group, knockout }
 })
+
+const mpMatchIds = computed(() => {
+  const part = renderedPart.value
+  if (!part || !scheduleZone.value) return []
+
+  const planGameCount = part.group === 'QW' ? 2 : 3
+  const orders = new Set<number>()
+  for (const node of part.jsonData.nodes) {
+    for (const partZone of zonesForPart(node, part)) {
+      for (const order of partZone.matches) orders.add(order)
+    }
+  }
+
+  const ids = new Set<number>()
+  for (const order of orders) {
+    const match = matchLookup.value.group.get(`${order}:${planGameCount}`)
+      ?? matchLookup.value.knockout.get(order)
+    const id = Number(match?.id)
+    if (Number.isFinite(id) && id > 0) ids.add(id)
+  }
+  return [...ids]
+})
+
+watch(
+  mpMatchIds,
+  (ids) => {
+    if (ids.length === 0) return
+    // 仅拉取当前 group/part；支持率失败不阻塞 Bracket。
+    void promotionStore.updateMpMatch(ids).catch(() => undefined)
+  },
+  { immediate: true },
+)
 
 const groupPlayerLookup = computed(() => {
   const players = new Map<string, Player>()
