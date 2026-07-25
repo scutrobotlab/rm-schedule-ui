@@ -4,13 +4,14 @@ import type { BracketViewModel } from '../../types/bracket'
 import {
   resolveBracketDensity,
   resolveBracketTitleShortenLevel,
+  resolveBracketVisualProgress,
   shouldForceBracketPendingName,
   shouldShowBracketPendingScore,
   shouldShowBracketPlaceholderLogo,
   shouldShowBracketTeamName,
   shouldShowBracketTypeTag,
 } from '../../utils/bracket_density'
-import { bracketColumnGap } from '../../utils/bracket_column_gap'
+import { bracketColumnGapForSpan } from '../../utils/bracket_column_gap'
 import { computeKnockoutLayout } from '../../utils/bracket_tree_layout'
 import BracketColumn from './BracketColumn.vue'
 import BracketConnectors from './BracketConnectors.vue'
@@ -28,23 +29,34 @@ const columnHeights = ref<Record<number, number>>({})
 const columnCount = computed(() => props.model.columns.length)
 const spanForDensity = computed(() => {
   const span = props.visibleSpan ?? columnCount.value
-  return Math.max(1, Math.round(span))
+  return Math.max(1, Math.floor(span))
 })
+const visibleSpan = computed(() => Math.max(1, props.visibleSpan ?? columnCount.value))
 const density = computed(() => resolveBracketDensity(spanForDensity.value))
 const titleShortenLevel = computed(() => resolveBracketTitleShortenLevel(spanForDensity.value))
-const showTeamName = computed(() => shouldShowBracketTeamName(spanForDensity.value))
-const showPendingScore = computed(() => shouldShowBracketPendingScore(spanForDensity.value))
-const forcePendingName = computed(() => shouldForceBracketPendingName(spanForDensity.value))
+const showTeamName = computed(() => shouldShowBracketTeamName(visibleSpan.value))
+const showPendingScore = computed(() => shouldShowBracketPendingScore(visibleSpan.value))
+const forcePendingName = computed(() => shouldForceBracketPendingName(visibleSpan.value))
 const showPlaceholderLogo = computed(
-  () => shouldShowBracketPlaceholderLogo(spanForDensity.value),
+  () => shouldShowBracketPlaceholderLogo(visibleSpan.value),
 )
-const showTypeTag = computed(() => shouldShowBracketTypeTag(spanForDensity.value))
+const showTypeTag = computed(() => shouldShowBracketTypeTag(visibleSpan.value))
 const isKnockout = computed(() => props.model.partType === 'knockout')
+const boardStyle = computed(() => {
+  const progress = resolveBracketVisualProgress(visibleSpan.value)
+  return {
+    '--bracket-cols': String(Math.max(columnCount.value, 1)),
+    '--bracket-normal-progress': String(progress.normal),
+    '--bracket-compact-progress': String(progress.compact),
+    '--bracket-placeholder-opacity': String(progress.placeholderLogo),
+    '--bracket-pending-score-opacity': String(progress.pendingScore),
+  }
+})
 
 const layoutKey = computed(() => {
   const cols = props.model.columns.map((c) => `${c.index}:${c.items.length}`).join('|')
   const conns = props.model.connections.map((c) => `${c.fromNodeId}>${c.toNodeId}`).join('|')
-  return `${cols}::${conns}::${density.value}::${spanForDensity.value}::${props.model.partType}`
+  return `${cols}::${conns}::${density.value}::${visibleSpan.value}::${props.model.partType}`
 })
 
 const connectorLayoutKey = computed(
@@ -56,7 +68,7 @@ let rafId = 0
 
 function gapPx(): number {
   const wide = typeof window !== 'undefined' && window.innerWidth >= 900
-  return bracketColumnGap(density.value, wide)
+  return bracketColumnGapForSpan(visibleSpan.value, wide)
 }
 
 function clearTreeLayout() {
@@ -132,7 +144,7 @@ watch(layoutKey, () => scheduleLayout())
     ref="boardRef"
     class="bracket-board"
     :class="[`density-${density}`, { 'bracket-board--knockout': isKnockout }]"
-    :style="{ '--bracket-cols': String(Math.max(columnCount, 1)) }"
+    :style="boardStyle"
   >
     <BracketConnectors
       :connections="model.connections"
@@ -144,6 +156,7 @@ watch(layoutKey, () => scheduleLayout())
         :key="`${column.index}-${column.x}`"
         :column="column"
         :density="density"
+        :visible-span="visibleSpan"
         :title-shorten-level="titleShortenLevel"
         :show-team-name="showTeamName"
         :show-pending-score="showPendingScore"
@@ -172,17 +185,13 @@ watch(layoutKey, () => scheduleLayout())
   z-index: 1;
   display: grid;
   grid-template-columns: repeat(var(--bracket-cols, 1), minmax(0, 1fr));
-  gap: 10px;
+  gap: calc(
+    10px
+    - 2px * var(--bracket-normal-progress, 0)
+    - 2px * var(--bracket-compact-progress, 0)
+  );
   width: 100%;
   align-items: start;
-}
-
-.density-normal .bracket-grid {
-  gap: 8px;
-}
-
-.density-compact .bracket-grid {
-  gap: 6px;
 }
 
 @media (min-width: 900px) {
@@ -190,12 +199,12 @@ watch(layoutKey, () => scheduleLayout())
     padding: 16px 20px 20px;
   }
 
-  .density-comfortable .bracket-grid {
-    gap: 16px;
-  }
-
-  .density-normal .bracket-grid {
-    gap: 12px;
+  .bracket-grid {
+    gap: calc(
+      16px
+      - 4px * var(--bracket-normal-progress, 0)
+      - 6px * var(--bracket-compact-progress, 0)
+    );
   }
 }
 </style>

@@ -3,6 +3,8 @@ import { computed } from 'vue'
 import moment from 'moment'
 import type { BracketMatchCard as MatchCard } from '../../types/bracket'
 import {
+  resolveBracketTextTransition,
+  resolveBracketTitleShortenLevel,
   shortenBracketTitle,
   type BracketDensity,
   type BracketTitleShortenLevel,
@@ -13,6 +15,7 @@ const props = withDefaults(
   defineProps<{
     item: MatchCard
     density: BracketDensity
+    visibleSpan: number
     titleShortenLevel?: BracketTitleShortenLevel
     showTeamName?: boolean
     showPendingScore?: boolean
@@ -38,8 +41,12 @@ const statusLabel: Record<string, string> = {
 }
 
 const showMeta = computed(() => props.density === 'comfortable')
-const displayTitle = computed(() => (
-  shortenBracketTitle(props.item.title, props.titleShortenLevel)
+const titleTransition = computed(() => resolveBracketTextTransition(
+  props.visibleSpan,
+  (columns) => shortenBracketTitle(
+    props.item.title,
+    resolveBracketTitleShortenLevel(columns),
+  ),
 ))
 const timeText = computed(() => {
   if (!props.item.planStartedAt) return ''
@@ -89,13 +96,16 @@ function slotMedal(
     :data-node-id="item.nodeId"
   >
     <div
-      v-if="displayTitle || (showTypeTag && (podiumTag || destinationTag))"
+      v-if="titleTransition.from || (showTypeTag && (podiumTag || destinationTag))"
       class="card-head"
     >
       <span
-        v-if="displayTitle"
-        class="card-title"
-      >{{ displayTitle }}</span>
+        v-if="titleTransition.from"
+        class="card-title text-transition"
+      >
+        <span :style="{ opacity: 1 - titleTransition.progress }">{{ titleTransition.from }}</span>
+        <span :style="{ opacity: titleTransition.progress }">{{ titleTransition.to }}</span>
+      </span>
       <span
         v-if="showTypeTag && podiumTag"
         class="type-tag"
@@ -111,6 +121,7 @@ function slotMedal(
         :team="item.slots[0]"
         :score="item.redWinGames"
         :density="density"
+        :visible-span="visibleSpan"
         :show-score="true"
         :show-name="showTeamName"
         :show-pending-score="showPendingScore"
@@ -131,6 +142,7 @@ function slotMedal(
         :team="item.slots[1]"
         :score="item.blueWinGames"
         :density="density"
+        :visible-span="visibleSpan"
         :show-score="true"
         :show-name="showTeamName"
         :show-pending-score="showPendingScore"
@@ -164,8 +176,12 @@ function slotMedal(
 .match-card {
   position: relative;
   z-index: 1;
-  padding: 8px;
-  border-radius: 8px;
+  padding: calc(
+    8px
+    - 2px * var(--bracket-normal-progress, 0)
+    - 2px * var(--bracket-compact-progress, 0)
+  );
+  border-radius: calc(8px - 2px * var(--bracket-compact-progress, 0));
   background: rgba(4, 12, 28, 0.28);
   border: 1px solid rgba(120, 170, 220, 0.22);
   border-left-width: 3px;
@@ -208,15 +224,6 @@ function slotMedal(
   font-weight: 700;
 }
 
-.match-card.density-normal {
-  padding: 6px;
-}
-
-.match-card.density-compact {
-  padding: 4px;
-  border-radius: 6px;
-}
-
 .slot-stack {
   display: flex;
   flex-direction: column;
@@ -236,9 +243,24 @@ function slotMedal(
 .card-title {
   flex: 1 1 auto;
   min-width: 0;
-  font-size: 0.72rem;
+  font-size: calc(
+    0.72rem
+    - 0.06rem * var(--bracket-normal-progress, 0)
+    - 0.02rem * var(--bracket-compact-progress, 0)
+  );
   opacity: 0.72;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.text-transition {
+  display: grid;
+}
+
+.text-transition > span {
+  grid-area: 1 / 1;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -270,29 +292,25 @@ function slotMedal(
   opacity: 0.55;
 }
 
-.density-normal .card-head {
-  margin-bottom: 4px;
-}
-
-.density-normal .card-title {
-  font-size: 0.66rem;
-}
-
-.density-compact .card-head {
-  margin-bottom: 4px;
-}
-
-.density-compact .card-title {
-  font-size: 0.64rem;
+.card-head {
+  margin-bottom: calc(6px - 2px * var(--bracket-normal-progress, 0));
 }
 
 @media (min-width: 900px) {
-  .density-comfortable {
-    padding: 10px;
+  .match-card {
+    padding: calc(
+      10px
+      - 4px * var(--bracket-normal-progress, 0)
+      - 2px * var(--bracket-compact-progress, 0)
+    );
   }
 
-  .density-comfortable .card-title {
-    font-size: 0.78rem;
+  .card-title {
+    font-size: calc(
+      0.78rem
+      - 0.12rem * var(--bracket-normal-progress, 0)
+      - 0.02rem * var(--bracket-compact-progress, 0)
+    );
   }
 }
 </style>

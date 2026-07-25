@@ -1,13 +1,70 @@
 import { describe, expect, it } from 'vitest'
 import {
   bracketDisplayUnits,
+  resolveBracketTextTransition,
   resolveBracketTitleShortenLevel,
+  resolveBracketVisualProgress,
   shouldForceBracketPendingName,
   shouldShowBracketPendingScore,
   shouldShowBracketPlaceholderLogo,
   shortenBracketSourceLabel,
   shortenBracketTitle,
 } from './bracket_density'
+import { bracketColumnGapForSpan } from './bracket_column_gap'
+
+describe('resolveBracketVisualProgress', () => {
+  it.each([
+    [2, 0, 0, 1, 1],
+    [2.5, 0.5, 0, 1, 1],
+    [3, 1, 0, 1, 1],
+    [4, 1, 0, 0, 1],
+    [4.5, 1, 0.5, 0, 0.5],
+    [5, 1, 1, 0, 0],
+  ])(
+    '%s 列返回连续视觉进度',
+    (span, normal, compact, placeholderLogo, pendingScore) => {
+      expect(resolveBracketVisualProgress(span)).toEqual({
+        normal,
+        compact,
+        placeholderLogo,
+        pendingScore,
+      })
+    },
+  )
+})
+
+describe('bracketColumnGapForSpan', () => {
+  it.each([
+    [false, 2, 8],
+    [false, 2.5, 7],
+    [false, 3, 6],
+    [false, 4.5, 5],
+    [false, 5, 4],
+    [true, 2, 12],
+    [true, 2.5, 9],
+    [true, 3, 6],
+  ])('wide=%s, span=%s → %spx', (wide, span, expected) => {
+    expect(bracketColumnGapForSpan(span, wide)).toBe(expected)
+  })
+})
+
+describe('resolveBracketTextTransition', () => {
+  it('在相邻整数档之间返回可交叉渐变的两份内容', () => {
+    expect(resolveBracketTextTransition(2.5, (columns) => `level-${columns}`)).toEqual({
+      from: 'level-2',
+      to: 'level-3',
+      progress: 0.5,
+    })
+  })
+
+  it('整数列不产生混合进度', () => {
+    expect(resolveBracketTextTransition(4, (columns) => columns)).toEqual({
+      from: 4,
+      to: 4,
+      progress: 0,
+    })
+  })
+})
 
 describe('bracketDisplayUnits', () => {
   it.each([

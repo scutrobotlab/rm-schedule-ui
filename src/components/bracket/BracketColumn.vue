@@ -11,6 +11,7 @@ import BracketInfoCardView from './BracketInfoCard.vue'
 const props = defineProps<{
   column: BracketColumn
   density: BracketDensity
+  visibleSpan: number
   /** 0=不缩；1=≥3；2=≥4；3=≥5；4=≥6 */
   titleShortenLevel?: BracketTitleShortenLevel
   /** ≥6 列时为 false，隐藏校名 */
@@ -69,6 +70,7 @@ function isMatch(item: BracketMatchCard | BracketInfoCard): item is BracketMatch
           v-if="isMatch(item)"
           :item="item"
           :density="density"
+          :visible-span="visibleSpan"
           :title-shorten-level="titleShortenLevel ?? 0"
           :show-team-name="showTeamName !== false"
           :show-pending-score="showPendingScore !== false"
@@ -80,6 +82,7 @@ function isMatch(item: BracketMatchCard | BracketInfoCard): item is BracketMatch
           v-else
           :item="item"
           :density="density"
+          :visible-span="visibleSpan"
           :title-shorten-level="titleShortenLevel ?? 0"
           :show-team-name="showTeamName !== false"
           :show-pending-score="showPendingScore !== false"
@@ -102,7 +105,11 @@ function isMatch(item: BracketMatchCard | BracketInfoCard): item is BracketMatch
 .column-items {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: calc(
+    8px
+    - 2px * var(--bracket-normal-progress, 0)
+    - 2px * var(--bracket-compact-progress, 0)
+  );
   flex: 1 1 auto;
 }
 
@@ -118,23 +125,19 @@ function isMatch(item: BracketMatchCard | BracketInfoCard): item is BracketMatch
   right: 0;
 }
 
-.density-normal .column-items {
-  gap: 6px;
-}
-
 .bracket-column--tree.density-normal .column-items,
 .bracket-column--tree.density-compact .column-items,
 .bracket-column--tree.density-comfortable .column-items {
   gap: 0;
 }
 
-.density-compact .column-items {
-  gap: 4px;
-}
-
 @media (min-width: 900px) {
-  .density-comfortable .column-items {
-    gap: 12px;
+  .column-items {
+    gap: calc(
+      12px
+      - 6px * var(--bracket-normal-progress, 0)
+      - 2px * var(--bracket-compact-progress, 0)
+    );
   }
 }
 </style>

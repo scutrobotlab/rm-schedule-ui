@@ -8,12 +8,57 @@ export type BracketSourceShortenLevel = 0 | 1 | 2 | 3
 /** 0=不缩；1=≥3；2=≥4；3=≥5；4=≥6 */
 export type BracketTitleShortenLevel = 0 | 1 | 2 | 3 | 4
 
+export interface BracketTextTransition<T> {
+  from: T
+  to: T
+  progress: number
+}
+
+export interface BracketVisualProgress {
+  normal: number
+  compact: number
+  placeholderLogo: number
+  pendingScore: number
+}
+
 const MAX_BRACKET_TITLE_UNITS = 6
 
 export function resolveBracketDensity(columnCount: number): BracketDensity {
   if (columnCount <= 2) return 'comfortable'
   if (columnCount <= 4) return 'normal'
   return 'compact'
+}
+
+function clampUnit(value: number): number {
+  return Math.min(1, Math.max(0, value))
+}
+
+/**
+ * 连续列宽的视觉收缩进度。
+ * comfortable → normal 发生在 2–3 列，normal → compact 发生在 4–5 列。
+ */
+export function resolveBracketVisualProgress(visibleSpan: number): BracketVisualProgress {
+  return {
+    normal: clampUnit(visibleSpan - 2),
+    compact: clampUnit(visibleSpan - 4),
+    placeholderLogo: 1 - clampUnit(visibleSpan - 3),
+    pendingScore: 1 - clampUnit(visibleSpan - 4),
+  }
+}
+
+/** 返回当前整数档与下一整数档，以及两者之间的连续混合比例。 */
+export function resolveBracketTextTransition<T>(
+  visibleSpan: number,
+  resolve: (columnCount: number) => T,
+): BracketTextTransition<T> {
+  const clamped = Math.max(1, visibleSpan)
+  const lower = Math.floor(clamped)
+  const upper = Math.ceil(clamped)
+  return {
+    from: resolve(lower),
+    to: resolve(upper),
+    progress: upper === lower ? 0 : clampUnit(clamped - lower),
+  }
 }
 
 /**

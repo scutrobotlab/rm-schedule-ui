@@ -2,6 +2,9 @@
 import { computed } from 'vue'
 import type { BracketTeamSlot } from '../../types/bracket'
 import {
+  resolveBracketDensity,
+  resolveBracketTextTransition,
+  resolveBracketTitleShortenLevel,
   shortenBracketSourceLabel,
   type BracketDensity,
   type BracketSourceShortenLevel,
@@ -16,6 +19,7 @@ const props = withDefaults(
     team: BracketTeamSlot
     score: number | null
     density: BracketDensity
+    visibleSpan?: number
     showScore: boolean
     /** ≥6 列时为 false */
     showName?: boolean
@@ -49,6 +53,7 @@ const props = withDefaults(
     finalized: true,
     matchSourceShortenLevel: 0,
     showPlaceholderLogo: true,
+    visibleSpan: undefined,
   },
 )
 
@@ -57,13 +62,33 @@ function logoSrc(url: string | undefined): string | undefined {
   return StaticCDN(`${url}?process=bg_white`)
 }
 
+function sourceLevelForColumns(columns: number): BracketSourceShortenLevel {
+  const titleLevel = resolveBracketTitleShortenLevel(columns)
+  if (titleLevel >= 4) return 3
+  if (titleLevel >= 2) return 2
+  if (titleLevel >= 1) return 1
+  return 0
+}
+
 const displayName = computed(() => {
-  if (props.team.sourceKind === 'team') return props.team.displayName
-  return shortenBracketSourceLabel(
-    props.team.displayName,
-    props.density,
-    props.matchSourceShortenLevel,
-  )
+  if (props.team.sourceKind === 'team') {
+    return { from: props.team.displayName, to: props.team.displayName, progress: 0 }
+  }
+  if (props.visibleSpan == null) {
+    const value = shortenBracketSourceLabel(
+      props.team.displayName,
+      props.density,
+      props.matchSourceShortenLevel,
+    )
+    return { from: value, to: value, progress: 0 }
+  }
+  return resolveBracketTextTransition(props.visibleSpan, (columns) => (
+    shortenBracketSourceLabel(
+      props.team.displayName,
+      resolveBracketDensity(columns),
+      sourceLevelForColumns(columns),
+    )
+  ))
 })
 
 const isPending = computed(() => props.team.sourceKind !== 'team')
@@ -115,9 +140,12 @@ const shouldShowScore = computed(
 
     <span
       v-if="shouldShowName"
-      class="team-name"
+      class="team-name text-transition"
       :title="team.sourceLabel || team.displayName"
-    >{{ displayName || '—' }}</span>
+    >
+      <span :style="{ opacity: 1 - displayName.progress }">{{ displayName.from || '—' }}</span>
+      <span :style="{ opacity: displayName.progress }">{{ displayName.to || '—' }}</span>
+    </span>
     <span
       v-else
       class="team-name-spacer"
@@ -127,6 +155,7 @@ const shouldShowScore = computed(
     <span
       v-if="shouldShowScore && score != null"
       class="team-score"
+      :class="{ 'pending-score': isPending }"
     >{{ score }}</span>
   </div>
 </template>
@@ -135,10 +164,28 @@ const shouldShowScore = computed(
 .team-row {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: calc(
+    6px
+    - 1px * var(--bracket-normal-progress, 0)
+    - 1px * var(--bracket-compact-progress, 0)
+  );
   min-width: 0;
-  min-height: 34px;
-  padding: 4px 8px;
+  min-height: calc(
+    34px
+    - 6px * var(--bracket-normal-progress, 0)
+    - 4px * var(--bracket-compact-progress, 0)
+  );
+  padding:
+    calc(
+      4px
+      - 1px * var(--bracket-normal-progress, 0)
+      - 1px * var(--bracket-compact-progress, 0)
+    )
+    calc(
+      8px
+      - 2px * var(--bracket-normal-progress, 0)
+      - 1px * var(--bracket-compact-progress, 0)
+    );
   border-radius: 4px;
   background: rgba(255, 255, 255, 0.05);
 }
@@ -247,11 +294,25 @@ const shouldShowScore = computed(
 
 .team-logo {
   flex: 0 0 auto;
-  width: 22px;
-  height: 22px;
+  width: calc(
+    22px
+    - 4px * var(--bracket-normal-progress, 0)
+    - 4px * var(--bracket-compact-progress, 0)
+  );
+  height: calc(
+    22px
+    - 4px * var(--bracket-normal-progress, 0)
+    - 4px * var(--bracket-compact-progress, 0)
+  );
   border-radius: 50%;
   object-fit: cover;
   background: rgba(255, 255, 255, 0.85);
+}
+
+.team-logo.pending-logo {
+  max-width: calc(22px * var(--bracket-placeholder-opacity, 1));
+  opacity: var(--bracket-placeholder-opacity, 1);
+  transform: scale(var(--bracket-placeholder-opacity, 1));
 }
 
 .team-logo.placeholder {
@@ -275,8 +336,23 @@ const shouldShowScore = computed(
 .team-name {
   flex: 1 1 auto;
   min-width: 0;
-  font-size: 0.84rem;
+  font-size: calc(
+    0.84rem
+    - 0.08rem * var(--bracket-normal-progress, 0)
+    - 0.08rem * var(--bracket-compact-progress, 0)
+  );
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.text-transition {
+  display: grid;
+}
+
+.text-transition > span {
+  grid-area: 1 / 1;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -292,39 +368,32 @@ const shouldShowScore = computed(
   min-width: 1.1em;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  font-size: 0.9rem;
+  font-size: calc(
+    0.9rem
+    - 0.02rem * var(--bracket-normal-progress, 0)
+    - 0.02rem * var(--bracket-compact-progress, 0)
+  );
   line-height: 1;
   text-align: right;
   /* 缩放/紧凑密度下也保证比分完整可读，不被挤掉 */
   overflow: visible;
 }
 
+.team-score.pending-score {
+  min-width: 0;
+  max-width: calc(1.1em * var(--bracket-pending-score-opacity, 1));
+  opacity: var(--bracket-pending-score-opacity, 1);
+  overflow: hidden;
+  transform: scale(var(--bracket-pending-score-opacity, 1));
+}
+
 .team-row.tight-name-score-gap .team-score {
   margin-left: -4px;
-}
-
-.density-normal .team-logo {
-  width: 18px;
-  height: 18px;
-}
-
-.density-normal {
-  min-height: 28px;
-  padding: 3px 6px;
-  gap: 5px;
 }
 
 .density-normal.side-red,
 .density-normal.side-blue {
   border-left-width: 2px;
-}
-
-.density-normal .team-name {
-  font-size: 0.76rem;
-}
-
-.density-normal .team-score {
-  font-size: 0.88rem;
 }
 
 .density-normal .rank-badge {
@@ -333,29 +402,9 @@ const shouldShowScore = computed(
   font-size: 0.6rem;
 }
 
-.density-compact {
-  min-height: 24px;
-  padding: 2px 5px;
-  gap: 4px;
-}
-
 .density-compact.side-red,
 .density-compact.side-blue {
   border-left-width: 2px;
-}
-
-.density-compact .team-logo {
-  width: 14px;
-  height: 14px;
-}
-
-.density-compact .team-name {
-  font-size: 0.68rem;
-}
-
-.density-compact .team-score {
-  /* 紧凑时仍保持可读字号，保证比分完整显示 */
-  font-size: 0.86rem;
 }
 
 .density-compact .rank-badge {
@@ -365,13 +414,29 @@ const shouldShowScore = computed(
 }
 
 @media (min-width: 900px) {
-  .density-comfortable .team-name {
-    font-size: 0.92rem;
+  .team-name {
+    font-size: calc(
+      0.92rem
+      - 0.16rem * var(--bracket-normal-progress, 0)
+      - 0.08rem * var(--bracket-compact-progress, 0)
+    );
   }
 
-  .density-comfortable .team-logo {
-    width: 26px;
-    height: 26px;
+  .team-logo {
+    width: calc(
+      26px
+      - 8px * var(--bracket-normal-progress, 0)
+      - 4px * var(--bracket-compact-progress, 0)
+    );
+    height: calc(
+      26px
+      - 8px * var(--bracket-normal-progress, 0)
+      - 4px * var(--bracket-compact-progress, 0)
+    );
+  }
+
+  .team-logo.pending-logo {
+    max-width: calc(26px * var(--bracket-placeholder-opacity, 1));
   }
 }
 </style>

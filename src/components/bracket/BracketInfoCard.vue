@@ -3,6 +3,8 @@ import { computed } from 'vue'
 import moment from 'moment'
 import type { BracketInfoCard as InfoCard, BracketMatchSummary } from '../../types/bracket'
 import {
+  resolveBracketTextTransition,
+  resolveBracketTitleShortenLevel,
   shortenBracketTitle,
   type BracketDensity,
   type BracketTitleShortenLevel,
@@ -13,6 +15,7 @@ const props = withDefaults(
   defineProps<{
     item: InfoCard
     density: BracketDensity
+    visibleSpan: number
     titleShortenLevel?: BracketTitleShortenLevel
     showTeamName?: boolean
     showPendingScore?: boolean
@@ -50,8 +53,12 @@ const showAsMatches = computed(
 )
 
 const showMeta = computed(() => props.density === 'comfortable')
-const displayTitle = computed(() => (
-  shortenBracketTitle(props.item.title, props.titleShortenLevel)
+const titleTransition = computed(() => resolveBracketTextTransition(
+  props.visibleSpan,
+  (columns) => shortenBracketTitle(
+    props.item.title,
+    resolveBracketTitleShortenLevel(columns),
+  ),
 ))
 
 function matchTimeText(m: BracketMatchSummary): string {
@@ -72,7 +79,10 @@ function hasMatchMeta(m: BracketMatchSummary): boolean {
     :data-node-id="item.nodeId"
   >
     <div class="card-head">
-      <span class="card-title">{{ displayTitle }}</span>
+      <span class="card-title text-transition">
+        <span :style="{ opacity: 1 - titleTransition.progress }">{{ titleTransition.from }}</span>
+        <span :style="{ opacity: titleTransition.progress }">{{ titleTransition.to }}</span>
+      </span>
       <span
         v-if="showTypeTag"
         class="type-tag"
@@ -93,6 +103,7 @@ function hasMatchMeta(m: BracketMatchSummary): boolean {
             :team="m.slots[0]"
             :score="m.redWinGames"
             :density="density"
+            :visible-span="visibleSpan"
             :show-score="true"
             :show-name="showTeamName"
             :show-pending-score="showPendingScore"
@@ -111,6 +122,7 @@ function hasMatchMeta(m: BracketMatchSummary): boolean {
             :team="m.slots[1]"
             :score="m.blueWinGames"
             :density="density"
+            :visible-span="visibleSpan"
             :show-score="true"
             :show-name="showTeamName"
             :show-pending-score="showPendingScore"
@@ -147,6 +159,7 @@ function hasMatchMeta(m: BracketMatchSummary): boolean {
         :team="slot"
         :score="null"
         :density="density"
+        :visible-span="visibleSpan"
         :show-score="false"
         :show-name="showTeamName"
         :show-pending-score="showPendingScore"
@@ -164,8 +177,12 @@ function hasMatchMeta(m: BracketMatchSummary): boolean {
 .info-card {
   position: relative;
   z-index: 1;
-  padding: 8px;
-  border-radius: 8px;
+  padding: calc(
+    8px
+    - 2px * var(--bracket-normal-progress, 0)
+    - 2px * var(--bracket-compact-progress, 0)
+  );
+  border-radius: calc(8px - 2px * var(--bracket-compact-progress, 0));
   background: rgba(4, 12, 28, 0.24);
   border: 1px solid rgba(120, 170, 220, 0.18);
   border-left-width: 3px;
@@ -213,15 +230,6 @@ function hasMatchMeta(m: BracketMatchSummary): boolean {
   color: rgba(255, 255, 255, 0.85);
 }
 
-.info-card.density-normal {
-  padding: 6px;
-}
-
-.info-card.density-compact {
-  padding: 4px;
-  border-radius: 6px;
-}
-
 .card-head {
   display: flex;
   align-items: center;
@@ -235,9 +243,24 @@ function hasMatchMeta(m: BracketMatchSummary): boolean {
 .card-title {
   flex: 1 1 auto;
   min-width: 0;
-  font-size: 0.72rem;
+  font-size: calc(
+    0.72rem
+    - 0.06rem * var(--bracket-normal-progress, 0)
+    - 0.02rem * var(--bracket-compact-progress, 0)
+  );
   opacity: 0.78;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.text-transition {
+  display: grid;
+}
+
+.text-transition > span {
+  grid-area: 1 / 1;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -268,7 +291,13 @@ function hasMatchMeta(m: BracketMatchSummary): boolean {
 .mini-match {
   display: flex;
   flex-direction: column;
-  padding: 8px 0;
+  padding:
+    calc(
+      8px
+      - 2px * var(--bracket-normal-progress, 0)
+      - 1px * var(--bracket-compact-progress, 0)
+    )
+    0;
 }
 
 .mini-match:first-child {
@@ -298,33 +327,39 @@ function hasMatchMeta(m: BracketMatchSummary): boolean {
   opacity: 0.55;
 }
 
-.density-normal .mini-match {
-  padding: 6px 0;
-}
-
-.density-compact .mini-match {
-  padding: 5px 0;
-}
-
 .density-compact .mini-match + .mini-match {
   border-top-color: rgba(120, 170, 220, 0.14);
 }
 
-.density-compact .card-head {
-  margin-bottom: 4px;
-}
-
-.density-compact .card-title {
-  font-size: 0.64rem;
+.card-head {
+  margin-bottom: calc(6px - 2px * var(--bracket-normal-progress, 0));
 }
 
 @media (min-width: 900px) {
-  .density-comfortable {
-    padding: 10px;
+  .info-card {
+    padding: calc(
+      10px
+      - 4px * var(--bracket-normal-progress, 0)
+      - 2px * var(--bracket-compact-progress, 0)
+    );
   }
 
-  .density-comfortable .mini-match {
-    padding: 10px 0;
+  .mini-match {
+    padding:
+      calc(
+        10px
+        - 4px * var(--bracket-normal-progress, 0)
+        - 1px * var(--bracket-compact-progress, 0)
+      )
+      0;
+  }
+
+  .card-title {
+    font-size: calc(
+      0.78rem
+      - 0.12rem * var(--bracket-normal-progress, 0)
+      - 0.02rem * var(--bracket-compact-progress, 0)
+    );
   }
 }
 </style>
