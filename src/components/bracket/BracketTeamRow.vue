@@ -23,6 +23,8 @@ const props = withDefaults(
     showPendingScore?: boolean
     /** 即使校名被隐藏，也强制显示未确定席位的来源文字 */
     forcePendingName?: boolean
+    /** 收紧文字与比分的间距，为较长名次留出空间 */
+    tightNameScoreGap?: boolean
     /** 对阵红蓝方；排名席位等非对阵不传 */
     side?: 'red' | 'blue' | null
     /** 占位 R logo 的颜色，可与奖牌卡的边框阵营样式解耦 */
@@ -40,6 +42,7 @@ const props = withDefaults(
     showName: true,
     showPendingScore: true,
     forcePendingName: false,
+    tightNameScoreGap: false,
     side: null,
     placeholderSide: null,
     medal: null,
@@ -79,6 +82,7 @@ const shouldShowScore = computed(
       winner: finalized && team.isWinner && !medal,
       loser: finalized && team.isLoser && !medal,
       pending: team.sourceKind !== 'team',
+      'tight-name-score-gap': tightNameScoreGap,
       [`side-${side}`]: Boolean(side),
       [`medal-${medal}`]: Boolean(medal),
       [`density-${density}`]: true,
@@ -293,6 +297,10 @@ const shouldShowScore = computed(
   text-align: right;
   /* 缩放/紧凑密度下也保证比分完整可读，不被挤掉 */
   overflow: visible;
+}
+
+.team-row.tight-name-score-gap .team-score {
+  margin-left: -4px;
 }
 
 .density-normal .team-logo {
