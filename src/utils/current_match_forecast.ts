@@ -73,7 +73,7 @@ export function resolveForecastSeason(zoneId?: number): number {
 
 /**
  * 拼装页眉比赛元信息。
- * 格式：`<< RMUC {赛季} {赛区} ｜ {阶段} 第{N}场`；slug 为 null 时省略阶段文字。
+ * 格式：`< RMUC {赛季} {赛区} ｜ {阶段} 第{N}场`；slug 为 null 时省略阶段文字。
  */
 export function formatMatchMeta(
   data: Pick<CurrentMatchForecastResp, 'zone_name' | 'slug' | 'order_number' | 'zone_id'>,
@@ -83,7 +83,7 @@ export function formatMatchMeta(
   const stage = data.slug
   const order = Number.isFinite(data.order_number) ? data.order_number : 0
   const tail = stage ? `${stage} 第${order}场` : `第${order}场`
-  return `<< RMUC ${season} ${zone} ｜ ${tail}`
+  return `< RMUC ${season} ${zone} ｜ ${tail}`
 }
 
 /** 无进行中比赛时的元信息占位。 */
