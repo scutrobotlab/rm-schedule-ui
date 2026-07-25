@@ -555,7 +555,7 @@ function barsStyle(stage: StageItem): Record<string, string> {
   border-radius: var(--bar-radius);
   background: var(--track-bg);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
-  overflow: hidden;
+  overflow: visible;
   cursor: pointer;
 }
 
@@ -702,6 +702,8 @@ function barsStyle(stage: StageItem): Record<string, string> {
 
 .stage-range__selection {
   --handle-width: 14px;
+  --handle-outer-hit: 28px;
+  --handle-vertical-hit: 14px;
   position: absolute;
   top: 0;
   bottom: 0;
@@ -743,50 +745,71 @@ function barsStyle(stage: StageItem): Record<string, string> {
 
 .stage-range__handle {
   position: absolute;
-  top: 0;
-  bottom: 0;
+  top: calc(-1 * var(--handle-vertical-hit, 14px));
+  bottom: calc(-1 * var(--handle-vertical-hit, 14px));
   z-index: 1;
-  width: var(--handle-width, 14px);
-  height: 100%;
+  width: calc(var(--handle-width, 14px) + var(--handle-outer-hit, 28px));
+  height: auto;
   padding: 0;
   border: none;
-  background: #ffffff;
+  background: transparent;
   color: #1a2a4a;
   cursor: ew-resize;
   touch-action: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
-  transition:
-    transform 0.2s var(--snap-ease),
-    box-shadow 0.2s ease,
-    width 0.2s ease;
 }
 
-.stage-range--dragging .stage-range__handle {
+/* 按钮热区向选区内侧扩展，白色把手的可见尺寸与位置保持不变。 */
+.stage-range__handle::before {
+  content: '';
+  position: absolute;
+  top: var(--handle-vertical-hit, 14px);
+  bottom: var(--handle-vertical-hit, 14px);
+  width: var(--handle-width, 14px);
+  background: #ffffff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  transition: box-shadow 0.2s ease;
+}
+
+.stage-range--dragging .stage-range__handle::before {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.32);
 }
 
 .stage-range__handle--start {
-  left: 0;
+  left: calc(-1 * var(--handle-outer-hit, 28px));
+  justify-content: flex-end;
+}
+
+.stage-range__handle--start::before {
+  right: 0;
   border-radius: var(--bar-radius) 0 0 var(--bar-radius);
 }
 
 .stage-range__handle--end {
-  right: 0;
+  right: calc(-1 * var(--handle-outer-hit, 28px));
+  justify-content: flex-start;
+}
+
+.stage-range__handle--end::before {
+  left: 0;
   border-radius: 0 var(--bar-radius) var(--bar-radius) 0;
 }
 
-.stage-range__handle:active {
+.stage-range__handle:active::before {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.36);
 }
 
 .stage-range__chevron {
+  position: relative;
+  z-index: 1;
+  width: var(--handle-width, 14px);
   font-size: 18px;
   font-weight: 700;
   line-height: 1;
-  margin-top: -1px;
+  transform: translateY(-1px);
+  text-align: center;
 }
 
 @media (max-width: 600px) {
