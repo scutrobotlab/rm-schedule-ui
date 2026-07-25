@@ -48,7 +48,8 @@ const route = useRoute()
 const posterRef = ref<HTMLElement | null>(null)
 const status = ref<PosterStatus>('pending')
 const errorMessage = ref('')
-const forecast = ref<MatchForecastResp | null>(null)
+const forecastResponse = ref<MatchForecastResp | null>(null)
+const forecast = computed(() => forecastResponse.value?.current ?? null)
 const downloading = ref(false)
 const downloadError = ref('')
 
@@ -66,13 +67,17 @@ const downloadFilename = computed(() => {
 })
 
 const matchMeta = computed(() => {
-  if (!forecast.value?.has_match) return ''
-  return formatMatchMeta(forecast.value)
+  if (!forecast.value?.has_match || !forecastResponse.value) return ''
+  return formatMatchMeta({
+    ...forecast.value,
+    zone_name: forecastResponse.value.zone_name,
+    zone_id: forecastResponse.value.zone_id,
+  })
 })
 
 const deadlineText = computed(() => {
   if (!forecast.value?.has_match) return ''
-  const raw = forecast.value.support_rate_deadline?.trim() ?? ''
+  const raw = forecastResponse.value?.support_rate_deadline?.trim() ?? ''
   if (!raw) return ''
   // 展示到分钟，与参考海报一致
   return raw.length >= 16 ? raw.slice(0, 16) : raw
@@ -328,7 +333,7 @@ async function waitUntilReady(): Promise<void> {
 onMounted(async () => {
   try {
     const data = await fetchMatchForecast(requestedMatchId.value)
-    forecast.value = data
+    forecastResponse.value = data
     await nextTick()
     await waitUntilReady()
     status.value = 'ready'

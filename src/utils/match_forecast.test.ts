@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import axios from 'axios'
 import { fetchMatchForecast } from './match_forecast'
-import type { MatchForecastResp } from '../types/match_forecast'
+import type { MatchForecast, MatchForecastResp } from '../types/match_forecast'
 
 vi.mock('axios', () => ({
   default: Object.assign(vi.fn(), {
@@ -9,15 +9,11 @@ vi.mock('axios', () => ({
   }),
 }))
 
-const response: MatchForecastResp = {
-  publish_time: '2026-07-25 12:00:00',
+const match: MatchForecast = {
   has_match: false,
-  zone_name: '',
-  zone_id: 0,
   order_number: 0,
   slug: null,
   match_id: 0,
-  support_rate_deadline: '',
   image_url: '/api/match_forecast_image',
   red_side: {
     team_info: {
@@ -38,6 +34,20 @@ const response: MatchForecastResp = {
     },
     support_rate: -1,
     support_rate_percent: -1,
+  },
+}
+
+const response: MatchForecastResp = {
+  publish_time: '2026-07-25 12:00:00',
+  support_rate_deadline: '',
+  zone_name: '',
+  zone_id: 0,
+  current: match,
+  next: {
+    ...match,
+    match_id: 31056,
+    has_match: true,
+    image_url: '/api/match_forecast_image?match_id=31056',
   },
 }
 

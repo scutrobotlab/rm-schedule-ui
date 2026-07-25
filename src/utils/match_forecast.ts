@@ -1,5 +1,5 @@
 import axios, { type AxiosResponse } from 'axios'
-import type { MatchForecastResp } from '../types/match_forecast'
+import type { MatchForecast, MatchForecastResp } from '../types/match_forecast'
 import { SeasonList, ZoneMap } from '../constant/zone'
 
 /** 竞猜接口超时；配合海报 12s 资源上限，避免拖到后端全局渲染超时。 */
@@ -31,9 +31,17 @@ export async function fetchMatchForecast(matchId?: string): Promise<MatchForecas
 export function normalizeForecastResp(raw: MatchForecastResp): MatchForecastResp {
   return {
     ...raw,
+    support_rate_deadline: raw.support_rate_deadline ?? '',
+    current: normalizeForecast(raw.current),
+    next: normalizeForecast(raw.next),
+  }
+}
+
+function normalizeForecast(raw: MatchForecast): MatchForecast {
+  return {
+    ...raw,
     // 后端 slug 为 interface{}，运行时可能非 string
     slug: normalizeSlug(raw.slug as unknown),
-    support_rate_deadline: raw.support_rate_deadline ?? '',
     red_side: normalizeSide(raw.red_side),
     blue_side: normalizeSide(raw.blue_side),
   }
@@ -49,7 +57,7 @@ function normalizeSlug(slug: unknown): string | null {
   return trimmed === '' ? null : trimmed
 }
 
-function normalizeSide(side: MatchForecastResp['red_side']) {
+function normalizeSide(side: MatchForecast['red_side']) {
   return {
     support_rate: Number(side?.support_rate ?? -1),
     support_rate_percent: Number(side?.support_rate_percent ?? -1),
@@ -78,7 +86,8 @@ export function resolveForecastSeason(zoneId?: number): number {
  * 格式：`< RMUC {赛季} {赛区} ｜ {阶段} 第{N}场`；slug 为 null 时省略阶段文字。
  */
 export function formatMatchMeta(
-  data: Pick<MatchForecastResp, 'zone_name' | 'slug' | 'order_number' | 'zone_id'>,
+  data: Pick<MatchForecastResp, 'zone_name' | 'zone_id'> &
+    Pick<MatchForecast, 'slug' | 'order_number'>,
 ): string {
   const season = resolveForecastSeason(data.zone_id)
   const zone = (data.zone_name || '').trim() || '未知赛区'
