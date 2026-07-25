@@ -25,6 +25,8 @@ import {
   type BracketPart,
 } from '../utils/bracket_part_merge'
 import type { BracketViewModel } from '../types/bracket'
+import type { MatchNode, Player } from '../types/schedule'
+import { isPointerTap } from '../utils/pointer_tap'
 
 const stageRange = ref<StageRange>({ start: 0, end: 1 })
 /** 视口左右边缘（右开区间，允许小数）；渲染与跟手以此为准 */
@@ -40,6 +42,8 @@ const liveMode = computed(() => route.query.live == '1')
 
 /** 原始 zone.parts 下标（与 ?group= 兼容） */
 const selectedGroup = ref(Number(route.query.group ?? -1))
+/** bracket 内容延后一帧切换，让 group 按钮先完成选中态绘制 */
+const renderedGroup = ref(selectedGroup.value)
 const routeHasGroup = computed(() => route.query.group !== undefined)
 const viewportWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024)
 
@@ -338,14 +342,16 @@ const zone = computed(() => ZoneMap[season.value]?.find((z) => z.id == zoneId.va
 /** 前后段合并后的分组列表，仅 BracketPage 使用 */
 const bracketParts = computed(() => (zone.value ? resolveBracketParts(zone.value) : []))
 
+function bracketIndexForRawGroup(rawGroup: number): number {
+  if (!bracketParts.value.length) return 0
+  const idx = bracketParts.value.findIndex((bp) => bp.sourceIndices.includes(rawGroup))
+  return idx >= 0 ? idx : 0
+}
+
 /** slide-group 用合并项下标；读写时映射到/自原始 part 下标 */
 const selectedBracketIndex = computed({
   get() {
-    if (!bracketParts.value.length) return 0
-    const idx = bracketParts.value.findIndex((bp) =>
-      bp.sourceIndices.includes(selectedGroup.value),
-    )
-    return idx >= 0 ? idx : 0
+    return bracketIndexForRawGroup(selectedGroup.value)
   },
   set(bracketIndex: number) {
     const bp = bracketParts.value[bracketIndex]
@@ -354,6 +360,86 @@ const selectedBracketIndex = computed({
 })
 
 const currentPart = computed(() => bracketParts.value[selectedBracketIndex.value]?.part)
+const renderedPart = computed(
+  () => bracketParts.value[bracketIndexForRawGroup(renderedGroup.value)]?.part,
+)
+
+let groupRenderRaf = 0
+
+function cancelPendingGroupWork() {
+  cancelAnimationFrame(groupRenderRaf)
+  groupRenderRaf = 0
+  if (wheelSnapTimer) {
+    clearTimeout(wheelSnapTimer)
+    wheelSnapTimer = null
+  }
+  if (settleTimer) {
+    clearTimeout(settleTimer)
+    settleTimer = null
+  }
+  windowMotion.value = 'idle'
+}
+
+function scheduleRenderedGroup(rawGroup: number) {
+  cancelPendingGroupWork()
+  groupRenderRaf = requestAnimationFrame(() => {
+    groupRenderRaf = 0
+    renderedGroup.value = rawGroup
+  })
+}
+
+const groupPointer = {
+  id: null as number | null,
+  index: -1,
+  startX: 0,
+  startY: 0,
+  suppressClick: false,
+}
+
+function selectBracketIndex(index: number) {
+  if (index === selectedBracketIndex.value) return
+  selectedBracketIndex.value = index
+}
+
+function onGroupPointerDown(index: number, event: PointerEvent) {
+  if (event.pointerType === 'mouse' || event.button !== 0) return
+  groupPointer.suppressClick = false
+  groupPointer.id = event.pointerId
+  groupPointer.index = index
+  groupPointer.startX = event.clientX
+  groupPointer.startY = event.clientY
+}
+
+function onGroupPointerUp(index: number, event: PointerEvent) {
+  if (groupPointer.id !== event.pointerId || groupPointer.index !== index) return
+  const tap = isPointerTap(
+    groupPointer.startX,
+    groupPointer.startY,
+    event.clientX,
+    event.clientY,
+  )
+  groupPointer.id = null
+  groupPointer.index = -1
+  groupPointer.suppressClick = !tap
+  if (tap) selectBracketIndex(index)
+}
+
+function onGroupPointerCancel(event: PointerEvent) {
+  if (groupPointer.id !== event.pointerId) return
+  groupPointer.id = null
+  groupPointer.index = -1
+  groupPointer.suppressClick = true
+}
+
+function onGroupClick(index: number, event: MouseEvent) {
+  // pointer 手势已被判定为滚动时，屏蔽部分移动浏览器随后合成的 click。
+  if (event.detail > 0 && groupPointer.suppressClick) {
+    groupPointer.suppressClick = false
+    return
+  }
+  groupPointer.suppressClick = false
+  selectBracketIndex(index)
+}
 
 const displayStages = computed(() => {
   const part = currentPart.value
@@ -414,7 +500,6 @@ async function initSelectedGroup() {
     await promotionStore.updateSchedule()
   }
   selectedGroup.value = getDefaultSelectedGroup(!routeHasGroup.value)
-  updateQuery()
 }
 
 function getDefaultSelectedGroup(preferStarted: boolean): number {
@@ -432,10 +517,14 @@ function bracketPath(seasonValue: number, zoneValue: number): string {
 function updateQuery() {
   if (!zone.value?.parts[selectedGroup.value]) {
     selectedGroup.value = getDefaultSelectedGroup(false)
+    return
   }
-  router.push({
-    path: bracketPath(promotionStore.season, zoneId.value),
-    query: { ...route.query, group: selectedGroup.value },
+  const path = bracketPath(promotionStore.season, zoneId.value)
+  const group = String(selectedGroup.value)
+  if (route.path === path && String(route.query.group ?? '') === group) return
+  void router.push({
+    path,
+    query: { ...route.query, group },
   })
 }
 
@@ -464,7 +553,23 @@ function toggleLiveMode() {
 }
 
 watch(zoneId, updateQuery)
-watch(selectedGroup, updateQuery)
+watch(selectedGroup, (rawGroup) => {
+  updateQuery()
+  scheduleRenderedGroup(rawGroup)
+})
+watch(
+  () => route.query.group,
+  (queryGroup) => {
+    const rawGroup = Number(queryGroup)
+    if (
+      Number.isInteger(rawGroup) &&
+      zone.value?.parts[rawGroup] &&
+      rawGroup !== selectedGroup.value
+    ) {
+      selectedGroup.value = rawGroup
+    }
+  },
+)
 watch(
   [selectedGroup, zoneId, () => displayStages.value.length],
   () => {
@@ -549,8 +654,37 @@ const scheduleReady = computed(
   () => Boolean(promotionStore.schedule.data?.event?.zones?.nodes),
 )
 
+const scheduleZone = computed(() => {
+  if (!scheduleReady.value) return undefined
+  return promotionStore.schedule.data.event.zones.nodes.find(
+    (item) => item.id == String(zoneId.value),
+  )
+})
+
+const matchLookup = computed(() => {
+  const group = new Map<string, MatchNode>()
+  const knockout = new Map<number, MatchNode>()
+  for (const match of scheduleZone.value?.groupMatches.nodes ?? []) {
+    group.set(`${match.orderNumber}:${match.planGameCount}`, match)
+  }
+  for (const match of scheduleZone.value?.knockoutMatches.nodes ?? []) {
+    knockout.set(match.orderNumber, match)
+  }
+  return { group, knockout }
+})
+
+const groupPlayerLookup = computed(() => {
+  const players = new Map<string, Player>()
+  for (const group of scheduleZone.value?.groups.nodes ?? []) {
+    for (const player of group.players.nodes) {
+      players.set(`${group.name}:${player.rank}`, player)
+    }
+  }
+  return players
+})
+
 const bracketModel = computed((): BracketViewModel | null => {
-  const part = currentPart.value
+  const part = renderedPart.value
   if (!part) return null
   const ready = scheduleReady.value
   // 始终渲染全部阶段列；可见窗口由 windowLeft/span + 条带 translate 控制
@@ -558,22 +692,13 @@ const bracketModel = computed((): BracketViewModel | null => {
     zoneId: zoneId.value,
     part,
     getMatchByOrder: (z, order, plan) => {
-      if (!ready) return undefined
-      try {
-        return promotionStore.getMatchByOrder(z, order, plan)
-      } catch {
-        return undefined
-      }
+      if (!ready || z !== zoneId.value) return undefined
+      return matchLookup.value.group.get(`${order}:${plan ?? 3}`)
+        ?? matchLookup.value.knockout.get(order)
     },
     getGroupPlayerByRank: (groupName, rank) => {
       if (!ready) return undefined
-      try {
-        const zone = promotionStore.getZone(zoneId.value)
-        const group = zone?.groups?.nodes?.find((g) => g.name === groupName)
-        return group?.players?.nodes?.find((p) => p.rank === rank) ?? null
-      } catch {
-        return undefined
-      }
+      return groupPlayerLookup.value.get(`${groupName}:${rank}`) ?? null
     },
   })
 })
@@ -590,6 +715,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  cancelAnimationFrame(groupRenderRaf)
   window.removeEventListener('resize', onResize)
   bracketViewportRef.value?.removeEventListener('wheel', onBoardWheel)
   if (wheelSnapTimer) {
@@ -647,7 +773,6 @@ onBeforeUnmount(() => {
               item-title="name"
               :items="ZoneMap[promotionStore.season]"
               v-model="promotionStore.zoneId"
-              @update:model-value="updateQuery"
             />
             <v-spacer />
 
@@ -715,7 +840,7 @@ onBeforeUnmount(() => {
                 v-for="(bp, index) in bracketParts"
                 :key="bp.part.name"
                 :value="index"
-                v-slot="{ isSelected, toggle }"
+                v-slot="{ isSelected }"
               >
                 <v-btn
                   :color="isSelected ? 'primary' : undefined"
@@ -723,7 +848,10 @@ onBeforeUnmount(() => {
                   rounded
                   variant="outlined"
                   size="small"
-                  @click="toggle"
+                  @pointerdown="onGroupPointerDown(index, $event)"
+                  @pointerup="onGroupPointerUp(index, $event)"
+                  @pointercancel="onGroupPointerCancel"
+                  @click="onGroupClick(index, $event)"
                 >
                   {{ bp.part.name }}
                   <span
