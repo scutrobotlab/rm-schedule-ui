@@ -262,8 +262,20 @@ function slotMedal(
     inset 0 1px 0 rgba(255, 255, 255, 0.1),
     inset 0 0 0 1px rgba(190, 220, 244, 0.025),
     0 8px 22px rgba(0, 5, 16, 0.18);
+  transition:
+    transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    filter 220ms ease-out,
+    opacity 220ms ease-out;
   backdrop-filter: blur(22px) saturate(1.28);
   -webkit-backdrop-filter: blur(22px) saturate(1.28);
+}
+
+.match-card:active {
+  transform: scale(0.975);
+  filter: brightness(0.9) saturate(0.94);
+  opacity: 0.9;
+  transition-duration: 80ms;
+  transition-timing-function: ease-out;
 }
 
 .match-card.lane-gold {
@@ -446,6 +458,14 @@ function slotMedal(
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .match-card {
+    transition: none;
+  }
+
+  .match-card:active {
+    transform: none;
+  }
+
   .group-stats-enter-active,
   .group-stats-leave-active {
     transition: none;

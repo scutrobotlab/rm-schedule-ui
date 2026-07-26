@@ -246,8 +246,20 @@ function groupStat(
     inset 0 1px 0 rgba(255, 255, 255, 0.09),
     inset 0 0 0 1px rgba(190, 220, 244, 0.02),
     0 8px 22px rgba(0, 5, 16, 0.16);
+  transition:
+    transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    filter 220ms ease-out,
+    opacity 220ms ease-out;
   backdrop-filter: blur(22px) saturate(1.28);
   -webkit-backdrop-filter: blur(22px) saturate(1.28);
+}
+
+.info-card:active {
+  transform: scale(0.975);
+  filter: brightness(0.9) saturate(0.94);
+  opacity: 0.9;
+  transition-duration: 80ms;
+  transition-timing-function: ease-out;
 }
 
 .group-stats-tools {
@@ -475,6 +487,14 @@ function groupStat(
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .info-card {
+    transition: none;
+  }
+
+  .info-card:active {
+    transform: none;
+  }
+
   .group-stats-enter-active,
   .group-stats-leave-active {
     transition: none;
