@@ -56,6 +56,7 @@ const bracketViewportRef = ref<HTMLElement | null>(null)
 const bracketMatchMenuOpen = ref(false)
 const bracketMatchMenuTarget = ref<[number, number]>([0, 0])
 const bracketMatchMenuMatch = ref<MatchNode | null>(null)
+const bracketMenuVideoLoading = ref(false)
 let bracketMenuRequestVersion = 0
 
 const stageCount = computed(() => displayStages.value.length)
@@ -760,6 +761,7 @@ function onBracketTeamLongPress(event: Event) {
 
   const requestVersion = ++bracketMenuRequestVersion
   const selectedPlayer = promotionStore.findPlayerById(detail.playerId)
+  bracketMenuVideoLoading.value = true
   promotionStore.bilibiliReplay = null
   promotionStore.teamInfo = null
 
@@ -776,10 +778,12 @@ function onBracketTeamLongPress(event: Event) {
       bracketMatchMenuMatch.value?.id === match.id
     ) {
       promotionStore.bilibiliReplay = data
+      bracketMenuVideoLoading.value = false
     }
   }).catch(() => {
     if (requestVersion === bracketMenuRequestVersion) {
       promotionStore.bilibiliReplay = null
+      bracketMenuVideoLoading.value = false
     }
   })
 
@@ -808,6 +812,7 @@ watch(bracketMatchMenuOpen, (open) => {
   bracketMenuRequestVersion += 1
   promotionStore.bilibiliReplay = null
   promotionStore.teamInfo = null
+  bracketMenuVideoLoading.value = false
   bracketMatchMenuMatch.value = null
 })
 
@@ -1144,13 +1149,13 @@ onBeforeUnmount(() => {
         >
           <Transition
             name="bracket-menu-content"
-            mode="out-in"
           >
             <MatchMenu
               v-if="bracketMatchMenuMatch"
               :key="`${bracketMatchMenuMatch.id}-${promotionStore.selectedPlayer?.id ?? ''}`"
               :match="bracketMatchMenuMatch"
               variant="bracket"
+              :video-loading="bracketMenuVideoLoading"
               @close="bracketMatchMenuOpen = false"
             />
           </Transition>
@@ -1210,9 +1215,7 @@ onBeforeUnmount(() => {
 }
 
 :global(.bracket-menu-transition-enter-active) {
-  transition:
-    opacity 200ms ease-out,
-    transform 260ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+  transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1) !important;
   transform-origin: top left;
 }
 
@@ -1223,26 +1226,31 @@ onBeforeUnmount(() => {
   transform-origin: top left;
 }
 
-:global(.bracket-menu-transition-enter-from),
+:global(.bracket-menu-transition-enter-from) {
+  transform: translateY(-6px) scale(0.94);
+}
+
 :global(.bracket-menu-transition-leave-to) {
   opacity: 0;
   transform: translateY(-6px) scale(0.94);
 }
 
 :global(.bracket-menu-content-enter-active) {
-  transition:
-    opacity 180ms ease-out,
-    transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 190ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 :global(.bracket-menu-content-leave-active) {
+  position: absolute;
+  inset: 0;
+  width: 100%;
   transition:
-    opacity 120ms ease-in,
-    transform 140ms ease-in;
+    opacity 150ms ease-in,
+    transform 160ms ease-in;
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
 :global(.bracket-menu-content-enter-from) {
-  opacity: 0;
   transform: translateY(5px) scale(0.985);
 }
 
@@ -1251,11 +1259,32 @@ onBeforeUnmount(() => {
   transform: translateY(-3px) scale(0.99);
 }
 
+:global(.bracket-menu-content-enter-active .v-card-item),
+:global(.bracket-menu-content-enter-active .v-list),
+:global(.bracket-menu-content-enter-active iframe) {
+  transition:
+    opacity 170ms ease-out 40ms,
+    transform 190ms cubic-bezier(0.22, 1, 0.36, 1) 40ms;
+}
+
+:global(.bracket-menu-content-enter-from .v-card-item),
+:global(.bracket-menu-content-enter-from .v-list),
+:global(.bracket-menu-content-enter-from iframe) {
+  opacity: 0;
+  transform: translateY(3px);
+}
+
 @media (prefers-reduced-motion: reduce) {
   :global(.bracket-menu-transition-enter-active),
   :global(.bracket-menu-transition-leave-active),
   :global(.bracket-menu-content-enter-active),
   :global(.bracket-menu-content-leave-active) {
+    transition: none !important;
+  }
+
+  :global(.bracket-menu-content-enter-active .v-card-item),
+  :global(.bracket-menu-content-enter-active .v-list),
+  :global(.bracket-menu-content-enter-active iframe) {
     transition: none !important;
   }
 }

@@ -9,10 +9,12 @@ import { usePromotionStore } from "../stores/promotion";
 interface Props {
   match: MatchNode
   variant?: 'default' | 'bracket'
+  videoLoading?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   variant: 'default',
+  videoLoading: false,
 });
 const emit = defineEmits<{
   close: []
@@ -80,8 +82,31 @@ function onAnalyzeMatch() {
       </span>
     </template>
 
+    <div
+      v-if="variant === 'bracket'"
+      class="bracket-video-slot"
+    >
+      <BilibiliEmbedRenderer
+        v-if="promotionStore.bilibiliReplay"
+        width="320"
+        height="180"
+        :bvid="promotionStore.bilibiliReplay.bvid"
+      />
+      <div
+        v-else
+        class="bracket-video-placeholder"
+        :class="{ 'bracket-video-placeholder--loading': videoLoading }"
+      >
+        <v-icon
+          :icon="videoLoading ? 'mdi-loading' : 'mdi-video-off-outline'"
+          :class="{ 'bracket-video-loading-icon': videoLoading }"
+        />
+        <span>{{ videoLoading ? '回放加载中' : '暂无比赛回放' }}</span>
+      </div>
+    </div>
+
     <BilibiliEmbedRenderer
-      v-if="promotionStore.bilibiliReplay"
+      v-else-if="promotionStore.bilibiliReplay"
       width="320"
       height="180"
       :bvid="promotionStore.bilibiliReplay.bvid">
@@ -211,6 +236,74 @@ function onAnalyzeMatch() {
 
   &:active {
     transform: scale(0.92);
+  }
+}
+
+.bracket-video-slot {
+  width: 320px;
+  max-width: calc(100% - 16px);
+  height: 180px;
+  margin: 4px auto 8px;
+  overflow: hidden;
+  border: 1px solid rgba(205, 229, 247, 0.1);
+  border-radius: 14px;
+  background: rgba(3, 12, 24, 0.24);
+
+  :deep(iframe) {
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0;
+    border-radius: inherit;
+  }
+}
+
+.bracket-video-placeholder {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+  color: rgba(205, 224, 239, 0.52);
+  font-size: 0.82rem;
+  background:
+    linear-gradient(145deg, rgba(174, 211, 239, 0.045), transparent),
+    rgba(5, 16, 30, 0.16);
+}
+
+.bracket-video-placeholder--loading {
+  background:
+    linear-gradient(
+      110deg,
+      rgba(174, 211, 239, 0.025) 20%,
+      rgba(205, 229, 247, 0.09) 42%,
+      rgba(174, 211, 239, 0.025) 64%
+    ),
+    rgba(5, 16, 30, 0.16);
+  background-size: 220% 100%;
+  animation: bracket-video-shimmer 1.5s ease-in-out infinite;
+}
+
+.bracket-video-loading-icon {
+  animation: bracket-video-spin 1s linear infinite;
+}
+
+@keyframes bracket-video-shimmer {
+  to {
+    background-position: -120% 0;
+  }
+}
+
+@keyframes bracket-video-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bracket-video-placeholder--loading,
+  .bracket-video-loading-icon {
+    animation: none;
   }
 }
 </style>
