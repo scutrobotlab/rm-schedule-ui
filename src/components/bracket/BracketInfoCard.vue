@@ -289,13 +289,12 @@ function groupStat(
 }
 
 .group-stats-tools {
+  position: absolute;
+  right: calc(1.8rem + 8px);
   display: inline-grid;
   grid-template-columns: repeat(2, 2rem);
-  flex: 0 0 auto;
   gap: 4px;
   align-items: center;
-  margin-left: auto;
-  margin-right: calc(1.8rem + 8px);
   color: rgba(220, 232, 246, 0.72);
   font-size: 0.58rem;
   font-weight: 600;
@@ -415,6 +414,8 @@ function groupStat(
 }
 
 .type-tag {
+  position: absolute;
+  right: 0;
   flex: 0 0 auto;
   max-width: calc(7rem * var(--bracket-type-tag-opacity, 1));
   font-size: 0.58rem;
@@ -431,7 +432,6 @@ function groupStat(
 
 .type-tag--match {
   position: absolute;
-  right: 0;
 }
 
 .type-tag.text-transition > span {

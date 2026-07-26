@@ -10,6 +10,7 @@ import {
   shouldShowBracketPendingScore,
   shouldShowBracketPlaceholderLogo,
   shouldShowBracketTeamName,
+  shouldShowBracketTypeTag,
   shortenBracketSourceLabel,
   shortenBracketTitle,
 } from './bracket_density'
@@ -35,6 +36,17 @@ describe('resolveBracketVisualProgress', () => {
       })
     },
   )
+})
+
+describe('shouldShowBracketTypeTag', () => {
+  it.each([
+    [3, true],
+    [3.001, true],
+    [3.5, true],
+    [4, false],
+  ])('%s 列时返回 %s', (span, expected) => {
+    expect(shouldShowBracketTypeTag(span)).toBe(expected)
+  })
 })
 
 describe('bracketColumnGapForSpan', () => {

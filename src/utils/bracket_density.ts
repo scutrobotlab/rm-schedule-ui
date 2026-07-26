@@ -192,7 +192,7 @@ export function shortenBracketTitle(
   return shortened
 }
 
-/** ≥4 列时隐藏节点右上角类型/去向标签 */
+/** 3→4 列期间保持节点右上角类型/去向标签挂载，以便连续淡出。 */
 export function shouldShowBracketTypeTag(columnCount: number): boolean {
   return columnCount < 4
 }
