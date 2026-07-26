@@ -816,8 +816,25 @@ watch(bracketMatchMenuOpen, (open) => {
   bracketMatchMenuMatch.value = null
 })
 
+watch(
+  [
+    () => promotionStore.season,
+    zoneId,
+    selectedGroup,
+    () => stageRange.value.start,
+    () => stageRange.value.end,
+  ],
+  () => {
+    bracketMatchMenuOpen.value = false
+  },
+)
+
 function preventBrowserContextMenuWhileBracketMenuOpen(event: MouseEvent) {
   if (bracketMatchMenuOpen.value) event.preventDefault()
+}
+
+function closeBracketMenuBeforeControlInteraction() {
+  if (bracketMatchMenuOpen.value) bracketMatchMenuOpen.value = false
 }
 
 const mpMatchIds = computed(() => {
@@ -967,6 +984,7 @@ onBeforeUnmount(() => {
               variant="filled"
               :items="SeasonList"
               :model-value="promotionStore.season"
+              @pointerdown.capture="closeBracketMenuBeforeControlInteraction"
               @update:model-value="(newSeason: number) => updateHref(newSeason)"
             />
             <v-select
@@ -978,6 +996,7 @@ onBeforeUnmount(() => {
               item-title="name"
               :items="ZoneMap[promotionStore.season]"
               v-model="promotionStore.zoneId"
+              @pointerdown.capture="closeBracketMenuBeforeControlInteraction"
             />
             <v-spacer />
 
