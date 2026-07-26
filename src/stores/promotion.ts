@@ -133,6 +133,34 @@ export const usePromotionStore = defineStore("promotion", {
     getCurrentZone(): ZoneNode {
       return this.getZone(this.zoneId);
     },
+    findPlayerById(playerId: string): Player | undefined {
+      const zone = this.schedule.data?.event?.zones?.nodes?.find(
+        (item: ZoneNode) => item.id == this.zoneId.toString()
+      );
+      if (!zone) return undefined;
+
+      for (const group of zone.groups.nodes) {
+        const player = group.players.nodes.find((item) => item.id === playerId);
+        if (player) return player;
+      }
+
+      for (const match of [...zone.groupMatches.nodes, ...zone.knockoutMatches.nodes]) {
+        if (match.redSide.player?.id === playerId) return match.redSide.player;
+        if (match.blueSide.player?.id === playerId) return match.blueSide.player;
+      }
+      return undefined;
+    },
+    toggleSelectedPlayerById(playerId: string): boolean {
+      if (this.selectedPlayer?.id === playerId) {
+        this.selectedPlayer = null;
+        return true;
+      }
+
+      const player = this.findPlayerById(playerId);
+      if (!player) return false;
+      this.selectedPlayer = player;
+      return true;
+    },
     getMatchByOrder(
       zoneId: number,
       orderNumber: number,

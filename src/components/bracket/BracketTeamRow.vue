@@ -16,6 +16,7 @@ import schoolGrey from '@/assets/school_grey.png'
 import schoolRed from '@/assets/school_red.png'
 import { usePromotionStore } from '../../stores/promotion'
 import { vAutoFitText } from '../../directives/auto_fit_text'
+import { isPointerTap } from '../../utils/pointer_tap'
 
 const props = withDefaults(
   defineProps<{
@@ -81,6 +82,45 @@ const props = withDefaults(
 const promotionStore = usePromotionStore()
 const logoLoaded = ref(false)
 const logoFailed = ref(false)
+const pointerId = ref<number | null>(null)
+const pointerStartX = ref(0)
+const pointerStartY = ref(0)
+
+const isSelectable = computed(
+  () => props.team.sourceKind === 'team' && Boolean(props.team.playerId),
+)
+const isSelected = computed(
+  () => isSelectable.value &&
+    promotionStore.selectedPlayer?.id === props.team.playerId,
+)
+
+function toggleSelection() {
+  if (!props.team.playerId) return
+  promotionStore.toggleSelectedPlayerById(props.team.playerId)
+}
+
+function onPointerDown(event: PointerEvent) {
+  if (!isSelectable.value || event.button !== 0) return
+  pointerId.value = event.pointerId
+  pointerStartX.value = event.clientX
+  pointerStartY.value = event.clientY
+}
+
+function onPointerUp(event: PointerEvent) {
+  if (pointerId.value !== event.pointerId) return
+  const tapped = isPointerTap(
+    pointerStartX.value,
+    pointerStartY.value,
+    event.clientX,
+    event.clientY,
+  )
+  pointerId.value = null
+  if (tapped) toggleSelection()
+}
+
+function onPointerCancel(event: PointerEvent) {
+  if (pointerId.value === event.pointerId) pointerId.value = null
+}
 
 function logoSrc(url: string | undefined): string | undefined {
   if (!url) return undefined
@@ -272,6 +312,8 @@ const nameToOpacity = computed(() => (
   <div
     class="team-row"
     :class="{
+      selectable: isSelectable,
+      selected: isSelected,
       winner: finalized && team.isWinner && !medal,
       loser: finalized && team.isLoser && !medal,
       pending: team.sourceKind !== 'team',
@@ -291,7 +333,19 @@ const nameToOpacity = computed(() => (
       [`medal-${medal}`]: Boolean(medal),
       [`density-${density}`]: true,
     }"
+    :role="isSelectable ? 'button' : undefined"
+    :tabindex="isSelectable ? 0 : undefined"
+    :aria-pressed="isSelectable ? isSelected : undefined"
+    :aria-label="isSelectable
+      ? `${team.collegeName || team.displayName}${isSelected ? '，已选中' : '，点击高亮'}`
+      : undefined"
+    @pointerdown="onPointerDown"
+    @pointerup="onPointerUp"
+    @pointercancel="onPointerCancel"
+    @keydown.enter.prevent="toggleSelection"
+    @keydown.space.prevent="toggleSelection"
   >
+    <span class="selection-highlight" aria-hidden="true" />
     <Transition name="support-rate-fill">
       <span
         v-if="normalizedSupportRate != null"
@@ -439,9 +493,49 @@ const nameToOpacity = computed(() => (
   overflow: hidden;
 }
 
-.team-row > :not(.support-rate-fill) {
+.team-row > :not(.support-rate-fill, .selection-highlight) {
   position: relative;
   z-index: 1;
+}
+
+.team-row.selectable {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.team-row.selectable:focus-visible {
+  outline: 2px solid rgba(255, 222, 142, 0.9);
+  outline-offset: 2px;
+}
+
+.selection-highlight {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  left: -3px;
+  border-radius: 0;
+  opacity: 0;
+  background:
+    linear-gradient(135deg, rgba(255, 224, 151, 0.2), rgba(255, 248, 224, 0.08));
+  box-shadow: inset 0 0 12px rgba(255, 214, 120, 0.12);
+  pointer-events: none;
+  transition: opacity 180ms ease;
+}
+
+.team-row.selected {
+  outline: 1px solid rgba(255, 225, 151, 0.78);
+  outline-offset: 0;
+  transition: outline-color 180ms ease;
+}
+
+.team-row.selected > .selection-highlight {
+  opacity: 1;
+}
+
+.team-row.selected > .team-logo,
+.team-row.selected > .team-name,
+.team-row.selected > .team-name-spacer {
+  filter: brightness(1.1);
 }
 
 .team-row > .team-logo,
@@ -648,6 +742,10 @@ const nameToOpacity = computed(() => (
   opacity: 0.52;
 }
 
+.team-row.loser.selected {
+  opacity: 1;
+}
+
 .team-row.loser.side-red {
   --side-color: 138, 74, 72;
 }
@@ -737,7 +835,9 @@ const nameToOpacity = computed(() => (
   .team-row > .rank-badge,
   .team-row > .team-logo,
   .team-row > .team-name,
-  .team-row > .team-name-spacer {
+  .team-row > .team-name-spacer,
+  .selection-highlight,
+  .team-row.selected {
     transition: none;
   }
 
