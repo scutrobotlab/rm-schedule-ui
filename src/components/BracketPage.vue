@@ -888,49 +888,46 @@ onBeforeUnmount(() => {
 
           <v-sheet
             v-if="zone"
-            class="mx-auto text-center bg-transparent"
+            class="group-selector-wrap mx-auto text-center bg-transparent"
           >
-            <v-slide-group
-              class="ml-2"
-              v-model="selectedBracketIndex"
-              mandatory="force"
+            <div
+              class="group-selector"
             >
-              <v-slide-group-item
-                v-for="(bp, index) in bracketParts"
-                :key="bp.part.name"
-                :value="index"
-                v-slot="{ isSelected }"
+              <div
+                class="group-selector__track"
+                role="tablist"
+                aria-label="赛段分组"
               >
-                <v-btn
-                  :color="isSelected ? 'primary' : undefined"
-                  class="mx-1 my-2"
-                  rounded
-                  variant="outlined"
-                  size="small"
+                <button
+                  v-for="(bp, index) in bracketParts"
+                  :key="bp.part.name"
+                  class="group-selector__item"
+                  :class="{ 'group-selector__item--active': index === selectedBracketIndex }"
+                  type="button"
+                  role="tab"
+                  :title="bp.part.name"
+                  :aria-selected="index === selectedBracketIndex"
                   @pointerdown="onGroupPointerDown(index, $event)"
                   @pointerup="onGroupPointerUp(index, $event)"
                   @pointercancel="onGroupPointerCancel"
                   @click="onGroupClick(index, $event)"
                 >
-                  {{ bp.part.name }}
+                  <span class="group-selector__label">{{ bp.part.name }}</span>
                   <span
                     v-if="bracketPartHasStartedMatch(bp)"
                     class="group-live-dot"
+                    aria-label="已有比赛开始"
                   />
-                </v-btn>
-              </v-slide-group-item>
-
-              <v-spacer />
-
-              <div class="text-right mr-4 live-mode-indicator-container">
-                <span
-                  v-if="liveMode"
-                  class="live-mode-indicator"
-                >
-                  直播模式
-                </span>
+                </button>
               </div>
-            </v-slide-group>
+
+              <span
+                v-if="liveMode"
+                class="live-mode-indicator"
+              >
+                直播模式
+              </span>
+            </div>
           </v-sheet>
 
           <div
@@ -1136,13 +1133,14 @@ onBeforeUnmount(() => {
   white-space: nowrap;
 }
 
-.live-mode-indicator-container {
-  display: flex;
-  align-items: center;
-}
-
 .live-mode-indicator {
+  position: absolute;
+  left: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%);
   white-space: nowrap;
+  color: rgba(210, 224, 244, 0.72);
+  font-size: 12px;
 }
 
 .glass-sheet {
@@ -1216,13 +1214,100 @@ onBeforeUnmount(() => {
   padding: 4px 0 8px;
 }
 
+.group-selector-wrap {
+  width: 100%;
+}
+
+.group-selector {
+  --track-bg: rgba(8, 28, 72, 0.52);
+  --selection-bg: rgba(120, 170, 255, 0.22);
+  --label-active: #ffffff;
+  --label-inactive: rgba(180, 198, 230, 0.55);
+  --snap-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 8px max(24px, env(safe-area-inset-right, 0px)) 2px
+    max(24px, env(safe-area-inset-left, 0px));
+  user-select: none;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.group-selector::-webkit-scrollbar {
+  display: none;
+}
+
+.group-selector__track {
+  position: relative;
+  display: flex;
+  width: max-content;
+  min-width: 100%;
+  height: 32px;
+  border-radius: 10px;
+  background:
+    linear-gradient(180deg, rgba(180, 216, 246, 0.07), rgba(30, 64, 104, 0.015)),
+    var(--track-bg);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    inset 0 0 0 1px rgba(170, 205, 236, 0.07);
+  backdrop-filter: blur(14px) saturate(1.18);
+  -webkit-backdrop-filter: blur(14px) saturate(1.18);
+  overflow: hidden;
+}
+
+.group-selector__item {
+  position: relative;
+  z-index: 1;
+  flex: 1 0 auto;
+  min-width: max-content;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--label-inactive);
+  font: inherit;
+  font-size: clamp(11px, 2vw, 13px);
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background-color 0.28s var(--snap-ease),
+    box-shadow 0.28s var(--snap-ease),
+    color 0.28s var(--snap-ease),
+    text-shadow 0.28s var(--snap-ease);
+}
+
+.group-selector__item--active {
+  background: var(--selection-bg);
+  box-shadow:
+    inset 0 0 0 1px rgba(180, 214, 255, 0.12),
+    0 3px 12px rgba(0, 8, 28, 0.16);
+  color: var(--label-active);
+  text-shadow: 0 1px 8px rgba(190, 220, 255, 0.18);
+}
+
+.group-selector__item:focus-visible {
+  outline: 2px solid rgba(140, 180, 255, 0.7);
+  outline-offset: -3px;
+  border-radius: 10px;
+}
+
+.group-selector__label {
+  white-space: nowrap;
+}
+
 .group-live-dot {
-  display: inline-block;
+  flex: 0 0 auto;
   width: 8px;
   height: 8px;
   margin-left: 6px;
   border-radius: 50%;
   background: #f44336;
+  box-shadow: 0 0 6px rgba(244, 67, 54, 0.55);
 }
 
 .my-font {
@@ -1239,6 +1324,23 @@ onBeforeUnmount(() => {
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .glass-sheet {
     background: rgba(8, 24, 43, 0.92);
+  }
+
+  .group-selector {
+    --track-bg: rgba(8, 28, 72, 0.88);
+  }
+}
+
+@media (max-width: 800px) {
+  .live-mode-indicator {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .group-selector {
+    padding-right: max(20px, env(safe-area-inset-right, 0px));
+    padding-left: max(20px, env(safe-area-inset-left, 0px));
   }
 }
 </style>
