@@ -89,7 +89,7 @@ export function buildBracketViewModel(options: BuildBracketOptions): BracketView
     : columns
 
   if (part.type === 'knockout') {
-    annotateWinnerDestinations(columns)
+    annotateProgressLabels(columns)
   }
 
   return {
@@ -157,39 +157,30 @@ export function detectLane(node: ZoneNodeJsonData): BracketLane {
 }
 
 /**
- * 淘汰赛胜者去向短标签（世界杯风格）。
- * - 16进8（含胜者组）→ 八强；16进8第一轮不标
- * - 8进4（含胜者组）→ 四强；半决赛 → 决赛
- * - 败者组：16进8第二轮→八强，8进4第一轮→六强，8进4第二轮→四强
+ * 淘汰赛当前进程短标签。
+ * 标签描述卡片内队伍当前所处阶段，而非胜者的下一站。
  */
-export function resolveWinnerDestination(stageLabel: string, matchTitle: string): string | null {
+export function resolveBracketProgressLabel(stageLabel: string, matchTitle: string): string | null {
   const title = matchTitle || ''
   if (/季军/.test(title)) return null
   if (/冠军/.test(title)) return null
 
   const stage = stageLabel || ''
 
-  if (/16进8第一轮/.test(stage)) return null
-
-  if (/败者组/.test(stage)) {
-    if (/16进8败者组第二轮/.test(stage)) return '八强'
-    if (/8进4败者组第一轮/.test(stage)) return '六强'
-    if (/8进4败者组第二轮/.test(stage)) return '四强'
-    return null
-  }
-
-  if (/16进8|十六强|十六进八/.test(stage)) return '八强'
-  if (/8进4|四分之一/.test(stage)) return '四强'
-  if (/半决赛/.test(stage)) return '决赛'
+  if (/16进8(?:胜者组|败者组第二轮)/.test(stage)) return '12强'
+  if (/16进8|十六强|十六进八/.test(stage)) return '16强'
+  if (/8进4败者组第二轮/.test(stage)) return '六强'
+  if (/8进4|四分之一/.test(stage)) return '八强'
+  if (/半决赛/.test(stage)) return '四强'
   return null
 }
 
-function annotateWinnerDestinations(columns: BracketColumn[]): void {
+function annotateProgressLabels(columns: BracketColumn[]): void {
   for (const col of columns) {
     for (const item of col.items) {
       if (item.kind !== 'match') continue
-      const dest = resolveWinnerDestination(col.label, item.title)
-      if (dest) item.winnerDestination = dest
+      const label = resolveBracketProgressLabel(col.label, item.title)
+      if (label) item.progressLabel = label
     }
   }
 }

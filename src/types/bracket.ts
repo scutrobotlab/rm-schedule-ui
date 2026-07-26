@@ -45,8 +45,8 @@ export interface BracketMatchCard {
   redWinGames: number | null
   blueWinGames: number | null
   planStartedAt?: string
-  /** 胜者去向短标签，如「八强」「四强」 */
-  winnerDestination?: string
+  /** 当前对阵中队伍所处的赛事进程，如「16强」「8强」 */
+  progressLabel?: string
 }
 
 /** 多场次节点内的单场摘要（瑞士轮等） */

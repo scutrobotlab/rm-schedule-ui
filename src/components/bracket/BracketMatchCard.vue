@@ -75,7 +75,7 @@ const timeText = computed(() => {
   return m.isValid() ? m.format('M/D HH:mm') : ''
 })
 
-/** 冠军争夺战 → 冠/亚；季军争夺战 → 季 */
+/** 冠军争夺战 → 冠亚；季军争夺战 → 季殿 */
 const podiumKind = computed<'champion' | 'third' | null>(() => {
   const title = props.item.title || ''
   if (title.includes('季军')) return 'third'
@@ -84,15 +84,25 @@ const podiumKind = computed<'champion' | 'third' | null>(() => {
 })
 
 const podiumTag = computed(() => {
-  if (podiumKind.value === 'third') return '季军'
-  if (podiumKind.value === 'champion') return '冠军'
+  if (podiumKind.value === 'third') return '季殿'
+  if (podiumKind.value === 'champion') return '冠亚'
   return null
 })
 
-const destinationTag = computed(() => {
-  if (podiumTag.value) return null
-  return props.item.winnerDestination || null
-})
+function formatProgressTag(label: string, columns: number): string {
+  if (label === '16强') return columns <= 2 ? '十六强' : '十六'
+  if (label === '12强') return columns <= 2 ? '十二强' : '十二'
+  return label
+}
+
+const progressTagTransition = computed(() => resolveBracketTextTransition(
+  props.visibleSpan,
+  (columns) => (
+    podiumTag.value || !props.item.progressLabel
+      ? ''
+      : formatProgressTag(props.item.progressLabel, columns)
+  ),
+))
 
 function slotMedal(
   slot: { isWinner: boolean; isLoser: boolean },
@@ -119,7 +129,7 @@ function slotMedal(
     <div
       v-if="
         titleTransition.from ||
-        (showTypeTag && (podiumTag || destinationTag)) ||
+        (showTypeTag && (podiumTag || progressTagTransition.from)) ||
         showGroupStats
       "
       class="card-head"
@@ -149,9 +159,16 @@ function slotMedal(
         class="type-tag"
       >{{ podiumTag }}</span>
       <span
-        v-else-if="showTypeTag && destinationTag"
-        class="type-tag dest-tag"
-      >{{ destinationTag }}</span>
+        v-else-if="showTypeTag && progressTagTransition.from"
+        class="type-tag progress-tag text-transition"
+      >
+        <span :style="{ opacity: 1 - progressTagTransition.progress }">
+          {{ progressTagTransition.from }}
+        </span>
+        <span :style="{ opacity: progressTagTransition.progress }">
+          {{ progressTagTransition.to }}
+        </span>
+      </span>
     </div>
 
     <div class="slot-stack">
@@ -365,7 +382,7 @@ function slotMedal(
   transform-origin: right center;
 }
 
-.dest-tag {
+.progress-tag {
   color: #9fd9bc;
   background: rgba(93, 206, 160, 0.18);
   opacity: var(--bracket-type-tag-opacity, 1);

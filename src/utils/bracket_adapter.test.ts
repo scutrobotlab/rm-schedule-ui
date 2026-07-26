@@ -10,7 +10,7 @@ import {
   formatSourceLabel,
   resolveLoser,
   resolveWinner,
-  resolveWinnerDestination,
+  resolveBracketProgressLabel,
 } from './bracket_adapter'
 import { resolveBracketDensity, shouldShowBracketTypeTag } from './bracket_density'
 
@@ -346,26 +346,26 @@ describe('detectLane', () => {
   })
 })
 
-describe('resolveWinnerDestination', () => {
-  it('按轮次给出八强/四强/决赛去向', () => {
-    expect(resolveWinnerDestination('16进8', '16进8淘汰赛 第1场')).toBe('八强')
-    expect(resolveWinnerDestination('16进8第一轮', '')).toBeNull()
-    expect(resolveWinnerDestination('16进8胜者组', '')).toBe('八强')
-    expect(resolveWinnerDestination('8进4', '')).toBe('四强')
-    expect(resolveWinnerDestination('8进4胜者组', '')).toBe('四强')
-    expect(resolveWinnerDestination('半决赛', '半决赛 第1场')).toBe('决赛')
+describe('resolveBracketProgressLabel', () => {
+  it('按轮次给出卡片内队伍当前所处进程', () => {
+    expect(resolveBracketProgressLabel('16进8', '16进8淘汰赛 第1场')).toBe('16强')
+    expect(resolveBracketProgressLabel('16进8第一轮', '')).toBe('16强')
+    expect(resolveBracketProgressLabel('16进8胜者组', '')).toBe('12强')
+    expect(resolveBracketProgressLabel('8进4', '')).toBe('八强')
+    expect(resolveBracketProgressLabel('8进4胜者组', '')).toBe('八强')
+    expect(resolveBracketProgressLabel('半决赛', '半决赛 第1场')).toBe('四强')
   })
 
-  it('败者组按指定轮次标记去向', () => {
-    expect(resolveWinnerDestination('16进8败者组第一轮', '')).toBeNull()
-    expect(resolveWinnerDestination('16进8败者组第二轮', '')).toBe('八强')
-    expect(resolveWinnerDestination('8进4败者组第一轮', '')).toBe('六强')
-    expect(resolveWinnerDestination('8进4败者组第二轮', '')).toBe('四强')
+  it('败者组按当前阶段标记进程', () => {
+    expect(resolveBracketProgressLabel('16进8败者组第一轮', '')).toBe('16强')
+    expect(resolveBracketProgressLabel('16进8败者组第二轮', '')).toBe('12强')
+    expect(resolveBracketProgressLabel('8进4败者组第一轮', '')).toBe('八强')
+    expect(resolveBracketProgressLabel('8进4败者组第二轮', '')).toBe('六强')
   })
 
-  it('冠季军不标去向', () => {
-    expect(resolveWinnerDestination('决赛', '冠军争夺战')).toBeNull()
-    expect(resolveWinnerDestination('决赛', '季军争夺战')).toBeNull()
+  it('冠季军使用卡片自身的名次标签', () => {
+    expect(resolveBracketProgressLabel('决赛', '冠军争夺战')).toBeNull()
+    expect(resolveBracketProgressLabel('决赛', '季军争夺战')).toBeNull()
   })
 })
 
@@ -404,7 +404,7 @@ describe('buildBracketViewModel — 单败 + 季军', () => {
       expect(semi1.slots[0].isWinner).toBe(true)
       expect(semi1.redWinGames).toBe(2)
       expect(semi1.blueWinGames).toBe(0)
-      expect(semi1.winnerDestination).toBe('决赛')
+      expect(semi1.progressLabel).toBe('四强')
     }
 
     const semi2 = model.columns[0].items.find((i) => i.nodeId === '#2')
