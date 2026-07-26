@@ -113,6 +113,14 @@ describe('resolveBracketTeamDisplayName', () => {
       3,
     )).toBe('未收录大学')
   })
+
+  it('二列时长校名保留前七个字符并显示省略号', () => {
+    expect(resolveBracketTeamDisplayName(
+      '南京航空航天大学金城学院',
+      '南航金城',
+      2,
+    )).toBe('南京航空航天大…')
+  })
 })
 
 describe('resolveBracketTitleShortenLevel', () => {

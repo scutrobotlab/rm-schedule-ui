@@ -135,6 +135,12 @@ const isSingleColumnTeam = computed(() => (
   props.visibleSpan != null &&
   Math.abs(props.visibleSpan - 1) < 0.001
 ))
+const isTwoColumnTeam = computed(() => (
+  props.team.sourceKind === 'team' &&
+  props.visibleSpan != null &&
+  props.visibleSpan >= 2 &&
+  props.visibleSpan < 3
+))
 const isThreeColumnAbbreviation = computed(() => {
   if (
     props.team.sourceKind !== 'team' ||
@@ -147,9 +153,10 @@ const isThreeColumnAbbreviation = computed(() => {
   const fullName = props.team.collegeName ?? props.team.displayName
   return Boolean(promotionStore.teamAbbreviations[fullName])
 })
-/** 单列校名与三列简称始终适配；缩放暂停只影响未确定席位。 */
+/** 单列校名、二列短校名与三列简称始终适配；缩放暂停只影响未确定席位。 */
 const autoFitActive = computed(() => (
   isSingleColumnTeam.value ||
+  isTwoColumnTeam.value ||
   isThreeColumnAbbreviation.value ||
   (isPending.value && props.textFitEnabled)
 ))

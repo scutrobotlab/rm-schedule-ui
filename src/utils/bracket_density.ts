@@ -208,6 +208,12 @@ export function resolveBracketTeamDisplayName(
   abbreviation: string | undefined,
   visibleSpan: number | undefined,
 ): string {
+  if (visibleSpan != null && visibleSpan >= 2 && visibleSpan < 3) {
+    const characters = Array.from(fullName)
+    return characters.length > 7
+      ? `${characters.slice(0, 7).join('')}…`
+      : fullName
+  }
   if (
     visibleSpan != null &&
     visibleSpan >= 3 &&
