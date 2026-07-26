@@ -253,6 +253,10 @@ const PAN_AXIS_SLOP = 3
 const PAN_X_BIAS = 1.35
 /** 跟手增益：同位移下窗口滑动更快 */
 const PAN_GAIN = 1.35
+/** 单列时一格等于整个视口，提高增益以避免需要横跨近半屏才能触发换列 */
+const SINGLE_COLUMN_PAN_BOOST = 2.5
+/** 两列时小幅提高手势响应，仍保留比单列更稳的滑动手感 */
+const TWO_COLUMN_PAN_BOOST = 1.5
 const WHEEL_GAIN = 1.25
 
 function onBoardPointerDown(e: PointerEvent) {
@@ -287,8 +291,15 @@ function onBoardPointerMove(e: PointerEvent) {
   const width = bracketViewportRef.value?.clientWidth ?? 1
   if (width <= 0) return
   const cellWidth = width / windowSpan.value
+  const panGain = PAN_GAIN * (
+    windowSpan.value <= 1.001
+      ? SINGLE_COLUMN_PAN_BOOST
+      : windowSpan.value <= 2.001
+        ? TWO_COLUMN_PAN_BOOST
+        : 1
+  )
   // 手指右移 → 内容跟手右移 → windowLeft 减小
-  const deltaCells = (dx / cellWidth) * PAN_GAIN
+  const deltaCells = (dx / cellWidth) * panGain
   setWindowEdges(
     panOriginLeft.value - deltaCells,
     panOriginLeft.value - deltaCells + windowSpan.value,
