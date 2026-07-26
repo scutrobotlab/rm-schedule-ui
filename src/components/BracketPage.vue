@@ -793,11 +793,18 @@ function onResize() {
 }
 
 function openAnniversaryFromCorner(event: MouseEvent) {
-  const isCoveredByBracketCard = document
-    .elementsFromPoint(event.clientX, event.clientY)
-    .some(element => element.closest('.match-card, .info-card'))
-
-  if (isCoveredByBracketCard) return
+  const logoLeft = 0
+  const logoRight = 120
+  const logoTop = window.innerHeight - 148
+  const logoBottom = window.innerHeight - 28
+  const isInsideLogo = (
+    event.clientX >= logoLeft &&
+    event.clientX <= logoRight &&
+    event.clientY >= logoTop &&
+    event.clientY <= logoBottom
+  )
+  if (!isInsideLogo) return
+  if ((event.target as Element).closest('.match-card, .info-card')) return
 
   appStore.anniversaryAnnouncementDialog = true
 }
@@ -995,6 +1002,7 @@ onBeforeUnmount(() => {
           @pointermove="onBoardPointerMove"
           @pointerup="onBoardPointerUp"
           @pointercancel="onBoardPointerUp"
+          @click="openAnniversaryFromCorner"
         >
           <div
             class="bracket-strip"
@@ -1027,13 +1035,6 @@ onBeforeUnmount(() => {
             华南理工大学 华南虎
           </p>
         </div>
-        <button
-          class="corner-logo-trigger"
-          type="button"
-          aria-label="打开三周年公告"
-          @click="openAnniversaryFromCorner"
-        />
-
         <v-bottom-sheet v-model="appStore.analysisDialog">
           <AnalyzeTeam
             :zone-id="zoneId"
@@ -1091,20 +1092,6 @@ onBeforeUnmount(() => {
   width: 120px;
   height: auto;
   opacity: 0.5;
-}
-
-/* 点击层独立于可见 Logo，避免提升 Logo 本身的层级而压住赛程文字。 */
-.corner-logo-trigger {
-  position: fixed;
-  left: 0;
-  bottom: 28px;
-  z-index: 4;
-  width: 120px;
-  height: 120px;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  cursor: pointer;
 }
 
 .corner-copyright {
