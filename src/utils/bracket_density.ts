@@ -197,9 +197,9 @@ export function shouldShowBracketTypeTag(columnCount: number): boolean {
   return columnCount < 4
 }
 
-/** ≥5 列时隐藏校名，仅保留校徽与比分 */
+/** ≥6 列时隐藏校名；5 列仍显示二字简称。 */
 export function shouldShowBracketTeamName(columnCount: number): boolean {
-  return columnCount < 5
+  return columnCount < 6
 }
 
 export interface TeamAbbreviation {
@@ -207,7 +207,7 @@ export interface TeamAbbreviation {
   abbreviation2: string
 }
 
-/** 3 列显示四字档、4 列显示二字档、5 列沿用单字符显示；其他列数显示校名。 */
+/** 3 列显示四字档、4–5 列显示二字档；其他列数显示校名。 */
 export function resolveBracketTeamDisplayName(
   fullName: string,
   abbreviation: TeamAbbreviation | undefined,
@@ -222,18 +222,10 @@ export function resolveBracketTeamDisplayName(
   if (
     visibleSpan != null &&
     visibleSpan >= 4 &&
-    visibleSpan < 5 &&
-    abbreviation
-  ) {
-    return abbreviation.abbreviation2
-  }
-  if (
-    visibleSpan != null &&
-    visibleSpan >= 5 &&
     visibleSpan < 6 &&
     abbreviation
   ) {
-    return Array.from(abbreviation.abbreviation2)[0] ?? abbreviation.abbreviation2
+    return abbreviation.abbreviation2
   }
   if (
     visibleSpan != null &&

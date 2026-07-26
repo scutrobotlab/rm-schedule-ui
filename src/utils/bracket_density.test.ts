@@ -103,7 +103,7 @@ describe('resolveBracketTeamDisplayName', () => {
     [2, '上海交通大学'],
     [3, '上海交大'],
     [4, '上交'],
-    [5, '上'],
+    [5, '上交'],
     [6, '上海交通大学'],
   ])('%s 列时返回 %s', (visibleSpan, expected) => {
     expect(resolveBracketTeamDisplayName(
@@ -143,7 +143,7 @@ describe('resolveBracketTeamDisplayName', () => {
     )).toBe('金城')
   })
 
-  it('五列时沿用二字简称的首个字符', () => {
+  it('五列时使用二字简称', () => {
     expect(resolveBracketTeamDisplayName(
       '南京航空航天大学金城学院',
       {
@@ -151,7 +151,7 @@ describe('resolveBracketTeamDisplayName', () => {
         abbreviation2: '金城',
       },
       5,
-    )).toBe('金')
+    )).toBe('金城')
   })
 })
 
@@ -309,7 +309,7 @@ describe('未确定席位的高列数展示', () => {
 describe('高列数校名展示', () => {
   it('5 列起隐藏真实队伍校名', () => {
     expect(shouldShowBracketTeamName(4)).toBe(true)
-    expect(shouldShowBracketTeamName(5)).toBe(false)
+    expect(shouldShowBracketTeamName(5)).toBe(true)
     expect(shouldShowBracketTeamName(6)).toBe(false)
   })
 })

@@ -156,24 +156,24 @@ const isThreeColumnAbbreviation = computed(() => {
   const fullName = props.team.collegeName ?? props.team.displayName
   return Boolean(promotionStore.teamAbbreviations[fullName])
 })
-const isFourColumnAbbreviation = computed(() => {
+const isFourOrFiveColumnAbbreviation = computed(() => {
   if (
     props.team.sourceKind !== 'team' ||
     props.visibleSpan == null ||
     props.visibleSpan < 4 ||
-    props.visibleSpan >= 5
+    props.visibleSpan >= 6
   ) {
     return false
   }
   const fullName = props.team.collegeName ?? props.team.displayName
   return Boolean(promotionStore.teamAbbreviations[fullName])
 })
-/** 单列校名、二列校名及三/四列简称始终适配；缩放暂停只影响未确定席位。 */
+/** 单列校名、二列校名及三至五列简称始终适配；缩放暂停只影响未确定席位。 */
 const autoFitActive = computed(() => (
   isSingleColumnTeam.value ||
   isTwoColumnTeam.value ||
   isThreeColumnAbbreviation.value ||
-  isFourColumnAbbreviation.value ||
+  isFourOrFiveColumnAbbreviation.value ||
   (isPending.value && props.textFitEnabled)
 ))
 const autoFitMinFontSize = computed(
@@ -209,6 +209,16 @@ const shouldShowScore = computed(
 const useExtraTightScoreGap = computed(
   () => props.visibleSpan != null && props.visibleSpan >= 4,
 )
+const useCompactScoreFont = computed(() => (
+  props.visibleSpan != null &&
+  props.visibleSpan >= 5 &&
+  props.visibleSpan < 7
+))
+const useFiveColumnNameLayout = computed(() => (
+  props.visibleSpan != null &&
+  props.visibleSpan >= 5 &&
+  props.visibleSpan < 6
+))
 const hideNameEllipsis = computed(
   () => props.visibleSpan != null && props.visibleSpan >= 3,
 )
@@ -244,6 +254,8 @@ const isShortMatchSource = computed(() => (
       'group-stats': showGroupStats,
       'tight-name-score-gap': tightNameScoreGap,
       'extra-tight-score-gap': useExtraTightScoreGap,
+      'compact-score-font': useCompactScoreFont,
+      'five-column-name-layout': useFiveColumnNameLayout,
       'hide-name-ellipsis': hideNameEllipsis,
       'tight-edge-padding': useTightEdgePadding,
       'compact-team-slots': useCompactTeamSlots,
@@ -398,6 +410,16 @@ const isShortMatchSource = computed(() => (
 .team-row > :not(.support-rate-fill) {
   position: relative;
   z-index: 1;
+}
+
+.team-row > .team-logo,
+.team-row > .team-logo-skeleton,
+.team-row > .team-name,
+.team-row > .team-name-skeleton,
+.team-row > .team-name-spacer,
+.team-row > .team-score,
+.team-row > .team-score-skeleton {
+  align-self: center;
 }
 
 .team-row.compact-team-slots {
@@ -686,6 +708,7 @@ const isShortMatchSource = computed(() => (
 }
 
 .team-logo {
+  display: block;
   flex: 0 0 auto;
   width: calc(
     22px
@@ -779,6 +802,7 @@ const isShortMatchSource = computed(() => (
     - 0.08rem * var(--bracket-normal-progress, 0)
     - 0.08rem * var(--bracket-compact-progress, 0)
   );
+  line-height: 1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -858,6 +882,18 @@ const isShortMatchSource = computed(() => (
   text-align: right;
   /* 缩放/紧凑密度下也保证比分完整可读，不被挤掉 */
   overflow: visible;
+}
+
+.team-row.compact-score-font .team-score {
+  font-size: 0.76rem;
+}
+
+.team-row.five-column-name-layout .team-name {
+  font-size: 0.64rem;
+}
+
+.team-row.five-column-name-layout .team-score {
+  margin-left: 0;
 }
 
 .team-stat {
