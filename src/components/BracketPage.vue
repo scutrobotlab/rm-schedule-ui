@@ -618,6 +618,37 @@ function toggleLiveMode() {
   router.replace({ path: route.path, query })
 }
 
+function defaultStageRange(stageTotal: number): StageRange {
+  return { start: 0, end: Math.min(1, Math.max(0, stageTotal - 1)) }
+}
+
+/** URL 格式：?stage=0-1（下标与 group 一样从 0 开始） */
+function stageRangeFromQuery(stageTotal: number): StageRange | null {
+  if (stageTotal <= 0) return null
+  const rawValue = Array.isArray(route.query.stage)
+    ? route.query.stage[0]
+    : route.query.stage
+  const match = String(rawValue ?? '').match(/^(\d+)-(\d+)$/)
+  if (!match) return null
+
+  const max = stageTotal - 1
+  const rawStart = Number(match[1])
+  const rawEnd = Number(match[2])
+  return {
+    start: clamp(Math.min(rawStart, rawEnd), 0, max),
+    end: clamp(Math.max(rawStart, rawEnd), 0, max),
+  }
+}
+
+function syncStageRangeToUrl(range: StageRange) {
+  const stage = `${range.start}-${range.end}`
+  if (String(route.query.stage ?? '') === stage) return
+  void router.replace({
+    path: route.path,
+    query: { ...route.query, stage },
+  })
+}
+
 watch(zoneId, () => {
   updateQuery()
   scheduleRenderedBracket(selectedGroup.value)
@@ -645,18 +676,49 @@ watch(
   [zoneId, stageStructureKey],
   () => {
     const n = displayStages.value.length
-    const next = { start: 0, end: Math.min(1, Math.max(0, n - 1)) }
-    if (
+    const isGroupSwitching =
       renderedStageCount.value > 0 &&
       (renderedZoneId.value !== zoneId.value || renderedGroup.value !== selectedGroup.value)
-    ) {
-      pendingStageRange = next
+    if (isGroupSwitching) {
+      // 相同列数沿用当前窗口；列数变化时才回到前两个阶段。
+      pendingStageRange = n === renderedStageCount.value
+        ? null
+        : defaultStageRange(n)
       return
     }
+    const next = stageRangeFromQuery(n) ?? defaultStageRange(n)
     renderedStageCount.value = n
     stageRange.value = next
     syncWindowFromRange(next)
   },
+  { immediate: true },
+)
+watch(
+  () => route.query.stage,
+  () => {
+    const next = stageRangeFromQuery(displayStages.value.length)
+      ?? defaultStageRange(displayStages.value.length)
+    if (
+      renderedZoneId.value !== zoneId.value ||
+      renderedGroup.value !== selectedGroup.value
+    ) {
+      pendingStageRange = next
+      return
+    }
+    if (
+      next.start === stageRange.value.start &&
+      next.end === stageRange.value.end
+    ) return
+    stageRange.value = next
+    syncWindowFromRange(next)
+  },
+)
+watch(
+  [
+    () => stageRange.value.start,
+    () => stageRange.value.end,
+  ],
+  () => syncStageRangeToUrl(stageRange.value),
   { immediate: true },
 )
 
