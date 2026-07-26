@@ -3,28 +3,36 @@ import type { Directive, DirectiveBinding } from 'vue'
 interface AutoFitTextOptions {
   enabled?: boolean
   minFontSize?: number
+  /** 在前两个子节点的文字宽度之间插值，用于重叠文字的连续切换。 */
+  blendProgress?: number
 }
 
 type AutoFitElement = HTMLElement & {
   __autoFitCleanup?: () => void
   __autoFitFrame?: number
-  __autoFitOptions?: Required<AutoFitTextOptions>
+  __autoFitOptions?: Required<Omit<AutoFitTextOptions, 'blendProgress'>> & {
+    blendProgress: number | null
+  }
 }
 
-function optionsOf(binding: DirectiveBinding<boolean | AutoFitTextOptions>): Required<AutoFitTextOptions> {
+function optionsOf(
+  binding: DirectiveBinding<boolean | AutoFitTextOptions>,
+): Required<Omit<AutoFitTextOptions, 'blendProgress'>> & { blendProgress: number | null } {
   if (typeof binding.value === 'boolean') {
-    return { enabled: binding.value, minFontSize: 7 }
+    return { enabled: binding.value, minFontSize: 7, blendProgress: null }
   }
   return {
     enabled: binding.value?.enabled ?? true,
     minFontSize: binding.value?.minFontSize ?? 7,
+    blendProgress: binding.value?.blendProgress ?? null,
   }
 }
 
 function fit(el: AutoFitElement): void {
-  const { enabled, minFontSize } = el.__autoFitOptions ?? {
+  const { enabled, minFontSize, blendProgress } = el.__autoFitOptions ?? {
     enabled: true,
     minFontSize: 7,
+    blendProgress: null,
   }
 
   // font-size 本身有过渡时，移除上一次的内联字号后，getComputedStyle() 仍会
@@ -71,13 +79,13 @@ function fit(el: AutoFitElement): void {
     ? Array.from(el.children)
     : [el]
   const letterSpacing = Number.parseFloat(style.letterSpacing) || 0
-  const requiredWidth = candidates.reduce((widest, candidate) => {
+  const candidateWidths = candidates.map((candidate) => {
     const text = candidate.textContent ?? ''
-    return Math.max(
-      widest,
-      context.measureText(text).width + Math.max(0, text.length - 1) * letterSpacing,
-    )
-  }, 0)
+    return context.measureText(text).width + Math.max(0, text.length - 1) * letterSpacing
+  })
+  const requiredWidth = blendProgress != null && candidateWidths.length >= 2
+    ? candidateWidths[0] * (1 - blendProgress) + candidateWidths[1] * blendProgress
+    : Math.max(...candidateWidths)
 
   if (requiredWidth > availableWidth) {
     const fittedSize = Math.max(minFontSize, baseFontSize * availableWidth / requiredWidth)
@@ -128,7 +136,8 @@ export const vAutoFitText: Directive<AutoFitElement, boolean | AutoFitTextOption
     el.__autoFitOptions = next
     if (
       previous?.enabled !== next.enabled ||
-      previous?.minFontSize !== next.minFontSize
+      previous?.minFontSize !== next.minFontSize ||
+      previous?.blendProgress !== next.blendProgress
     ) {
       scheduleFit(el)
     }

@@ -55,6 +55,7 @@ const showTypeTag = computed(() => (
 const showSupportRate = computed(() => Math.abs(visibleSpan.value - 1) < 0.001)
 const boardStyle = computed(() => {
   const progress = resolveBracketVisualProgress(visibleSpan.value)
+  const teamNameProgress = Math.min(1, Math.max(0, visibleSpan.value - 5))
   return {
     '--bracket-cols': String(Math.max(columnCount.value, 1)),
     '--bracket-normal-progress': String(progress.normal),
@@ -62,6 +63,8 @@ const boardStyle = computed(() => {
     '--bracket-type-tag-opacity': String(progress.typeTag),
     '--bracket-placeholder-opacity': String(progress.placeholderLogo),
     '--bracket-pending-score-opacity': String(progress.pendingScore),
+    '--bracket-team-name-progress': String(teamNameProgress),
+    '--bracket-result-rank-logo-gap': `${6 * teamNameProgress}px`,
   }
 })
 

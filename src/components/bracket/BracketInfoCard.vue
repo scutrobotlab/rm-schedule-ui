@@ -236,7 +236,7 @@ function groupStat(
         :show-pending-score="showPendingScore"
         :force-pending-name="forcePendingName"
         :align-logo-right="
-          visibleSpan >= 6 &&
+          visibleSpan >= 5 &&
           (item.nodeType === 'promote' || item.nodeType === 'eliminate')
         "
         :match-source-shorten-level="

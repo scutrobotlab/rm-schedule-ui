@@ -108,11 +108,17 @@ function sourceLevelForColumns(columns: number): BracketSourceShortenLevel {
 const displayName = computed(() => {
   if (props.team.sourceKind === 'team') {
     const fullName = props.team.collegeName ?? props.team.displayName
-    const value = resolveBracketTeamDisplayName(
-      fullName,
-      promotionStore.teamAbbreviations[fullName],
-      props.visibleSpan,
-    )
+    const abbreviation = promotionStore.teamAbbreviations[fullName]
+    if (
+      props.visibleSpan != null &&
+      props.visibleSpan >= 2 &&
+      props.visibleSpan < 4
+    ) {
+      return resolveBracketTextTransition(props.visibleSpan, (columns) => (
+        resolveBracketTeamDisplayName(fullName, abbreviation, columns)
+      ))
+    }
+    const value = resolveBracketTeamDisplayName(fullName, abbreviation, props.visibleSpan)
     return { from: value, to: value, progress: 0 }
   }
   if (props.visibleSpan == null) {
@@ -201,11 +207,21 @@ const supportRateText = computed(() => (
     : `${(normalizedSupportRate.value * 100).toFixed(1)}%`
 ))
 const shouldShowName = computed(
-  () => props.showName || (props.forcePendingName && isPending.value),
+  () => (
+    props.showName ||
+    (props.team.sourceKind === 'team' && props.visibleSpan != null && props.visibleSpan >= 5) ||
+    (props.forcePendingName && isPending.value)
+  ),
 )
 const shouldShowScore = computed(
   () => props.showScore && (!isPending.value || props.showPendingScore),
 )
+const useResultRankLogoGap = computed(() => (
+  props.alignLogoRight &&
+  props.team.sourceKind === 'team' &&
+  props.team.groupRank != null &&
+  !(shouldShowScore.value && props.score != null)
+))
 const useExtraTightScoreGap = computed(
   () => props.visibleSpan != null && props.visibleSpan >= 4,
 )
@@ -231,9 +247,24 @@ const useCompactTeamSlots = computed(() => (
   props.team.sourceKind === 'team' &&
   !shouldShowName.value
 ))
+const isTeamNameCollapsing = computed(() => (
+  props.visibleSpan != null &&
+  props.visibleSpan >= 5 &&
+  props.team.sourceKind === 'team'
+))
 const isShortMatchSource = computed(() => (
   isPending.value &&
   /^\d+[胜败]$/.test(displayName.value.to || displayName.value.from)
+))
+const nameFromOpacity = computed(() => (
+  props.team.sourceKind === 'team'
+    ? Math.sqrt(1 - displayName.value.progress)
+    : 1 - displayName.value.progress
+))
+const nameToOpacity = computed(() => (
+  props.team.sourceKind === 'team'
+    ? Math.sqrt(displayName.value.progress)
+    : displayName.value.progress
 ))
 </script>
 
@@ -253,7 +284,9 @@ const isShortMatchSource = computed(() => (
       'hide-name-ellipsis': hideNameEllipsis,
       'tight-edge-padding': useTightEdgePadding,
       'compact-team-slots': useCompactTeamSlots,
-      'logo-right': alignLogoRight && team.sourceKind === 'team',
+      'team-name-collapsing': isTeamNameCollapsing,
+      'result-rank-logo-gap': useResultRankLogoGap,
+      'logo-right': alignLogoRight && team.sourceKind === 'team' && !isTeamNameCollapsing,
       [`side-${side}`]: Boolean(side),
       [`medal-${medal}`]: Boolean(medal),
       [`density-${density}`]: true,
@@ -317,6 +350,12 @@ const isShortMatchSource = computed(() => (
       v-auto-fit-text="{
         enabled: autoFitActive,
         minFontSize: autoFitMinFontSize,
+        blendProgress: team.sourceKind === 'team' &&
+          visibleSpan != null &&
+          visibleSpan >= 2 &&
+          visibleSpan < 4
+          ? displayName.progress
+          : undefined,
       }"
       class="team-name text-transition"
       :class="{
@@ -327,8 +366,8 @@ const isShortMatchSource = computed(() => (
         ? (team.collegeName || team.displayName)
         : (team.sourceLabel || team.displayName)"
     >
-      <span :style="{ opacity: 1 - displayName.progress }">{{ displayName.from || '—' }}</span>
-      <span :style="{ opacity: displayName.progress }">{{ displayName.to || '—' }}</span>
+      <span :style="{ opacity: nameFromOpacity }">{{ displayName.from || '—' }}</span>
+      <span :style="{ opacity: nameToOpacity }">{{ displayName.to || '—' }}</span>
     </span>
     <span
       v-else
@@ -433,6 +472,33 @@ const isShortMatchSource = computed(() => (
 .team-row.compact-team-slots.logo-right .team-logo {
   order: initial;
   margin-left: 0;
+}
+
+.team-row.team-name-collapsing > .team-name {
+  flex: 1 1 0;
+  max-width: none;
+  opacity: calc(1 - var(--bracket-team-name-progress, 0));
+  transition: none;
+}
+
+.team-row.team-name-collapsing::before,
+.team-row.team-name-collapsing::after {
+  content: '';
+  flex: var(--bracket-team-name-progress, 0) 1 0;
+  min-width: 0;
+}
+
+.team-row.team-name-collapsing::before {
+  margin-right: -2px;
+}
+
+.team-row.team-name-collapsing::after {
+  margin-left: -2px;
+}
+
+.team-row.result-rank-logo-gap > .team-logo,
+.team-row.result-rank-logo-gap > .team-logo-skeleton {
+  margin-left: var(--bracket-result-rank-logo-gap, 0);
 }
 
 .team-row.tight-edge-padding {
