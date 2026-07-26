@@ -362,6 +362,7 @@ function groupStat(
 .info-card.node-eliminate :deep(.rank-badge) {
   background: #6b6f76;
   color: rgba(255, 255, 255, 0.85);
+  opacity: 0.68;
 }
 
 .card-head {
