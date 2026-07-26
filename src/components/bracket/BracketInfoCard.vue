@@ -262,7 +262,11 @@ function groupStat(
     linear-gradient(180deg, rgba(162, 205, 240, 0.085) 0%, rgba(22, 50, 78, 0.025) 42%),
     rgba(4, 12, 28, 0.38);
   border: 1px solid rgba(154, 196, 230, 0.23);
-  border-left-width: 3px;
+  border-left-width: calc(
+    3px
+    - 0.5px * var(--bracket-normal-progress, 0)
+    - 0.5px * var(--bracket-compact-progress, 0)
+  );
   border-left-color: rgba(132, 187, 230, 0.58);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.09),

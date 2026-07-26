@@ -194,6 +194,11 @@ watch(layoutKey, () => scheduleLayout())
   width: 100%;
   height: fit-content;
   padding: 12px 10px 16px;
+  padding-left: calc(
+    10px
+    - 2px * var(--bracket-normal-progress, 0)
+    - 2px * var(--bracket-compact-progress, 0)
+  );
   overflow: hidden;
   background: transparent;
 }
@@ -215,6 +220,11 @@ watch(layoutKey, () => scheduleLayout())
 @media (min-width: 900px) {
   .bracket-board {
     padding: 16px 20px 20px;
+    padding-left: calc(
+      20px
+      - 4px * var(--bracket-normal-progress, 0)
+      - 6px * var(--bracket-compact-progress, 0)
+    );
   }
 
   .bracket-grid {

@@ -264,7 +264,11 @@ function slotMedal(
     linear-gradient(180deg, rgba(162, 205, 240, 0.1) 0%, rgba(22, 50, 78, 0.03) 42%),
     rgba(4, 12, 28, 0.4);
   border: 1px solid rgba(154, 196, 230, 0.26);
-  border-left-width: 3px;
+  border-left-width: calc(
+    3px
+    - 0.5px * var(--bracket-normal-progress, 0)
+    - 0.5px * var(--bracket-compact-progress, 0)
+  );
   border-left-color: rgba(132, 187, 230, 0.68);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.1),
