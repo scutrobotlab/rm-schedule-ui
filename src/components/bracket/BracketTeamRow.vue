@@ -123,13 +123,14 @@ const displayName = computed(() => {
 })
 
 const isPending = computed(() => props.team.sourceKind !== 'team')
-const shouldAutoFitName = computed(() => (
-  isPending.value ||
-  (
-    props.team.sourceKind === 'team' &&
-    props.visibleSpan != null &&
-    Math.abs(props.visibleSpan - 1) < 0.001
-  )
+const isSingleColumnTeam = computed(() => (
+  props.team.sourceKind === 'team' &&
+  props.visibleSpan != null &&
+  Math.abs(props.visibleSpan - 1) < 0.001
+))
+/** 单列校名始终使用预计算字号；缩放暂停只影响未确定席位。 */
+const autoFitActive = computed(() => (
+  isSingleColumnTeam.value || (isPending.value && props.textFitEnabled)
 ))
 const autoFitMinFontSize = computed(() => isPending.value ? 7 : 0)
 const normalizedSupportRate = computed(() => {
@@ -236,12 +237,12 @@ const isShortMatchSource = computed(() => (
     <span
       v-else-if="shouldShowName"
       v-auto-fit-text="{
-        enabled: shouldAutoFitName && textFitEnabled,
+        enabled: autoFitActive,
         minFontSize: autoFitMinFontSize,
       }"
       class="team-name text-transition"
       :class="{
-        'auto-fit-text': shouldAutoFitName && textFitEnabled,
+        'auto-fit-text': autoFitActive,
         'short-match-source': isShortMatchSource && textFitEnabled,
       }"
       :title="team.sourceLabel || team.displayName"

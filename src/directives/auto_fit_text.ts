@@ -85,8 +85,15 @@ export const vAutoFitText: Directive<AutoFitElement, boolean | AutoFitTextOption
     scheduleFit(el)
   },
   updated(el, binding) {
-    el.__autoFitOptions = optionsOf(binding)
-    scheduleFit(el)
+    const previous = el.__autoFitOptions
+    const next = optionsOf(binding)
+    el.__autoFitOptions = next
+    if (
+      previous?.enabled !== next.enabled ||
+      previous?.minFontSize !== next.minFontSize
+    ) {
+      scheduleFit(el)
+    }
   },
   unmounted(el) {
     el.__autoFitCleanup?.()
