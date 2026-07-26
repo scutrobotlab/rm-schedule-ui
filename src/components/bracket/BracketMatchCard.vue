@@ -419,6 +419,10 @@ function slotMedal(
   text-overflow: clip;
 }
 
+.card-title.auto-fit-text {
+  transition: font-size 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 .type-tag {
   flex: 0 0 auto;
   max-width: calc(7rem * var(--bracket-type-tag-opacity, 1));
@@ -483,6 +487,10 @@ function slotMedal(
 
   .group-stats-enter-active,
   .group-stats-leave-active {
+    transition: none;
+  }
+
+  .card-title.auto-fit-text {
     transition: none;
   }
 }

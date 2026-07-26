@@ -75,7 +75,9 @@ export const vAutoFitText: Directive<AutoFitElement, boolean | AutoFitTextOption
     el.__autoFitOptions = optionsOf(binding)
     const resizeObserver = new ResizeObserver(() => scheduleFit(el))
     const mutationObserver = new MutationObserver(() => scheduleFit(el))
-    resizeObserver.observe(el)
+    // 监听可用空间的容器，而不是文字自身；否则 font-size 过渡会持续触发
+    // ResizeObserver，反复重启适配动画。
+    resizeObserver.observe(el.parentElement ?? el)
     mutationObserver.observe(el, { childList: true, subtree: true, characterData: true })
     el.__autoFitCleanup = () => {
       resizeObserver.disconnect()

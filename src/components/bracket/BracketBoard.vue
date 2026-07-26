@@ -43,9 +43,12 @@ const forcePendingName = computed(() => shouldForceBracketPendingName(visibleSpa
 const showPlaceholderLogo = computed(
   () => shouldShowBracketPlaceholderLogo(visibleSpan.value),
 )
-const showTypeTag = computed(() => shouldShowBracketTypeTag(visibleSpan.value))
-const showSupportRate = computed(() => Math.abs(visibleSpan.value - 1) < 0.001)
 const isKnockout = computed(() => props.model.partType === 'knockout')
+const showTypeTag = computed(() => (
+  shouldShowBracketTypeTag(visibleSpan.value) &&
+  (!isKnockout.value || visibleSpan.value < 3)
+))
+const showSupportRate = computed(() => Math.abs(visibleSpan.value - 1) < 0.001)
 const boardStyle = computed(() => {
   const progress = resolveBracketVisualProgress(visibleSpan.value)
   return {

@@ -683,6 +683,18 @@ const isShortMatchSource = computed(() => (
   overflow: visible;
 }
 
+.team-row.pending .team-name.auto-fit-text {
+  transition:
+    transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    font-size 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .team-row.pending .team-name.auto-fit-text {
+    transition: none;
+  }
+}
+
 .text-transition {
   display: grid;
 }
