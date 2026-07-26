@@ -209,6 +209,7 @@ function slotMedal(
         :show-group-stats="showGroupStats"
         :win-count="groupStat('red', '胜场数')"
         :opponent-score="groupStat('red', '对手分')"
+        :match-id="item.matchId"
       />
       <BracketTeamRow
         :team="item.slots[1]"
@@ -236,6 +237,7 @@ function slotMedal(
         :show-group-stats="showGroupStats"
         :win-count="groupStat('blue', '胜场数')"
         :opponent-score="groupStat('blue', '对手分')"
+        :match-id="item.matchId"
       />
     </div>
 

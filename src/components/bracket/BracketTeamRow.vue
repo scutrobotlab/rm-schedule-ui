@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import type { BracketTeamSlot } from '../../types/bracket'
 import {
   resolveBracketDensity,
@@ -56,6 +56,7 @@ const props = withDefaults(
     showGroupStats?: boolean
     winCount?: string
     opponentScore?: string
+    matchId?: string | null
   }>(),
   {
     showName: true,
@@ -76,6 +77,7 @@ const props = withDefaults(
     opponentScore: '—',
     visibleSpan: undefined,
     textFitEnabled: true,
+    matchId: null,
   },
 )
 
@@ -85,6 +87,9 @@ const logoFailed = ref(false)
 const pointerId = ref<number | null>(null)
 const pointerStartX = ref(0)
 const pointerStartY = ref(0)
+const longPressTriggered = ref(false)
+let longPressTimer: ReturnType<typeof setTimeout> | null = null
+const LONG_PRESS_MS = 500
 
 const isSelectable = computed(
   () => props.team.sourceKind === 'team' && Boolean(props.team.playerId),
@@ -99,11 +104,49 @@ function toggleSelection() {
   promotionStore.toggleSelectedPlayerById(props.team.playerId)
 }
 
+function clearLongPressTimer() {
+  if (!longPressTimer) return
+  clearTimeout(longPressTimer)
+  longPressTimer = null
+}
+
 function onPointerDown(event: PointerEvent) {
   if (!isSelectable.value || event.button !== 0) return
   pointerId.value = event.pointerId
   pointerStartX.value = event.clientX
   pointerStartY.value = event.clientY
+  longPressTriggered.value = false
+  clearLongPressTimer()
+  const target = event.currentTarget as HTMLElement
+  longPressTimer = setTimeout(() => {
+    longPressTimer = null
+    if (pointerId.value !== event.pointerId || !props.team.playerId) return
+    longPressTriggered.value = true
+    if (promotionStore.selectedPlayer?.id !== props.team.playerId) {
+      promotionStore.toggleSelectedPlayerById(props.team.playerId)
+    }
+    target.dispatchEvent(new CustomEvent('bracket-team-long-press', {
+      bubbles: true,
+      detail: {
+        playerId: props.team.playerId,
+        matchId: props.matchId,
+        clientX: event.clientX,
+        clientY: event.clientY,
+      },
+    }))
+  }, LONG_PRESS_MS)
+}
+
+function onPointerMove(event: PointerEvent) {
+  if (pointerId.value !== event.pointerId) return
+  if (!isPointerTap(
+    pointerStartX.value,
+    pointerStartY.value,
+    event.clientX,
+    event.clientY,
+  )) {
+    clearLongPressTimer()
+  }
 }
 
 function onPointerUp(event: PointerEvent) {
@@ -114,13 +157,21 @@ function onPointerUp(event: PointerEvent) {
     event.clientX,
     event.clientY,
   )
+  clearLongPressTimer()
   pointerId.value = null
-  if (tapped) toggleSelection()
+  if (tapped && !longPressTriggered.value) toggleSelection()
+  longPressTriggered.value = false
 }
 
 function onPointerCancel(event: PointerEvent) {
-  if (pointerId.value === event.pointerId) pointerId.value = null
+  if (pointerId.value === event.pointerId) {
+    clearLongPressTimer()
+    pointerId.value = null
+    longPressTriggered.value = false
+  }
 }
+
+onBeforeUnmount(clearLongPressTimer)
 
 function logoSrc(url: string | undefined): string | undefined {
   if (!url) return undefined
@@ -340,8 +391,12 @@ const nameToOpacity = computed(() => (
       ? `${team.collegeName || team.displayName}${isSelected ? '，已选中' : '，点击高亮'}`
       : undefined"
     @pointerdown="onPointerDown"
+    @pointermove="onPointerMove"
     @pointerup="onPointerUp"
     @pointercancel="onPointerCancel"
+    @contextmenu.prevent
+    @selectstart.prevent
+    @dragstart.prevent
     @keydown.enter.prevent="toggleSelection"
     @keydown.space.prevent="toggleSelection"
   >
@@ -501,6 +556,9 @@ const nameToOpacity = computed(() => (
 .team-row.selectable {
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .team-row.selectable:focus-visible {

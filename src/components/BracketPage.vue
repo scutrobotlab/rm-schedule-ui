@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import axios from 'axios'
 import { useRoute, useRouter } from 'vue-router'
 import StageRangeSelector, {
   type StageItem,
@@ -9,6 +10,7 @@ import StageRangeSelector, {
 import BracketBoard from './bracket/BracketBoard.vue'
 import AnalyzeTeam from './AnalyzeTeam.vue'
 import AnalyzeMatch from './AnalyzeMatch.vue'
+import MatchMenu from './MatchMenu.vue'
 import SearchPlayer from './SearchPlayer.vue'
 import About from './About.vue'
 import GraphComment from './GraphComment.vue'
@@ -26,6 +28,8 @@ import {
 } from '../utils/bracket_part_merge'
 import type { BracketViewModel } from '../types/bracket'
 import type { MatchNode, Player } from '../types/schedule'
+import type { BilibiliReplay } from '../types/bilibili_replay'
+import type { TeamInfo } from '../types/team_info'
 import { isPointerTap } from '../utils/pointer_tap'
 
 const stageRange = ref<StageRange>({ start: 0, end: 1 })
@@ -49,6 +53,10 @@ const routeHasGroup = computed(() => route.query.group !== undefined)
 const viewportWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024)
 
 const bracketViewportRef = ref<HTMLElement | null>(null)
+const bracketMatchMenuOpen = ref(false)
+const bracketMatchMenuTarget = ref<[number, number]>([0, 0])
+const bracketMatchMenuMatch = ref<MatchNode | null>(null)
+let bracketMenuRequestVersion = 0
 
 const stageCount = computed(() => displayStages.value.length)
 const windowSpan = computed(() => Math.max(windowRight.value - windowLeft.value, 0.05))
@@ -726,6 +734,78 @@ const matchLookup = computed(() => {
   return { group, knockout }
 })
 
+function onBracketTeamLongPress(event: Event) {
+  const detail = (event as CustomEvent<{
+    playerId: string
+    matchId?: string | null
+    clientX: number
+    clientY: number
+  }>).detail
+  if (!detail?.matchId) return
+  const match = [
+    ...(scheduleZone.value?.groupMatches.nodes ?? []),
+    ...(scheduleZone.value?.knockoutMatches.nodes ?? []),
+  ].find(item => item.id === detail.matchId)
+  if (!match) return
+
+  promotionStore.selectedMatch = match
+  bracketMatchMenuMatch.value = match
+  bracketMatchMenuTarget.value = [detail.clientX, detail.clientY]
+  bracketMatchMenuOpen.value = true
+
+  const requestVersion = ++bracketMenuRequestVersion
+  const selectedPlayer = promotionStore.findPlayerById(detail.playerId)
+  promotionStore.bilibiliReplay = null
+  promotionStore.teamInfo = null
+
+  void axios.get<BilibiliReplay>('/api/match_order_to_video', {
+    params: {
+      season: promotionStore.season,
+      zone: promotionStore.getZone(zoneId.value).name,
+      order_number: match.orderNumber,
+    },
+  }).then(({ data }) => {
+    if (
+      requestVersion === bracketMenuRequestVersion &&
+      bracketMatchMenuOpen.value &&
+      bracketMatchMenuMatch.value?.id === match.id
+    ) {
+      promotionStore.bilibiliReplay = data
+    }
+  }).catch(() => {
+    if (requestVersion === bracketMenuRequestVersion) {
+      promotionStore.bilibiliReplay = null
+    }
+  })
+
+  const collegeName = selectedPlayer?.team?.collegeName
+  if (collegeName) {
+    void axios.get<TeamInfo>('/api/team_info', {
+      params: { college_name: collegeName },
+    }).then(({ data }) => {
+      if (
+        requestVersion === bracketMenuRequestVersion &&
+        bracketMatchMenuOpen.value &&
+        promotionStore.selectedPlayer?.id === detail.playerId
+      ) {
+        promotionStore.teamInfo = data
+      }
+    }).catch(() => {
+      if (requestVersion === bracketMenuRequestVersion) {
+        promotionStore.teamInfo = null
+      }
+    })
+  }
+}
+
+watch(bracketMatchMenuOpen, (open) => {
+  if (open) return
+  bracketMenuRequestVersion += 1
+  promotionStore.bilibiliReplay = null
+  promotionStore.teamInfo = null
+  bracketMatchMenuMatch.value = null
+})
+
 const mpMatchIds = computed(() => {
   const part = renderedPart.value
   if (!part || !scheduleZone.value) return []
@@ -1003,6 +1083,7 @@ onBeforeUnmount(() => {
           @pointerup="onBoardPointerUp"
           @pointercancel="onBoardPointerUp"
           @click="openAnniversaryFromCorner"
+          @bracket-team-long-press="onBracketTeamLongPress"
         >
           <div
             class="bracket-strip"
@@ -1035,6 +1116,16 @@ onBeforeUnmount(() => {
             华南理工大学 华南虎
           </p>
         </div>
+        <v-menu
+          v-model="bracketMatchMenuOpen"
+          :target="bracketMatchMenuTarget"
+          location="end"
+        >
+          <MatchMenu
+            v-if="bracketMatchMenuMatch"
+            :match="bracketMatchMenuMatch"
+          />
+        </v-menu>
         <v-bottom-sheet v-model="appStore.analysisDialog">
           <AnalyzeTeam
             :zone-id="zoneId"

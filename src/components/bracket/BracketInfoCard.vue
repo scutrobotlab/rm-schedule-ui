@@ -180,6 +180,7 @@ function groupStat(
             :show-group-stats="showGroupStats"
             :win-count="groupStat(m, 'red', '胜场数')"
             :opponent-score="groupStat(m, 'red', '对手分')"
+            :match-id="m.matchId"
           />
           <BracketTeamRow
             :team="m.slots[1]"
@@ -205,6 +206,7 @@ function groupStat(
             :show-group-stats="showGroupStats"
             :win-count="groupStat(m, 'blue', '胜场数')"
             :opponent-score="groupStat(m, 'blue', '对手分')"
+            :match-id="m.matchId"
           />
         </div>
         <div
