@@ -281,7 +281,11 @@ const TWO_COLUMN_PAN_BOOST = 1.5
 const WHEEL_GAIN = 1.25
 
 function onBoardPointerDown(e: PointerEvent) {
-  if (e.button !== 0 || stageCount.value <= 0) return
+  if (
+    e.button !== 0 ||
+    stageCount.value <= 0 ||
+    bracketMatchMenuOpen.value
+  ) return
   if (wheelSnapTimer) {
     clearTimeout(wheelSnapTimer)
     wheelSnapTimer = null
@@ -295,6 +299,7 @@ function onBoardPointerDown(e: PointerEvent) {
 
 function onBoardPointerMove(e: PointerEvent) {
   if (panPointerId.value !== e.pointerId) return
+  if (bracketMatchMenuOpen.value) return
   const dx = e.clientX - panStartX.value
   const dy = e.clientY - panStartY.value
   if (!panAxis.value) {
@@ -342,7 +347,7 @@ function onBoardPointerUp(e: PointerEvent) {
 }
 
 function onBoardWheel(e: WheelEvent) {
-  if (stageCount.value <= 0) return
+  if (stageCount.value <= 0 || bracketMatchMenuOpen.value) return
   let delta = 0
   if (Math.abs(e.deltaX) * PAN_X_BIAS >= Math.abs(e.deltaY)) {
     delta = e.deltaX
@@ -1132,13 +1137,23 @@ onBeforeUnmount(() => {
         </div>
         <v-menu
           v-model="bracketMatchMenuOpen"
+          content-class="bracket-match-menu-overlay"
           :target="bracketMatchMenuTarget"
           location="end"
+          transition="bracket-menu-transition"
         >
-          <MatchMenu
-            v-if="bracketMatchMenuMatch"
-            :match="bracketMatchMenuMatch"
-          />
+          <Transition
+            name="bracket-menu-content"
+            mode="out-in"
+          >
+            <MatchMenu
+              v-if="bracketMatchMenuMatch"
+              :key="`${bracketMatchMenuMatch.id}-${promotionStore.selectedPlayer?.id ?? ''}`"
+              :match="bracketMatchMenuMatch"
+              variant="bracket"
+              @close="bracketMatchMenuOpen = false"
+            />
+          </Transition>
         </v-menu>
         <v-bottom-sheet v-model="appStore.analysisDialog">
           <AnalyzeTeam
@@ -1187,6 +1202,62 @@ onBeforeUnmount(() => {
   width: 120px;
   height: 120px;
   pointer-events: none;
+}
+
+:global(.bracket-match-menu-overlay) {
+  overflow-x: hidden !important;
+  max-width: calc(100vw - 16px);
+}
+
+:global(.bracket-menu-transition-enter-active) {
+  transition:
+    opacity 200ms ease-out,
+    transform 260ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+  transform-origin: top left;
+}
+
+:global(.bracket-menu-transition-leave-active) {
+  transition:
+    opacity 150ms ease-in,
+    transform 170ms ease-in !important;
+  transform-origin: top left;
+}
+
+:global(.bracket-menu-transition-enter-from),
+:global(.bracket-menu-transition-leave-to) {
+  opacity: 0;
+  transform: translateY(-6px) scale(0.94);
+}
+
+:global(.bracket-menu-content-enter-active) {
+  transition:
+    opacity 180ms ease-out,
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:global(.bracket-menu-content-leave-active) {
+  transition:
+    opacity 120ms ease-in,
+    transform 140ms ease-in;
+}
+
+:global(.bracket-menu-content-enter-from) {
+  opacity: 0;
+  transform: translateY(5px) scale(0.985);
+}
+
+:global(.bracket-menu-content-leave-to) {
+  opacity: 0;
+  transform: translateY(-3px) scale(0.99);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :global(.bracket-menu-transition-enter-active),
+  :global(.bracket-menu-transition-leave-active),
+  :global(.bracket-menu-content-enter-active),
+  :global(.bracket-menu-content-leave-active) {
+    transition: none !important;
+  }
 }
 
 .corner-logo {
