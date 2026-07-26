@@ -5,6 +5,7 @@ import { GroupRankInfo } from "../types/group_rank_info";
 import { MpMatch, MpMatchRoot } from "../types/mp_match";
 import { BilibiliReplay } from "../types/bilibili_replay";
 import { TeamInfo } from "../types/team_info";
+import type { TeamAbbreviation } from "../utils/bracket_density";
 
 export interface Schedule {
   data: ScheduleData;
@@ -17,7 +18,7 @@ export const usePromotionStore = defineStore("promotion", {
     schedule: {} as Schedule,
     groupRank: {} as GroupRankInfo,
     mpMatchMap: new Map<string, MpMatch>(),
-    teamAbbreviations: {} as Record<string, string>,
+    teamAbbreviations: {} as Record<string, TeamAbbreviation>,
     teamAbbreviationsLoaded: false as boolean,
     selectedPlayer: null as Player | null,
     selectedMatch: null as MatchNode | null,
@@ -103,7 +104,7 @@ export const usePromotionStore = defineStore("promotion", {
     async updateTeamAbbreviations() {
       if (this.teamAbbreviationsLoaded) return;
       this.teamAbbreviationsLoaded = true;
-      const response: AxiosResponse<Record<string, string>> = await axios({
+      const response: AxiosResponse<Record<string, TeamAbbreviation>> = await axios({
         method: "GET",
         url: "/api/team_abbreviations",
       });

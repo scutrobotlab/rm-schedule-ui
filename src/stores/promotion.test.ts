@@ -15,7 +15,12 @@ describe('promotion team abbreviations', () => {
 
   it('loads and stores the abbreviation map once', async () => {
     vi.mocked(axios).mockResolvedValue({
-      data: { 上海交通大学: '上交' },
+      data: {
+        上海交通大学: {
+          abbreviation4: '上海交大',
+          abbreviation2: '上交',
+        },
+      },
     })
     const store = usePromotionStore()
 
@@ -27,7 +32,12 @@ describe('promotion team abbreviations', () => {
       method: 'GET',
       url: '/api/team_abbreviations',
     })
-    expect(store.teamAbbreviations).toEqual({ 上海交通大学: '上交' })
+    expect(store.teamAbbreviations).toEqual({
+      上海交通大学: {
+        abbreviation4: '上海交大',
+        abbreviation2: '上交',
+      },
+    })
   })
 
   it('keeps an empty fallback map when loading fails', async () => {

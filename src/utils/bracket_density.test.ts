@@ -94,15 +94,21 @@ describe('bracketDisplayUnits', () => {
 })
 
 describe('resolveBracketTeamDisplayName', () => {
+  const abbreviation = {
+    abbreviation4: '上海交大',
+    abbreviation2: '上交',
+  }
+
   it.each([
     [2, '上海交通大学'],
-    [3, '上交'],
+    [3, '上海交大'],
+    [4, '上交'],
     [5, '上'],
     [6, '上海交通大学'],
   ])('%s 列时返回 %s', (visibleSpan, expected) => {
     expect(resolveBracketTeamDisplayName(
       '上海交通大学',
-      '上交',
+      abbreviation,
       visibleSpan,
     )).toBe(expected)
   })
@@ -118,25 +124,34 @@ describe('resolveBracketTeamDisplayName', () => {
   it('二列时长校名保留前七个字符并显示省略号', () => {
     expect(resolveBracketTeamDisplayName(
       '南京航空航天大学金城学院',
-      '南航金城',
+      {
+        abbreviation4: '南航金城',
+        abbreviation2: '金城',
+      },
       2,
     )).toBe('南京航空航天大…')
   })
 
-  it('四列时简称只保留前两个字符', () => {
+  it('四列时使用二字简称', () => {
     expect(resolveBracketTeamDisplayName(
       '南京航空航天大学金城学院',
-      '南航金城',
+      {
+        abbreviation4: '南航金城',
+        abbreviation2: '金城',
+      },
       4,
-    )).toBe('南航')
+    )).toBe('金城')
   })
 
-  it('五列时简称只保留首个字符', () => {
+  it('五列时沿用二字简称的首个字符', () => {
     expect(resolveBracketTeamDisplayName(
       '南京航空航天大学金城学院',
-      '南航金城',
+      {
+        abbreviation4: '南航金城',
+        abbreviation2: '金城',
+      },
       5,
-    )).toBe('南')
+    )).toBe('金')
   })
 })
 

@@ -202,10 +202,15 @@ export function shouldShowBracketTeamName(columnCount: number): boolean {
   return columnCount < 5
 }
 
-/** 3–5 列时优先显示学校简称；其他列数与无简称时保留完整校名。 */
+export interface TeamAbbreviation {
+  abbreviation4: string
+  abbreviation2: string
+}
+
+/** 3 列显示四字档、4 列显示二字档、5 列沿用单字符显示；其他列数显示校名。 */
 export function resolveBracketTeamDisplayName(
   fullName: string,
-  abbreviation: string | undefined,
+  abbreviation: TeamAbbreviation | undefined,
   visibleSpan: number | undefined,
 ): string {
   if (visibleSpan != null && visibleSpan >= 2 && visibleSpan < 3) {
@@ -220,10 +225,7 @@ export function resolveBracketTeamDisplayName(
     visibleSpan < 5 &&
     abbreviation
   ) {
-    const characters = Array.from(abbreviation)
-    return characters.length > 2
-      ? characters.slice(0, 2).join('')
-      : abbreviation
+    return abbreviation.abbreviation2
   }
   if (
     visibleSpan != null &&
@@ -231,7 +233,7 @@ export function resolveBracketTeamDisplayName(
     visibleSpan < 6 &&
     abbreviation
   ) {
-    return Array.from(abbreviation)[0] ?? abbreviation
+    return Array.from(abbreviation.abbreviation2)[0] ?? abbreviation.abbreviation2
   }
   if (
     visibleSpan != null &&
@@ -239,7 +241,7 @@ export function resolveBracketTeamDisplayName(
     visibleSpan < 6 &&
     abbreviation
   ) {
-    return abbreviation
+    return abbreviation.abbreviation4
   }
   return fullName
 }
