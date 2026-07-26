@@ -892,10 +892,6 @@ const isShortMatchSource = computed(() => (
   font-size: 0.64rem;
 }
 
-.team-row.five-column-name-layout .team-score {
-  margin-left: 0;
-}
-
 .team-stat {
   position: relative;
   z-index: 1;
@@ -953,6 +949,10 @@ const isShortMatchSource = computed(() => (
 
 .team-row.extra-tight-score-gap .team-score {
   margin-left: -8px;
+}
+
+.team-row.extra-tight-score-gap.five-column-name-layout .team-score {
+  margin-left: -6px;
 }
 
 .density-normal.side-red,
