@@ -69,6 +69,20 @@ function closeDialog() {
     @update:model-value="onDialogModelUpdate"
   >
     <v-card class="anniversary-card">
+      <div class="anniversary-mobile-actions">
+        <span class="anniversary-mobile-title">
+          RM Schedule 三周年
+        </span>
+        <v-btn
+          class="anniversary-close-button"
+          prepend-icon="mdi-close"
+          aria-label="关闭周年公告"
+          text="关闭"
+          variant="text"
+          @click="closeDialog"
+        />
+      </div>
+
       <img
         class="anniversary-image"
         src="@/assets/three_years_same_frequency.jpg"
@@ -131,9 +145,14 @@ function closeDialog() {
 
 <style scoped lang="scss">
 .anniversary-card {
+  position: relative;
   width: 100%;
   max-height: calc(100vh - 24px);
   overflow-y: auto;
+}
+
+.anniversary-mobile-actions {
+  display: none;
 }
 
 .anniversary-image {
@@ -209,6 +228,27 @@ function closeDialog() {
 }
 
 @media (max-width: 720px) {
+  .anniversary-mobile-actions {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .anniversary-mobile-title {
+    padding-left: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    opacity: 0.82;
+  }
+
+  .anniversary-close-button {
+    font-weight: 600;
+  }
+
   .product-grid {
     grid-template-columns: 1fr;
   }
