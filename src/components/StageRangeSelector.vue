@@ -630,11 +630,11 @@ function barsStyle(stage: StageItem): Record<string, string> {
   grid-template-columns: repeat(2, auto);
   grid-auto-flow: column;
   grid-template-rows: repeat(var(--bar-rows), auto);
-  gap: 2px 4px;
+  gap: 2px;
 }
 
 .stage-range__bars--cols-roomy {
-  gap: 3.5px 5px;
+  gap: 3.5px 2px;
   padding: 2px 0;
 }
 
@@ -664,11 +664,11 @@ function barsStyle(stage: StageItem): Record<string, string> {
 }
 
 .stage-range__bars--cols .stage-range__bar {
-  width: 11px;
+  width: 10px;
 }
 
 .stage-range__bars--cols-roomy .stage-range__bar {
-  width: 12px;
+  width: 11px;
   height: 2.5px;
 }
 
