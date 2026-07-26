@@ -257,7 +257,7 @@ const isShortMatchSource = computed(() => (
   );
   border-radius: 4px;
   background:
-    linear-gradient(90deg, rgba(210, 232, 248, 0.055), rgba(255, 255, 255, 0.025));
+    linear-gradient(180deg, rgba(210, 232, 248, 0.055), rgba(255, 255, 255, 0.025));
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.035),
     inset 0 0 0 1px rgba(190, 220, 244, 0.018);

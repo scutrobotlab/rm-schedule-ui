@@ -1106,8 +1106,7 @@ onBeforeUnmount(() => {
   z-index: 1;
   pointer-events: none;
   background:
-    radial-gradient(ellipse at 20% 0%, rgba(40, 90, 140, 0.18) 0%, transparent 55%),
-    radial-gradient(ellipse at 80% 100%, rgba(20, 50, 90, 0.16) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 0%, rgba(40, 90, 140, 0.2) 0%, transparent 58%),
     linear-gradient(180deg, rgba(4, 12, 26, 0.58) 0%, rgba(6, 16, 32, 0.72) 100%);
 }
 
