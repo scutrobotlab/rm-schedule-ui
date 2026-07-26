@@ -190,6 +190,9 @@ const shouldShowName = computed(
 const shouldShowScore = computed(
   () => props.showScore && (!isPending.value || props.showPendingScore),
 )
+const useExtraTightScoreGap = computed(
+  () => props.visibleSpan != null && props.visibleSpan >= 6,
+)
 const isShortMatchSource = computed(() => (
   isPending.value &&
   /^\d+[胜败]$/.test(displayName.value.to || displayName.value.from)
@@ -206,6 +209,7 @@ const isShortMatchSource = computed(() => (
       'has-support-rate': normalizedSupportRate != null,
       'group-stats': showGroupStats,
       'tight-name-score-gap': tightNameScoreGap,
+      'extra-tight-score-gap': useExtraTightScoreGap,
       [`side-${side}`]: Boolean(side),
       [`medal-${medal}`]: Boolean(medal),
       [`density-${density}`]: true,
@@ -815,6 +819,10 @@ const isShortMatchSource = computed(() => (
 
 .team-row.tight-name-score-gap .team-score {
   margin-left: -4px;
+}
+
+.team-row.extra-tight-score-gap .team-score {
+  margin-left: -8px;
 }
 
 .density-normal.side-red,
