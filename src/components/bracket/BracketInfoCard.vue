@@ -59,7 +59,8 @@ const showAsMatches = computed(
   () => props.item.nodeType === 'matchGroup' && props.item.matches.length > 0,
 )
 
-const showMeta = computed(() => props.density === 'comfortable')
+/** 2→3 列缩放期间保持挂载，由 --bracket-normal-progress 连续收起。 */
+const showMeta = computed(() => props.visibleSpan < 3)
 const showSupportRate = computed(() => Math.abs(props.visibleSpan - 1) < 0.001)
 const titleTransition = computed(() => resolveBracketTextTransition(
   props.visibleSpan,
@@ -369,6 +370,11 @@ function groupStat(
   transform-origin: right center;
 }
 
+.type-tag.text-transition > span {
+  overflow: visible;
+  text-overflow: clip;
+}
+
 .match-list,
 .slot-list {
   display: flex;
@@ -433,9 +439,13 @@ function groupStat(
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin-top: 6px;
+  max-height: calc(1.2rem * (1 - var(--bracket-normal-progress, 0)));
+  margin-top: calc(6px * (1 - var(--bracket-normal-progress, 0)));
   font-size: 0.66rem;
-  opacity: 0.55;
+  line-height: 1.2rem;
+  opacity: calc(0.55 * (1 - var(--bracket-normal-progress, 0)));
+  overflow: hidden;
+  transform: translateY(calc(-2px * var(--bracket-normal-progress, 0)));
 }
 
 .density-compact .mini-match + .mini-match {

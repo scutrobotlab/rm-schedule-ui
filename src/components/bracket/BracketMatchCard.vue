@@ -47,7 +47,8 @@ const statusLabel: Record<string, string> = {
   UNKNOWN: '',
 }
 
-const showMeta = computed(() => props.density === 'comfortable')
+/** 2→3 列缩放期间保持挂载，由 --bracket-normal-progress 连续收起。 */
+const showMeta = computed(() => props.visibleSpan < 3)
 const showSupportRate = computed(() => Math.abs(props.visibleSpan - 1) < 0.001)
 const mpMatch = computed(() => (
   props.item.matchId ? promotionStore.getMpMatch(props.item.matchId) : undefined
@@ -161,6 +162,10 @@ function slotMedal(
       <span
         v-else-if="showTypeTag && progressTagTransition.from"
         class="type-tag progress-tag text-transition"
+        :class="{
+          'progress-tag--two-digit':
+            item.progressLabel === '16强' || item.progressLabel === '12强',
+        }"
       >
         <span :style="{ opacity: 1 - progressTagTransition.progress }">
           {{ progressTagTransition.from }}
@@ -389,13 +394,31 @@ function slotMedal(
   font-weight: 600;
 }
 
+.progress-tag--two-digit {
+  width: calc(3.8em - 1.2em * var(--bracket-normal-progress, 0));
+  box-sizing: content-box;
+  justify-items: center;
+  overflow: visible;
+}
+
+.progress-tag--two-digit > span {
+  width: 100%;
+  text-align: center;
+  overflow: visible;
+  text-overflow: clip;
+}
+
 .card-meta {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin-top: 6px;
+  max-height: calc(1.2rem * (1 - var(--bracket-normal-progress, 0)));
+  margin-top: calc(6px * (1 - var(--bracket-normal-progress, 0)));
   font-size: 0.66rem;
-  opacity: 0.55;
+  line-height: 1.2rem;
+  opacity: calc(0.55 * (1 - var(--bracket-normal-progress, 0)));
+  overflow: hidden;
+  transform: translateY(calc(-2px * var(--bracket-normal-progress, 0)));
 }
 
 .card-head {
