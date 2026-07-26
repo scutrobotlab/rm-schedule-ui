@@ -134,7 +134,7 @@ function groupStat(
       </Transition>
       <span
         v-if="showGroupStats && showAsMatches"
-        class="type-tag"
+        class="type-tag type-tag--match"
       >{{ nodeTypeLabel[item.nodeType] }}</span>
       <span
         v-else-if="showTypeTag"
@@ -282,7 +282,7 @@ function groupStat(
   gap: 0;
   align-items: center;
   margin-left: auto;
-  margin-right: 2px;
+  margin-right: 2.65rem;
   color: rgba(220, 232, 246, 0.72);
   font-size: 0.58rem;
   font-weight: 600;
@@ -364,6 +364,7 @@ function groupStat(
 }
 
 .card-head {
+  position: relative;
   display: flex;
   align-items: center;
   flex-wrap: nowrap;
@@ -420,6 +421,11 @@ function groupStat(
   overflow: hidden;
   transform: scale(var(--bracket-type-tag-opacity, 1));
   transform-origin: right center;
+}
+
+.type-tag--match {
+  position: absolute;
+  right: 0;
 }
 
 .type-tag.text-transition > span {

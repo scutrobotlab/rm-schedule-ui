@@ -96,20 +96,25 @@ const podiumTag = computed(() => {
   return null
 })
 
-function formatProgressTag(label: string, columns: number): string {
-  if (label === '16强') return columns <= 2 ? '十六强' : '十六'
-  if (label === '12强') return columns <= 2 ? '十二强' : '十二'
-  return label
-}
-
-const progressTagTransition = computed(() => resolveBracketTextTransition(
-  props.visibleSpan,
-  (columns) => (
-    podiumTag.value || !props.item.progressLabel
-      ? ''
-      : formatProgressTag(props.item.progressLabel, columns)
-  ),
+const progressTag = computed(() => {
+  if (podiumTag.value || !props.item.progressLabel) return ''
+  if (props.item.progressLabel === '16强') return '十六强'
+  if (props.item.progressLabel === '12强') return '十二强'
+  return props.item.progressLabel
+})
+/** 与缩放手势同步：2→3 列期间连续收起，达到 3 列时再卸载。 */
+const progressTagVisibility = computed(() => (
+  Math.min(1, Math.max(0, 3 - props.visibleSpan))
 ))
+const progressTagStyle = computed(() => {
+  const visibility = progressTagVisibility.value
+  return {
+    maxWidth: `${7 * visibility}rem`,
+    paddingInline: `${5 * visibility}px`,
+    opacity: String(visibility),
+    transform: `scale(${visibility})`,
+  }
+})
 
 function slotMedal(
   slot: { isWinner: boolean; isLoser: boolean },
@@ -136,7 +141,8 @@ function slotMedal(
     <div
       v-if="
         titleTransition.from ||
-        (showTypeTag && (podiumTag || progressTagTransition.from)) ||
+        (showTypeTag && podiumTag) ||
+        (progressTag && progressTagVisibility > 0) ||
         showGroupStats
       "
       class="card-head"
@@ -161,26 +167,18 @@ function slotMedal(
       </Transition>
       <span
         v-if="showGroupStats"
-        class="type-tag"
+        class="type-tag type-tag--match"
       >对阵</span>
       <span
         v-else-if="showTypeTag && podiumTag"
         class="type-tag"
       >{{ podiumTag }}</span>
       <span
-        v-else-if="showTypeTag && progressTagTransition.from"
-        class="type-tag progress-tag text-transition"
-        :class="{
-          'progress-tag--two-digit':
-            item.progressLabel === '16强' || item.progressLabel === '12强',
-        }"
+        v-else-if="progressTag && progressTagVisibility > 0"
+        class="type-tag progress-tag"
+        :style="progressTagStyle"
       >
-        <span :style="{ opacity: 1 - progressTagTransition.progress }">
-          {{ progressTagTransition.from }}
-        </span>
-        <span :style="{ opacity: progressTagTransition.progress }">
-          {{ progressTagTransition.to }}
-        </span>
+        {{ progressTag }}
       </span>
     </div>
 
@@ -349,7 +347,7 @@ function slotMedal(
   gap: 0;
   align-items: center;
   margin-left: auto;
-  margin-right: 2px;
+  margin-right: 2.65rem;
   color: rgba(220, 232, 246, 0.72);
   font-size: 0.58rem;
   font-weight: 600;
@@ -380,6 +378,7 @@ function slotMedal(
 }
 
 .card-head {
+  position: relative;
   display: flex;
   align-items: center;
   flex-wrap: nowrap;
@@ -438,25 +437,16 @@ function slotMedal(
   transform-origin: right center;
 }
 
+.type-tag--match {
+  position: absolute;
+  right: 0;
+}
+
 .progress-tag {
   color: #9fd9bc;
   background: rgba(93, 206, 160, 0.18);
   opacity: var(--bracket-type-tag-opacity, 1);
   font-weight: 600;
-}
-
-.progress-tag--two-digit {
-  width: calc(3.8em - 1.2em * var(--bracket-normal-progress, 0));
-  box-sizing: content-box;
-  justify-items: center;
-  overflow: visible;
-}
-
-.progress-tag--two-digit > span {
-  width: 100%;
-  text-align: center;
-  overflow: visible;
-  text-overflow: clip;
 }
 
 .card-meta {
