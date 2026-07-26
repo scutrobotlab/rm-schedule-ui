@@ -343,9 +343,12 @@ const autoFitActive = computed(() => (
   )) ||
   (isPending.value && props.textFitEnabled)
 ))
-const autoFitMinFontSize = computed(
-  () => isPending.value && !isThreeColumnAbbreviation.value ? 7 : 0,
-)
+const autoFitMinFontSize = computed(() => {
+  // 二列先缩小完整校名，最低到 12px；仍放不下时由 CSS 省略号按实际宽度
+  // 尽量多展示字符。常规二列卡片在该下限下至少可容纳八个汉字。
+  if (isTwoColumnTeam.value) return 12
+  return isPending.value && !isThreeColumnAbbreviation.value ? 7 : 0
+})
 const normalizedSupportRate = computed(() => {
   if (
     !props.showSupportRate ||

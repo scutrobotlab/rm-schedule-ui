@@ -135,7 +135,7 @@ describe('resolveBracketTeamDisplayName', () => {
     )).toBe('未收录大学')
   })
 
-  it('二列时长校名保留前七个字符并显示省略号', () => {
+  it('二列时保留完整校名，由布局按实际宽度尽量展示', () => {
     expect(resolveBracketTeamDisplayName(
       '南京航空航天大学金城学院',
       {
@@ -143,7 +143,7 @@ describe('resolveBracketTeamDisplayName', () => {
         abbreviation2: '金城',
       },
       2,
-    )).toBe('南京航空航天大…')
+    )).toBe('南京航空航天大学金城学院')
   })
 
   it('四列时使用二字简称', () => {

@@ -209,18 +209,12 @@ export interface TeamAbbreviation {
   abbreviation2: string
 }
 
-/** 3 列显示四字档、4–5 列显示二字档；其他列数显示校名。 */
+/** 2 列保留完整校名并交由布局按可用宽度适配；3 列显示四字档、4–5 列显示二字档。 */
 export function resolveBracketTeamDisplayName(
   fullName: string,
   abbreviation: TeamAbbreviation | undefined,
   visibleSpan: number | undefined,
 ): string {
-  if (visibleSpan != null && visibleSpan >= 2 && visibleSpan < 3) {
-    const characters = Array.from(fullName)
-    return characters.length > 7
-      ? `${characters.slice(0, 7).join('')}…`
-      : fullName
-  }
   if (
     visibleSpan != null &&
     visibleSpan >= 4 &&
