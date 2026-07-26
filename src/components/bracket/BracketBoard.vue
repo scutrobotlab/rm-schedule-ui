@@ -22,6 +22,7 @@ const props = defineProps<{
   /** 视口内可见跨度（可小数）；密度按取整后的 span 计算 */
   visibleSpan?: number
   motionState?: BracketMotionState
+  textFitEnabled?: boolean
 }>()
 
 const boardRef = ref<HTMLElement | null>(null)
@@ -162,6 +163,7 @@ watch(layoutKey, () => scheduleLayout())
         :density="density"
         :visible-span="visibleSpan"
         :motion-state="motionState ?? 'idle'"
+        :text-fit-enabled="textFitEnabled !== false"
         :title-shorten-level="titleShortenLevel"
         :show-team-name="showTeamName"
         :show-pending-score="showPendingScore"

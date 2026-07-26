@@ -71,6 +71,7 @@ const stripStyle = computed(() => {
 const windowMotion = ref<'live' | 'settle' | 'idle'>('idle')
 const isWindowLive = computed(() => windowMotion.value === 'live')
 const isStripSettling = computed(() => windowMotion.value === 'settle')
+const textFitSuspended = ref(false)
 let settleTimer: ReturnType<typeof setTimeout> | null = null
 const SETTLE_MS = 300
 
@@ -92,7 +93,17 @@ function beginSettleMotion() {
   settleTimer = setTimeout(() => {
     settleTimer = null
     windowMotion.value = 'idle'
+    textFitSuspended.value = false
   }, SETTLE_MS)
+}
+
+function onResizeInteraction(active: boolean) {
+  if (active) {
+    textFitSuspended.value = true
+    return
+  }
+  // 有缩放 preview 时，等待随后的吸附动画结束再恢复完整文字。
+  if (windowMotion.value === 'idle') textFitSuspended.value = false
 }
 
 /** 吸附后：仅 Knockout 且最左列节点 ≤ 2 时，滚动视口使该列最上节点贴顶（不改树形 Y） */
@@ -153,6 +164,7 @@ function syncWindowFromRange(range: StageRange) {
   const nextRight = range.end + 1
   if (nextLeft === windowLeft.value && nextRight === windowRight.value) {
     windowMotion.value = 'idle'
+    textFitSuspended.value = false
     // 选区拖到左右边界时，preview 已经把窗口钳到最终整数位置；
     // 松手虽会强制提交同一范围，但不能因早退跳过左列的 Y 锚定。
     // immediate watcher 运行时 bracketModel 仍在初始化，延后一帧再读取它。
@@ -175,6 +187,7 @@ function syncWindowFromRange(range: StageRange) {
     return
   }
   windowMotion.value = 'idle'
+  textFitSuspended.value = false
   windowLeft.value = nextLeft
   windowRight.value = nextRight
   pinLeftColumnToViewportTop(nextLeft, false)
@@ -966,6 +979,7 @@ onBeforeUnmount(() => {
                   :visual-override="visualOverride"
                   :suppress-transition="isWindowLive"
                   @preview="onStagePreview"
+                  @resize-interaction="onResizeInteraction"
                   @update:model-value="syncWindowFromRange"
                 />
               </div>
@@ -996,6 +1010,7 @@ onBeforeUnmount(() => {
                 :model="bracketModel"
                 :visible-span="windowSpan"
                 :motion-state="windowMotion"
+                :text-fit-enabled="!textFitSuspended"
               />
             </Transition>
           </div>

@@ -14,6 +14,7 @@ const props = defineProps<{
   density: BracketDensity
   visibleSpan: number
   motionState?: BracketMotionState
+  textFitEnabled?: boolean
   /** 0=不缩；1=≥3；2=≥4；3=≥5；4=≥6 */
   titleShortenLevel?: BracketTitleShortenLevel
   /** ≥6 列时为 false，隐藏校名 */
@@ -77,6 +78,7 @@ function isMatch(item: BracketMatchCard | BracketInfoCard): item is BracketMatch
           :density="density"
           :visible-span="visibleSpan"
           :motion-state="motionState ?? 'idle'"
+          :text-fit-enabled="textFitEnabled !== false"
           :title-shorten-level="titleShortenLevel ?? 0"
           :show-team-name="showTeamName !== false"
           :show-pending-score="showPendingScore !== false"
@@ -92,6 +94,7 @@ function isMatch(item: BracketMatchCard | BracketInfoCard): item is BracketMatch
           :density="density"
           :visible-span="visibleSpan"
           :motion-state="motionState ?? 'idle'"
+          :text-fit-enabled="textFitEnabled !== false"
           :title-shorten-level="titleShortenLevel ?? 0"
           :show-team-name="showTeamName !== false"
           :show-pending-score="showPendingScore !== false"

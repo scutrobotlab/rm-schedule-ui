@@ -21,6 +21,7 @@ const props = withDefaults(
     density: BracketDensity
     visibleSpan: number
     motionState?: BracketMotionState
+    textFitEnabled?: boolean
     titleShortenLevel?: BracketTitleShortenLevel
     showTeamName?: boolean
     showPendingScore?: boolean
@@ -40,6 +41,7 @@ const props = withDefaults(
     showGroupStats: false,
     groupName: '',
     motionState: 'idle',
+    textFitEnabled: true,
   },
 )
 const promotionStore = usePromotionStore()
@@ -66,7 +68,6 @@ const showAsMatches = computed(
 /** 2→3 列缩放期间保持挂载，由 --bracket-normal-progress 连续收起。 */
 const showMeta = computed(() => props.visibleSpan < 3)
 const showSupportRate = computed(() => Math.abs(props.visibleSpan - 1) < 0.001)
-const textFitEnabled = computed(() => props.motionState === 'idle')
 const titleTransition = computed(() => resolveBracketTextTransition(
   props.visibleSpan,
   (columns) => shortenBracketTitle(

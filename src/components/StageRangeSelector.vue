@@ -48,6 +48,8 @@ const emit = defineEmits<{
   change: [value: StageRange]
   /** 拖动中抛出分数边缘（松手仍走整数 v-model） */
   preview: [value: StageRangeEdges]
+  /** 仅缩放把手触发；平移选区不触发 */
+  resizeInteraction: [active: boolean]
 }>()
 
 const trackRef = ref<HTMLElement | null>(null)
@@ -256,6 +258,7 @@ function onPointerDown(mode: DragMode, e: PointerEvent) {
   const target = e.currentTarget as HTMLElement
   target.setPointerCapture(e.pointerId)
   dragMode.value = mode
+  if (mode === 'start' || mode === 'end') emit('resizeInteraction', true)
   dragPointerId.value = e.pointerId
   dragOriginX.value = e.clientX
   // 外部跟手停在半列时，从 override 边缘起拖
@@ -323,6 +326,7 @@ function onPointerUp(e: PointerEvent) {
   const wasClick = !didDrag.value
   dragMode.value = null
   dragPointerId.value = null
+  if (mode === 'start' || mode === 'end') emit('resizeInteraction', false)
 
   if (wasClick) {
     const clickedIndex = indexFromClientX(e.clientX)
