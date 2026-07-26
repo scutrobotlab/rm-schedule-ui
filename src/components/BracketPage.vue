@@ -806,6 +806,10 @@ watch(bracketMatchMenuOpen, (open) => {
   bracketMatchMenuMatch.value = null
 })
 
+function preventBrowserContextMenuWhileBracketMenuOpen(event: MouseEvent) {
+  if (bracketMatchMenuOpen.value) event.preventDefault()
+}
+
 const mpMatchIds = computed(() => {
   const part = renderedPart.value
   if (!part || !scheduleZone.value) return []
@@ -891,6 +895,11 @@ function openAnniversaryFromCorner(event: MouseEvent) {
 
 onMounted(() => {
   window.addEventListener('resize', onResize)
+  document.addEventListener(
+    'contextmenu',
+    preventBrowserContextMenuWhileBracketMenuOpen,
+    { capture: true },
+  )
   bracketViewportRef.value?.addEventListener('wheel', onBoardWheel, { passive: false })
   void promotionStore.updateTeamAbbreviations().catch(() => undefined)
 })
@@ -898,6 +907,11 @@ onMounted(() => {
 onBeforeUnmount(() => {
   cancelAnimationFrame(groupRenderRaf)
   window.removeEventListener('resize', onResize)
+  document.removeEventListener(
+    'contextmenu',
+    preventBrowserContextMenuWhileBracketMenuOpen,
+    { capture: true },
+  )
   bracketViewportRef.value?.removeEventListener('wheel', onBoardWheel)
   if (wheelSnapTimer) {
     clearTimeout(wheelSnapTimer)
