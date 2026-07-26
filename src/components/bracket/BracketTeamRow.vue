@@ -231,12 +231,6 @@ const useCompactTeamSlots = computed(() => (
   props.team.sourceKind === 'team' &&
   !shouldShowName.value
 ))
-const isTeamNameTransitioning = computed(() => (
-  props.visibleSpan != null &&
-  props.visibleSpan >= 4 &&
-  props.visibleSpan < 5 &&
-  props.team.sourceKind === 'team'
-))
 const isShortMatchSource = computed(() => (
   isPending.value &&
   /^\d+[胜败]$/.test(displayName.value.to || displayName.value.from)
@@ -259,7 +253,6 @@ const isShortMatchSource = computed(() => (
       'hide-name-ellipsis': hideNameEllipsis,
       'tight-edge-padding': useTightEdgePadding,
       'compact-team-slots': useCompactTeamSlots,
-      'team-name-transitioning': isTeamNameTransitioning,
       'logo-right': alignLogoRight && team.sourceKind === 'team',
       [`side-${side}`]: Boolean(side),
       [`medal-${medal}`]: Boolean(medal),
@@ -440,24 +433,6 @@ const isShortMatchSource = computed(() => (
 .team-row.compact-team-slots.logo-right .team-logo {
   order: initial;
   margin-left: 0;
-}
-
-.team-row.team-name-transitioning > .team-name,
-.team-row.team-name-transitioning > .team-name-spacer {
-  flex-basis: calc(
-    12rem
-    - 12rem * var(--bracket-compact-progress, 0)
-  );
-  max-width: calc(
-    12rem
-    - 12rem * var(--bracket-compact-progress, 0)
-  );
-  opacity: calc(1 - var(--bracket-compact-progress, 0));
-  transform:
-    translateX(calc(-3px * var(--bracket-compact-progress, 0)))
-    scaleX(calc(1 - 0.08 * var(--bracket-compact-progress, 0)));
-  transform-origin: left center;
-  transition: none;
 }
 
 .team-row.tight-edge-padding {
