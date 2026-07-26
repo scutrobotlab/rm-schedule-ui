@@ -49,8 +49,8 @@ const promotionStore = usePromotionStore()
 const statusLabel: Record<string, string> = {
   STARTED: '进行中',
   DONE: '已结束',
-  PENDING: '',
-  UNKNOWN: '',
+  PENDING: '未开始',
+  UNKNOWN: '待确认',
 }
 
 /** 2→3 列缩放期间保持挂载，由 --bracket-normal-progress 连续收起。 */

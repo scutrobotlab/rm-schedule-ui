@@ -56,8 +56,8 @@ const nodeTypeLabel: Record<string, string> = {
 const statusLabel: Record<string, string> = {
   STARTED: '进行中',
   DONE: '已结束',
-  PENDING: '',
-  UNKNOWN: '',
+  PENDING: '未开始',
+  UNKNOWN: '待确认',
 }
 
 /** 多场对阵按场次完整展示；纵向席位/场次一律不截断 */
