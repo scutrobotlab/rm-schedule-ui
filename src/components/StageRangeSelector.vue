@@ -281,8 +281,15 @@ function onPointerUp(e: PointerEvent) {
   dragMode.value = null
   dragPointerId.value = null
 
-  if (wasClick && mode === 'range') {
-    selectStageAt(indexFromClientX(e.clientX))
+  if (wasClick) {
+    const clickedIndex = indexFromClientX(e.clientX)
+    if (
+      mode === 'range' ||
+      (mode === 'start' && clickedIndex < normalized.value.start) ||
+      (mode === 'end' && clickedIndex > normalized.value.end)
+    ) {
+      selectStageAt(clickedIndex)
+    }
     didDrag.value = false
     return
   }
