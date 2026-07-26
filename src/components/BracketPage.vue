@@ -62,6 +62,8 @@ const bracketMenuVideoLoading = ref(false)
 let bracketMenuRequestVersion = 0
 
 const stageCount = computed(() => displayStages.value.length)
+/** 退场中的 Board 继续使用旧列数，完全淡出后才提交新 group 的列数 */
+const renderedStageCount = ref(0)
 const windowSpan = computed(() => Math.max(windowRight.value - windowLeft.value, 0.05))
 const visualOverride = computed((): StageRangeEdges => ({
   left: windowLeft.value,
@@ -69,7 +71,7 @@ const visualOverride = computed((): StageRangeEdges => ({
 }))
 
 const stripStyle = computed(() => {
-  const n = stageCount.value
+  const n = renderedStageCount.value || stageCount.value
   if (n <= 0) return {}
   const span = windowSpan.value
   return {
@@ -416,6 +418,7 @@ const renderedPart = computed(() => {
 })
 
 let groupRenderRaf = 0
+let pendingStageRange: StageRange | null = null
 
 function cancelPendingGroupWork() {
   cancelAnimationFrame(groupRenderRaf)
@@ -643,11 +646,39 @@ watch(
   () => {
     const n = displayStages.value.length
     const next = { start: 0, end: Math.min(1, Math.max(0, n - 1)) }
+    if (
+      renderedStageCount.value > 0 &&
+      (renderedZoneId.value !== zoneId.value || renderedGroup.value !== selectedGroup.value)
+    ) {
+      pendingStageRange = next
+      return
+    }
+    renderedStageCount.value = n
     stageRange.value = next
     syncWindowFromRange(next)
   },
   { immediate: true },
 )
+
+function onBracketGroupAfterLeave() {
+  const n = displayStages.value.length
+  const next = pendingStageRange
+  pendingStageRange = null
+
+  // 旧 Board 此时已经不可见，可以原子更新条带列数和可见窗口。
+  // 禁止 settle 过渡，避免新 Board 入场时仍经历一次宽度缩放。
+  renderedStageCount.value = n
+  if (!next) return
+  if (settleTimer) {
+    clearTimeout(settleTimer)
+    settleTimer = null
+  }
+  windowMotion.value = 'idle'
+  stageRange.value = next
+  windowLeft.value = next.start
+  windowRight.value = next.end + 1
+  textFitSuspended.value = false
+}
 
 function partHasStartedMatch(part: Part): boolean {
   if (!promotionStore.schedule.data?.event?.zones?.nodes) return false
@@ -1139,6 +1170,7 @@ onBeforeUnmount(() => {
             <Transition
               name="bracket-group"
               mode="out-in"
+              @after-leave="onBracketGroupAfterLeave"
             >
               <BracketBoard
                 v-if="bracketModel"
