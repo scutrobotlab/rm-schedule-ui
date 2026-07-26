@@ -492,8 +492,8 @@ function barsStyle(stage: StageItem): Record<string, string> {
 
 <style scoped lang="scss">
 .stage-range {
-  --track-bg: rgba(8, 28, 72, 0.92);
-  --selection-bg: rgba(120, 170, 255, 0.28);
+  --track-bg: rgba(8, 28, 72, 0.52);
+  --selection-bg: rgba(120, 170, 255, 0.22);
   --label-active: #ffffff;
   --label-inactive: rgba(180, 198, 230, 0.55);
   --icon-active: rgba(255, 255, 255, 0.95);
@@ -560,8 +560,14 @@ function barsStyle(stage: StageItem): Record<string, string> {
   position: relative;
   height: 48px;
   border-radius: var(--bar-radius);
-  background: var(--track-bg);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  background:
+    linear-gradient(180deg, rgba(180, 216, 246, 0.07), rgba(30, 64, 104, 0.015)),
+    var(--track-bg);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    inset 0 0 0 1px rgba(170, 205, 236, 0.07);
+  backdrop-filter: blur(14px) saturate(1.18);
+  -webkit-backdrop-filter: blur(14px) saturate(1.18);
   overflow: visible;
   cursor: pointer;
 }
@@ -747,7 +753,7 @@ function barsStyle(stage: StageItem): Record<string, string> {
 }
 
 .stage-range--dragging .stage-range__selection::before {
-  background: rgba(140, 185, 255, 0.34);
+  background: rgba(140, 185, 255, 0.28);
 }
 
 .stage-range__handle {
@@ -817,6 +823,12 @@ function barsStyle(stage: StageItem): Record<string, string> {
   line-height: 1;
   transform: translateY(-1px);
   text-align: center;
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .stage-range {
+    --track-bg: rgba(8, 28, 72, 0.88);
+  }
 }
 
 @media (max-width: 600px) {

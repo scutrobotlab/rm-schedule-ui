@@ -236,12 +236,18 @@ function groupStat(
     - 2px * var(--bracket-compact-progress, 0)
   );
   border-radius: calc(8px - 2px * var(--bracket-compact-progress, 0));
-  background: rgba(4, 12, 28, 0.24);
-  border: 1px solid rgba(120, 170, 220, 0.18);
+  background:
+    linear-gradient(180deg, rgba(162, 205, 240, 0.085) 0%, rgba(22, 50, 78, 0.025) 42%),
+    rgba(4, 12, 28, 0.38);
+  border: 1px solid rgba(154, 196, 230, 0.23);
   border-left-width: 3px;
-  border-left-color: rgba(120, 170, 220, 0.45);
-  backdrop-filter: blur(18px) saturate(1.15);
-  -webkit-backdrop-filter: blur(18px) saturate(1.15);
+  border-left-color: rgba(132, 187, 230, 0.58);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    inset 0 0 0 1px rgba(190, 220, 244, 0.02),
+    0 8px 22px rgba(0, 5, 16, 0.16);
+  backdrop-filter: blur(22px) saturate(1.28);
+  -webkit-backdrop-filter: blur(22px) saturate(1.28);
 }
 
 .group-stats-tools {
@@ -292,9 +298,15 @@ function groupStat(
 }
 
 .info-card.node-promote {
-  background: rgba(40, 28, 8, 0.22);
-  border-color: rgba(220, 170, 90, 0.28);
+  background:
+    linear-gradient(180deg, rgba(255, 215, 112, 0.13) 0%, rgba(93, 60, 12, 0.035) 46%),
+    rgba(34, 24, 8, 0.4);
+  border-color: rgba(232, 187, 102, 0.32);
   border-left-color: #ffc857;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 231, 164, 0.14),
+    inset 0 0 0 1px rgba(255, 215, 112, 0.025),
+    0 8px 22px rgba(12, 8, 0, 0.2);
 }
 
 .info-card.node-promote .card-title {
@@ -311,8 +323,14 @@ function groupStat(
 }
 
 .info-card.node-eliminate {
-  background: rgba(18, 18, 22, 0.24);
-  border-color: rgba(120, 120, 130, 0.25);
+  background:
+    linear-gradient(180deg, rgba(185, 190, 202, 0.08) 0%, rgba(55, 58, 68, 0.025) 44%),
+    rgba(16, 17, 22, 0.42);
+  border-color: rgba(148, 151, 163, 0.28);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.085),
+    inset 0 0 0 1px rgba(205, 208, 218, 0.02),
+    0 8px 22px rgba(0, 0, 4, 0.17);
 }
 
 .info-card.node-eliminate :deep(.rank-badge) {
@@ -460,6 +478,20 @@ function groupStat(
   .group-stats-enter-active,
   .group-stats-leave-active {
     transition: none;
+  }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .info-card {
+    background: rgba(7, 18, 36, 0.9);
+  }
+
+  .info-card.node-promote {
+    background: rgba(40, 29, 11, 0.9);
+  }
+
+  .info-card.node-eliminate {
+    background: rgba(23, 24, 30, 0.92);
   }
 }
 

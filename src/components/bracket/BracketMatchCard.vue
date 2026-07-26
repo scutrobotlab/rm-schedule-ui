@@ -252,18 +252,30 @@ function slotMedal(
     - 2px * var(--bracket-compact-progress, 0)
   );
   border-radius: calc(8px - 2px * var(--bracket-compact-progress, 0));
-  background: rgba(4, 12, 28, 0.28);
-  border: 1px solid rgba(120, 170, 220, 0.22);
+  background:
+    linear-gradient(180deg, rgba(162, 205, 240, 0.1) 0%, rgba(22, 50, 78, 0.03) 42%),
+    rgba(4, 12, 28, 0.4);
+  border: 1px solid rgba(154, 196, 230, 0.26);
   border-left-width: 3px;
-  border-left-color: rgba(120, 170, 220, 0.6);
-  backdrop-filter: blur(18px) saturate(1.15);
-  -webkit-backdrop-filter: blur(18px) saturate(1.15);
+  border-left-color: rgba(132, 187, 230, 0.68);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 0 0 1px rgba(190, 220, 244, 0.025),
+    0 8px 22px rgba(0, 5, 16, 0.18);
+  backdrop-filter: blur(22px) saturate(1.28);
+  -webkit-backdrop-filter: blur(22px) saturate(1.28);
 }
 
 .match-card.lane-gold {
-  background: rgba(40, 28, 8, 0.22);
-  border-color: rgba(220, 170, 90, 0.28);
+  background:
+    linear-gradient(180deg, rgba(255, 215, 112, 0.13) 0%, rgba(93, 60, 12, 0.035) 46%),
+    rgba(34, 24, 8, 0.4);
+  border-color: rgba(232, 187, 102, 0.32);
   border-left-color: #ffc857;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 231, 164, 0.14),
+    inset 0 0 0 1px rgba(255, 215, 112, 0.025),
+    0 8px 22px rgba(12, 8, 0, 0.2);
 }
 
 .match-card.lane-gold .card-title {
@@ -280,7 +292,15 @@ function slotMedal(
 }
 
 .match-card.podium-third {
+  background:
+    linear-gradient(180deg, rgba(214, 150, 101, 0.12) 0%, rgba(79, 43, 24, 0.035) 46%),
+    rgba(30, 20, 17, 0.4);
+  border-color: rgba(200, 137, 90, 0.3);
   border-left-color: #c8895a;
+  box-shadow:
+    inset 0 1px 0 rgba(238, 183, 137, 0.13),
+    inset 0 0 0 1px rgba(224, 168, 120, 0.025),
+    0 8px 22px rgba(12, 6, 3, 0.19);
 }
 
 .match-card.podium-third .card-title {
@@ -429,6 +449,20 @@ function slotMedal(
   .group-stats-enter-active,
   .group-stats-leave-active {
     transition: none;
+  }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .match-card {
+    background: rgba(7, 18, 36, 0.9);
+  }
+
+  .match-card.lane-gold {
+    background: rgba(40, 29, 11, 0.9);
+  }
+
+  .match-card.podium-third {
+    background: rgba(37, 24, 20, 0.9);
   }
 }
 

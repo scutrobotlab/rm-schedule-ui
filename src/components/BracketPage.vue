@@ -1146,9 +1146,14 @@ onBeforeUnmount(() => {
 }
 
 .glass-sheet {
-  background-color: rgba(10, 28, 48, 0.55);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  background:
+    linear-gradient(180deg, rgba(176, 216, 245, 0.1) 0%, rgba(30, 64, 92, 0.025) 100%),
+    rgba(7, 22, 40, 0.52);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    0 14px 32px -12px rgba(0, 6, 18, 0.24);
+  backdrop-filter: blur(18px) saturate(1.24);
+  -webkit-backdrop-filter: blur(18px) saturate(1.24);
 }
 
 .floating-container {
@@ -1228,6 +1233,12 @@ onBeforeUnmount(() => {
   .bracket-page * {
     animation: none !important;
     transition: none !important;
+  }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass-sheet {
+    background: rgba(8, 24, 43, 0.92);
   }
 }
 </style>
