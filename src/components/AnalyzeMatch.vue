@@ -58,8 +58,8 @@ Promise.all([updateRedRank, updateBlueRank]).finally(() => {
   loading.value = false;
 });
 
-function getRobotData(player: Player): Team {
-  return robotDataStore.robotData.zones.find((zone) => {
+function getRobotData(player: Player): Team | undefined {
+  return robotDataStore.robotData.zones?.find((zone) => {
     return Number(zone.zoneId) == props.zoneId
   })?.teams.find((team) => {
     return team.collegeName == player.team?.collegeName

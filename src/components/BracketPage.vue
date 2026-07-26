@@ -20,6 +20,7 @@ import logoUrl from '@/assets/logo.png'
 import { DefaultZoneMap, Part, SeasonList, ZoneMap } from '../constant/zone'
 import { usePromotionStore } from '../stores/promotion'
 import { useAppStore } from '../stores/app'
+import { useRobotDataStore } from '../stores/robot_data'
 import { getStageMatchCounts } from '../utils/stage_teams'
 import { buildBracketViewModel, zonesForPart } from '../utils/bracket_adapter'
 import {
@@ -41,6 +42,7 @@ const route = useRoute()
 const router = useRouter()
 const appStore = useAppStore()
 const promotionStore = usePromotionStore()
+const robotDataStore = useRobotDataStore()
 
 const liveMode = computed(() => route.query.live == '1')
 
@@ -712,6 +714,7 @@ watch(
   () => promotionStore.season,
   async () => {
     void promotionStore.updateGroupRank().catch(() => undefined)
+    void robotDataStore.updateRobotData(promotionStore.season).catch(() => undefined)
     await promotionStore.updateSchedule()
   },
   { immediate: true },

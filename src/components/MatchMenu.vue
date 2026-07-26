@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { BilibiliEmbedRenderer } from "vue-bilibili-embed-renderer";
 import { MatchNode } from "../types/schedule";
-import { computed, ref, watch } from "vue";
+import { computed, nextTick, ref, watch } from "vue";
 import moment from "moment/moment";
 import { useAppStore } from "../stores/app";
 import { usePromotionStore } from "../stores/promotion";
@@ -55,8 +55,13 @@ function openBilibiliSpace(uid: number) {
   window.open(`https://space.bilibili.com/${uid}`, '_blank')
 }
 
-function onAnalyzeMatch() {
+async function onAnalyzeMatch() {
   promotionStore.selectedMatch = match.value
+  if (props.variant === 'bracket') {
+    emit('close')
+    await nextTick()
+    await new Promise(resolve => setTimeout(resolve, 180))
+  }
   appStore.matchAnalysisDialog = true
 }
 </script>
