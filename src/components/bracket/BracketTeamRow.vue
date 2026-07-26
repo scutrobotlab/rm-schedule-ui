@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import type { BracketTeamSlot } from '../../types/bracket'
 import {
   resolveBracketDensity,
@@ -13,6 +13,7 @@ import { StaticCDN } from '../../utils/cdn'
 import schoolBlue from '@/assets/school_blue.png'
 import schoolGrey from '@/assets/school_grey.png'
 import schoolRed from '@/assets/school_red.png'
+import { usePromotionStore } from '../../stores/promotion'
 
 const props = withDefaults(
   defineProps<{
@@ -69,10 +70,24 @@ const props = withDefaults(
   },
 )
 
+const promotionStore = usePromotionStore()
+const logoLoaded = ref(false)
+const logoFailed = ref(false)
+
 function logoSrc(url: string | undefined): string | undefined {
   if (!url) return undefined
   return StaticCDN(`${url}?process=bg_white`)
 }
+
+const teamLogoSrc = computed(() => logoSrc(props.team.collegeLogo))
+const isDataLoading = computed(
+  () => !promotionStore.schedule.data?.event?.zones?.nodes,
+)
+
+watch(teamLogoSrc, () => {
+  logoLoaded.value = false
+  logoFailed.value = false
+}, { immediate: true })
 
 function sourceLevelForColumns(columns: number): BracketSourceShortenLevel {
   const titleLevel = resolveBracketTitleShortenLevel(columns)
@@ -168,16 +183,24 @@ const isShortMatchSource = computed(() => (
     </Transition>
 
     <span
-      v-if="team.groupRank != null"
+      v-if="!isDataLoading && team.groupRank != null"
       class="rank-badge"
     >{{ team.groupRank }}</span>
 
+    <span
+      v-if="isDataLoading && (showPlaceholderLogo || showName)"
+      class="team-logo team-logo-skeleton skeleton-pulse"
+      aria-hidden="true"
+    />
     <img
-      v-if="team.sourceKind === 'team' && team.collegeLogo"
+      v-else-if="team.sourceKind === 'team' && teamLogoSrc && !logoFailed"
       class="team-logo"
-      :src="logoSrc(team.collegeLogo)"
+      :class="{ 'logo-loading skeleton-pulse': !logoLoaded }"
+      :src="teamLogoSrc"
       alt=""
       loading="lazy"
+      @load="logoLoaded = true"
+      @error="logoFailed = true"
     />
     <img
       v-else-if="team.sourceKind === 'team'"
@@ -193,7 +216,12 @@ const isShortMatchSource = computed(() => (
     />
 
     <span
-      v-if="shouldShowName"
+      v-if="isDataLoading && shouldShowName"
+      class="team-name-skeleton skeleton-pulse"
+      aria-hidden="true"
+    />
+    <span
+      v-else-if="shouldShowName"
       class="team-name text-transition"
       :class="{ 'short-match-source': isShortMatchSource }"
       :title="team.sourceLabel || team.displayName"
@@ -221,7 +249,12 @@ const isShortMatchSource = computed(() => (
     </Transition>
 
     <span
-      v-if="shouldShowScore && score != null"
+      v-if="isDataLoading && showScore"
+      class="team-score-skeleton skeleton-pulse"
+      aria-hidden="true"
+    />
+    <span
+      v-else-if="shouldShowScore && score != null"
       class="team-score"
       :class="{ 'pending-score': isPending }"
     >{{ score }}</span>
@@ -480,6 +513,11 @@ const isShortMatchSource = computed(() => (
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .skeleton-pulse {
+    animation: none;
+    opacity: 0.62;
+  }
+
   .support-rate-fill-enter-active,
   .support-rate-fill-leave-active,
   .support-rate-text-enter-active,
@@ -519,6 +557,46 @@ const isShortMatchSource = computed(() => (
   border-radius: 50%;
   object-fit: cover;
   background: rgba(255, 255, 255, 0.85);
+}
+
+.team-logo.logo-loading,
+.team-logo-skeleton {
+  background: rgba(190, 210, 232, 0.18);
+}
+
+.team-logo.logo-loading {
+  object-position: -9999px -9999px;
+}
+
+.team-name-skeleton {
+  flex: 1 1 auto;
+  width: min(56%, 7rem);
+  max-width: 7rem;
+  height: 0.62em;
+  border-radius: 999px;
+  background: rgba(190, 210, 232, 0.15);
+}
+
+.team-score-skeleton {
+  flex: 0 0 1.1rem;
+  width: 1.1rem;
+  height: 0.62em;
+  border-radius: 999px;
+  background: rgba(190, 210, 232, 0.13);
+}
+
+.skeleton-pulse {
+  animation: skeleton-pulse 1.35s ease-in-out infinite alternate;
+}
+
+@keyframes skeleton-pulse {
+  from {
+    opacity: 0.42;
+  }
+
+  to {
+    opacity: 0.82;
+  }
 }
 
 .team-logo.pending-logo {
