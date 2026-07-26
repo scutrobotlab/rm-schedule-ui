@@ -759,8 +759,6 @@ function onResize() {
 }
 
 onMounted(() => {
-  // 晋级图不自动弹出周年公告，仍可通过左下角 Logo 手动打开
-  appStore.anniversaryAnnouncementDialog = false
   window.addEventListener('resize', onResize)
   bracketViewportRef.value?.addEventListener('wheel', onBoardWheel, { passive: false })
 })

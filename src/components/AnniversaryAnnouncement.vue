@@ -62,6 +62,8 @@ function closeDialog() {
 <template>
   <v-dialog
     v-model="appStore.anniversaryAnnouncementDialog"
+    content-class="anniversary-dialog"
+    location="bottom center"
     width="100%"
     max-width="720"
     @update:model-value="onDialogModelUpdate"
@@ -130,7 +132,7 @@ function closeDialog() {
 <style scoped lang="scss">
 .anniversary-card {
   width: 100%;
-  max-height: calc(100vh - 48px);
+  max-height: calc(100vh - 24px);
   overflow-y: auto;
 }
 
@@ -214,5 +216,12 @@ function closeDialog() {
   .reopen-tip {
     font-size: 0.8rem;
   }
+}
+</style>
+
+<style lang="scss">
+.v-overlay__content.anniversary-dialog {
+  margin: 24px 24px 0;
+  max-height: calc(100% - 24px);
 }
 </style>
