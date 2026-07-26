@@ -1,6 +1,11 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import championIcon from '@/assets/champion.png'
+import {
+  findOverlappingStageLabels,
+  splitOverlappingStageLabel,
+  splitStageLabelByMeaning,
+} from '@/utils/stage_label_layout'
 
 export interface StageItem {
   label: string
@@ -46,6 +51,10 @@ const emit = defineEmits<{
 }>()
 
 const trackRef = ref<HTMLElement | null>(null)
+const labelsRef = ref<HTMLElement | null>(null)
+const labelMeasureRefs = ref<HTMLElement[]>([])
+const overlappingLabelIndexes = ref<Set<number>>(new Set())
+let labelsResizeObserver: ResizeObserver | null = null
 
 type DragMode = 'start' | 'end' | 'range'
 const dragMode = ref<DragMode | null>(null)
@@ -124,18 +133,52 @@ function isActive(index: number): boolean {
   return index >= start && index <= end
 }
 
-/** 超过 8 个字时按语义断句（如 16进8败者组 / 第一轮） */
-const LABEL_BREAK_SUFFIXES = ['第一轮', '第二轮', '第三轮', '第四轮', '第五轮', '胜者组', '败者组'] as const
+const hasSemanticWrap = computed(() => (
+  props.stages.some((stage) => splitStageLabelByMeaning(stage.label).length > 1)
+))
+const useTwoLineLayout = computed(() => (
+  hasSemanticWrap.value || overlappingLabelIndexes.value.size > 0
+))
 
-function labelLines(label: string): string[] {
-  if (label.length <= 8) return [label]
-  for (const suffix of LABEL_BREAK_SUFFIXES) {
-    if (label.endsWith(suffix) && label.length > suffix.length) {
-      return [label.slice(0, -suffix.length), suffix]
-    }
+function labelLines(label: string, index: number): string[] {
+  const semanticLines = splitStageLabelByMeaning(label)
+  if (semanticLines.length > 1) return semanticLines
+  if (overlappingLabelIndexes.value.has(index)) {
+    return splitOverlappingStageLabel(label)
   }
-  const mid = Math.ceil(label.length / 2)
-  return [label.slice(0, mid), label.slice(mid)]
+  return [label]
+}
+
+function setLabelMeasureRef(element: Element | null, index: number) {
+  if (element instanceof HTMLElement) {
+    labelMeasureRefs.value[index] = element
+  }
+}
+
+function measureLabelOverlap() {
+  const labels = labelsRef.value
+  const measures = labelMeasureRefs.value.slice(0, stageCount.value)
+  if (stageCount.value < 2) {
+    overlappingLabelIndexes.value = new Set()
+    return
+  }
+  if (!labels || measures.length !== stageCount.value || measures.some((el) => !el)) {
+    overlappingLabelIndexes.value = new Set()
+    return
+  }
+
+  const labelsRect = labels.getBoundingClientRect()
+  const cellWidth = labelsRect.width / stageCount.value
+  const centers = measures.map((_, index) => (
+    labelsRect.left + cellWidth * (index + 0.5)
+  ))
+  const widths = measures.map((element) => element.getBoundingClientRect().width)
+  overlappingLabelIndexes.value = findOverlappingStageLabels(widths, centers)
+}
+
+async function scheduleLabelMeasurement() {
+  await nextTick()
+  measureLabelOverlap()
 }
 
 function emitRange(start: number, end: number, force = false) {
@@ -334,6 +377,28 @@ watch(
   { immediate: true },
 )
 
+watch(
+  () => props.stages.map((stage) => stage.label),
+  () => {
+    labelMeasureRefs.value = []
+    void scheduleLabelMeasurement()
+  },
+)
+
+onMounted(() => {
+  void scheduleLabelMeasurement()
+  if (labelsRef.value) {
+    labelsResizeObserver = new ResizeObserver(measureLabelOverlap)
+    labelsResizeObserver.observe(labelsRef.value)
+  }
+  document.fonts?.ready.then(measureLabelOverlap)
+})
+
+onBeforeUnmount(() => {
+  labelsResizeObserver?.disconnect()
+  labelsResizeObserver = null
+})
+
 function barList(stage: StageItem): number[] {
   if (typeof stage.icon !== 'number') return []
   return Array.from({ length: stage.icon }, (_, i) => i)
@@ -378,10 +443,11 @@ function barsStyle(stage: StageItem): Record<string, string> {
     :class="{
       'stage-range--dragging': isDragging,
       'stage-range--override': suppressTransition,
+      'stage-range--labels-wrap': useTwoLineLayout,
     }"
     :style="{ '--stage-count': Math.max(stageCount, 1) }"
   >
-    <div class="stage-range__labels">
+    <div ref="labelsRef" class="stage-range__labels">
       <button
         v-for="(stage, index) in stages"
         :key="`label-${index}`"
@@ -389,17 +455,29 @@ function barsStyle(stage: StageItem): Record<string, string> {
         class="stage-range__label"
         :class="{
           'stage-range__label--active': isActive(index),
-          'stage-range__label--wrap': labelLines(stage.label).length > 1,
+          'stage-range__label--wrap': labelLines(stage.label, index).length > 1,
         }"
         :aria-label="`切换到${stage.label}`"
         @click="onLabelClick(index)"
       >
         <span
-          v-for="(line, lineIndex) in labelLines(stage.label)"
+          v-for="(line, lineIndex) in labelLines(stage.label, index)"
           :key="lineIndex"
           class="stage-range__label-line"
         >{{ line }}</span>
       </button>
+      <div class="stage-range__label-measures" aria-hidden="true">
+        <span
+          v-for="(stage, index) in stages"
+          :key="`measure-${index}`"
+          class="stage-range__label-measure-cell"
+        >
+          <span
+            :ref="(element) => setLabelMeasureRef(element, index)"
+            class="stage-range__label-measure"
+          >{{ stage.label }}</span>
+        </span>
+      </div>
     </div>
 
     <div
@@ -512,6 +590,7 @@ function barsStyle(stage: StageItem): Record<string, string> {
 }
 
 .stage-range__labels {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(var(--stage-count), minmax(0, 1fr));
   gap: 0;
@@ -537,6 +616,10 @@ function barsStyle(stage: StageItem): Record<string, string> {
   transition: color 0.28s var(--snap-ease);
 }
 
+.stage-range--labels-wrap .stage-range__label {
+  min-height: 2.4em;
+}
+
 .stage-range__label:focus-visible {
   outline: 2px solid rgba(140, 180, 255, 0.7);
   outline-offset: 2px;
@@ -549,6 +632,30 @@ function barsStyle(stage: StageItem): Record<string, string> {
 
 .stage-range__label-line {
   display: block;
+  white-space: nowrap;
+}
+
+.stage-range__label-measures {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--stage-count), minmax(0, 1fr));
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.stage-range__label-measure-cell {
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+  font: inherit;
+  font-size: clamp(11px, 2.4vw, 14px);
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.stage-range__label-measure {
+  flex: none;
   white-space: nowrap;
 }
 
