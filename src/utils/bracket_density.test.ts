@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   bracketDisplayUnits,
+  normalizeBracketVisibleSpan,
   resolveBracketTextTransition,
   resolveBracketTitleShortenLevel,
   resolveBracketVisualProgress,
@@ -64,6 +65,18 @@ describe('resolveBracketTextTransition', () => {
       to: 4,
       progress: 0,
     })
+  })
+
+  it('浮点误差产生的近似整数不进入相邻档位过渡', () => {
+    expect(resolveBracketTextTransition(
+      2.9999999999999996,
+      (columns) => `level-${columns}`,
+    )).toEqual({
+      from: 'level-3',
+      to: 'level-3',
+      progress: 0,
+    })
+    expect(normalizeBracketVisibleSpan(3.0000000000000004)).toBe(3)
   })
 })
 

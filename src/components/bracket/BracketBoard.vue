@@ -2,6 +2,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { BracketViewModel } from '../../types/bracket'
 import {
+  normalizeBracketVisibleSpan,
   resolveBracketDensity,
   resolveBracketTitleShortenLevel,
   resolveBracketVisualProgress,
@@ -31,10 +32,13 @@ const columnHeights = ref<Record<number, number>>({})
 
 const columnCount = computed(() => props.model.columns.length)
 const spanForDensity = computed(() => {
-  const span = props.visibleSpan ?? columnCount.value
+  const span = normalizeBracketVisibleSpan(props.visibleSpan ?? columnCount.value)
   return Math.max(1, Math.floor(span))
 })
-const visibleSpan = computed(() => Math.max(1, props.visibleSpan ?? columnCount.value))
+const visibleSpan = computed(() => Math.max(
+  1,
+  normalizeBracketVisibleSpan(props.visibleSpan ?? columnCount.value),
+))
 const density = computed(() => resolveBracketDensity(spanForDensity.value))
 const titleShortenLevel = computed(() => resolveBracketTitleShortenLevel(spanForDensity.value))
 const showTeamName = computed(() => shouldShowBracketTeamName(visibleSpan.value))

@@ -26,23 +26,45 @@ function fit(el: AutoFitElement): void {
     enabled: true,
     minFontSize: 7,
   }
+
+  // font-size 本身有过渡时，移除上一次的内联字号后，getComputedStyle() 仍会
+  // 返回过渡中的旧字号。若直接拿它作为下一次适配的基准，重复测量会让字号
+  // 单向递减。测量和写入期间临时关闭过渡，强制读取 CSS 声明的真实基准值。
+  const previousTransition = el.style.getPropertyValue('transition')
+  const previousTransitionPriority = el.style.getPropertyPriority('transition')
+  el.style.setProperty('transition', 'none', 'important')
   el.style.removeProperty('font-size')
-  if (!enabled || el.clientWidth <= 0) return
+  // 触发布局，使后续 computed style 不再停留在取消前的过渡状态。
+  void el.offsetWidth
+
+  if (!enabled || el.clientWidth <= 0) {
+    restoreTransition(el, previousTransition, previousTransitionPriority)
+    return
+  }
 
   const rect = el.getBoundingClientRect()
   const parentRect = el.parentElement?.getBoundingClientRect()
   const availableWidth = parentRect
     ? Math.max(0, Math.min(rect.right, parentRect.right) - Math.max(rect.left, parentRect.left))
     : el.clientWidth
-  if (availableWidth <= 0) return
+  if (availableWidth <= 0) {
+    restoreTransition(el, previousTransition, previousTransitionPriority)
+    return
+  }
 
   const style = getComputedStyle(el)
   const baseFontSize = Number.parseFloat(style.fontSize)
-  if (!Number.isFinite(baseFontSize)) return
+  if (!Number.isFinite(baseFontSize)) {
+    restoreTransition(el, previousTransition, previousTransitionPriority)
+    return
+  }
 
   const canvas = document.createElement('canvas')
   const context = canvas.getContext('2d')
-  if (!context) return
+  if (!context) {
+    restoreTransition(el, previousTransition, previousTransitionPriority)
+    return
+  }
   context.font = style.font
 
   const candidates = el.children.length > 0
@@ -57,9 +79,23 @@ function fit(el: AutoFitElement): void {
     )
   }, 0)
 
-  if (requiredWidth <= availableWidth) return
-  const fittedSize = Math.max(minFontSize, baseFontSize * availableWidth / requiredWidth)
-  el.style.fontSize = `${fittedSize}px`
+  if (requiredWidth > availableWidth) {
+    const fittedSize = Math.max(minFontSize, baseFontSize * availableWidth / requiredWidth)
+    el.style.fontSize = `${fittedSize}px`
+  }
+
+  // 在恢复过渡前提交最终字号，避免恢复后又从旧的动画值开始插值。
+  void el.offsetWidth
+  restoreTransition(el, previousTransition, previousTransitionPriority)
+}
+
+function restoreTransition(
+  el: HTMLElement,
+  value: string,
+  priority: string,
+): void {
+  if (value) el.style.setProperty('transition', value, priority)
+  else el.style.removeProperty('transition')
 }
 
 function scheduleFit(el: AutoFitElement): void {

@@ -24,6 +24,18 @@ export interface BracketVisualProgress {
 }
 
 const MAX_BRACKET_TITLE_UNITS = 6
+const INTEGER_SPAN_EPSILON = 0.001
+
+/**
+ * 横向拖动会经过多次浮点加减，整数列宽可能变成 2.999999999。
+ * 在密度和文字档位计算前吸附到整数，避免误进入相邻档位的过渡态。
+ */
+export function normalizeBracketVisibleSpan(visibleSpan: number): number {
+  const rounded = Math.round(visibleSpan)
+  return Math.abs(visibleSpan - rounded) < INTEGER_SPAN_EPSILON
+    ? rounded
+    : visibleSpan
+}
 
 export function resolveBracketDensity(columnCount: number): BracketDensity {
   if (columnCount <= 2) return 'comfortable'
@@ -54,7 +66,7 @@ export function resolveBracketTextTransition<T>(
   visibleSpan: number,
   resolve: (columnCount: number) => T,
 ): BracketTextTransition<T> {
-  const clamped = Math.max(1, visibleSpan)
+  const clamped = Math.max(1, normalizeBracketVisibleSpan(visibleSpan))
   const lower = Math.floor(clamped)
   const upper = Math.ceil(clamped)
   return {
