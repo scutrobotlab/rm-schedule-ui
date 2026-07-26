@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { BilibiliEmbedRenderer } from "vue-bilibili-embed-renderer";
 import { MatchNode } from "../types/schedule";
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 import moment from "moment/moment";
 import { useAppStore } from "../stores/app";
 import { usePromotionStore } from "../stores/promotion";
@@ -22,6 +22,18 @@ const emit = defineEmits<{
 const appStore = useAppStore()
 const promotionStore = usePromotionStore();
 const match = computed(() => props.match)
+const videoReady = ref(false)
+const videoPending = computed(() => (
+  props.videoLoading ||
+  (Boolean(promotionStore.bilibiliReplay) && !videoReady.value)
+))
+
+watch(
+  () => promotionStore.bilibiliReplay?.bvid,
+  () => {
+    videoReady.value = false
+  },
+)
 
 function matchTooltip(match: MatchNode): string {
   if (!match) return ""
@@ -88,21 +100,26 @@ function onAnalyzeMatch() {
     >
       <BilibiliEmbedRenderer
         v-if="promotionStore.bilibiliReplay"
+        class="bracket-video-frame"
+        :class="{ 'bracket-video-frame--ready': videoReady }"
         width="320"
         height="180"
         :bvid="promotionStore.bilibiliReplay.bvid"
+        @load="videoReady = true"
       />
-      <div
-        v-else
-        class="bracket-video-placeholder"
-        :class="{ 'bracket-video-placeholder--loading': videoLoading }"
-      >
-        <v-icon
-          :icon="videoLoading ? 'mdi-loading' : 'mdi-video-off-outline'"
-          :class="{ 'bracket-video-loading-icon': videoLoading }"
-        />
-        <span>{{ videoLoading ? '回放加载中' : '暂无比赛回放' }}</span>
-      </div>
+      <Transition name="bracket-video-cover">
+        <div
+          v-if="!promotionStore.bilibiliReplay || !videoReady"
+          class="bracket-video-placeholder"
+          :class="{ 'bracket-video-placeholder--loading': videoPending }"
+        >
+          <v-icon
+            :icon="videoPending ? 'mdi-loading' : 'mdi-video-off-outline'"
+            :class="{ 'bracket-video-loading-icon': videoPending }"
+          />
+          <span>{{ videoPending ? '回放加载中' : '暂无比赛回放' }}</span>
+        </div>
+      </Transition>
     </div>
 
     <BilibiliEmbedRenderer
@@ -240,6 +257,7 @@ function onAnalyzeMatch() {
 }
 
 .bracket-video-slot {
+  position: relative;
   width: 320px;
   max-width: calc(100% - 16px);
   height: 180px;
@@ -257,7 +275,19 @@ function onAnalyzeMatch() {
   }
 }
 
+.bracket-video-frame {
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+
+.bracket-video-frame--ready {
+  opacity: 1;
+}
+
 .bracket-video-placeholder {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
   display: flex;
   height: 100%;
   align-items: center;
@@ -269,6 +299,14 @@ function onAnalyzeMatch() {
   background:
     linear-gradient(145deg, rgba(174, 211, 239, 0.045), transparent),
     rgba(5, 16, 30, 0.16);
+}
+
+.bracket-video-cover-leave-active {
+  transition: opacity 220ms ease;
+}
+
+.bracket-video-cover-leave-to {
+  opacity: 0;
 }
 
 .bracket-video-placeholder--loading {
@@ -302,8 +340,11 @@ function onAnalyzeMatch() {
 
 @media (prefers-reduced-motion: reduce) {
   .bracket-video-placeholder--loading,
-  .bracket-video-loading-icon {
+  .bracket-video-loading-icon,
+  .bracket-video-frame,
+  .bracket-video-cover-leave-active {
     animation: none;
+    transition: none;
   }
 }
 </style>
