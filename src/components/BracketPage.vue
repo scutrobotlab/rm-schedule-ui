@@ -758,6 +758,16 @@ function onResize() {
   viewportWidth.value = window.innerWidth
 }
 
+function openAnniversaryFromCorner(event: MouseEvent) {
+  const isCoveredByBracketCard = document
+    .elementsFromPoint(event.clientX, event.clientY)
+    .some(element => element.closest('.match-card, .info-card'))
+
+  if (isCoveredByBracketCard) return
+
+  appStore.anniversaryAnnouncementDialog = true
+}
+
 onMounted(() => {
   window.addEventListener('resize', onResize)
   bracketViewportRef.value?.addEventListener('wheel', onBoardWheel, { passive: false })
@@ -979,7 +989,7 @@ onBeforeUnmount(() => {
           class="corner-logo-trigger"
           type="button"
           aria-label="打开三周年公告"
-          @click="appStore.anniversaryAnnouncementDialog = true"
+          @click="openAnniversaryFromCorner"
         />
 
         <v-bottom-sheet v-model="appStore.analysisDialog">
