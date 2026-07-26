@@ -8,6 +8,7 @@ interface AutoFitTextOptions {
 type AutoFitElement = HTMLElement & {
   __autoFitCleanup?: () => void
   __autoFitFrame?: number
+  __autoFitOptions?: Required<AutoFitTextOptions>
 }
 
 function optionsOf(binding: DirectiveBinding<boolean | AutoFitTextOptions>): Required<AutoFitTextOptions> {
@@ -20,8 +21,11 @@ function optionsOf(binding: DirectiveBinding<boolean | AutoFitTextOptions>): Req
   }
 }
 
-function fit(el: AutoFitElement, binding: DirectiveBinding<boolean | AutoFitTextOptions>): void {
-  const { enabled, minFontSize } = optionsOf(binding)
+function fit(el: AutoFitElement): void {
+  const { enabled, minFontSize } = el.__autoFitOptions ?? {
+    enabled: true,
+    minFontSize: 7,
+  }
   el.style.removeProperty('font-size')
   if (!enabled || el.clientWidth <= 0) return
 
@@ -51,21 +55,19 @@ function fit(el: AutoFitElement, binding: DirectiveBinding<boolean | AutoFitText
   el.style.fontSize = `${fittedSize}px`
 }
 
-function scheduleFit(
-  el: AutoFitElement,
-  binding: DirectiveBinding<boolean | AutoFitTextOptions>,
-): void {
+function scheduleFit(el: AutoFitElement): void {
   if (el.__autoFitFrame != null) cancelAnimationFrame(el.__autoFitFrame)
   el.__autoFitFrame = requestAnimationFrame(() => {
     el.__autoFitFrame = undefined
-    fit(el, binding)
+    fit(el)
   })
 }
 
 export const vAutoFitText: Directive<AutoFitElement, boolean | AutoFitTextOptions> = {
   mounted(el, binding) {
-    const resizeObserver = new ResizeObserver(() => scheduleFit(el, binding))
-    const mutationObserver = new MutationObserver(() => scheduleFit(el, binding))
+    el.__autoFitOptions = optionsOf(binding)
+    const resizeObserver = new ResizeObserver(() => scheduleFit(el))
+    const mutationObserver = new MutationObserver(() => scheduleFit(el))
     resizeObserver.observe(el)
     mutationObserver.observe(el, { childList: true, subtree: true, characterData: true })
     el.__autoFitCleanup = () => {
@@ -73,10 +75,11 @@ export const vAutoFitText: Directive<AutoFitElement, boolean | AutoFitTextOption
       mutationObserver.disconnect()
       if (el.__autoFitFrame != null) cancelAnimationFrame(el.__autoFitFrame)
     }
-    scheduleFit(el, binding)
+    scheduleFit(el)
   },
   updated(el, binding) {
-    scheduleFit(el, binding)
+    el.__autoFitOptions = optionsOf(binding)
+    scheduleFit(el)
   },
   unmounted(el) {
     el.__autoFitCleanup?.()

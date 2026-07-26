@@ -984,6 +984,7 @@ onBeforeUnmount(() => {
                 :key="`${renderedZoneId}-${renderedGroup}`"
                 :model="bracketModel"
                 :visible-span="windowSpan"
+                :motion-state="windowMotion"
               />
             </Transition>
           </div>

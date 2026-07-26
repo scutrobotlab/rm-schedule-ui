@@ -10,6 +10,7 @@ import {
   shouldShowBracketPlaceholderLogo,
   shouldShowBracketTeamName,
   shouldShowBracketTypeTag,
+  type BracketMotionState,
 } from '../../utils/bracket_density'
 import { bracketColumnGapForSpan } from '../../utils/bracket_column_gap'
 import { computeKnockoutLayout } from '../../utils/bracket_tree_layout'
@@ -20,6 +21,7 @@ const props = defineProps<{
   model: BracketViewModel
   /** 视口内可见跨度（可小数）；密度按取整后的 span 计算 */
   visibleSpan?: number
+  motionState?: BracketMotionState
 }>()
 
 const boardRef = ref<HTMLElement | null>(null)
@@ -159,6 +161,7 @@ watch(layoutKey, () => scheduleLayout())
         :column="column"
         :density="density"
         :visible-span="visibleSpan"
+        :motion-state="motionState ?? 'idle'"
         :title-shorten-level="titleShortenLevel"
         :show-team-name="showTeamName"
         :show-pending-score="showPendingScore"

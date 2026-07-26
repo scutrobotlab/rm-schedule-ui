@@ -7,6 +7,7 @@ import {
   resolveBracketTitleShortenLevel,
   shortenBracketTitle,
   type BracketDensity,
+  type BracketMotionState,
   type BracketTitleShortenLevel,
 } from '../../utils/bracket_density'
 import BracketTeamRow from './BracketTeamRow.vue'
@@ -19,6 +20,7 @@ const props = withDefaults(
     item: MatchCard
     density: BracketDensity
     visibleSpan: number
+    motionState?: BracketMotionState
     titleShortenLevel?: BracketTitleShortenLevel
     showTeamName?: boolean
     showPendingScore?: boolean
@@ -37,6 +39,7 @@ const props = withDefaults(
     showTypeTag: true,
     showGroupStats: false,
     groupName: '',
+    motionState: 'idle',
   },
 )
 const promotionStore = usePromotionStore()
@@ -51,6 +54,7 @@ const statusLabel: Record<string, string> = {
 /** 2→3 列缩放期间保持挂载，由 --bracket-normal-progress 连续收起。 */
 const showMeta = computed(() => props.visibleSpan < 3)
 const showSupportRate = computed(() => Math.abs(props.visibleSpan - 1) < 0.001)
+const textFitEnabled = computed(() => props.motionState === 'idle')
 const mpMatch = computed(() => (
   props.item.matchId ? promotionStore.getMpMatch(props.item.matchId) : undefined
 ))
@@ -138,8 +142,9 @@ function slotMedal(
     >
       <span
         v-if="titleTransition.from"
-        v-auto-fit-text="{ minFontSize: 8 }"
-        class="card-title text-transition auto-fit-text"
+        v-auto-fit-text="{ enabled: textFitEnabled, minFontSize: 8 }"
+        class="card-title text-transition"
+        :class="{ 'auto-fit-text': textFitEnabled }"
       >
         <span :style="{ opacity: 1 - titleTransition.progress }">{{ titleTransition.from }}</span>
         <span :style="{ opacity: titleTransition.progress }">{{ titleTransition.to }}</span>
@@ -184,6 +189,7 @@ function slotMedal(
         :score="item.redWinGames"
         :density="density"
         :visible-span="visibleSpan"
+        :text-fit-enabled="textFitEnabled"
         :show-score="true"
         :show-name="showTeamName"
         :show-pending-score="showPendingScore"
@@ -210,6 +216,7 @@ function slotMedal(
         :score="item.blueWinGames"
         :density="density"
         :visible-span="visibleSpan"
+        :text-fit-enabled="textFitEnabled"
         :show-score="true"
         :show-name="showTeamName"
         :show-pending-score="showPendingScore"

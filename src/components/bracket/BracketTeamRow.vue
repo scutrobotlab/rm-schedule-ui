@@ -22,6 +22,8 @@ const props = withDefaults(
     score: number | null
     density: BracketDensity
     visibleSpan?: number
+    /** 缩放/吸附结束后才对未确定席位执行完整文字适配 */
+    textFitEnabled?: boolean
     showScore: boolean
     /** ≥6 列时为 false */
     showName?: boolean
@@ -68,6 +70,7 @@ const props = withDefaults(
     winCount: '—',
     opponentScore: '—',
     visibleSpan: undefined,
+    textFitEnabled: true,
   },
 )
 
@@ -223,11 +226,11 @@ const isShortMatchSource = computed(() => (
     />
     <span
       v-else-if="shouldShowName"
-      v-auto-fit-text="{ enabled: isPending, minFontSize: 7 }"
+      v-auto-fit-text="{ enabled: isPending && textFitEnabled, minFontSize: 7 }"
       class="team-name text-transition"
       :class="{
-        'auto-fit-text': isPending,
-        'short-match-source': isShortMatchSource,
+        'auto-fit-text': isPending && textFitEnabled,
+        'short-match-source': isShortMatchSource && textFitEnabled,
       }"
       :title="team.sourceLabel || team.displayName"
     >

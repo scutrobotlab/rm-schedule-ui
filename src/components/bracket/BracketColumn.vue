@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import type { BracketColumn, BracketInfoCard, BracketMatchCard } from '../../types/bracket'
 import type {
   BracketDensity,
+  BracketMotionState,
   BracketTitleShortenLevel,
 } from '../../utils/bracket_density'
 import BracketMatchCardView from './BracketMatchCard.vue'
@@ -12,6 +13,7 @@ const props = defineProps<{
   column: BracketColumn
   density: BracketDensity
   visibleSpan: number
+  motionState?: BracketMotionState
   /** 0=不缩；1=≥3；2=≥4；3=≥5；4=≥6 */
   titleShortenLevel?: BracketTitleShortenLevel
   /** ≥6 列时为 false，隐藏校名 */
@@ -74,6 +76,7 @@ function isMatch(item: BracketMatchCard | BracketInfoCard): item is BracketMatch
           :item="item"
           :density="density"
           :visible-span="visibleSpan"
+          :motion-state="motionState ?? 'idle'"
           :title-shorten-level="titleShortenLevel ?? 0"
           :show-team-name="showTeamName !== false"
           :show-pending-score="showPendingScore !== false"
@@ -88,6 +91,7 @@ function isMatch(item: BracketMatchCard | BracketInfoCard): item is BracketMatch
           :item="item"
           :density="density"
           :visible-span="visibleSpan"
+          :motion-state="motionState ?? 'idle'"
           :title-shorten-level="titleShortenLevel ?? 0"
           :show-team-name="showTeamName !== false"
           :show-pending-score="showPendingScore !== false"

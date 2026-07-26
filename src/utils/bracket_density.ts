@@ -3,6 +3,7 @@
  * 仅收缩字号/内边距/次要元信息；纵向对阵与席位永不截断。
  */
 export type BracketDensity = 'comfortable' | 'normal' | 'compact'
+export type BracketMotionState = 'live' | 'settle' | 'idle'
 export type BracketSourceShortenLevel = 0 | 1 | 2 | 3
 
 /** 0=不缩；1=≥3；2=≥4；3=≥5；4=≥6 */

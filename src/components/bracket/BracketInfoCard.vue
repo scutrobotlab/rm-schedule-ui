@@ -7,6 +7,7 @@ import {
   resolveBracketTitleShortenLevel,
   shortenBracketTitle,
   type BracketDensity,
+  type BracketMotionState,
   type BracketTitleShortenLevel,
 } from '../../utils/bracket_density'
 import BracketTeamRow from './BracketTeamRow.vue'
@@ -19,6 +20,7 @@ const props = withDefaults(
     item: InfoCard
     density: BracketDensity
     visibleSpan: number
+    motionState?: BracketMotionState
     titleShortenLevel?: BracketTitleShortenLevel
     showTeamName?: boolean
     showPendingScore?: boolean
@@ -37,6 +39,7 @@ const props = withDefaults(
     showTypeTag: true,
     showGroupStats: false,
     groupName: '',
+    motionState: 'idle',
   },
 )
 const promotionStore = usePromotionStore()
@@ -63,6 +66,7 @@ const showAsMatches = computed(
 /** 2→3 列缩放期间保持挂载，由 --bracket-normal-progress 连续收起。 */
 const showMeta = computed(() => props.visibleSpan < 3)
 const showSupportRate = computed(() => Math.abs(props.visibleSpan - 1) < 0.001)
+const textFitEnabled = computed(() => props.motionState === 'idle')
 const titleTransition = computed(() => resolveBracketTextTransition(
   props.visibleSpan,
   (columns) => shortenBracketTitle(
@@ -111,8 +115,9 @@ function groupStat(
   >
     <div class="card-head">
       <span
-        v-auto-fit-text="{ minFontSize: 8 }"
-        class="card-title text-transition auto-fit-text"
+        v-auto-fit-text="{ enabled: textFitEnabled, minFontSize: 8 }"
+        class="card-title text-transition"
+        :class="{ 'auto-fit-text': textFitEnabled }"
       >
         <span :style="{ opacity: 1 - titleTransition.progress }">{{ titleTransition.from }}</span>
         <span :style="{ opacity: titleTransition.progress }">{{ titleTransition.to }}</span>
@@ -151,6 +156,7 @@ function groupStat(
             :score="m.redWinGames"
             :density="density"
             :visible-span="visibleSpan"
+            :text-fit-enabled="textFitEnabled"
             :show-score="true"
             :show-name="showTeamName"
             :show-pending-score="showPendingScore"
@@ -175,6 +181,7 @@ function groupStat(
             :score="m.blueWinGames"
             :density="density"
             :visible-span="visibleSpan"
+            :text-fit-enabled="textFitEnabled"
             :show-score="true"
             :show-name="showTeamName"
             :show-pending-score="showPendingScore"
@@ -217,6 +224,7 @@ function groupStat(
         :score="null"
         :density="density"
         :visible-span="visibleSpan"
+        :text-fit-enabled="textFitEnabled"
         :show-score="false"
         :show-name="showTeamName"
         :show-pending-score="showPendingScore"
