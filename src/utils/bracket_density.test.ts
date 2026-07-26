@@ -121,6 +121,14 @@ describe('resolveBracketTeamDisplayName', () => {
       2,
     )).toBe('南京航空航天大…')
   })
+
+  it('四列时简称只保留前两个字符', () => {
+    expect(resolveBracketTeamDisplayName(
+      '南京航空航天大学金城学院',
+      '南航金城',
+      4,
+    )).toBe('南航')
+  })
 })
 
 describe('resolveBracketTitleShortenLevel', () => {

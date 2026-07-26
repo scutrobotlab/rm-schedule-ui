@@ -216,6 +216,17 @@ export function resolveBracketTeamDisplayName(
   }
   if (
     visibleSpan != null &&
+    visibleSpan >= 4 &&
+    visibleSpan < 5 &&
+    abbreviation
+  ) {
+    const characters = Array.from(abbreviation)
+    return characters.length > 2
+      ? characters.slice(0, 2).join('')
+      : abbreviation
+  }
+  if (
+    visibleSpan != null &&
     visibleSpan >= 3 &&
     visibleSpan < 6 &&
     abbreviation

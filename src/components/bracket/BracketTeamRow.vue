@@ -153,11 +153,24 @@ const isThreeColumnAbbreviation = computed(() => {
   const fullName = props.team.collegeName ?? props.team.displayName
   return Boolean(promotionStore.teamAbbreviations[fullName])
 })
-/** 单列校名、二列短校名与三列简称始终适配；缩放暂停只影响未确定席位。 */
+const isFourColumnAbbreviation = computed(() => {
+  if (
+    props.team.sourceKind !== 'team' ||
+    props.visibleSpan == null ||
+    props.visibleSpan < 4 ||
+    props.visibleSpan >= 5
+  ) {
+    return false
+  }
+  const fullName = props.team.collegeName ?? props.team.displayName
+  return Boolean(promotionStore.teamAbbreviations[fullName])
+})
+/** 单列校名、二列校名及三/四列简称始终适配；缩放暂停只影响未确定席位。 */
 const autoFitActive = computed(() => (
   isSingleColumnTeam.value ||
   isTwoColumnTeam.value ||
   isThreeColumnAbbreviation.value ||
+  isFourColumnAbbreviation.value ||
   (isPending.value && props.textFitEnabled)
 ))
 const autoFitMinFontSize = computed(
@@ -193,6 +206,9 @@ const shouldShowScore = computed(
 const useExtraTightScoreGap = computed(
   () => props.visibleSpan != null && props.visibleSpan >= 6,
 )
+const hideNameEllipsis = computed(
+  () => props.visibleSpan != null && props.visibleSpan >= 3,
+)
 const isShortMatchSource = computed(() => (
   isPending.value &&
   /^\d+[胜败]$/.test(displayName.value.to || displayName.value.from)
@@ -210,6 +226,7 @@ const isShortMatchSource = computed(() => (
       'group-stats': showGroupStats,
       'tight-name-score-gap': tightNameScoreGap,
       'extra-tight-score-gap': useExtraTightScoreGap,
+      'hide-name-ellipsis': hideNameEllipsis,
       [`side-${side}`]: Boolean(side),
       [`medal-${medal}`]: Boolean(medal),
       [`density-${density}`]: true,
@@ -326,7 +343,7 @@ const isShortMatchSource = computed(() => (
   display: flex;
   align-items: center;
   gap: calc(
-    6px
+    4px
     - 1px * var(--bracket-normal-progress, 0)
     - 1px * var(--bracket-compact-progress, 0)
   );
@@ -742,6 +759,11 @@ const isShortMatchSource = computed(() => (
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.team-row.hide-name-ellipsis .team-name,
+.team-row.hide-name-ellipsis .team-name > span {
+  text-overflow: clip;
 }
 
 .team-name-spacer {
