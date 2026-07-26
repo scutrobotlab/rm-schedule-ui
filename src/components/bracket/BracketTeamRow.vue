@@ -545,7 +545,12 @@ const nameToOpacity = computed(() => (
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.035),
     inset 0 0 0 1px rgba(190, 220, 244, 0.018);
+  outline: 1px solid transparent;
+  outline-offset: 0;
   overflow: hidden;
+  transition:
+    outline-color 220ms ease,
+    box-shadow 220ms ease;
 }
 
 .team-row > :not(.support-rate-fill, .selection-highlight) {
@@ -581,9 +586,10 @@ const nameToOpacity = computed(() => (
 }
 
 .team-row.selected {
-  outline: 1px solid rgba(255, 225, 151, 0.78);
-  outline-offset: 0;
-  transition: outline-color 180ms ease;
+  outline-color: rgba(255, 225, 151, 0.78);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    inset 0 0 12px rgba(255, 214, 120, 0.12);
 }
 
 .team-row.selected > .selection-highlight {
@@ -740,8 +746,10 @@ const nameToOpacity = computed(() => (
 .team-row > .team-logo,
 .team-row > .team-name,
 .team-row > .team-name-spacer {
-  transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: transform;
+  transition:
+    transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 220ms ease;
+  will-change: transform, filter;
 }
 
 .team-row.has-support-rate > .rank-badge,
@@ -890,6 +898,7 @@ const nameToOpacity = computed(() => (
   .support-rate-text-leave-active,
   .team-stat-enter-active,
   .team-stat-leave-active,
+  .team-row,
   .team-row > .rank-badge,
   .team-row > .team-logo,
   .team-row > .team-name,
