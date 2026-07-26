@@ -55,14 +55,26 @@ function openBilibiliSpace(uid: number) {
   window.open(`https://space.bilibili.com/${uid}`, '_blank')
 }
 
-async function onAnalyzeMatch() {
-  promotionStore.selectedMatch = match.value
+async function runAfterBracketMenuClose(action: () => void) {
   if (props.variant === 'bracket') {
     emit('close')
     await nextTick()
     await new Promise(resolve => setTimeout(resolve, 180))
   }
-  appStore.matchAnalysisDialog = true
+  action()
+}
+
+async function onAnalyzeMatch() {
+  promotionStore.selectedMatch = match.value
+  await runAfterBracketMenuClose(() => {
+    appStore.matchAnalysisDialog = true
+  })
+}
+
+async function onAnalyzeTeam() {
+  await runAfterBracketMenuClose(() => {
+    appStore.analysisDialog = true
+  })
 }
 </script>
 
@@ -142,7 +154,7 @@ async function onAnalyzeMatch() {
         分析比赛{{ promotionStore.getCurrentZone().name }}第{{ match.orderNumber }}场
       </v-list-item>
       <v-list-item
-        @click="appStore.analysisDialog = true"
+        @click="onAnalyzeTeam"
         :disabled="!promotionStore.selectedPlayer?.team"
       >
         分析队伍{{ promotionStore.selectedPlayer?.team?.collegeName }}
@@ -293,6 +305,7 @@ async function onAnalyzeMatch() {
   position: absolute;
   z-index: 1;
   inset: 0;
+  pointer-events: none;
   display: flex;
   height: 100%;
   align-items: center;

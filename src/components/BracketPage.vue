@@ -1259,6 +1259,7 @@ onBeforeUnmount(() => {
         <v-menu
           v-model="bracketMatchMenuOpen"
           content-class="bracket-match-menu-overlay"
+          :close-on-content-click="false"
           :target="bracketMatchMenuTarget"
           location="end"
           transition="bracket-menu-transition"
