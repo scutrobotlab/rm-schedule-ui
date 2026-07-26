@@ -235,6 +235,10 @@ function groupStat(
         :show-name="showTeamName"
         :show-pending-score="showPendingScore"
         :force-pending-name="forcePendingName"
+        :align-logo-right="
+          visibleSpan >= 6 &&
+          (item.nodeType === 'promote' || item.nodeType === 'eliminate')
+        "
         :match-source-shorten-level="
           (titleShortenLevel ?? 0) >= 4 ? 3 : (titleShortenLevel ?? 0) >= 2 ? 2 : 0
         "

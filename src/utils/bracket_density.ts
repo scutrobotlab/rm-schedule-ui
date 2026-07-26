@@ -227,6 +227,14 @@ export function resolveBracketTeamDisplayName(
   }
   if (
     visibleSpan != null &&
+    visibleSpan >= 5 &&
+    visibleSpan < 6 &&
+    abbreviation
+  ) {
+    return Array.from(abbreviation)[0] ?? abbreviation
+  }
+  if (
+    visibleSpan != null &&
     visibleSpan >= 3 &&
     visibleSpan < 6 &&
     abbreviation

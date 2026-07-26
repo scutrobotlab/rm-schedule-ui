@@ -96,7 +96,7 @@ describe('resolveBracketTeamDisplayName', () => {
   it.each([
     [2, '上海交通大学'],
     [3, '上交'],
-    [5, '上交'],
+    [5, '上'],
     [6, '上海交通大学'],
   ])('%s 列时返回 %s', (visibleSpan, expected) => {
     expect(resolveBracketTeamDisplayName(
@@ -128,6 +128,14 @@ describe('resolveBracketTeamDisplayName', () => {
       '南航金城',
       4,
     )).toBe('南航')
+  })
+
+  it('五列时简称只保留首个字符', () => {
+    expect(resolveBracketTeamDisplayName(
+      '南京航空航天大学金城学院',
+      '南航金城',
+      5,
+    )).toBe('南')
   })
 })
 

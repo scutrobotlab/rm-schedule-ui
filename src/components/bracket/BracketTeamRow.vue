@@ -34,6 +34,8 @@ const props = withDefaults(
     forcePendingName?: boolean
     /** 收紧文字与比分的间距，为较长名次留出空间 */
     tightNameScoreGap?: boolean
+    /** 无校名/比分的结果席位中，将真实校徽靠右显示 */
+    alignLogoRight?: boolean
     /** 对阵红蓝方；排名席位等非对阵不传 */
     side?: 'red' | 'blue' | null
     /** 占位 R logo 的颜色，可与奖牌卡的边框阵营样式解耦 */
@@ -59,6 +61,7 @@ const props = withDefaults(
     showPendingScore: true,
     forcePendingName: false,
     tightNameScoreGap: false,
+    alignLogoRight: false,
     side: null,
     placeholderSide: null,
     medal: null,
@@ -231,6 +234,7 @@ const isShortMatchSource = computed(() => (
       'extra-tight-score-gap': useExtraTightScoreGap,
       'hide-name-ellipsis': hideNameEllipsis,
       'tight-edge-padding': useTightEdgePadding,
+      'logo-right': alignLogoRight && team.sourceKind === 'team',
       [`side-${side}`]: Boolean(side),
       [`medal-${medal}`]: Boolean(medal),
       [`density-${density}`]: true,
@@ -694,6 +698,11 @@ const isShortMatchSource = computed(() => (
 
 .team-logo.placeholder {
   opacity: 0.7;
+}
+
+.team-row.logo-right .team-logo {
+  order: 2;
+  margin-left: auto;
 }
 
 .rank-badge {
