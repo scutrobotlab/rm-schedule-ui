@@ -111,7 +111,12 @@ function groupStat(
 <template>
   <article
     class="info-card"
-    :class="[`lane-${item.lane}`, `node-${item.nodeType}`, `density-${density}`]"
+    :class="[
+      `lane-${item.lane}`,
+      `node-${item.nodeType}`,
+      `density-${density}`,
+      { 'compact-horizontal': visibleSpan >= 4 },
+    ]"
     :data-node-id="item.nodeId"
   >
     <div class="card-head">
@@ -573,5 +578,25 @@ function groupStat(
       - 0.02rem * var(--bracket-compact-progress, 0)
     );
   }
+}
+
+.info-card.compact-horizontal.node-promote,
+.info-card.compact-horizontal.node-eliminate {
+  padding-inline: calc(
+    4px
+    - 1px * var(--bracket-compact-progress, 0)
+  );
+}
+
+.info-card.compact-horizontal.node-promote :deep(.team-row),
+.info-card.compact-horizontal.node-eliminate :deep(.team-row) {
+  padding-inline: calc(
+    4px
+    - 1px * var(--bracket-compact-progress, 0)
+  );
+  gap: calc(
+    3px
+    - 1px * var(--bracket-compact-progress, 0)
+  );
 }
 </style>

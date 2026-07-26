@@ -204,10 +204,13 @@ const shouldShowScore = computed(
   () => props.showScore && (!isPending.value || props.showPendingScore),
 )
 const useExtraTightScoreGap = computed(
-  () => props.visibleSpan != null && props.visibleSpan >= 6,
+  () => props.visibleSpan != null && props.visibleSpan >= 4,
 )
 const hideNameEllipsis = computed(
   () => props.visibleSpan != null && props.visibleSpan >= 3,
+)
+const useTightEdgePadding = computed(
+  () => props.visibleSpan != null && props.visibleSpan >= 4,
 )
 const isShortMatchSource = computed(() => (
   isPending.value &&
@@ -227,6 +230,7 @@ const isShortMatchSource = computed(() => (
       'tight-name-score-gap': tightNameScoreGap,
       'extra-tight-score-gap': useExtraTightScoreGap,
       'hide-name-ellipsis': hideNameEllipsis,
+      'tight-edge-padding': useTightEdgePadding,
       [`side-${side}`]: Boolean(side),
       [`medal-${medal}`]: Boolean(medal),
       [`density-${density}`]: true,
@@ -376,6 +380,13 @@ const isShortMatchSource = computed(() => (
 .team-row > :not(.support-rate-fill) {
   position: relative;
   z-index: 1;
+}
+
+.team-row.tight-edge-padding {
+  padding-inline: calc(
+    4px
+    - 1px * var(--bracket-compact-progress, 0)
+  );
 }
 
 .support-rate-fill {
