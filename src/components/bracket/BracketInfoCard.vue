@@ -253,6 +253,9 @@ function groupStat(
 .info-card {
   position: relative;
   z-index: 1;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
   padding: calc(
     8px
     - 2px * var(--bracket-normal-progress, 0)
