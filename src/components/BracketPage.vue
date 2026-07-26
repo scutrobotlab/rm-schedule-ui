@@ -31,7 +31,11 @@ import type { BracketViewModel } from '../types/bracket'
 import type { MatchNode, Player } from '../types/schedule'
 import type { BilibiliReplay } from '../types/bilibili_replay'
 import type { TeamInfo } from '../types/team_info'
-import { isPointerTap } from '../utils/pointer_tap'
+import {
+  isPointerTap,
+  POINTER_PAN_AXIS_SLOP_PX,
+  POINTER_PAN_X_BIAS,
+} from '../utils/pointer_tap'
 
 const stageRange = ref<StageRange>({ start: 0, end: 1 })
 /** 视口左右边缘（右开区间，允许小数）；渲染与跟手以此为准 */
@@ -274,9 +278,9 @@ const panAxis = ref<'x' | 'y' | null>(null)
 let wheelSnapTimer: ReturnType<typeof setTimeout> | null = null
 
 /** 轴向阈值（px）：越小越容易进入轴向判定 */
-const PAN_AXIS_SLOP = 3
+const PAN_AXIS_SLOP = POINTER_PAN_AXIS_SLOP_PX
 /** 水平偏向：dx 达到 dy 的该比例即判为横向（>1 更易触发左右滑） */
-const PAN_X_BIAS = 1.35
+const PAN_X_BIAS = POINTER_PAN_X_BIAS
 /** 跟手增益：同位移下窗口滑动更快 */
 const PAN_GAIN = 1.35
 /** 单列时一格等于整个视口，提高增益以避免需要横跨近半屏才能触发换列 */

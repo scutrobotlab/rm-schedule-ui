@@ -16,7 +16,7 @@ import schoolGrey from '@/assets/school_grey.png'
 import schoolRed from '@/assets/school_red.png'
 import { usePromotionStore } from '../../stores/promotion'
 import { vAutoFitText } from '../../directives/auto_fit_text'
-import { isPointerTap } from '../../utils/pointer_tap'
+import { isHorizontalPointerPan, isPointerTap } from '../../utils/pointer_tap'
 
 const props = withDefaults(
   defineProps<{
@@ -202,12 +202,20 @@ function onPointerDown(event: PointerEvent) {
 
 function onPointerMove(event: PointerEvent) {
   if (pointerId.value !== event.pointerId) return
-  if (!isPointerTap(
-    pointerStartX.value,
-    pointerStartY.value,
-    event.clientX,
-    event.clientY,
-  )) {
+  if (
+    isHorizontalPointerPan(
+      pointerStartX.value,
+      pointerStartY.value,
+      event.clientX,
+      event.clientY,
+    ) ||
+    !isPointerTap(
+      pointerStartX.value,
+      pointerStartY.value,
+      event.clientX,
+      event.clientY,
+    )
+  ) {
     clearLongPressTimer()
   }
 }
