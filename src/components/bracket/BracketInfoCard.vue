@@ -12,6 +12,7 @@ import {
 import BracketTeamRow from './BracketTeamRow.vue'
 import { usePromotionStore } from '../../stores/promotion'
 import { resolveGroupRankStat, type GroupRankStatName } from '../../utils/group_rank'
+import { vAutoFitText } from '../../directives/auto_fit_text'
 
 const props = withDefaults(
   defineProps<{
@@ -109,7 +110,10 @@ function groupStat(
     :data-node-id="item.nodeId"
   >
     <div class="card-head">
-      <span class="card-title text-transition">
+      <span
+        v-auto-fit-text="{ minFontSize: 8 }"
+        class="card-title text-transition auto-fit-text"
+      >
         <span :style="{ opacity: 1 - titleTransition.progress }">{{ titleTransition.from }}</span>
         <span :style="{ opacity: titleTransition.progress }">{{ titleTransition.to }}</span>
       </span>
@@ -383,6 +387,11 @@ function groupStat(
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.auto-fit-text,
+.auto-fit-text > span {
+  text-overflow: clip;
 }
 
 .type-tag {

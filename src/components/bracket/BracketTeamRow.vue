@@ -14,6 +14,7 @@ import schoolBlue from '@/assets/school_blue.png'
 import schoolGrey from '@/assets/school_grey.png'
 import schoolRed from '@/assets/school_red.png'
 import { usePromotionStore } from '../../stores/promotion'
+import { vAutoFitText } from '../../directives/auto_fit_text'
 
 const props = withDefaults(
   defineProps<{
@@ -222,8 +223,12 @@ const isShortMatchSource = computed(() => (
     />
     <span
       v-else-if="shouldShowName"
+      v-auto-fit-text="{ enabled: isPending, minFontSize: 7 }"
       class="team-name text-transition"
-      :class="{ 'short-match-source': isShortMatchSource }"
+      :class="{
+        'auto-fit-text': isPending,
+        'short-match-source': isShortMatchSource,
+      }"
       :title="team.sourceLabel || team.displayName"
     >
       <span :style="{ opacity: 1 - displayName.progress }">{{ displayName.from || '—' }}</span>
@@ -645,6 +650,21 @@ const isShortMatchSource = computed(() => (
 .team-name.short-match-source > span {
   overflow: visible;
   text-overflow: clip;
+}
+
+.team-name.auto-fit-text,
+.team-name.auto-fit-text > span {
+  text-overflow: clip;
+}
+
+.team-name.auto-fit-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.team-name.auto-fit-text > span {
+  overflow: visible;
 }
 
 .text-transition {
