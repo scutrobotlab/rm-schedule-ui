@@ -29,6 +29,13 @@ function fit(el: AutoFitElement): void {
   el.style.removeProperty('font-size')
   if (!enabled || el.clientWidth <= 0) return
 
+  const rect = el.getBoundingClientRect()
+  const parentRect = el.parentElement?.getBoundingClientRect()
+  const availableWidth = parentRect
+    ? Math.max(0, Math.min(rect.right, parentRect.right) - Math.max(rect.left, parentRect.left))
+    : el.clientWidth
+  if (availableWidth <= 0) return
+
   const style = getComputedStyle(el)
   const baseFontSize = Number.parseFloat(style.fontSize)
   if (!Number.isFinite(baseFontSize)) return
@@ -50,8 +57,8 @@ function fit(el: AutoFitElement): void {
     )
   }, 0)
 
-  if (requiredWidth <= el.clientWidth) return
-  const fittedSize = Math.max(minFontSize, baseFontSize * el.clientWidth / requiredWidth)
+  if (requiredWidth <= availableWidth) return
+  const fittedSize = Math.max(minFontSize, baseFontSize * availableWidth / requiredWidth)
   el.style.fontSize = `${fittedSize}px`
 }
 

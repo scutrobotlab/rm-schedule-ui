@@ -123,6 +123,15 @@ const displayName = computed(() => {
 })
 
 const isPending = computed(() => props.team.sourceKind !== 'team')
+const shouldAutoFitName = computed(() => (
+  isPending.value ||
+  (
+    props.team.sourceKind === 'team' &&
+    props.visibleSpan != null &&
+    Math.abs(props.visibleSpan - 1) < 0.001
+  )
+))
+const autoFitMinFontSize = computed(() => isPending.value ? 7 : 0)
 const normalizedSupportRate = computed(() => {
   if (
     !props.showSupportRate ||
@@ -226,10 +235,13 @@ const isShortMatchSource = computed(() => (
     />
     <span
       v-else-if="shouldShowName"
-      v-auto-fit-text="{ enabled: isPending && textFitEnabled, minFontSize: 7 }"
+      v-auto-fit-text="{
+        enabled: shouldAutoFitName && textFitEnabled,
+        minFontSize: autoFitMinFontSize,
+      }"
       class="team-name text-transition"
       :class="{
-        'auto-fit-text': isPending && textFitEnabled,
+        'auto-fit-text': shouldAutoFitName && textFitEnabled,
         'short-match-source': isShortMatchSource && textFitEnabled,
       }"
       :title="team.sourceLabel || team.displayName"
