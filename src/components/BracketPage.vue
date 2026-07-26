@@ -464,6 +464,16 @@ const displayStages = computed(() => {
   )
 })
 
+/** 相同阶段结构跨 group 复用组件，避免无意义的退场/入场和选区重置 */
+const stageStructureKey = computed(() =>
+  JSON.stringify(displayStages.value.map(stage => ({
+    label: stage.label,
+    icon: stage.icon,
+    thick: stage.thick ?? false,
+    columns: stage.columns ?? 1,
+  }))),
+)
+
 let needsRouteNormalize = false
 
 function toStageItem(label: string, index: number, length: number, matches: number): StageItem {
@@ -589,7 +599,7 @@ watch(
 // 覆盖 setup 期间同步完成的 zone/group 归一化；后续变化仍由上方 watcher 合并调度。
 scheduleRenderedBracket(selectedGroup.value)
 watch(
-  [selectedGroup, zoneId, () => displayStages.value.length],
+  [zoneId, stageStructureKey],
   () => {
     const n = displayStages.value.length
     const next = { start: 0, end: Math.min(1, Math.max(0, n - 1)) }
@@ -931,17 +941,24 @@ onBeforeUnmount(() => {
           </v-sheet>
 
           <div
-            v-if="displayStages.length >= 2"
-            class="stage-range-wrap"
+            class="stage-transition-slot"
           >
-            <StageRangeSelector
-              v-model="stageRange"
-              :stages="displayStages"
-              :visual-override="visualOverride"
-              :suppress-transition="isWindowLive"
-              @preview="onStagePreview"
-              @update:model-value="syncWindowFromRange"
-            />
+            <Transition name="stage-switch">
+              <div
+                v-if="displayStages.length >= 2"
+                :key="`${zoneId}-${stageStructureKey}`"
+                class="stage-range-wrap"
+              >
+                <StageRangeSelector
+                  v-model="stageRange"
+                  :stages="displayStages"
+                  :visual-override="visualOverride"
+                  :suppress-transition="isWindowLive"
+                  @preview="onStagePreview"
+                  @update:model-value="syncWindowFromRange"
+                />
+              </div>
+            </Transition>
           </div>
         </div>
 
@@ -1210,8 +1227,36 @@ onBeforeUnmount(() => {
   transform: translate3d(0, -4px, 0);
 }
 
+.stage-transition-slot {
+  display: grid;
+}
+
 .stage-range-wrap {
+  grid-area: 1 / 1;
   padding: 4px 0 8px;
+}
+
+.stage-switch-enter-active {
+  z-index: 1;
+  transition:
+    opacity 0.2s ease-out,
+    transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.stage-switch-leave-active {
+  transition:
+    opacity 0.12s ease-in,
+    transform 0.16s ease-in;
+}
+
+.stage-switch-enter-from {
+  opacity: 0;
+  transform: translate3d(0, 5px, 0) scale(0.985);
+}
+
+.stage-switch-leave-to {
+  opacity: 0;
+  transform: translate3d(0, -3px, 0) scale(0.99);
 }
 
 .group-selector-wrap {
