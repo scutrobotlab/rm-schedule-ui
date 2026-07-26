@@ -26,7 +26,7 @@ const props = withDefaults(
     /** 缩放/吸附结束后才对未确定席位执行完整文字适配 */
     textFitEnabled?: boolean
     showScore: boolean
-    /** ≥6 列时为 false */
+    /** ≥5 列时为 false */
     showName?: boolean
     /** 是否显示未确定席位的占位比分；真实队伍比分不受影响 */
     showPendingScore?: boolean
@@ -215,9 +215,9 @@ const hideNameEllipsis = computed(
 const useTightEdgePadding = computed(
   () => props.visibleSpan != null && props.visibleSpan >= 4,
 )
-const useSixColumnSlots = computed(() => (
+const useCompactTeamSlots = computed(() => (
   props.visibleSpan != null &&
-  props.visibleSpan >= 6 &&
+  props.visibleSpan >= 5 &&
   props.team.sourceKind === 'team' &&
   !shouldShowName.value
 ))
@@ -240,7 +240,7 @@ const isShortMatchSource = computed(() => (
       'extra-tight-score-gap': useExtraTightScoreGap,
       'hide-name-ellipsis': hideNameEllipsis,
       'tight-edge-padding': useTightEdgePadding,
-      'six-column-slots': useSixColumnSlots,
+      'compact-team-slots': useCompactTeamSlots,
       'logo-right': alignLogoRight && team.sourceKind === 'team',
       [`side-${side}`]: Boolean(side),
       [`medal-${medal}`]: Boolean(medal),
@@ -393,22 +393,22 @@ const isShortMatchSource = computed(() => (
   z-index: 1;
 }
 
-.team-row.six-column-slots {
+.team-row.compact-team-slots {
   display: flex;
   justify-content: space-evenly;
   gap: 3px;
 }
 
-.team-row.six-column-slots > .team-name-spacer {
+.team-row.compact-team-slots > .team-name-spacer {
   display: none;
 }
 
-.team-row.six-column-slots > .team-score,
-.team-row.six-column-slots > .team-score-skeleton {
+.team-row.compact-team-slots > .team-score,
+.team-row.compact-team-slots > .team-score-skeleton {
   margin-left: 0;
 }
 
-.team-row.six-column-slots.logo-right .team-logo {
+.team-row.compact-team-slots.logo-right .team-logo {
   order: initial;
   margin-left: 0;
 }

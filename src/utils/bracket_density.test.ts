@@ -9,6 +9,7 @@ import {
   shouldForceBracketPendingName,
   shouldShowBracketPendingScore,
   shouldShowBracketPlaceholderLogo,
+  shouldShowBracketTeamName,
   shortenBracketSourceLabel,
   shortenBracketTitle,
 } from './bracket_density'
@@ -283,8 +284,17 @@ describe('未确定席位的高列数展示', () => {
     expect(shouldShowBracketPendingScore(6)).toBe(false)
   })
 
-  it('6 列起强制展示来源文字', () => {
-    expect(shouldForceBracketPendingName(5)).toBe(false)
+  it('5 列起强制展示来源文字', () => {
+    expect(shouldForceBracketPendingName(4)).toBe(false)
+    expect(shouldForceBracketPendingName(5)).toBe(true)
     expect(shouldForceBracketPendingName(6)).toBe(true)
+  })
+})
+
+describe('高列数校名展示', () => {
+  it('5 列起隐藏真实队伍校名', () => {
+    expect(shouldShowBracketTeamName(4)).toBe(true)
+    expect(shouldShowBracketTeamName(5)).toBe(false)
+    expect(shouldShowBracketTeamName(6)).toBe(false)
   })
 })

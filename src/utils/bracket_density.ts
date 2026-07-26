@@ -197,9 +197,9 @@ export function shouldShowBracketTypeTag(columnCount: number): boolean {
   return columnCount < 4
 }
 
-/** ≥6 列时隐藏校名，仅保留校徽与比分 */
+/** ≥5 列时隐藏校名，仅保留校徽与比分 */
 export function shouldShowBracketTeamName(columnCount: number): boolean {
-  return columnCount < 6
+  return columnCount < 5
 }
 
 /** 3–5 列时优先显示学校简称；其他列数与无简称时保留完整校名。 */
@@ -249,9 +249,9 @@ export function shouldShowBracketPendingScore(columnCount: number): boolean {
   return columnCount < 5
 }
 
-/** ≥6 列时仍展示未确定席位的来源文字，避免整行只剩空白。 */
+/** ≥5 列时仍展示未确定席位的来源文字，避免整行只剩空白。 */
 export function shouldForceBracketPendingName(columnCount: number): boolean {
-  return columnCount >= 6
+  return columnCount >= 5
 }
 
 /** ≥4 列时隐藏未确定队伍的红蓝 R 占位 Logo，真实校徽不受影响。 */
