@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue'
 import type { BracketTeamSlot } from '../../types/bracket'
 import {
   resolveBracketDensity,
+  resolveBracketTeamDisplayName,
   resolveBracketTextTransition,
   resolveBracketTitleShortenLevel,
   shortenBracketSourceLabel,
@@ -103,7 +104,13 @@ function sourceLevelForColumns(columns: number): BracketSourceShortenLevel {
 
 const displayName = computed(() => {
   if (props.team.sourceKind === 'team') {
-    return { from: props.team.displayName, to: props.team.displayName, progress: 0 }
+    const fullName = props.team.collegeName ?? props.team.displayName
+    const value = resolveBracketTeamDisplayName(
+      fullName,
+      promotionStore.teamAbbreviations[fullName],
+      props.visibleSpan,
+    )
+    return { from: value, to: value, progress: 0 }
   }
   if (props.visibleSpan == null) {
     const value = shortenBracketSourceLabel(
@@ -128,11 +135,27 @@ const isSingleColumnTeam = computed(() => (
   props.visibleSpan != null &&
   Math.abs(props.visibleSpan - 1) < 0.001
 ))
-/** 单列校名始终使用预计算字号；缩放暂停只影响未确定席位。 */
+const isThreeColumnAbbreviation = computed(() => {
+  if (
+    props.team.sourceKind !== 'team' ||
+    props.visibleSpan == null ||
+    props.visibleSpan < 3 ||
+    props.visibleSpan >= 4
+  ) {
+    return false
+  }
+  const fullName = props.team.collegeName ?? props.team.displayName
+  return Boolean(promotionStore.teamAbbreviations[fullName])
+})
+/** 单列校名与三列简称始终适配；缩放暂停只影响未确定席位。 */
 const autoFitActive = computed(() => (
-  isSingleColumnTeam.value || (isPending.value && props.textFitEnabled)
+  isSingleColumnTeam.value ||
+  isThreeColumnAbbreviation.value ||
+  (isPending.value && props.textFitEnabled)
 ))
-const autoFitMinFontSize = computed(() => isPending.value ? 7 : 0)
+const autoFitMinFontSize = computed(
+  () => isPending.value && !isThreeColumnAbbreviation.value ? 7 : 0,
+)
 const normalizedSupportRate = computed(() => {
   if (
     !props.showSupportRate ||
@@ -245,7 +268,9 @@ const isShortMatchSource = computed(() => (
         'auto-fit-text': autoFitActive,
         'short-match-source': isShortMatchSource && textFitEnabled,
       }"
-      :title="team.sourceLabel || team.displayName"
+      :title="team.sourceKind === 'team'
+        ? (team.collegeName || team.displayName)
+        : (team.sourceLabel || team.displayName)"
     >
       <span :style="{ opacity: 1 - displayName.progress }">{{ displayName.from || '—' }}</span>
       <span :style="{ opacity: displayName.progress }">{{ displayName.to || '—' }}</span>
@@ -253,7 +278,9 @@ const isShortMatchSource = computed(() => (
     <span
       v-else
       class="team-name-spacer"
-      :title="team.sourceLabel || team.displayName"
+      :title="team.sourceKind === 'team'
+        ? (team.collegeName || team.displayName)
+        : (team.sourceLabel || team.displayName)"
     />
 
     <Transition name="team-stat">

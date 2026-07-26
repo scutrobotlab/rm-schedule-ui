@@ -3,6 +3,7 @@ import {
   bracketDisplayUnits,
   normalizeBracketVisibleSpan,
   resolveBracketTextTransition,
+  resolveBracketTeamDisplayName,
   resolveBracketTitleShortenLevel,
   resolveBracketVisualProgress,
   shouldForceBracketPendingName,
@@ -88,6 +89,29 @@ describe('bracketDisplayUnits', () => {
     ['A1 胜-负：！', 3],
   ])('按中英文宽度计量 %s', (title, expected) => {
     expect(bracketDisplayUnits(title)).toBe(expected)
+  })
+})
+
+describe('resolveBracketTeamDisplayName', () => {
+  it.each([
+    [2, '上海交通大学'],
+    [3, '上交'],
+    [5, '上交'],
+    [6, '上海交通大学'],
+  ])('%s 列时返回 %s', (visibleSpan, expected) => {
+    expect(resolveBracketTeamDisplayName(
+      '上海交通大学',
+      '上交',
+      visibleSpan,
+    )).toBe(expected)
+  })
+
+  it('没有简称时保留完整校名', () => {
+    expect(resolveBracketTeamDisplayName(
+      '未收录大学',
+      undefined,
+      3,
+    )).toBe('未收录大学')
   })
 })
 

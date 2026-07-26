@@ -17,6 +17,8 @@ export const usePromotionStore = defineStore("promotion", {
     schedule: {} as Schedule,
     groupRank: {} as GroupRankInfo,
     mpMatchMap: new Map<string, MpMatch>(),
+    teamAbbreviations: {} as Record<string, string>,
+    teamAbbreviationsLoaded: false as boolean,
     selectedPlayer: null as Player | null,
     selectedMatch: null as MatchNode | null,
     suggestionEnabled: false as boolean,
@@ -97,6 +99,15 @@ export const usePromotionStore = defineStore("promotion", {
       }).then((response: AxiosResponse<any>) => {
         this.groupRank = response.data;
       });
+    },
+    async updateTeamAbbreviations() {
+      if (this.teamAbbreviationsLoaded) return;
+      this.teamAbbreviationsLoaded = true;
+      const response: AxiosResponse<Record<string, string>> = await axios({
+        method: "GET",
+        url: "/api/team_abbreviations",
+      });
+      this.teamAbbreviations = response.data;
     },
     async updateMpMatch(matchIds: number[]) {
       if (matchIds.length === 0) return;

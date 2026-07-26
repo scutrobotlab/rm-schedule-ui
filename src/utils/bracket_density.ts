@@ -202,6 +202,23 @@ export function shouldShowBracketTeamName(columnCount: number): boolean {
   return columnCount < 6
 }
 
+/** 3–5 列时优先显示学校简称；其他列数与无简称时保留完整校名。 */
+export function resolveBracketTeamDisplayName(
+  fullName: string,
+  abbreviation: string | undefined,
+  visibleSpan: number | undefined,
+): string {
+  if (
+    visibleSpan != null &&
+    visibleSpan >= 3 &&
+    visibleSpan < 6 &&
+    abbreviation
+  ) {
+    return abbreviation
+  }
+  return fullName
+}
+
 /** ≥5 列时隐藏未确定席位的占位比分；真实队伍比分不受影响。 */
 export function shouldShowBracketPendingScore(columnCount: number): boolean {
   return columnCount < 5

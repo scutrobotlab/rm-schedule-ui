@@ -805,6 +805,7 @@ function openAnniversaryFromCorner(event: MouseEvent) {
 onMounted(() => {
   window.addEventListener('resize', onResize)
   bracketViewportRef.value?.addEventListener('wheel', onBoardWheel, { passive: false })
+  void promotionStore.updateTeamAbbreviations().catch(() => undefined)
 })
 
 onBeforeUnmount(() => {
