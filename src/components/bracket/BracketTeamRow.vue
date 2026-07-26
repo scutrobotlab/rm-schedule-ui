@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, watch, type Directive, type DirectiveBinding } from 'vue'
 import type { BracketTeamSlot } from '../../types/bracket'
 import {
   resolveBracketDensity,
@@ -90,6 +90,69 @@ const pointerStartY = ref(0)
 const longPressTriggered = ref(false)
 let longPressTimer: ReturnType<typeof setTimeout> | null = null
 const LONG_PRESS_MS = 500
+
+type SelectedNameMarqueeElement = HTMLElement & {
+  __selectedNameMarqueeCleanup?: () => void
+  __selectedNameMarqueeFrame?: number
+  __selectedNameMarqueeEnabled?: boolean
+}
+
+function updateSelectedNameMarquee(el: SelectedNameMarqueeElement) {
+  el.classList.remove('selected-name-marquee')
+  for (const child of Array.from(el.children) as HTMLElement[]) {
+    child.style.removeProperty('--selected-name-marquee-distance')
+  }
+
+  if (!el.__selectedNameMarqueeEnabled || el.clientWidth <= 0) return
+
+  let hasOverflow = false
+  for (const child of Array.from(el.children) as HTMLElement[]) {
+    const overflow = Math.ceil(child.scrollWidth - el.clientWidth)
+    if (overflow <= 1) continue
+    hasOverflow = true
+    child.style.setProperty('--selected-name-marquee-distance', `${overflow}px`)
+  }
+  if (hasOverflow) el.classList.add('selected-name-marquee')
+}
+
+function scheduleSelectedNameMarquee(el: SelectedNameMarqueeElement) {
+  if (el.__selectedNameMarqueeFrame != null) {
+    cancelAnimationFrame(el.__selectedNameMarqueeFrame)
+  }
+  el.__selectedNameMarqueeFrame = requestAnimationFrame(() => {
+    el.__selectedNameMarqueeFrame = undefined
+    updateSelectedNameMarquee(el)
+  })
+}
+
+function setSelectedNameMarqueeBinding(
+  el: SelectedNameMarqueeElement,
+  binding: DirectiveBinding<boolean>,
+) {
+  el.__selectedNameMarqueeEnabled = binding.value
+  scheduleSelectedNameMarquee(el)
+}
+
+const vSelectedNameMarquee: Directive<SelectedNameMarqueeElement, boolean> = {
+  mounted(el, binding) {
+    const resizeObserver = new ResizeObserver(() => scheduleSelectedNameMarquee(el))
+    const mutationObserver = new MutationObserver(() => scheduleSelectedNameMarquee(el))
+    resizeObserver.observe(el)
+    mutationObserver.observe(el, { childList: true, subtree: true, characterData: true })
+    el.__selectedNameMarqueeCleanup = () => {
+      resizeObserver.disconnect()
+      mutationObserver.disconnect()
+      if (el.__selectedNameMarqueeFrame != null) {
+        cancelAnimationFrame(el.__selectedNameMarqueeFrame)
+      }
+    }
+    setSelectedNameMarqueeBinding(el, binding)
+  },
+  updated: setSelectedNameMarqueeBinding,
+  unmounted(el) {
+    el.__selectedNameMarqueeCleanup?.()
+  },
+}
 
 const isSelectable = computed(
   () => props.team.sourceKind === 'team' && Boolean(props.team.playerId),
@@ -199,6 +262,11 @@ function sourceLevelForColumns(columns: number): BracketSourceShortenLevel {
 const displayName = computed(() => {
   if (props.team.sourceKind === 'team') {
     const fullName = props.team.collegeName ?? props.team.displayName
+    // 未选中时沿用各列密度下的简称；选中后恢复完整校名，
+    // 再由 selected-name-marquee 按实际可用宽度决定是否滚动。
+    if (isSelected.value && isTwoColumnTeam.value) {
+      return { from: fullName, to: fullName, progress: 0 }
+    }
     const abbreviation = promotionStore.teamAbbreviations[fullName]
     if (
       props.visibleSpan != null &&
@@ -267,10 +335,12 @@ const isFourOrFiveColumnAbbreviation = computed(() => {
 })
 /** 单列校名、二列校名及三至五列简称始终适配；缩放暂停只影响未确定席位。 */
 const autoFitActive = computed(() => (
-  isSingleColumnTeam.value ||
-  isTwoColumnTeam.value ||
-  isThreeColumnAbbreviation.value ||
-  isFourOrFiveColumnAbbreviation.value ||
+  (!(isSelected.value && isTwoColumnTeam.value) && (
+    isSingleColumnTeam.value ||
+    isTwoColumnTeam.value ||
+    isThreeColumnAbbreviation.value ||
+    isFourOrFiveColumnAbbreviation.value
+  )) ||
   (isPending.value && props.textFitEnabled)
 ))
 const autoFitMinFontSize = computed(
@@ -466,6 +536,7 @@ const nameToOpacity = computed(() => (
           ? displayName.progress
           : undefined,
       }"
+      v-selected-name-marquee="isSelected && isTwoColumnTeam"
       class="team-name text-transition"
       :class="{
         'auto-fit-text': autoFitActive,
@@ -1079,6 +1150,36 @@ const nameToOpacity = computed(() => (
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.team-name.selected-name-marquee > span {
+  overflow: visible;
+  text-overflow: clip;
+  animation: selected-name-marquee 5s ease-in-out 0.5s infinite;
+}
+
+@keyframes selected-name-marquee {
+  0%,
+  14% {
+    transform: translateX(0);
+  }
+
+  64%,
+  84% {
+    transform: translateX(calc(-1 * var(--selected-name-marquee-distance, 0px)));
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .team-name.selected-name-marquee > span {
+    animation: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 .team-row.hide-name-ellipsis .team-name,
