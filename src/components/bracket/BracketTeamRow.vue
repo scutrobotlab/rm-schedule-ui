@@ -215,6 +215,12 @@ const hideNameEllipsis = computed(
 const useTightEdgePadding = computed(
   () => props.visibleSpan != null && props.visibleSpan >= 4,
 )
+const useSixColumnSlots = computed(() => (
+  props.visibleSpan != null &&
+  props.visibleSpan >= 6 &&
+  props.team.sourceKind === 'team' &&
+  !shouldShowName.value
+))
 const isShortMatchSource = computed(() => (
   isPending.value &&
   /^\d+[胜败]$/.test(displayName.value.to || displayName.value.from)
@@ -234,6 +240,7 @@ const isShortMatchSource = computed(() => (
       'extra-tight-score-gap': useExtraTightScoreGap,
       'hide-name-ellipsis': hideNameEllipsis,
       'tight-edge-padding': useTightEdgePadding,
+      'six-column-slots': useSixColumnSlots,
       'logo-right': alignLogoRight && team.sourceKind === 'team',
       [`side-${side}`]: Boolean(side),
       [`medal-${medal}`]: Boolean(medal),
@@ -384,6 +391,26 @@ const isShortMatchSource = computed(() => (
 .team-row > :not(.support-rate-fill) {
   position: relative;
   z-index: 1;
+}
+
+.team-row.six-column-slots {
+  display: flex;
+  justify-content: space-evenly;
+  gap: 3px;
+}
+
+.team-row.six-column-slots > .team-name-spacer {
+  display: none;
+}
+
+.team-row.six-column-slots > .team-score,
+.team-row.six-column-slots > .team-score-skeleton {
+  margin-left: 0;
+}
+
+.team-row.six-column-slots.logo-right .team-logo {
+  order: initial;
+  margin-left: 0;
 }
 
 .team-row.tight-edge-padding {
