@@ -354,7 +354,7 @@ const isShortMatchSource = computed(() => (
 
 .team-row > .support-rate-text {
   position: absolute;
-  z-index: 2;
+  z-index: 0;
   top: 50%;
   left: 11px;
   width: 3rem;
@@ -717,11 +717,17 @@ const isShortMatchSource = computed(() => (
   margin-left: -6px;
 }
 
-.team-stat-enter-active,
-.team-stat-leave-active {
+.team-stat-enter-active {
   transition:
     opacity 220ms ease,
     transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.team-stat-leave-active {
+  position: absolute;
+  opacity: 0;
+  transition: none;
+  pointer-events: none;
 }
 
 .team-stat-enter-from,
