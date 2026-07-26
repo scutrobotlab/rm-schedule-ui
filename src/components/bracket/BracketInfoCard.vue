@@ -124,11 +124,11 @@ function groupStat(
       <span
         v-if="showGroupStats && showAsMatches"
         class="type-tag"
-      >{{ nodeTypeLabel[item.nodeType] || '说明' }}</span>
+      >{{ nodeTypeLabel[item.nodeType] }}</span>
       <span
         v-else-if="showTypeTag"
         class="type-tag"
-      >{{ nodeTypeLabel[item.nodeType] || '说明' }}</span>
+      >{{ nodeTypeLabel[item.nodeType] }}</span>
     </div>
 
     <div
