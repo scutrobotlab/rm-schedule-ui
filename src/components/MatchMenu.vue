@@ -206,8 +206,13 @@ async function onAnalyzeTeam() {
 
   :deep(.v-card-subtitle) {
     margin-top: 3px;
+    overflow: visible;
     color: rgba(211, 227, 241, 0.7);
     opacity: 1;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    text-overflow: clip;
+    line-height: 1.45;
   }
 
   :deep(.v-list) {
