@@ -286,26 +286,18 @@ function groupStat(
 
 .group-stats-tools {
   display: inline-grid;
-  grid-template-columns: 2rem 0 2rem;
+  grid-template-columns: repeat(2, 2rem);
   flex: 0 0 auto;
-  gap: 0;
+  gap: 4px;
   align-items: center;
   margin-left: auto;
-  margin-right: 2.65rem;
+  margin-right: calc(1.8rem + 8px);
   color: rgba(220, 232, 246, 0.72);
   font-size: 0.58rem;
   font-weight: 600;
   line-height: 1;
   text-align: center;
   white-space: nowrap;
-}
-
-.group-stats-tools > :nth-child(1) {
-  grid-column: 1;
-}
-
-.group-stats-tools > :nth-child(2) {
-  grid-column: 3;
 }
 
 .group-stats-enter-active,

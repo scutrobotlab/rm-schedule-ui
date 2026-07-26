@@ -822,7 +822,7 @@ const isShortMatchSource = computed(() => (
 }
 
 .team-stat + .team-stat {
-  margin-left: -6px;
+  margin-left: 0;
 }
 
 .team-stat-enter-active {
