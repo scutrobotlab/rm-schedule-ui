@@ -614,12 +614,16 @@ const nameToOpacity = computed(() => (
 
 .team-row.side-red {
   --side-color: 229, 57, 53;
-  border-left: 3px solid rgb(var(--side-color));
+  border-left: calc(
+    3px - 1px * var(--bracket-normal-progress, 0)
+  ) solid rgb(var(--side-color));
 }
 
 .team-row.side-blue {
   --side-color: 30, 136, 229;
-  border-left: 3px solid rgb(var(--side-color));
+  border-left: calc(
+    3px - 1px * var(--bracket-normal-progress, 0)
+  ) solid rgb(var(--side-color));
 }
 
 .team-row.has-support-rate.side-red,
@@ -822,12 +826,24 @@ const nameToOpacity = computed(() => (
 }
 
 .rank-badge {
-  flex: 0 0 1.75em;
-  width: 1.75em;
+  flex: 0 0 calc(
+    1.75em
+    - 0.15em * var(--bracket-normal-progress, 0)
+    - 0.1em * var(--bracket-compact-progress, 0)
+  );
+  width: calc(
+    1.75em
+    - 0.15em * var(--bracket-normal-progress, 0)
+    - 0.1em * var(--bracket-compact-progress, 0)
+  );
   box-sizing: border-box;
   padding: 1px 0;
   border-radius: 3px;
-  font-size: 0.68rem;
+  font-size: calc(
+    0.68rem
+    - 0.08rem * var(--bracket-normal-progress, 0)
+    - 0.04rem * var(--bracket-compact-progress, 0)
+  );
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   text-align: center;
@@ -994,28 +1010,6 @@ const nameToOpacity = computed(() => (
 
 .team-row.extra-tight-score-gap.five-column-name-layout .team-score {
   margin-left: -6px;
-}
-
-.density-normal.side-red,
-.density-normal.side-blue {
-  border-left-width: 2px;
-}
-
-.density-normal .rank-badge {
-  flex-basis: 1.6em;
-  width: 1.6em;
-  font-size: 0.6rem;
-}
-
-.density-compact.side-red,
-.density-compact.side-blue {
-  border-left-width: 2px;
-}
-
-.density-compact .rank-badge {
-  flex-basis: 1.5em;
-  width: 1.5em;
-  font-size: 0.56rem;
 }
 
 @media (min-width: 900px) {

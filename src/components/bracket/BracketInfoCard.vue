@@ -115,7 +115,6 @@ function groupStat(
       `lane-${item.lane}`,
       `node-${item.nodeType}`,
       `density-${density}`,
-      { 'compact-horizontal': visibleSpan >= 4 },
     ]"
     :data-node-id="item.nodeId"
   >
@@ -581,23 +580,41 @@ function groupStat(
   }
 }
 
-.info-card.compact-horizontal.node-promote,
-.info-card.compact-horizontal.node-eliminate {
+.info-card.node-promote,
+.info-card.node-eliminate {
   padding-inline: calc(
-    4px
+    8px
+    - 2px * var(--bracket-normal-progress, 0)
+    - 2px * var(--bracket-result-card-progress, 0)
     - 1px * var(--bracket-compact-progress, 0)
   );
 }
 
-.info-card.compact-horizontal.node-promote :deep(.team-row),
-.info-card.compact-horizontal.node-eliminate :deep(.team-row) {
+.info-card.node-promote :deep(.team-row),
+.info-card.node-eliminate :deep(.team-row) {
   padding-inline: calc(
-    4px
+    8px
+    - 2px * var(--bracket-normal-progress, 0)
+    - 2px * var(--bracket-result-card-progress, 0)
     - 1px * var(--bracket-compact-progress, 0)
   );
   gap: calc(
-    3px
+    6px
+    - 1px * var(--bracket-normal-progress, 0)
+    - 2px * var(--bracket-result-card-progress, 0)
     - 1px * var(--bracket-compact-progress, 0)
   );
+}
+
+@media (min-width: 900px) {
+  .info-card.node-promote,
+  .info-card.node-eliminate {
+    padding-inline: calc(
+      10px
+      - 4px * var(--bracket-normal-progress, 0)
+      - 2px * var(--bracket-result-card-progress, 0)
+      - 1px * var(--bracket-compact-progress, 0)
+    );
+  }
 }
 </style>

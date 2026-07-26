@@ -18,6 +18,7 @@ export interface BracketTextTransition<T> {
 export interface BracketVisualProgress {
   normal: number
   compact: number
+  resultCard: number
   typeTag: number
   placeholderLogo: number
   pendingScore: number
@@ -55,6 +56,7 @@ export function resolveBracketVisualProgress(visibleSpan: number): BracketVisual
   return {
     normal: clampUnit(visibleSpan - 2),
     compact: clampUnit(visibleSpan - 4),
+    resultCard: clampUnit(visibleSpan - 3),
     typeTag: 1 - clampUnit(visibleSpan - 3),
     placeholderLogo: 1 - clampUnit(visibleSpan - 3),
     pendingScore: 1 - clampUnit(visibleSpan - 4),
