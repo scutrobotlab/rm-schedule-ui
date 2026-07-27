@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue";
+import { computed, watchEffect } from "vue";
 import { useRoute } from "vue-router";
 import { useAppStore } from "./stores/app";
 import AnniversaryAnnouncement from "./components/AnniversaryAnnouncement.vue";
@@ -18,13 +18,45 @@ import UpdateAnnouncement from "./components/UpdateAnnouncement.vue";
 const route = useRoute()
 const appStore = useAppStore()
 
-/** 竞猜海报 / 晋级图不挂载全局公告，避免遮罩干扰全屏浏览或截图 */
+/** 竞猜海报 / 晋级图 / OBS 嵌套层不挂载全局公告，避免遮罩干扰全屏浏览、截图或录制 */
 const hideGlobalAnnouncements = computed(() => {
   const path = route.path
-  return path === '/forecast' || path === '/bracket' || path.endsWith('/bracket')
+  return path === '/forecast' || path === '/obs' || path === '/bracket' || path.endsWith('/bracket')
 })
 
-appStore.initStore()
+/**
+ * 在 iframe 内（如 /obs 录制层）拿不到真实 env(safe-area-inset-*)，
+ * 允许通过 query 注入模拟安全区，避免内容被状态栏或 Home 指示条压住。
+ */
+const SAFE_AREA_QUERY_VARS: Record<string, string> = {
+  safe_top: '--app-safe-top',
+  safe_right: '--app-safe-right',
+  safe_bottom: '--app-safe-bottom',
+  safe_left: '--app-safe-left',
+}
+
+watchEffect(() => {
+  if (typeof document === 'undefined') return
+  const root = document.documentElement
+
+  for (const [key, cssVar] of Object.entries(SAFE_AREA_QUERY_VARS)) {
+    const raw = Array.isArray(route.query[key]) ? route.query[key][0] : route.query[key]
+    const value = Number(raw)
+    if (typeof raw === 'string' && Number.isFinite(value) && value >= 0) {
+      root.style.setProperty(cssVar, `${value}px`)
+    } else {
+      root.style.removeProperty(cssVar)
+    }
+  }
+})
+
+/** 录制层（?capture=1）不自动弹公告，避免遮住画面 */
+const isCaptureEmbed =
+  typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('capture')
+
+if (!isCaptureEmbed) {
+  appStore.initStore()
+}
 </script>
 
 <style lang="scss">

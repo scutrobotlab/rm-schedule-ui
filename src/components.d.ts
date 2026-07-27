@@ -20,6 +20,7 @@ declare module 'vue' {
     BracketPage: typeof import('./components/BracketPage.vue')['default']
     BracketTeamRow: typeof import('./components/bracket/BracketTeamRow.vue')['default']
     CompleteFormRank: typeof import('./components/CompleteFormRank.vue')['default']
+    DeviceChrome: typeof import('./components/obs/DeviceChrome.vue')['default']
     ForecastPoster: typeof import('./components/ForecastPoster.vue')['default']
     GraphComment: typeof import('./components/GraphComment.vue')['default']
     GroupMatchData: typeof import('./components/GroupMatchData.vue')['default']

@@ -22,5 +22,6 @@ declare module 'vue-router/auto-routes' {
     '/Bracket': RouteRecordInfo<'/Bracket', '/Bracket', Record<never, never>, Record<never, never>>,
     '/ExportGraph': RouteRecordInfo<'/ExportGraph', '/ExportGraph', Record<never, never>, Record<never, never>>,
     '/Forecast': RouteRecordInfo<'/Forecast', '/Forecast', Record<never, never>, Record<never, never>>,
+    '/Obs': RouteRecordInfo<'/Obs', '/Obs', Record<never, never>, Record<never, never>>,
   }
 }
