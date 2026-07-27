@@ -1301,12 +1301,37 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .bracket-page {
+  --page-safe-top: var(--app-safe-top, env(safe-area-inset-top, 0px));
+  --page-safe-right: var(--app-safe-right, env(safe-area-inset-right, 0px));
+  --page-safe-left: var(--app-safe-left, env(safe-area-inset-left, 0px));
   position: fixed;
   inset: 0;
   color: #e8eef5;
+  background: #071628;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  /* 避免子层 transform / backdrop-filter 在圆角屏边缘露出浅缝 */
+  isolation: isolate;
+}
+
+.bracket-page::before {
+  display: none;
+  position: fixed;
+  /* 位于背景之上、页面内容之下，只负责衔接状态栏颜色。 */
+  z-index: 2;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: calc(var(--page-safe-top) + 28px);
+  background: linear-gradient(
+    180deg,
+    rgba(3, 8, 15, 0.98) 0%,
+    rgba(8, 23, 41, 0.94) var(--page-safe-top),
+    rgba(24, 48, 72, 0.72) 100%
+  );
+  pointer-events: none;
+  content: '';
 }
 
 .container {
@@ -1509,6 +1534,10 @@ onBeforeUnmount(() => {
     0 14px 32px -12px rgba(0, 6, 18, 0.24);
   backdrop-filter: blur(18px) saturate(1.24);
   -webkit-backdrop-filter: blur(18px) saturate(1.24);
+  /* 抑制 iOS backdrop-filter 在容器边缘的浅色发丝线 */
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
 .floating-container {
@@ -1516,6 +1545,13 @@ onBeforeUnmount(() => {
   z-index: 5;
   width: 100%;
   flex: 0 0 auto;
+  padding-top: var(--page-safe-top);
+}
+
+/* 顶部 tabs 避开横屏刘海；下方 stage/group 选择器已自带横向 safe-area */
+.floating-container > .row {
+  padding-right: var(--page-safe-right);
+  padding-left: var(--page-safe-left);
 }
 
 .bracket-scroll {
@@ -1722,10 +1758,38 @@ onBeforeUnmount(() => {
   }
 }
 
-@media (max-width: 600px) {
+/* 竖屏窄屏 + 横屏矮屏：状态栏衔接与顶部毛玻璃渐变 */
+@media (max-width: 600px), (orientation: landscape) and (max-height: 500px) {
+  .bracket-page::before {
+    display: block;
+  }
+
+  .floating-container.glass-sheet {
+    /* 左右各外扩 1px，盖住 WebKit backdrop-filter 边缘白线 */
+    width: calc(100% + 2px);
+    margin-left: -1px;
+    background:
+      linear-gradient(
+        180deg,
+        #061321 0,
+        rgba(6, 19, 33, 0.96) 12px,
+        rgba(11, 30, 49, 0.82) 52px,
+        rgba(20, 46, 70, 0.45) 96px,
+        transparent 150px
+      ),
+      linear-gradient(
+        180deg,
+        rgba(176, 216, 245, 0.1) 0%,
+        rgba(30, 64, 92, 0.025) 100%
+      ),
+      rgba(7, 22, 40, 0.72);
+    /* 去掉顶部 inset 高光，避免状态栏下方出现白线 */
+    box-shadow: none;
+  }
+
   .group-selector {
-    padding-right: max(20px, env(safe-area-inset-right, 0px));
-    padding-left: max(20px, env(safe-area-inset-left, 0px));
+    padding-right: max(20px, var(--page-safe-right));
+    padding-left: max(20px, var(--page-safe-left));
   }
 }
 </style>

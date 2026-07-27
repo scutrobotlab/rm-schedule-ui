@@ -446,6 +446,10 @@ const MenuItems = ref(
   position: absolute; /* 绝对定位 */
   z-index: 4; /* 确保在 v-carousel 上方 */
   width: 100%; /* 占满宽度 */
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
 }
 
 .v-carousel {
