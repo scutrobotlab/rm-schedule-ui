@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import axios from 'axios'
 import { useRoute, useRouter } from 'vue-router'
 import StageRangeSelector, {
@@ -461,6 +461,83 @@ function selectBracketIndex(index: number) {
   selectedBracketIndex.value = index
 }
 
+const groupSelectorRef = ref<HTMLElement | null>(null)
+const groupTrackRef = ref<HTMLElement | null>(null)
+const groupThumb = ref({ left: 0, width: 0, ready: false })
+let groupThumbRaf = 0
+let groupTrackObserver: ResizeObserver | null = null
+
+const groupThumbStyle = computed(() => ({
+  transform: `translate3d(${groupThumb.value.left}px, 0, 0)`,
+  width: `${groupThumb.value.width}px`,
+}))
+
+function scrollGroupItemIntoView(item: HTMLElement) {
+  const scroller = groupSelectorRef.value
+  if (!scroller) return
+  const scrollerRect = scroller.getBoundingClientRect()
+  const itemRect = item.getBoundingClientRect()
+  const pad = 12
+  if (itemRect.left < scrollerRect.left + pad) {
+    scroller.scrollBy({
+      left: itemRect.left - scrollerRect.left - pad,
+      behavior: 'smooth',
+    })
+  } else if (itemRect.right > scrollerRect.right - pad) {
+    scroller.scrollBy({
+      left: itemRect.right - scrollerRect.right + pad,
+      behavior: 'smooth',
+    })
+  }
+}
+
+function updateGroupThumb(options: { animate?: boolean; scroll?: boolean } = {}) {
+  const { animate = true, scroll = false } = options
+  const track = groupTrackRef.value
+  if (!track) {
+    groupThumb.value = { left: 0, width: 0, ready: false }
+    return
+  }
+  const items = track.querySelectorAll<HTMLElement>('.group-selector__item')
+  const item = items[selectedBracketIndex.value]
+  if (!item) {
+    groupThumb.value = { left: 0, width: 0, ready: false }
+    return
+  }
+
+  const left = item.offsetLeft
+  const width = item.offsetWidth
+
+  if (!animate) {
+    cancelAnimationFrame(groupThumbRaf)
+    groupThumb.value = { left, width, ready: false }
+    groupThumbRaf = requestAnimationFrame(() => {
+      groupThumbRaf = 0
+      if (groupThumb.value.width > 0) {
+        groupThumb.value = { ...groupThumb.value, ready: true }
+      }
+    })
+  } else {
+    const wasReady = groupThumb.value.ready
+    groupThumb.value = { left, width, ready: wasReady }
+    if (!wasReady) {
+      cancelAnimationFrame(groupThumbRaf)
+      groupThumbRaf = requestAnimationFrame(() => {
+        groupThumbRaf = 0
+        if (groupThumb.value.width > 0) {
+          groupThumb.value = { ...groupThumb.value, ready: true }
+        }
+      })
+    }
+  }
+
+  if (scroll) scrollGroupItemIntoView(item)
+}
+
+function scheduleGroupThumbUpdate(options: { animate?: boolean; scroll?: boolean } = {}) {
+  void nextTick(() => updateGroupThumb(options))
+}
+
 function onGroupPointerDown(index: number, event: PointerEvent) {
   if (event.pointerType === 'mouse' || event.button !== 0) return
   groupPointer.suppressClick = false
@@ -656,10 +733,15 @@ function syncStageRangeToUrl(range: StageRange) {
 watch(zoneId, () => {
   updateQuery()
   scheduleRenderedBracket(selectedGroup.value)
+  scheduleGroupThumbUpdate({ animate: false })
 })
 watch(selectedGroup, (rawGroup) => {
   updateQuery()
   scheduleRenderedBracket(rawGroup)
+  scheduleGroupThumbUpdate({ animate: true, scroll: true })
+})
+watch(bracketParts, () => {
+  scheduleGroupThumbUpdate({ animate: false })
 })
 watch(
   () => route.query.group,
@@ -1001,6 +1083,7 @@ const bracketModel = computed((): BracketViewModel | null => {
 
 function onResize() {
   viewportWidth.value = window.innerWidth
+  updateGroupThumb({ animate: false })
 }
 
 function openAnniversaryFromCorner(event: MouseEvent) {
@@ -1029,10 +1112,14 @@ onMounted(() => {
   )
   bracketViewportRef.value?.addEventListener('wheel', onBoardWheel, { passive: false })
   void promotionStore.updateTeamAbbreviations().catch(() => undefined)
+  scheduleGroupThumbUpdate({ animate: false })
 })
 
 onBeforeUnmount(() => {
   cancelAnimationFrame(groupRenderRaf)
+  cancelAnimationFrame(groupThumbRaf)
+  groupTrackObserver?.disconnect()
+  groupTrackObserver = null
   window.removeEventListener('resize', onResize)
   document.removeEventListener(
     'contextmenu',
@@ -1049,6 +1136,20 @@ onBeforeUnmount(() => {
     settleTimer = null
   }
 })
+
+watch(
+  groupTrackRef,
+  (el) => {
+    groupTrackObserver?.disconnect()
+    groupTrackObserver = null
+    if (!el || typeof ResizeObserver === 'undefined') return
+    groupTrackObserver = new ResizeObserver(() => {
+      updateGroupThumb({ animate: false })
+    })
+    groupTrackObserver.observe(el)
+    updateGroupThumb({ animate: false })
+  },
+)
 </script>
 
 <template>
@@ -1156,13 +1257,21 @@ onBeforeUnmount(() => {
             class="group-selector-wrap mx-auto text-center bg-transparent"
           >
             <div
+              ref="groupSelectorRef"
               class="group-selector"
             >
               <div
+                ref="groupTrackRef"
                 class="group-selector__track"
                 role="tablist"
                 aria-label="赛段分组"
               >
+                <div
+                  class="group-selector__thumb"
+                  :class="{ 'group-selector__thumb--ready': groupThumb.ready }"
+                  :style="groupThumbStyle"
+                  aria-hidden="true"
+                />
                 <button
                   v-for="(bp, index) in bracketParts"
                   :key="bp.part.name"
@@ -1678,6 +1787,27 @@ onBeforeUnmount(() => {
   overflow: hidden;
 }
 
+.group-selector__thumb {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  height: 100%;
+  border-radius: 10px;
+  background: var(--selection-bg);
+  box-shadow:
+    inset 0 0 0 1px rgba(180, 214, 255, 0.12),
+    0 3px 12px rgba(0, 8, 28, 0.16);
+  pointer-events: none;
+  will-change: transform, width;
+}
+
+.group-selector__thumb--ready {
+  transition:
+    transform 0.34s var(--snap-ease),
+    width 0.34s var(--snap-ease);
+}
+
 .group-selector__item {
   position: relative;
   z-index: 1;
@@ -1696,17 +1826,11 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   transition:
-    background-color 0.28s var(--snap-ease),
-    box-shadow 0.28s var(--snap-ease),
     color 0.28s var(--snap-ease),
     text-shadow 0.28s var(--snap-ease);
 }
 
 .group-selector__item--active {
-  background: var(--selection-bg);
-  box-shadow:
-    inset 0 0 0 1px rgba(180, 214, 255, 0.12),
-    0 3px 12px rgba(0, 8, 28, 0.16);
   color: var(--label-active);
   text-shadow: 0 1px 8px rgba(190, 220, 255, 0.18);
 }
