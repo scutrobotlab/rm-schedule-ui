@@ -242,6 +242,32 @@ describe('2026 全国赛 618 复用布局', () => {
       expect(model.columns.length).toBeGreaterThan(0)
     }
   })
+
+  it('8进4败者组第二轮按 2026 schedule：91=88败vs89胜，92=87败vs90胜', () => {
+    const zone = ZoneMap[2026].find((z) => z.id === 618)!
+    const loserPart = zone.parts.find((p) => p.name === '淘汰赛败者组')!
+    const byId = Object.fromEntries(loserPart.jsonData.nodes.map((n) => [n.id, n]))
+
+    expect(byId['#11'].data.zones[0]).toMatchObject({
+      matches: [91],
+      winners: [89],
+      losers: [88],
+      text: ['第88场败者', '第89场胜者'],
+    })
+    expect(byId['#12'].data.zones[0]).toMatchObject({
+      matches: [92],
+      winners: [90],
+      losers: [87],
+      text: ['第87场败者', '第90场胜者'],
+    })
+
+    // 2025 全国赛仍保持原对阵，不受 2026 修正影响
+    const zone2025 = ZoneMap[2025].find((z) => z.id === 572)!
+    const loser2025 = zone2025.parts.find((p) => p.name === '淘汰赛败者组')!
+    const byId2025 = Object.fromEntries(loser2025.jsonData.nodes.map((n) => [n.id, n]))
+    expect(byId2025['#11'].data.zones[0].losers).toEqual([87])
+    expect(byId2025['#12'].data.zones[0].losers).toEqual([88])
+  })
 })
 
 describe('2026 主题背景', () => {

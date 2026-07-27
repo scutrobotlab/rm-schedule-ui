@@ -32,6 +32,7 @@ import {
 import {
   FinalZoneKnockoutJsonData, FinalZoneKnockoutJsonData2025,
   FinalZoneKnockoutLoserJsonData, FinalZoneKnockoutLoserJsonData2025,
+  FinalZoneKnockoutLoserJsonData2026,
   FinalZoneKnockoutLoserTitleData, FinalZoneKnockoutLoserTitleData2025,
   FinalZoneKnockoutTitleData, FinalZoneKnockoutTitleData2025
 } from "./final_zone_knockout";
@@ -686,7 +687,8 @@ export const ZoneMap: { [key: number]: Zone[] } = {
           name: '淘汰赛败者组',
           type: 'knockout',
           group: 'Knockout',
-          jsonData: FinalZoneKnockoutLoserJsonData2025,
+          // 2026 schedule：#91/#92 红方败者来源与 2025 对调，勿复用 2025 败者组布局
+          jsonData: FinalZoneKnockoutLoserJsonData2026,
           extraTitleData: FinalZoneKnockoutLoserTitleData2025,
         },
         {

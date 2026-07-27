@@ -1485,3 +1485,42 @@ export const FinalZoneKnockoutLoserTitleData2025: TitleData[] = [
     image: '/static/title_bg.png',
   },
 ]
+
+/**
+ * 2026 全国赛败者组：在 2025 布局上仅修正 8进4败者组第二轮。
+ * schedule.json：#91 = 88败 vs 89胜，#92 = 87败 vs 90胜（与 2025 对调）。
+ */
+export const FinalZoneKnockoutLoserJsonData2026: ZoneJsonData = {
+  ...FinalZoneKnockoutLoserJsonData2025,
+  nodes: FinalZoneKnockoutLoserJsonData2025.nodes.map((node) => {
+    if (node.id === '#11') {
+      return {
+        ...node,
+        data: {
+          ...node.data,
+          zones: [{
+            matches: [91],
+            winners: [89],
+            losers: [88],
+            text: ['第88场败者', '第89场胜者'],
+          }],
+        },
+      }
+    }
+    if (node.id === '#12') {
+      return {
+        ...node,
+        data: {
+          ...node.data,
+          zones: [{
+            matches: [92],
+            winners: [90],
+            losers: [87],
+            text: ['第87场败者', '第90场胜者'],
+          }],
+        },
+      }
+    }
+    return node
+  }),
+}
