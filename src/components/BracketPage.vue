@@ -714,12 +714,16 @@ function updateQuery() {
 function updateHref(newSeason: number) {
   const query = new URLSearchParams()
   Object.entries(route.query).forEach(([key, value]) => {
+    // 切换赛季时回到新赛季全国赛 A 组与默认阶段范围，避免沿用旧赛季
+    // 的 group/stage 下标导致落在错误分组或非默认列数。
+    if (key === 'group' || key === 'stage') return
     if (Array.isArray(value)) {
       value.forEach((v) => v && query.append(key, v))
     } else if (value) {
       query.set(key, value)
     }
   })
+  query.set('group', '0')
   const defaultZone = DefaultZoneMap[newSeason]
   const queryString = query.toString()
   window.location.href = `${bracketPagePath(newSeason, defaultZone)}${queryString ? `?${queryString}` : ''}`

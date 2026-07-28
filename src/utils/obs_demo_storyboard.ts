@@ -120,6 +120,21 @@ async function selectZone(doc: Document, zoneName: string, signal?: AbortSignal)
   await sleep(550, signal)
 }
 
+async function selectSeason(doc: Document, season: string, signal?: AbortSignal) {
+  const selects = all(doc, '.v-select')
+  const seasonSelect = selects.find(element =>
+    normalizedText(element).includes('Season'),
+  ) ?? selects[0]
+  if (!seasonSelect) throw new Error('Season selector not found')
+
+  const activator = seasonSelect.querySelector('.v-field[role="combobox"]') ?? seasonSelect
+  await pointerTap(activator, centerOf(activator), { pointerId: 121, signal })
+  await sleep(900, signal)
+  const item = await waitForText(doc, '.v-list-item', season, signal)
+  await pointerTap(item, centerOf(item), { pointerId: 122, signal })
+  // Season 更新会导航并重载 iframe；Obs.vue 的 load 回调会接管 2026 续段。
+}
+
 async function searchAndSelectCurrentZoneTeam(
   doc: Document,
   queryText: string,
@@ -285,7 +300,24 @@ async function boardPanToLastStages(doc: Document, signal?: AbortSignal) {
 
 async function returnBoardToTop(doc: Document, signal?: AbortSignal) {
   const viewport = await waitForSelector(doc, '.bracket-scroll', { signal }) as HTMLElement
-  await animateScroll(viewport, 0, 1200, signal)
+  const rect = viewport.getBoundingClientRect()
+  const from: Point = {
+    x: rect.left + rect.width * 0.72,
+    y: rect.top + rect.height * 0.3,
+  }
+  const to: Point = {
+    x: from.x,
+    y: rect.top + rect.height * 0.76,
+  }
+  // 手指向下拖动，赛程同步回到顶部；触摸覆盖层可完整显示按下和移动。
+  await Promise.all([
+    pointerDrag(viewport, from, to, {
+      durationMs: 1200,
+      pointerId: 129,
+      signal,
+    }),
+    animateScroll(viewport, 0, 1200, signal),
+  ])
   // 到顶后留出明确静止，让观众把注意力转移到阶段选择器。
   await sleep(1700, signal)
 }
@@ -339,21 +371,100 @@ async function selectGroup(doc: Document, label: string, pointerId: number, sign
   await sleep(1000, signal)
 }
 
-/** 拖动整个阶段选区至轨道最右端，保留当前列数并定位半决赛/决赛。 */
+/** 两列选区拖到轨道最右端，定位 2025 胜者组半决赛与决赛。 */
 async function dragStageRangeToFinal(doc: Document, signal?: AbortSignal) {
   const track = await waitForSelector(doc, '.stage-range__track', { signal })
   const selection = await waitForSelector(doc, '.stage-range__selection', { signal })
   const trackRect = track.getBoundingClientRect()
   const selectionRect = selection.getBoundingClientRect()
   const from = centerOf(selection)
-  const targetX = trackRect.right - selectionRect.width / 2 - 2
   await pointerDrag(
     selection,
     from,
-    { x: targetX, y: from.y },
-    { durationMs: 1100, pointerId: 113, signal },
+    {
+      x: trackRect.right - selectionRect.width / 2 - 2,
+      y: from.y,
+    },
+    { durationMs: 1200, pointerId: 130, signal },
   )
+  await sleep(1800, signal)
+}
+
+/** 防御性确认当前 Group 为默认 0–1 两列；正常 Season 流程下不会产生手势。 */
+async function ensureFirstTwoStages(doc: Document, signal?: AbortSignal) {
+  const track = await waitForSelector(doc, '.stage-range__track', { signal })
+  const selection = await waitForSelector(doc, '.stage-range__selection', { signal })
+  const trackRect = track.getBoundingClientRect()
+  const stageCount = Math.max(1, track.querySelectorAll('.stage-range__icon-cell').length)
+  const selectionRect = selection.getBoundingClientRect()
+  const targetWidth = trackRect.width * Math.min(2, stageCount) / stageCount
+  if (Math.abs(selectionRect.width - targetWidth) < 3) return
+
+  const handle = await waitForSelector(doc, '.stage-range__handle--end', { signal })
+  const from = centerOf(handle)
+  await pointerDrag(
+    handle,
+    from,
+    {
+      x: trackRect.left + targetWidth - 2,
+      y: from.y,
+    },
+    { durationMs: 650, pointerId: 123, signal },
+  )
+  await sleep(500, signal)
+}
+
+/** 胜者组：保持起点 0，拖动结束把手从 0–1 连续展开到全部 5 列。 */
+async function expandWinnerToFiveStages(doc: Document, signal?: AbortSignal) {
+  const track = await waitForSelector(doc, '.stage-range__track', { signal })
+  const handle = await waitForSelector(doc, '.stage-range__handle--end', { signal })
+  const trackRect = track.getBoundingClientRect()
+  const stageCount = track.querySelectorAll('.stage-range__icon-cell').length
+  if (stageCount !== 5) {
+    throw new Error(`Expected 5 winner stages, received ${stageCount}`)
+  }
+  const from = centerOf(handle)
+  await pointerDrag(
+    handle,
+    from,
+    { x: trackRect.right - 2, y: from.y },
+    {
+      durationMs: 2600,
+      pointerId: 124,
+      easing: 'linear',
+      signal,
+    },
+  )
+  await sleep(1800, signal)
+}
+
+async function runStoryboard2026Continuation(
+  doc: Document,
+  options: StoryboardDemoOptions,
+): Promise<void> {
+  const { signal } = options
+  await waitForSelector(doc, '.bracket-page', { timeoutMs: 20_000, signal })
+  await waitForText(doc, '.v-select', '2026', signal, 20_000)
+  await waitForText(doc, '.v-select', '全国赛', signal, 20_000)
+
+  cue(options, '2026 全国赛', '未确定场次 · 对阵来源实时呈现')
+  await sleep(2600, signal)
+
+  cue(options, '依次切换 Group', 'A组画面 → B组 → 败者组 → 胜者组')
+  await selectGroup(doc, 'B组', 125, signal)
   await sleep(650, signal)
+  await selectGroup(doc, '淘汰赛败者组', 126, signal)
+  await sleep(800, signal)
+  await selectGroup(doc, '淘汰赛胜者组', 127, signal)
+  await sleep(1100, signal)
+
+  // Season 切换已重置为默认 0–1；各 Group 沿用两列，胜者组只需最终展开。
+  await ensureFirstTwoStages(doc, signal)
+  cue(options, '胜者组完整对阵', '0–1 两列 → 0–4 五列')
+  await expandWinnerToFiveStages(doc, signal)
+
+  cue(options, 'Bracket · 一图看懂晋级', '从未确定对阵，到完整冠军路径', true)
+  await sleep(3000, signal)
 }
 
 /**
@@ -364,6 +475,11 @@ export async function runStoryboardDemo(
   options: StoryboardDemoOptions = {},
 ): Promise<void> {
   const { signal } = options
+  if (doc.location.pathname.startsWith('/2026/')) {
+    await runStoryboard2026Continuation(doc, options)
+    return
+  }
+
   await waitForSelector(doc, '.bracket-page', { timeoutMs: 20_000, signal })
   await waitForTeamInMatch(doc, 1, '华南理工大学', signal).catch(() => undefined)
 
@@ -427,14 +543,18 @@ export async function runStoryboardDemo(
   await collapseToFirstStage(doc, signal)
   await sleep(2500, signal)
 
-  cue(options, 'A组 → 败者组 → 胜者组', '拖拽阶段范围定位决赛 · 冠军金牌特效')
+  cue(options, '2025 全国赛淘汰赛', 'A组 → 败者组 → 胜者组')
   await selectGroup(doc, '淘汰赛败者组', 111, signal)
+  await sleep(650, signal)
   await selectGroup(doc, '淘汰赛胜者组', 112, signal)
-  // 最后一次 Group 切换后多留 0.5 秒，让胜者组 Board 稳定并被看清。
-  await sleep(500, signal)
-  await dragStageRangeToFinal(doc, signal)
-  await sleep(7700, signal)
+  await sleep(800, signal)
+  await ensureFirstTwoStages(doc, signal)
 
-  cue(options, 'Bracket · 一图看懂晋级', '从单场细节，到完整赛程', true)
-  await sleep(3000, signal)
+  cue(options, '2025 最终对决', '拖拽定位半决赛与决赛 · 冠军高光')
+  await dragStageRangeToFinal(doc, signal)
+  await sleep(2600, signal)
+
+  cue(options, '2025 → 2026', '切换赛季 · 进入2026全国赛')
+  await sleep(900, signal)
+  await selectSeason(doc, '2026', signal)
 }
