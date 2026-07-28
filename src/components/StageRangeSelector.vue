@@ -256,7 +256,11 @@ function onPointerDown(mode: DragMode, e: PointerEvent) {
   e.preventDefault()
   e.stopPropagation()
   const target = e.currentTarget as HTMLElement
-  target.setPointerCapture(e.pointerId)
+  try {
+    target.setPointerCapture(e.pointerId)
+  } catch {
+    // 合成 PointerEvent（OBS demo）可能无法 capture；后续 move/up 仍派发到同一节点即可
+  }
   dragMode.value = mode
   if (mode === 'start' || mode === 'end') emit('resizeInteraction', true)
   dragPointerId.value = e.pointerId
@@ -319,8 +323,12 @@ function onPointerMove(e: PointerEvent) {
 function onPointerUp(e: PointerEvent) {
   if (dragPointerId.value !== e.pointerId) return
   const target = e.currentTarget as HTMLElement
-  if (target.hasPointerCapture(e.pointerId)) {
-    target.releasePointerCapture(e.pointerId)
+  try {
+    if (target.hasPointerCapture(e.pointerId)) {
+      target.releasePointerCapture(e.pointerId)
+    }
+  } catch {
+    // ignore synthetic-pointer release failures
   }
   const mode = dragMode.value
   const wasClick = !didDrag.value

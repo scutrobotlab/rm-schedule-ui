@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import DeviceChrome from '../components/obs/DeviceChrome.vue'
 import TouchPointerOverlay from '../components/obs/TouchPointerOverlay.vue'
+import { runStageSelectorDemo, STAGE_DEMO_DEFAULT_SRC } from '../utils/obs_demo_stage'
 
 /** iPhone 17 Pro Max 逻辑分辨率（1320×2868 @3x） */
 const DEFAULT_LOGICAL_W = 440
@@ -18,6 +19,8 @@ const DEFAULT_RADIUS = 0
 const route = useRoute()
 const frameRef = ref<HTMLIFrameElement | null>(null)
 const touchOverlayRef = ref<InstanceType<typeof TouchPointerOverlay> | null>(null)
+
+let demoAbort: AbortController | null = null
 
 function queryValue(key: string): string | undefined {
   const raw = route.query[key]
@@ -53,6 +56,8 @@ const showWifi = computed(() => readFlag('wifi', false))
 const reserveSafe = computed(() => readFlag('safe', true))
 /** 录制时默认显示半透明指尖与点击涟漪；touch=0 关闭 */
 const showTouch = computed(() => readFlag('touch', true))
+/** demo=stage：自动演示阶段选择器拖拽/缩放 */
+const demoKind = computed(() => queryValue('demo') ?? '')
 const charging = computed(() => readFlag('charging', false))
 const battery = computed(() => readNumber('battery', 100))
 const signal = computed(() => readNumber('signal', 4))
@@ -67,7 +72,7 @@ const canvasH = computed(() => logicalH.value * scale.value)
  */
 const embedSrc = computed(() => {
   const raw = queryValue('src')
-  const fallback = '/bracket'
+  const fallback = demoKind.value === 'stage' ? STAGE_DEMO_DEFAULT_SRC : '/bracket'
 
   let pathWithQuery = (raw ?? '').trim() || fallback
   try {
@@ -87,6 +92,10 @@ const embedSrc = computed(() => {
 
   const target = new URL(pathWithQuery, window.location.origin)
   target.searchParams.set('capture', '1')
+  // 阶段演示需要从 1 列起，便于右把手一路扩到满列
+  if (demoKind.value === 'stage' && !target.searchParams.has('stage')) {
+    target.searchParams.set('stage', '0-0')
+  }
   // 默认只预留安全区，不绘制状态栏；iframe 内用 query 注入模拟 inset
   if (reserveSafe.value) {
     if (!target.searchParams.has('safe_top')) {
@@ -112,15 +121,45 @@ const layerStyle = computed(() => ({
   transformOrigin: 'top left',
 }))
 
+function stopDemo() {
+  demoAbort?.abort()
+  demoAbort = null
+}
+
+async function startDemoIfNeeded() {
+  stopDemo()
+  if (demoKind.value !== 'stage') return
+  const doc = frameRef.value?.contentDocument
+  if (!doc || doc.URL === 'about:blank') return
+
+  const controller = new AbortController()
+  demoAbort = controller
+  try {
+    await runStageSelectorDemo(doc, { signal: controller.signal })
+  } catch (error) {
+    if ((error as DOMException)?.name === 'AbortError') return
+    console.warn('[obs demo]', error)
+  }
+}
+
 function onFrameLoad() {
   touchOverlayRef.value?.rebind()
+  void startDemoIfNeeded()
 }
+
+watch(demoKind, () => {
+  // query 变化且 iframe 已在时重跑；通常靠 load
+  if (frameRef.value?.contentDocument && frameRef.value.contentDocument.URL !== 'about:blank') {
+    void startDemoIfNeeded()
+  }
+})
 
 onMounted(() => {
   document.documentElement.classList.add('obs-capture')
 })
 
 onUnmounted(() => {
+  stopDemo()
   document.documentElement.classList.remove('obs-capture')
 })
 </script>
