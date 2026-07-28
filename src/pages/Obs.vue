@@ -15,8 +15,8 @@ const DEFAULT_LOGICAL_W = 440
 const DEFAULT_LOGICAL_H = 956
 /** OBS 画布相对逻辑分辨率的倍率 */
 const DEFAULT_SCALE = 4
-/** 竖屏安全区：状态栏 54pt + 灵动岛让位 = 62pt，底部 Home 指示条 34pt */
-const SAFE_TOP = 62
+/** 竖屏安全区：为灵动岛底部额外保留呼吸空间，底部 Home 指示条 34pt */
+const SAFE_TOP = 72
 const SAFE_BOTTOM = 34
 /** 屏幕圆角半径（录制画布默认直角，避免裁切边缘） */
 const DEFAULT_RADIUS = 0

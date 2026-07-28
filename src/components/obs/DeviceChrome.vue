@@ -3,7 +3,7 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 
 /**
  * iPhone 17 Pro Max 系统 UI 覆盖层（逻辑 440×956 @3x）。
- * 竖屏安全区 top 62pt / bottom 34pt，状态栏内容与灵动岛垂直居中同一条中线。
+ * OBS 默认竖屏安全区 top 72pt / bottom 34pt，状态栏内容与灵动岛垂直居中同一条中线。
  */
 const props = withDefaults(
   defineProps<{
