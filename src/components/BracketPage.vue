@@ -1086,11 +1086,21 @@ function onResize() {
   updateGroupThumb({ animate: false })
 }
 
+function readSafeBottomPx(): number {
+  if (typeof window === 'undefined') return 0
+  const raw = getComputedStyle(document.documentElement)
+    .getPropertyValue('--app-safe-bottom')
+    .trim()
+  const value = Number.parseFloat(raw)
+  return Number.isFinite(value) ? value : 0
+}
+
 function openAnniversaryFromCorner(event: MouseEvent) {
+  const safeBottom = readSafeBottomPx()
   const logoLeft = 0
   const logoRight = 120
-  const logoTop = window.innerHeight - 148
-  const logoBottom = window.innerHeight - 28
+  const logoTop = window.innerHeight - 148 - safeBottom
+  const logoBottom = window.innerHeight - 28 - safeBottom
   const isInsideLogo = (
     event.clientX >= logoLeft &&
     event.clientX <= logoRight &&
@@ -1412,6 +1422,7 @@ watch(
 .bracket-page {
   --page-safe-top: var(--app-safe-top, env(safe-area-inset-top, 0px));
   --page-safe-right: var(--app-safe-right, env(safe-area-inset-right, 0px));
+  --page-safe-bottom: var(--app-safe-bottom, env(safe-area-inset-bottom, 0px));
   --page-safe-left: var(--app-safe-left, env(safe-area-inset-left, 0px));
   position: fixed;
   inset: 0;
@@ -1456,7 +1467,8 @@ watch(
 .corner-brand {
   position: fixed;
   left: 0;
-  bottom: 0;
+  /* OBS / 真机预留底部安全区，避免被圆角边框或 Home 指示条裁切 */
+  bottom: var(--page-safe-bottom);
   /* 保持在卡片下方，让赛程节点的毛玻璃柔化背景 Logo。 */
   z-index: 2;
   width: 120px;
