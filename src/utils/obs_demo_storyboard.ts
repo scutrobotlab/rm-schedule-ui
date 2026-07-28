@@ -73,6 +73,20 @@ function cue(options: StoryboardDemoOptions, main: string, sub: string, brand = 
   options.onCue?.({ main, sub, brand })
 }
 
+function setInputValue(input: HTMLInputElement, value: string) {
+  const view = input.ownerDocument.defaultView
+  if (!view) return
+  const setter = Object.getOwnPropertyDescriptor(
+    view.HTMLInputElement.prototype,
+    'value',
+  )?.set
+  setter?.call(input, value)
+  input.dispatchEvent(new view.Event('input', {
+    bubbles: true,
+    composed: true,
+  }))
+}
+
 async function tapText(
   doc: Document,
   selector: string,
@@ -104,6 +118,69 @@ async function selectZone(doc: Document, zoneName: string, signal?: AbortSignal)
   )
   // Board 切换稳定即可继续，不在全国赛首屏空等。
   await sleep(550, signal)
+}
+
+async function searchAndSelectCurrentZoneTeam(
+  doc: Document,
+  queryText: string,
+  collegeName: string,
+  signal?: AbortSignal,
+) {
+  const searchButton = await waitForSelector(doc, '[aria-label="搜索队伍"]', { signal })
+  await pointerTap(searchButton, centerOf(searchButton), { pointerId: 114, signal })
+
+  const dialog = await waitForSelector(doc, '.v-dialog .v-card', { signal })
+  await sleep(700, signal)
+
+  // 限定全国赛，避免同一学校在区域赛与全国赛产生多个同名结果。
+  const currentZoneSwitch = dialog.querySelector(
+    '.v-switch input[type="checkbox"]',
+  ) as HTMLInputElement | null
+  if (currentZoneSwitch && !currentZoneSwitch.checked) {
+    await pointerTap(currentZoneSwitch, centerOf(currentZoneSwitch), {
+      pointerId: 115,
+      signal,
+    })
+    await sleep(700, signal)
+  }
+
+  const input = await waitForSelector(
+    dialog,
+    '.v-autocomplete input[type="text"]',
+    { signal },
+  ) as HTMLInputElement
+  await pointerTap(input, centerOf(input), { pointerId: 116, signal })
+  // 学校选择列表弹出后先停留，再输入第一个字母 H。
+  await sleep(600, signal)
+
+  let query = ''
+  for (const character of queryText) {
+    query += character
+    setInputValue(input, query)
+    await sleep(260, signal)
+  }
+  // 输入完成后让搜索结果充分展示，再选择华南理工大学。
+  await sleep(1000, signal)
+
+  const result = await waitForText(
+    doc,
+    '.v-overlay--active .v-list-item',
+    collegeName,
+    signal,
+  )
+  await pointerTap(result, centerOf(result), { pointerId: 117, signal })
+  await sleep(700, signal)
+
+  const selectButton = await waitForText(dialog, '.v-btn', '选中', signal)
+  await pointerTap(selectButton, centerOf(selectButton), {
+    pointerId: 118,
+    signal,
+  })
+  await waitForCondition(
+    () => !doc.querySelector('.v-dialog .v-card'),
+    signal,
+  )
+  await sleep(500, signal)
 }
 
 function matchCardForOrder(doc: Document, order: number): Element | undefined {
@@ -297,11 +374,23 @@ export async function runStoryboardDemo(
   await selectZone(doc, '全国赛', signal)
   await sleep(900, signal)
 
-  cue(options, '点击高亮 · 上下浏览', '第1场 0–2 → 第21场 2–0')
+  cue(options, '输入 HNLG 搜索华南理工', '拼音首字母 · 限定当前赛区')
+  await searchAndSelectCurrentZoneTeam(doc, 'HNLG', '华南理工大学', signal)
+
   const first = await waitForTeamInMatch(doc, 1, '华南理工大学', signal)
-  await pointerTap(first.row, centerOf(first.row), { pointerId: 108, signal })
-  // 先让观众看清跨赛程高亮，再开始向下追踪。
-  await sleep(1400, signal)
+  await waitForCondition(
+    () => first.row.classList.contains('selected'),
+    signal,
+  )
+
+  cue(options, '点击队伍，切换高亮', '再次点击即可取消或恢复选中')
+  await pointerTap(first.row, centerOf(first.row), { pointerId: 119, signal })
+  await sleep(700, signal)
+  await pointerTap(first.row, centerOf(first.row), { pointerId: 120, signal })
+  await sleep(1000, signal)
+
+  cue(options, '高亮路径 · 上下浏览', '第1场 0–2 → 第21场 2–0')
+  await sleep(450, signal)
   const twentyFirst = await waitForTeamInMatch(doc, 21, '华南理工大学', signal)
   await scrollCardIntoView(doc, twentyFirst.card, 2400, signal)
   await sleep(2000, signal)

@@ -1272,6 +1272,7 @@ watch(
                 variant="flat"
                 color="transparent"
                 icon="mdi-magnify"
+                aria-label="搜索队伍"
                 @click="appStore.searchDialog = true"
               />
 
