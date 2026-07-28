@@ -1,0 +1,351 @@
+/**
+ * OBS 60 秒产品分镜演示。
+ *
+ * 该脚本只编排真实 Bracket DOM 的操作；字幕和片尾由 Obs.vue 根据 cue 回调绘制。
+ * 默认从 2025 南部赛区 A 组、0–1 两列开始。
+ */
+import {
+  centerOf,
+  pointerDrag,
+  pointerLongPress,
+  pointerTap,
+  sleep,
+  waitForSelector,
+  type Point,
+} from './obs_pointer'
+
+export const STORYBOARD_DEMO_DEFAULT_SRC = '/2025/565/bracket?group=0&stage=0-1'
+
+export interface StoryboardCue {
+  main: string
+  sub: string
+  brand?: boolean
+}
+
+export interface StoryboardDemoOptions {
+  signal?: AbortSignal
+  onCue?: (cue: StoryboardCue) => void
+}
+
+function all(root: ParentNode, selector: string): Element[] {
+  return Array.from(root.querySelectorAll(selector))
+}
+
+function normalizedText(element: Element): string {
+  return (element.textContent ?? '').replace(/\s+/g, '')
+}
+
+async function waitForText(
+  root: ParentNode,
+  selector: string,
+  text: string,
+  signal?: AbortSignal,
+  timeoutMs = 15_000,
+): Promise<Element> {
+  const started = performance.now()
+  const expected = text.replace(/\s+/g, '')
+  while (performance.now() - started < timeoutMs) {
+    if (signal?.aborted) throw new DOMException('Aborted', 'AbortError')
+    const found = all(root, selector).find(element =>
+      normalizedText(element).includes(expected),
+    )
+    if (found) return found
+    await sleep(50, signal)
+  }
+  throw new Error(`waitForText timeout: ${selector} / ${text}`)
+}
+
+async function waitForCondition(
+  check: () => boolean,
+  signal?: AbortSignal,
+  timeoutMs = 15_000,
+): Promise<void> {
+  const started = performance.now()
+  while (performance.now() - started < timeoutMs) {
+    if (signal?.aborted) throw new DOMException('Aborted', 'AbortError')
+    if (check()) return
+    await sleep(50, signal)
+  }
+  throw new Error('waitForCondition timeout')
+}
+
+function cue(options: StoryboardDemoOptions, main: string, sub: string, brand = false) {
+  options.onCue?.({ main, sub, brand })
+}
+
+async function tapText(
+  doc: Document,
+  selector: string,
+  text: string,
+  pointerId: number,
+  signal?: AbortSignal,
+): Promise<Element> {
+  const target = await waitForText(doc, selector, text, signal)
+  await pointerTap(target, centerOf(target), { pointerId, signal })
+  return target
+}
+
+async function selectZone(doc: Document, zoneName: string, signal?: AbortSignal) {
+  const selects = all(doc, '.v-select')
+  const zoneSelect = selects.find(element =>
+    normalizedText(element).includes('Zone'),
+  ) ?? selects[1]
+  if (!zoneSelect) throw new Error('Zone selector not found')
+
+  const activator = zoneSelect.querySelector('.v-field[role="combobox"]') ?? zoneSelect
+  await pointerTap(activator, centerOf(activator), { pointerId: 101, signal })
+  // 完整展示下拉选项，避免“展开—选中”快得看不清。
+  await sleep(1200, signal)
+  const item = await waitForText(doc, '.v-list-item', zoneName, signal)
+  await pointerTap(item, centerOf(item), { pointerId: 102, signal })
+  await waitForCondition(
+    () => normalizedText(zoneSelect).includes(zoneName),
+    signal,
+  )
+  // Board 切换稳定即可继续，不在全国赛首屏空等。
+  await sleep(550, signal)
+}
+
+function matchCardForOrder(doc: Document, order: number): Element | undefined {
+  const marker = `第${order}场`
+  return all(doc, '.match-card, .mini-match').find(card =>
+    normalizedText(card).includes(marker),
+  )
+}
+
+function teamRowIn(card: Element, collegeName: string): Element | undefined {
+  return all(card, '.team-row').find(row => {
+    const label = row.getAttribute('aria-label') ?? ''
+    return label.includes(collegeName) || normalizedText(row).includes(collegeName)
+  })
+}
+
+async function waitForTeamInMatch(
+  doc: Document,
+  order: number,
+  collegeName: string,
+  signal?: AbortSignal,
+): Promise<{ card: Element; row: Element }> {
+  let result: { card: Element; row: Element } | undefined
+  await waitForCondition(() => {
+    const card = matchCardForOrder(doc, order)
+    const row = card ? teamRowIn(card, collegeName) : undefined
+    if (card && row) result = { card, row }
+    return Boolean(result)
+  }, signal, 20_000)
+  return result!
+}
+
+async function animateScroll(
+  element: HTMLElement,
+  to: number,
+  durationMs: number,
+  signal?: AbortSignal,
+) {
+  const from = element.scrollTop
+  const started = performance.now()
+  while (performance.now() - started < durationMs) {
+    if (signal?.aborted) throw new DOMException('Aborted', 'AbortError')
+    const t = Math.min(1, (performance.now() - started) / durationMs)
+    const eased = t < 0.5 ? 4 * t ** 3 : 1 - (-2 * t + 2) ** 3 / 2
+    element.scrollTop = from + (to - from) * eased
+    await sleep(16, signal)
+  }
+  element.scrollTop = to
+}
+
+async function scrollCardIntoView(
+  doc: Document,
+  card: Element,
+  durationMs: number,
+  signal?: AbortSignal,
+) {
+  const viewport = await waitForSelector(doc, '.bracket-scroll', { signal }) as HTMLElement
+  const viewportRect = viewport.getBoundingClientRect()
+  const cardRect = card.getBoundingClientRect()
+  const targetScrollTop = Math.max(
+    0,
+    // 第 21 场停在视口中部偏下即可，避免为了贴近顶部而下滑过深。
+    viewport.scrollTop + cardRect.top - viewportRect.top - viewportRect.height * 0.48,
+  )
+  const from: Point = {
+    x: viewportRect.left + viewportRect.width * 0.72,
+    y: viewportRect.top + viewportRect.height * 0.72,
+  }
+  const to: Point = { x: from.x, y: viewportRect.top + viewportRect.height * 0.28 }
+  await Promise.all([
+    pointerDrag(viewport, from, to, {
+      durationMs,
+      pointerId: 103,
+      signal,
+    }),
+    animateScroll(viewport, targetScrollTop, durationMs, signal),
+  ])
+}
+
+async function boardPanToLastStages(doc: Document, signal?: AbortSignal) {
+  const viewport = await waitForSelector(doc, '.bracket-scroll', { signal })
+  const rect = viewport.getBoundingClientRect()
+  const y = rect.top + rect.height * 0.68
+  // 两列视图下，约四分之一屏宽的左滑对应前进一列。
+  // 分四次完成 0–1 → 1–2 → 2–3 → 3–4 → 4–5，让吸附过程可见。
+  const fromX = rect.left + rect.width * 0.72
+  const toX = rect.left + rect.width * 0.47
+  for (let index = 0; index < 4; index++) {
+    await pointerDrag(
+      viewport,
+      { x: fromX, y },
+      { x: toX, y },
+      {
+        durationMs: 520,
+        pointerId: 105 + index,
+        signal,
+      },
+    )
+    await sleep(360, signal)
+  }
+}
+
+async function returnBoardToTop(doc: Document, signal?: AbortSignal) {
+  const viewport = await waitForSelector(doc, '.bracket-scroll', { signal }) as HTMLElement
+  await animateScroll(viewport, 0, 1200, signal)
+  // 到顶后留出明确静止，让观众把注意力转移到阶段选择器。
+  await sleep(1700, signal)
+}
+
+async function stageGeometry(doc: Document, signal?: AbortSignal) {
+  const track = await waitForSelector(doc, '.stage-range__track', { signal })
+  const handle = await waitForSelector(doc, '.stage-range__handle--start', { signal })
+  const trackRect = track.getBoundingClientRect()
+  return { trackRect, handle }
+}
+
+/** 第一遍：快速直达六列，作为干净有力的英雄镜头。 */
+async function expandFastHero(doc: Document, signal?: AbortSignal) {
+  const { trackRect, handle } = await stageGeometry(doc, signal)
+  const from = centerOf(handle)
+  await pointerDrag(
+    handle,
+    from,
+    { x: trackRect.left + 2, y: from.y },
+    { durationMs: 1000, pointerId: 106, signal },
+  )
+  await sleep(1400, signal)
+}
+
+async function collapseToFirstStage(doc: Document, signal?: AbortSignal) {
+  const track = await waitForSelector(doc, '.stage-range__track', { signal })
+  const handle = await waitForSelector(doc, '.stage-range__handle--end', { signal })
+  const trackRect = track.getBoundingClientRect()
+  const stageCount = Math.max(1, track.querySelectorAll('.stage-range__icon-cell').length)
+  const from = centerOf(handle)
+  await pointerDrag(
+    handle,
+    from,
+    {
+      x: trackRect.left + trackRect.width / stageCount - 2,
+      y: from.y,
+    },
+    // 第二次也是最后一次范围调整：慢慢从六列收到一列，展示信息展开。
+    {
+      durationMs: 3500,
+      pointerId: 107,
+      easing: 'linear',
+      signal,
+    },
+  )
+  await sleep(1200, signal)
+}
+
+async function selectGroup(doc: Document, label: string, pointerId: number, signal?: AbortSignal) {
+  await tapText(doc, '.group-selector__item', label, pointerId, signal)
+  await sleep(1000, signal)
+}
+
+/** 拖动整个阶段选区至轨道最右端，保留当前列数并定位半决赛/决赛。 */
+async function dragStageRangeToFinal(doc: Document, signal?: AbortSignal) {
+  const track = await waitForSelector(doc, '.stage-range__track', { signal })
+  const selection = await waitForSelector(doc, '.stage-range__selection', { signal })
+  const trackRect = track.getBoundingClientRect()
+  const selectionRect = selection.getBoundingClientRect()
+  const from = centerOf(selection)
+  const targetX = trackRect.right - selectionRect.width / 2 - 2
+  await pointerDrag(
+    selection,
+    from,
+    { x: targetX, y: from.y },
+    { durationMs: 1100, pointerId: 113, signal },
+  )
+  await sleep(650, signal)
+}
+
+/**
+ * 分镜总长约 60 秒。初始数据等待不计入动作节奏；录制时建议在 iframe 稳定后开始。
+ */
+export async function runStoryboardDemo(
+  doc: Document,
+  options: StoryboardDemoOptions = {},
+): Promise<void> {
+  const { signal } = options
+  await waitForSelector(doc, '.bracket-page', { timeoutMs: 20_000, signal })
+  await waitForTeamInMatch(doc, 1, '华南理工大学', signal).catch(() => undefined)
+
+  cue(options, '2025 南部区域赛', '默认两列，清晰查看每场对阵')
+  await sleep(4000, signal)
+
+  cue(options, '南部赛区 → 全国赛', '切换 Zone，赛程同步更新')
+  await selectZone(doc, '全国赛', signal)
+  await sleep(900, signal)
+
+  cue(options, '点击高亮 · 上下浏览', '第1场 0–2 → 第21场 2–0')
+  const first = await waitForTeamInMatch(doc, 1, '华南理工大学', signal)
+  await pointerTap(first.row, centerOf(first.row), { pointerId: 108, signal })
+  // 先让观众看清跨赛程高亮，再开始向下追踪。
+  await sleep(1400, signal)
+  const twentyFirst = await waitForTeamInMatch(doc, 21, '华南理工大学', signal)
+  await scrollCardIntoView(doc, twentyFirst.card, 2400, signal)
+  await sleep(2000, signal)
+
+  cue(options, '第21场 · 长按查看更多', '回放 · 比赛分析 · 队伍分析')
+  await pointerLongPress(twentyFirst.row, centerOf(twentyFirst.row), {
+    pointerId: 109,
+    holdMs: 700,
+    signal,
+  })
+  await waitForSelector(doc, '.bracket-menu-close', { signal })
+  // 给回放 iframe 留出加载和播放时间，菜单内容至少完整展示数秒。
+  await sleep(5200, signal)
+  const close = await waitForSelector(doc, '.bracket-menu-close', { signal })
+  await pointerTap(close, centerOf(close), { pointerId: 110, signal })
+  await sleep(1350, signal)
+
+  cue(options, '赛程区向左滑动', '第0–1阶段 → 第4–5阶段')
+  await boardPanToLastStages(doc, signal)
+  await sleep(150, signal)
+
+  cue(options, '第4–5阶段 · 回到顶部', '准备调整阶段范围')
+  await sleep(350, signal)
+  await returnBoardToTop(doc, signal)
+
+  cue(options, '快速展开完整赛程', '2列 → 6列 · 英雄镜头')
+  await expandFastHero(doc, signal)
+  await sleep(300, signal)
+
+  cue(options, '华南理工 · 3胜1负晋级', '比赛比分 0–2 · 2–0 · 2–0 · 2–0')
+  await sleep(2500, signal)
+
+  cue(options, '聚焦单一阶段，展开完整数据', '状态 · 场次 · 时间 · 支持率 · 胜场 · 对手分')
+  await collapseToFirstStage(doc, signal)
+  await sleep(2500, signal)
+
+  cue(options, 'A组 → 败者组 → 胜者组', '拖拽阶段范围定位决赛 · 冠军金牌特效')
+  await selectGroup(doc, '淘汰赛败者组', 111, signal)
+  await selectGroup(doc, '淘汰赛胜者组', 112, signal)
+  // 最后一次 Group 切换后多留 0.5 秒，让胜者组 Board 稳定并被看清。
+  await sleep(500, signal)
+  await dragStageRangeToFinal(doc, signal)
+  await sleep(7700, signal)
+
+  cue(options, 'Bracket · 一图看懂晋级', '从单场细节，到完整赛程', true)
+  await sleep(3000, signal)
+}

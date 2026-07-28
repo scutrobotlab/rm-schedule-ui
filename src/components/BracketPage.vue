@@ -93,6 +93,8 @@ const isWindowLive = computed(() => windowMotion.value === 'live')
 const isStripSettling = computed(() => windowMotion.value === 'settle')
 const textFitSuspended = ref(false)
 let settleTimer: ReturnType<typeof setTimeout> | null = null
+let resizeScrollLockTop: number | null = null
+let resizeScrollUnlockTimer: ReturnType<typeof setTimeout> | null = null
 const SETTLE_MS = 300
 
 function clamp(value: number, min: number, max: number): number {
@@ -118,12 +120,22 @@ function beginSettleMotion() {
 }
 
 function onResizeInteraction(active: boolean) {
+  if (resizeScrollUnlockTimer) {
+    clearTimeout(resizeScrollUnlockTimer)
+    resizeScrollUnlockTimer = null
+  }
   if (active) {
     textFitSuspended.value = true
+    resizeScrollLockTop = bracketViewportRef.value?.scrollTop ?? 0
     return
   }
   // 有缩放 preview 时，等待随后的吸附动画结束再恢复完整文字。
   if (windowMotion.value === 'idle') textFitSuspended.value = false
+  // 松手后的整数吸附仍会触发一次重排，等吸附完成后再解除纵向锁定。
+  resizeScrollUnlockTimer = setTimeout(() => {
+    resizeScrollUnlockTimer = null
+    resizeScrollLockTop = null
+  }, SETTLE_MS + 50)
 }
 
 /** 吸附后：仅 Knockout 且最左列节点 ≤ 2 时，滚动视口使该列最上节点贴顶（不改树形 Y） */
@@ -270,6 +282,13 @@ function onStagePreview(edges: StageRangeEdges) {
   beginLiveMotion()
   windowLeft.value = edges.left
   windowRight.value = edges.right
+  if (
+    resizeScrollLockTop != null &&
+    bracketViewportRef.value &&
+    bracketViewportRef.value.scrollTop !== resizeScrollLockTop
+  ) {
+    bracketViewportRef.value.scrollTop = resizeScrollLockTop
+  }
 }
 
 /** —— 赛程区横向跟手手势 —— */
@@ -320,7 +339,12 @@ function onBoardPointerMove(e: PointerEvent) {
     panAxis.value = Math.abs(dx) * PAN_X_BIAS >= Math.abs(dy) ? 'x' : 'y'
     if (panAxis.value === 'x') {
       const target = e.currentTarget as HTMLElement
-      target.setPointerCapture(e.pointerId)
+      try {
+        target.setPointerCapture(e.pointerId)
+      } catch {
+        // OBS 自动演示使用合成 PointerEvent，浏览器不会为其建立 active pointer。
+        // 无 pointer capture 时仍可继续处理派发到当前赛程区的后续 move。
+      }
       beginLiveMotion()
     }
   }
@@ -438,6 +462,11 @@ function cancelPendingGroupWork() {
     clearTimeout(settleTimer)
     settleTimer = null
   }
+  if (resizeScrollUnlockTimer) {
+    clearTimeout(resizeScrollUnlockTimer)
+    resizeScrollUnlockTimer = null
+  }
+  resizeScrollLockTop = null
   windowMotion.value = 'idle'
 }
 
@@ -1148,6 +1177,11 @@ onBeforeUnmount(() => {
     clearTimeout(settleTimer)
     settleTimer = null
   }
+  if (resizeScrollUnlockTimer) {
+    clearTimeout(resizeScrollUnlockTimer)
+    resizeScrollUnlockTimer = null
+  }
+  resizeScrollLockTop = null
 })
 
 watch(
@@ -1706,6 +1740,11 @@ watch(
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
   overscroll-behavior-y: none;
+  /* 范围调整会改变卡片总高度；固定滚动条槽位，避免滚动条显隐改变
+     有效宽度并反向扰动阶段拖动与下方赛程布局。 */
+  scrollbar-gutter: stable;
+  /* 卡片密度随阶段范围重排时，不让浏览器自动改动纵向滚动位置。 */
+  overflow-anchor: none;
   /* 透明，让左下 Logo 透到卡片毛玻璃下方被虚化 */
   background: transparent;
 }

@@ -13,7 +13,16 @@ export interface PointerStrokeOptions {
   durationMs?: number
   /** 拖动插值步数；默认按 ~60fps */
   steps?: number
+  /** 默认模拟真人缓入缓出；细节展示可指定匀速。 */
+  easing?: 'ease-in-out' | 'linear'
   signal?: AbortSignal
+}
+
+export interface PointerPathPoint extends Point {
+  /** 从上一点移动到当前点的时长 */
+  durationMs: number
+  /** 到达当前点后保持按下的时长 */
+  holdMs?: number
 }
 
 function assertNotAborted(signal?: AbortSignal) {
@@ -84,6 +93,28 @@ function dispatchPointer(
   target.dispatchEvent(event)
 }
 
+function dispatchMouse(
+  target: Element,
+  type: 'mousedown' | 'mouseup' | 'click',
+  point: Point,
+  buttons: number,
+) {
+  const view = viewOf(target)
+  const event = new view.MouseEvent(type, {
+    bubbles: true,
+    cancelable: true,
+    composed: true,
+    view,
+    clientX: point.x,
+    clientY: point.y,
+    screenX: point.x,
+    screenY: point.y,
+    button: 0,
+    buttons,
+  })
+  target.dispatchEvent(event)
+}
+
 export async function waitForSelector(
   root: ParentNode,
   selector: string,
@@ -110,8 +141,13 @@ export async function pointerTap(
   const pointerType = opts.pointerType ?? 'touch'
   assertNotAborted(opts.signal)
   dispatchPointer(target, 'pointerdown', point, { pointerId, pointerType, buttons: 1 })
+  dispatchMouse(target, 'mousedown', point, 1)
   await sleep(90, opts.signal)
   dispatchPointer(target, 'pointerup', point, { pointerId, pointerType, buttons: 0 })
+  dispatchMouse(target, 'mouseup', point, 0)
+  // 合成 PointerEvent 不会像真实浏览器输入那样自动补发 click。
+  // 普通按钮 / Vuetify 控件依赖 click，因此显式补发一次。
+  dispatchMouse(target, 'click', point, 0)
 }
 
 /** 长按（不触发短按涟漪；用于打开菜单等） */
@@ -150,7 +186,8 @@ export async function pointerDrag(
 
   for (let i = 1; i <= steps; i++) {
     assertNotAborted(opts.signal)
-    const t = easeInOutCubic(i / steps)
+    const progress = i / steps
+    const t = opts.easing === 'linear' ? progress : easeInOutCubic(progress)
     const point = {
       x: from.x + (to.x - from.x) * t,
       y: from.y + (to.y - from.y) * t,
@@ -160,6 +197,50 @@ export async function pointerDrag(
   }
 
   dispatchPointer(target, 'pointerup', to, { pointerId, pointerType, buttons: 0 })
+}
+
+/** 一次不抬手的多段拖动，用于经过明确中间停顿的连续演示。 */
+export async function pointerDragPath(
+  target: Element,
+  from: Point,
+  points: PointerPathPoint[],
+  opts: PointerStrokeOptions = {},
+): Promise<void> {
+  const pointerId = opts.pointerId ?? 1
+  const pointerType = opts.pointerType ?? 'touch'
+  assertNotAborted(opts.signal)
+
+  dispatchPointer(target, 'pointerdown', from, { pointerId, pointerType, buttons: 1 })
+  await sleep(40, opts.signal)
+
+  let current = from
+  for (const destination of points) {
+    const durationMs = Math.max(0, destination.durationMs)
+    const steps = Math.max(1, Math.round(durationMs / 16))
+    for (let i = 1; i <= steps; i++) {
+      assertNotAborted(opts.signal)
+      const progress = i / steps
+      const t = opts.easing === 'linear' ? progress : easeInOutCubic(progress)
+      const point = {
+        x: current.x + (destination.x - current.x) * t,
+        y: current.y + (destination.y - current.y) * t,
+      }
+      dispatchPointer(target, 'pointermove', point, {
+        pointerId,
+        pointerType,
+        buttons: 1,
+      })
+      await sleep(durationMs / steps, opts.signal)
+    }
+    current = destination
+    if (destination.holdMs) await sleep(destination.holdMs, opts.signal)
+  }
+
+  dispatchPointer(target, 'pointerup', current, {
+    pointerId,
+    pointerType,
+    buttons: 0,
+  })
 }
 
 export { centerOf }

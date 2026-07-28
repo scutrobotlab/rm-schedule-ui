@@ -4,6 +4,11 @@ import { useRoute } from 'vue-router'
 import DeviceChrome from '../components/obs/DeviceChrome.vue'
 import TouchPointerOverlay from '../components/obs/TouchPointerOverlay.vue'
 import { runStageSelectorDemo, STAGE_DEMO_DEFAULT_SRC } from '../utils/obs_demo_stage'
+import {
+  runStoryboardDemo,
+  STORYBOARD_DEMO_DEFAULT_SRC,
+  type StoryboardCue,
+} from '../utils/obs_demo_storyboard'
 
 /** iPhone 17 Pro Max 逻辑分辨率（1320×2868 @3x） */
 const DEFAULT_LOGICAL_W = 440
@@ -19,6 +24,7 @@ const DEFAULT_RADIUS = 0
 const route = useRoute()
 const frameRef = ref<HTMLIFrameElement | null>(null)
 const touchOverlayRef = ref<InstanceType<typeof TouchPointerOverlay> | null>(null)
+const storyboardCue = ref<StoryboardCue | null>(null)
 
 let demoAbort: AbortController | null = null
 
@@ -72,7 +78,11 @@ const canvasH = computed(() => logicalH.value * scale.value)
  */
 const embedSrc = computed(() => {
   const raw = queryValue('src')
-  const fallback = demoKind.value === 'stage' ? STAGE_DEMO_DEFAULT_SRC : '/bracket'
+  const fallback = demoKind.value === 'stage'
+    ? STAGE_DEMO_DEFAULT_SRC
+    : demoKind.value === 'storyboard'
+      ? STORYBOARD_DEMO_DEFAULT_SRC
+      : '/bracket'
 
   let pathWithQuery = (raw ?? '').trim() || fallback
   try {
@@ -93,7 +103,10 @@ const embedSrc = computed(() => {
   const target = new URL(pathWithQuery, window.location.origin)
   target.searchParams.set('capture', '1')
   // 阶段演示需要从 1 列起，便于右把手一路扩到满列
-  if (demoKind.value === 'stage' && !target.searchParams.has('stage')) {
+  if (
+    (demoKind.value === 'stage' || demoKind.value === 'storyboard') &&
+    !target.searchParams.has('stage')
+  ) {
     target.searchParams.set('stage', '0-0')
   }
   // 默认只预留安全区，不绘制状态栏；iframe 内用 query 注入模拟 inset
@@ -124,18 +137,28 @@ const layerStyle = computed(() => ({
 function stopDemo() {
   demoAbort?.abort()
   demoAbort = null
+  storyboardCue.value = null
 }
 
 async function startDemoIfNeeded() {
   stopDemo()
-  if (demoKind.value !== 'stage') return
+  if (demoKind.value !== 'stage' && demoKind.value !== 'storyboard') return
   const doc = frameRef.value?.contentDocument
   if (!doc || doc.URL === 'about:blank') return
 
   const controller = new AbortController()
   demoAbort = controller
   try {
-    await runStageSelectorDemo(doc, { signal: controller.signal })
+    if (demoKind.value === 'storyboard') {
+      await runStoryboardDemo(doc, {
+        signal: controller.signal,
+        onCue: cue => {
+          storyboardCue.value = cue
+        },
+      })
+    } else {
+      await runStageSelectorDemo(doc, { signal: controller.signal })
+    }
   } catch (error) {
     if ((error as DOMException)?.name === 'AbortError') return
     console.warn('[obs demo]', error)
@@ -188,6 +211,17 @@ onUnmounted(() => {
         :host="frameRef"
         :enabled="showTouch"
       />
+
+      <Transition name="storyboard-caption">
+        <div
+          v-if="storyboardCue"
+          class="storyboard-caption"
+          :class="{ 'storyboard-caption--brand': storyboardCue.brand }"
+        >
+          <div class="storyboard-caption__main">{{ storyboardCue.main }}</div>
+          <div class="storyboard-caption__sub">{{ storyboardCue.sub }}</div>
+        </div>
+      </Transition>
 
       <DeviceChrome
         v-if="showChrome"
@@ -248,5 +282,72 @@ html.obs-capture .v-main__wrap {
   height: 100%;
   border: 0;
   background: transparent;
+}
+
+.storyboard-caption {
+  position: absolute;
+  z-index: 30;
+  right: 18px;
+  bottom: 48px;
+  left: 18px;
+  padding: 12px 16px;
+  color: #fff;
+  text-align: center;
+  border: 1px solid rgba(205, 228, 247, 0.2);
+  border-radius: 14px;
+  background: rgba(4, 14, 28, 0.68);
+  box-shadow: 0 12px 30px rgba(0, 5, 18, 0.3);
+  backdrop-filter: blur(16px) saturate(1.35);
+  pointer-events: none;
+
+  &__main {
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1.35;
+  }
+
+  &__sub {
+    margin-top: 4px;
+    color: rgba(222, 235, 247, 0.82);
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  &--brand {
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 32px;
+    border: 0;
+    border-radius: 0;
+    background: rgba(1, 8, 18, 0.72);
+
+    .storyboard-caption__main {
+      font-size: 32px;
+      letter-spacing: 0.02em;
+    }
+
+    .storyboard-caption__sub {
+      margin-top: 10px;
+      font-size: 16px;
+    }
+  }
+}
+
+.storyboard-caption-enter-active,
+.storyboard-caption-leave-active {
+  transition: opacity 240ms ease, transform 240ms ease;
+}
+
+.storyboard-caption-enter-from,
+.storyboard-caption-leave-to {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.storyboard-caption--brand.storyboard-caption-enter-from,
+.storyboard-caption--brand.storyboard-caption-leave-to {
+  transform: none;
 }
 </style>
