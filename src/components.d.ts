@@ -38,6 +38,7 @@ declare module 'vue' {
     Situation: typeof import('./components/Situation.vue')['default']
     StageRangeSelector: typeof import('./components/StageRangeSelector.vue')['default']
     TeamHeader: typeof import('./components/TeamHeader.vue')['default']
+    TouchPointerOverlay: typeof import('./components/obs/TouchPointerOverlay.vue')['default']
     UpdateAnnouncement: typeof import('./components/UpdateAnnouncement.vue')['default']
   }
 }

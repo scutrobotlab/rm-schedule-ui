@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import DeviceChrome from '../components/obs/DeviceChrome.vue'
+import TouchPointerOverlay from '../components/obs/TouchPointerOverlay.vue'
 
 /** iPhone 17 Pro Max 逻辑分辨率（1320×2868 @3x） */
 const DEFAULT_LOGICAL_W = 440
@@ -15,6 +16,8 @@ const SAFE_BOTTOM = 34
 const DEFAULT_RADIUS = 0
 
 const route = useRoute()
+const frameRef = ref<HTMLIFrameElement | null>(null)
+const touchOverlayRef = ref<InstanceType<typeof TouchPointerOverlay> | null>(null)
 
 function queryValue(key: string): string | undefined {
   const raw = route.query[key]
@@ -48,6 +51,8 @@ const showIsland = computed(() => readFlag('island', true))
 const showHome = computed(() => readFlag('home', true))
 const showWifi = computed(() => readFlag('wifi', false))
 const reserveSafe = computed(() => readFlag('safe', true))
+/** 录制时默认显示半透明指尖与点击涟漪；touch=0 关闭 */
+const showTouch = computed(() => readFlag('touch', true))
 const charging = computed(() => readFlag('charging', false))
 const battery = computed(() => readNumber('battery', 100))
 const signal = computed(() => readNumber('signal', 4))
@@ -107,6 +112,10 @@ const layerStyle = computed(() => ({
   transformOrigin: 'top left',
 }))
 
+function onFrameLoad() {
+  touchOverlayRef.value?.rebind()
+}
+
 onMounted(() => {
   document.documentElement.classList.add('obs-capture')
 })
@@ -126,10 +135,19 @@ onUnmounted(() => {
       :style="layerStyle"
     >
       <iframe
+        ref="frameRef"
         class="obs-frame"
         title="OBS nested viewport"
         :src="embedSrc"
         referrerpolicy="same-origin"
+        @load="onFrameLoad"
+      />
+
+      <TouchPointerOverlay
+        v-if="showTouch"
+        ref="touchOverlayRef"
+        :host="frameRef"
+        :enabled="showTouch"
       />
 
       <DeviceChrome

@@ -48,6 +48,9 @@ watchEffect(() => {
       root.style.removeProperty(cssVar)
     }
   }
+
+  // /obs iframe 内隐藏系统光标，只保留指尖叠层
+  root.classList.toggle('obs-touch-capture', route.query.capture != null)
 })
 
 /** 录制层（?capture=1）不自动弹公告，避免遮住画面 */
@@ -87,5 +90,10 @@ body,
   font-family: Noto Sans SC, sans-serif;
   font-style: normal;
   font-weight: 400;
+}
+
+html.obs-touch-capture,
+html.obs-touch-capture * {
+  cursor: none !important;
 }
 </style>
