@@ -43,10 +43,11 @@ const logicalH = computed(() => readPositiveInt('h', DEFAULT_LOGICAL_H))
 const scale = computed(() => readPositiveInt('scale', DEFAULT_SCALE))
 const radius = computed(() => Math.max(0, readNumber('radius', DEFAULT_RADIUS)))
 
-const showChrome = computed(() => readFlag('chrome', true))
+const showChrome = computed(() => readFlag('chrome', false))
 const showIsland = computed(() => readFlag('island', true))
 const showHome = computed(() => readFlag('home', true))
 const showWifi = computed(() => readFlag('wifi', false))
+const reserveSafe = computed(() => readFlag('safe', true))
 const charging = computed(() => readFlag('charging', false))
 const battery = computed(() => readNumber('battery', 100))
 const signal = computed(() => readNumber('signal', 4))
@@ -81,12 +82,12 @@ const embedSrc = computed(() => {
 
   const target = new URL(pathWithQuery, window.location.origin)
   target.searchParams.set('capture', '1')
-  // iframe 内拿不到真实 env(safe-area-inset-*)，用 query 把模拟安全区传进去
-  if (showChrome.value) {
+  // 默认只预留安全区，不绘制状态栏；iframe 内用 query 注入模拟 inset
+  if (reserveSafe.value) {
     if (!target.searchParams.has('safe_top')) {
       target.searchParams.set('safe_top', String(SAFE_TOP))
     }
-    if (!target.searchParams.has('safe_bottom') && showHome.value) {
+    if (!target.searchParams.has('safe_bottom')) {
       target.searchParams.set('safe_bottom', String(SAFE_BOTTOM))
     }
   }
