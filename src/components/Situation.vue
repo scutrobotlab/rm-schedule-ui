@@ -147,14 +147,6 @@ const MenuItems = ref(
       action: toggleLiveMode,
     },
     {
-      title: '更新公告',
-      icon: 'mdi-update',
-      disabled: () => false,
-      action: () => {
-        appStore.updateAnnouncementDialog = true
-      },
-    },
-    {
       title: '关于软件',
       icon: 'mdi-information',
       disabled: () => false,

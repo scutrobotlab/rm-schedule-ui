@@ -48,8 +48,6 @@ const appStore = useAppStore()
 const promotionStore = usePromotionStore()
 const robotDataStore = useRobotDataStore()
 
-const liveMode = computed(() => route.query.live == '1')
-
 /** 原始 zone.parts 下标（与 ?group= 兼容） */
 const selectedGroup = ref(Number(route.query.group ?? -1))
 /** bracket 内容延后一帧切换，让 zone/group 控件先完成选中态绘制 */
@@ -693,16 +691,6 @@ function updateHref(newSeason: number) {
   window.location.href = `${bracketPagePath(newSeason, defaultZone)}${queryString ? `?${queryString}` : ''}`
 }
 
-function toggleLiveMode() {
-  const query = { ...route.query }
-  if (liveMode.value) {
-    delete query.live
-  } else {
-    query.live = '1'
-  }
-  router.replace({ path: route.path, query })
-}
-
 function defaultStageRange(stageTotal: number): StageRange {
   return { start: 0, end: Math.min(1, Math.max(0, stageTotal - 1)) }
 }
@@ -867,20 +855,6 @@ const MenuItems = ref([
     disabled: () => false,
     action: () => {
       appStore.commentDialog = true
-    },
-  },
-  {
-    title: () => (liveMode.value ? '关闭直播' : '直播模式'),
-    icon: 'mdi-broadcast',
-    disabled: () => false,
-    action: toggleLiveMode,
-  },
-  {
-    title: '更新公告',
-    icon: 'mdi-update',
-    disabled: () => false,
-    action: () => {
-      appStore.updateAnnouncementDialog = true
     },
   },
   {
@@ -1308,13 +1282,6 @@ watch(
                   />
                 </button>
               </div>
-
-              <span
-                v-if="liveMode"
-                class="live-mode-indicator"
-              >
-                直播模式
-              </span>
             </div>
           </v-sheet>
 
@@ -1675,16 +1642,6 @@ watch(
   white-space: nowrap;
 }
 
-.live-mode-indicator {
-  position: absolute;
-  left: calc(100% + 12px);
-  top: 50%;
-  transform: translateY(-50%);
-  white-space: nowrap;
-  color: rgba(210, 224, 244, 0.72);
-  font-size: 12px;
-}
-
 .glass-sheet {
   background:
     linear-gradient(180deg, rgba(176, 216, 245, 0.1) 0%, rgba(30, 64, 92, 0.025) 100%),
@@ -1928,12 +1885,6 @@ watch(
 
   .group-selector {
     --track-bg: rgba(8, 28, 72, 0.88);
-  }
-}
-
-@media (max-width: 800px) {
-  .live-mode-indicator {
-    display: none;
   }
 }
 
