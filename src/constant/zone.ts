@@ -65,7 +65,7 @@ export const SeasonList = [2024, 2025, 2026];
 export const DefaultZoneMap = {
   2024: 526,
   2025: 572,
-  2026: 618,
+  2026: 617,
 }
 
 export const ZoneMap: { [key: number]: Zone[] } = {
@@ -653,7 +653,7 @@ export const ZoneMap: { [key: number]: Zone[] } = {
     },
     {
       id: 618, name: '全国赛', disabled: false,
-      defaultGroup: 5,
+      defaultGroup: 0,
       parts: [
         {
           name: 'A组前段',

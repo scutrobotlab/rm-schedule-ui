@@ -36,13 +36,14 @@ function knockoutZone(nodeId: string): ZoneZoneData {
 }
 
 describe('2026 ZoneMap 注册与默认赛区', () => {
-  it('注册 617/618，默认赛区为 618', () => {
+  it('注册 617/618，默认进入复活赛 A 组，全国赛也默认进入 A 组', () => {
     const zones = ZoneMap[2026]
     expect(zones.map((z) => z.id)).toEqual([614, 615, 616, 617, 618])
-    expect(DefaultZoneMap[2026]).toBe(618)
+    expect(DefaultZoneMap[2026]).toBe(617)
 
     const revival = zones.find((z) => z.id === 617)!
     expect(revival.name).toBe('复活赛')
+    expect(revival.defaultGroup).toBe(0)
     expect(revival.parts.map((p) => [p.name, p.type, p.group])).toEqual([
       ['A组', 'group', 'A'],
       ['B组', 'group', 'B'],
@@ -51,6 +52,7 @@ describe('2026 ZoneMap 注册与默认赛区', () => {
 
     const final = zones.find((z) => z.id === 618)!
     expect(final.name).toBe('全国赛')
+    expect(final.defaultGroup).toBe(0)
     expect(final.parts.map((p) => [p.name, p.type, p.group])).toEqual([
       ['A组前段', 'group', 'A'],
       ['B组前段', 'group', 'B'],
