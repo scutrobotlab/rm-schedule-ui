@@ -224,6 +224,12 @@ onUnmounted(() => {
         >
           <div class="storyboard-caption__main">{{ storyboardCue.main }}</div>
           <div class="storyboard-caption__sub">{{ storyboardCue.sub }}</div>
+          <div
+            v-if="storyboardCue.voiceover"
+            class="storyboard-caption__voiceover"
+          >
+            {{ storyboardCue.voiceover }}
+          </div>
         </div>
       </Transition>
 
@@ -317,6 +323,18 @@ html.obs-capture .v-main__wrap {
     line-height: 1.4;
   }
 
+  &__voiceover {
+    margin-top: 9px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(205, 228, 247, 0.16);
+    color: rgba(255, 255, 255, 0.96);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.55;
+    text-wrap: balance;
+    text-shadow: 0 1px 4px rgba(0, 5, 18, 0.8);
+  }
+
   &--brand {
     inset: 0;
     display: flex;
@@ -335,6 +353,13 @@ html.obs-capture .v-main__wrap {
     .storyboard-caption__sub {
       margin-top: 10px;
       font-size: 16px;
+    }
+
+    .storyboard-caption__voiceover {
+      margin-top: 18px;
+      padding-top: 0;
+      border-top: 0;
+      font-size: 15px;
     }
   }
 }
