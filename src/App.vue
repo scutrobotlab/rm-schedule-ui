@@ -1,5 +1,8 @@
 <template>
   <v-app>
+    <div v-if="appStore.isTestEnvironment" class="test-environment-badge">
+      测试环境
+    </div>
     <v-main>
       <AnniversaryAnnouncement v-if="!hideGlobalAnnouncements"/>
       <UpdateAnnouncement v-if="!hideGlobalAnnouncements"/>
@@ -17,6 +20,8 @@ import UpdateAnnouncement from "./components/UpdateAnnouncement.vue";
 
 const route = useRoute()
 const appStore = useAppStore()
+
+void appStore.loadGlobalConfig()
 
 /** 竞猜海报 / 晋级图 / OBS 嵌套层不挂载全局公告，避免遮罩干扰全屏浏览、截图或录制 */
 const hideGlobalAnnouncements = computed(() => {
@@ -84,6 +89,26 @@ body,
 .v-main,
 .v-main__wrap {
   background: transparent !important;
+}
+
+.test-environment-badge {
+  position: fixed;
+  z-index: 10000;
+  bottom: max(10px, var(--app-safe-bottom));
+  right: max(10px, var(--app-safe-right));
+  padding: 5px 11px;
+  border: 1px solid #fff;
+  border-radius: 6px;
+  background: rgb(194 55 24 / 92%);
+  box-shadow: 0 2px 10px rgb(0 0 0 / 30%);
+  color: #fff8dc;
+  opacity: 0.9;
+  font-family: 'MyFont', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 20px;
+  letter-spacing: 0.12em;
+  pointer-events: none;
 }
 
 #app {
