@@ -59,6 +59,13 @@ const renderedGroup = ref(selectedGroup.value)
 const renderedZoneId = ref(Number(route.params.zoneId))
 const routeHasGroup = computed(() => route.query.group !== undefined)
 const viewportWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024)
+const stageHandlesRevealed = ref(false)
+const stageHandlesIntro = computed(() => (
+  route.query.capture != null &&
+  route.query.stage_handles === 'intro' &&
+  Number(route.params.season) === 2025 &&
+  !stageHandlesRevealed.value
+))
 
 const bracketViewportRef = ref<HTMLElement | null>(null)
 const bracketMatchMenuOpen = ref(false)
@@ -1363,7 +1370,9 @@ watch(
                   :stages="displayStages"
                   :visual-override="visualOverride"
                   :suppress-transition="isWindowLive"
+                  :handles-intro="stageHandlesIntro"
                   @preview="onStagePreview"
+                  @handles-revealed="stageHandlesRevealed = true"
                   @resize-interaction="onResizeInteraction"
                   @update:model-value="syncWindowFromRange"
                 />

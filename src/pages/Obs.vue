@@ -102,12 +102,16 @@ const embedSrc = computed(() => {
 
   const target = new URL(pathWithQuery, window.location.origin)
   target.searchParams.set('capture', '1')
-  // 阶段演示需要从 1 列起，便于右把手一路扩到满列
+  // 自动演示缺省阶段由各自的默认 src 决定。
   if (
     (demoKind.value === 'stage' || demoKind.value === 'storyboard') &&
     !target.searchParams.has('stage')
   ) {
     target.searchParams.set('stage', '0-0')
+  }
+  // 完整分镜前 5 镜只展示平移；第 6 镜再由脚本触发缩放把手入场。
+  if (demoKind.value === 'storyboard') {
+    target.searchParams.set('stage_handles', 'intro')
   }
   // 默认只预留安全区，不绘制状态栏；iframe 内用 query 注入模拟 inset
   if (reserveSafe.value) {

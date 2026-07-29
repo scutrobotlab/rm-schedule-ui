@@ -2,7 +2,7 @@
  * OBS 60 秒产品分镜演示。
  *
  * 该脚本只编排真实 Bracket DOM 的操作；字幕和片尾由 Obs.vue 根据 cue 回调绘制。
- * 默认从 2025 南部赛区 A 组、0–1 两列开始。
+ * 默认从 2025 全国赛 A 组、0–1 两列开始。
  */
 import {
   centerOf,
@@ -14,7 +14,7 @@ import {
   type Point,
 } from './obs_pointer'
 
-export const STORYBOARD_DEMO_DEFAULT_SRC = '/2025/565/bracket?group=0&stage=0-1'
+export const STORYBOARD_DEMO_DEFAULT_SRC = '/2025/572/bracket?group=0&stage=0-1'
 
 export interface StoryboardCue {
   main: string
@@ -73,20 +73,6 @@ function cue(options: StoryboardDemoOptions, main: string, sub: string, brand = 
   options.onCue?.({ main, sub, brand })
 }
 
-function setInputValue(input: HTMLInputElement, value: string) {
-  const view = input.ownerDocument.defaultView
-  if (!view) return
-  const setter = Object.getOwnPropertyDescriptor(
-    view.HTMLInputElement.prototype,
-    'value',
-  )?.set
-  setter?.call(input, value)
-  input.dispatchEvent(new view.Event('input', {
-    bubbles: true,
-    composed: true,
-  }))
-}
-
 async function tapText(
   doc: Document,
   selector: string,
@@ -137,7 +123,6 @@ async function selectSeason(doc: Document, season: string, signal?: AbortSignal)
 
 async function searchAndSelectCurrentZoneTeam(
   doc: Document,
-  queryText: string,
   collegeName: string,
   signal?: AbortSignal,
 ) {
@@ -145,7 +130,7 @@ async function searchAndSelectCurrentZoneTeam(
   await pointerTap(searchButton, centerOf(searchButton), { pointerId: 114, signal })
 
   const dialog = await waitForSelector(doc, '.v-dialog .v-card', { signal })
-  await sleep(700, signal)
+  await sleep(800, signal)
 
   // 限定全国赛，避免同一学校在区域赛与全国赛产生多个同名结果。
   const currentZoneSwitch = dialog.querySelector(
@@ -156,7 +141,7 @@ async function searchAndSelectCurrentZoneTeam(
       pointerId: 115,
       signal,
     })
-    await sleep(700, signal)
+    await sleep(800, signal)
   }
 
   const input = await waitForSelector(
@@ -165,17 +150,8 @@ async function searchAndSelectCurrentZoneTeam(
     { signal },
   ) as HTMLInputElement
   await pointerTap(input, centerOf(input), { pointerId: 116, signal })
-  // 学校选择列表弹出后先停留，再输入第一个字母 H。
-  await sleep(600, signal)
-
-  let query = ''
-  for (const character of queryText) {
-    query += character
-    setInputValue(input, query)
-    await sleep(260, signal)
-  }
-  // 输入完成后让搜索结果充分展示，再选择华南理工大学。
-  await sleep(1000, signal)
+  // 直接从当前赛区学校列表选择目标，不再输入 HNLG。
+  await sleep(800, signal)
 
   const result = await waitForText(
     doc,
@@ -195,7 +171,8 @@ async function searchAndSelectCurrentZoneTeam(
     () => !doc.querySelector('.v-dialog .v-card'),
     signal,
   )
-  await sleep(500, signal)
+  // 返回赛程后先完整展示搜索产生的高亮，再进入点击取消演示。
+  await sleep(1400, signal)
 }
 
 function matchCardForOrder(doc: Document, order: number): Element | undefined {
@@ -322,6 +299,22 @@ async function returnBoardToTop(doc: Document, signal?: AbortSignal) {
   await sleep(1700, signal)
 }
 
+async function revealStageHandles(doc: Document, signal?: AbortSignal) {
+  const selector = await waitForSelector(doc, '.stage-range', { signal })
+  selector.dispatchEvent(new CustomEvent('stage-range:reveal-handles', {
+    bubbles: false,
+  }))
+  await waitForCondition(
+    () => (
+      selector.classList.contains('stage-range--handles-revealing') ||
+      !selector.classList.contains('stage-range--handles-hidden')
+    ),
+    signal,
+  )
+  // 1.5 秒完整播放滑块/把手生长，再留 1 秒让观众看清最终状态。
+  await sleep(2500, signal)
+}
+
 async function stageGeometry(doc: Document, signal?: AbortSignal) {
   const track = await waitForSelector(doc, '.stage-range__track', { signal })
   const handle = await waitForSelector(doc, '.stage-range__handle--start', { signal })
@@ -445,8 +438,13 @@ async function runStoryboard2026Continuation(
   const { signal } = options
   await waitForSelector(doc, '.bracket-page', { timeoutMs: 20_000, signal })
   await waitForText(doc, '.v-select', '2026', signal, 20_000)
-  await waitForText(doc, '.v-select', '全国赛', signal, 20_000)
+  await waitForText(doc, '.v-select', '复活赛', signal, 20_000)
 
+  cue(options, '2026 复活赛', '切换赛季 · 进入默认赛区')
+  await sleep(900, signal)
+  cue(options, '复活赛 → 全国赛', '切换 Zone · 进入2026全国赛')
+  await selectZone(doc, '全国赛', signal)
+  await sleep(900, signal)
   cue(options, '2026 全国赛', '未确定场次 · 对阵来源实时呈现')
   await sleep(2600, signal)
 
@@ -483,15 +481,11 @@ export async function runStoryboardDemo(
   await waitForSelector(doc, '.bracket-page', { timeoutMs: 20_000, signal })
   await waitForTeamInMatch(doc, 1, '华南理工大学', signal).catch(() => undefined)
 
-  cue(options, '2025 南部区域赛', '默认两列，清晰查看每场对阵')
+  cue(options, '2025 全国赛', '默认两列，清晰查看每场对阵')
   await sleep(4000, signal)
 
-  cue(options, '南部赛区 → 全国赛', '切换 Zone，赛程同步更新')
-  await selectZone(doc, '全国赛', signal)
-  await sleep(900, signal)
-
-  cue(options, '输入 HNLG 搜索华南理工', '拼音首字母 · 限定当前赛区')
-  await searchAndSelectCurrentZoneTeam(doc, 'HNLG', '华南理工大学', signal)
+  cue(options, '直接选择华南理工', '限定当前赛区 · 快速定位')
+  await searchAndSelectCurrentZoneTeam(doc, '华南理工大学', signal)
 
   const first = await waitForTeamInMatch(doc, 1, '华南理工大学', signal)
   await waitForCondition(
@@ -501,9 +495,10 @@ export async function runStoryboardDemo(
 
   cue(options, '点击队伍，切换高亮', '再次点击即可取消或恢复选中')
   await pointerTap(first.row, centerOf(first.row), { pointerId: 119, signal })
-  await sleep(700, signal)
+  // 明确展示取消选中状态，避免两次点击看起来像双击。
+  await sleep(1100, signal)
   await pointerTap(first.row, centerOf(first.row), { pointerId: 120, signal })
-  await sleep(1000, signal)
+  await sleep(1200, signal)
 
   cue(options, '高亮路径 · 上下浏览', '第1场 0–2 → 第21场 2–0')
   await sleep(450, signal)
@@ -528,9 +523,10 @@ export async function runStoryboardDemo(
   await boardPanToLastStages(doc, signal)
   await sleep(150, signal)
 
-  cue(options, '第4–5阶段 · 回到顶部', '准备调整阶段范围')
+  cue(options, '阶段范围选择器', '平移浏览 → 自由缩放')
   await sleep(350, signal)
   await returnBoardToTop(doc, signal)
+  await revealStageHandles(doc, signal)
 
   cue(options, '快速展开完整赛程', '2列 → 6列 · 英雄镜头')
   await expandFastHero(doc, signal)

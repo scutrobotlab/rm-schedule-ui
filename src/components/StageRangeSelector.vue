@@ -36,10 +36,13 @@ const props = withDefaults(
     visualOverride?: StageRangeEdges | null
     /** 为 true 时关闭选区过渡（外部跟手中）；吸附时请关掉以播放动画 */
     suppressTransition?: boolean
+    /** OBS 分镜：初始只展示可平移选区，稍后再揭示左右缩放把手 */
+    handlesIntro?: boolean
   }>(),
   {
     visualOverride: null,
     suppressTransition: false,
+    handlesIntro: false,
   },
 )
 
@@ -50,6 +53,7 @@ const emit = defineEmits<{
   preview: [value: StageRangeEdges]
   /** 仅缩放把手触发；平移选区不触发 */
   resizeInteraction: [active: boolean]
+  handlesRevealed: []
 }>()
 
 const trackRef = ref<HTMLElement | null>(null)
@@ -66,6 +70,9 @@ const dragOriginLeft = ref(0)
 const dragOriginRight = ref(0)
 /** 本次拖动是否产生位移；用于区分点击与拖拽 */
 const didDrag = ref(false)
+const handlesVisible = ref(!props.handlesIntro)
+const handlesRevealing = ref(false)
+let handlesRevealTimer: number | undefined
 
 /** 选区左右边界（以阶段格为单位，右边界为开区间） */
 const visualLeft = ref(0)
@@ -253,6 +260,7 @@ function applyVisual(left: number, right: number) {
 
 function onPointerDown(mode: DragMode, e: PointerEvent) {
   if (stageCount.value <= 0) return
+  if ((mode === 'start' || mode === 'end') && !handlesVisible.value) return
   e.preventDefault()
   e.stopPropagation()
   const target = e.currentTarget as HTMLElement
@@ -397,6 +405,32 @@ watch(
   },
 )
 
+watch(
+  () => props.handlesIntro,
+  (enabled) => {
+    // 揭示开始后父级会立即记住状态并把 handlesIntro 关掉。
+    // 此时必须让当前 1.5 秒入场动画继续播放，不能反向清空 revealing。
+    if (!enabled && (handlesVisible.value || handlesRevealing.value)) return
+    if (handlesRevealTimer !== undefined) {
+      window.clearTimeout(handlesRevealTimer)
+      handlesRevealTimer = undefined
+    }
+    handlesVisible.value = !enabled
+    handlesRevealing.value = false
+  },
+)
+
+function revealHandles() {
+  if (handlesVisible.value || handlesRevealing.value) return
+  handlesVisible.value = true
+  handlesRevealing.value = true
+  emit('handlesRevealed')
+  handlesRevealTimer = window.setTimeout(() => {
+    handlesRevealing.value = false
+    handlesRevealTimer = undefined
+  }, 1500)
+}
+
 onMounted(() => {
   void scheduleLabelMeasurement()
   if (labelsRef.value) {
@@ -407,6 +441,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  if (handlesRevealTimer !== undefined) window.clearTimeout(handlesRevealTimer)
   labelsResizeObserver?.disconnect()
   labelsResizeObserver = null
 })
@@ -456,8 +491,11 @@ function barsStyle(stage: StageItem): Record<string, string> {
       'stage-range--dragging': isDragging,
       'stage-range--override': suppressTransition,
       'stage-range--labels-wrap': useTwoLineLayout,
+      'stage-range--handles-hidden': !handlesVisible,
+      'stage-range--handles-revealing': handlesRevealing,
     }"
     :style="{ '--stage-count': Math.max(stageCount, 1) }"
+    @stage-range:reveal-handles="revealHandles"
   >
     <div ref="labelsRef" class="stage-range__labels">
       <button
@@ -557,6 +595,9 @@ function barsStyle(stage: StageItem): Record<string, string> {
           type="button"
           class="stage-range__handle stage-range__handle--start"
           aria-label="调整起始阶段"
+          :aria-hidden="!handlesVisible"
+          :tabindex="handlesVisible ? 0 : -1"
+          :disabled="!handlesVisible"
           @pointerdown.stop="onPointerDown('start', $event)"
           @pointermove="onPointerMove"
           @pointerup="onPointerUp"
@@ -568,6 +609,9 @@ function barsStyle(stage: StageItem): Record<string, string> {
           type="button"
           class="stage-range__handle stage-range__handle--end"
           aria-label="调整结束阶段"
+          :aria-hidden="!handlesVisible"
+          :tabindex="handlesVisible ? 0 : -1"
+          :disabled="!handlesVisible"
           @pointerdown.stop="onPointerDown('end', $event)"
           @pointermove="onPointerMove"
           @pointerup="onPointerUp"
@@ -859,7 +903,17 @@ function barsStyle(stage: StageItem): Record<string, string> {
   right: var(--handle-width);
   background: var(--selection-bg);
   pointer-events: none;
-  transition: background-color 0.2s ease;
+  transition:
+    left 0.45s var(--snap-ease),
+    right 0.45s var(--snap-ease),
+    background-color 0.2s ease;
+}
+
+/* 分镜前半段只保留选区平移，铺满填充以免提前暗示两侧可以缩放。 */
+.stage-range--handles-hidden .stage-range__selection::before {
+  left: 0;
+  right: 0;
+  border-radius: var(--bar-radius);
 }
 
 .stage-range--dragging .stage-range__selection,
@@ -891,6 +945,78 @@ function barsStyle(stage: StageItem): Record<string, string> {
   display: flex;
   align-items: center;
   justify-content: center;
+  opacity: 1;
+  transform: scaleX(1);
+  transition:
+    opacity 0.32s ease,
+    transform 0.72s var(--snap-ease);
+}
+
+.stage-range--handles-hidden .stage-range__handle {
+  opacity: 0;
+  transform: scaleX(0.08);
+  pointer-events: none;
+}
+
+.stage-range--handles-revealing .stage-range__selection::before {
+  animation: stage-range-fill-reveal 1.5s var(--snap-ease) both;
+}
+
+.stage-range--handles-revealing .stage-range__handle {
+  animation: stage-range-handle-reveal 1.5s cubic-bezier(0.2, 0.9, 0.25, 1) both;
+}
+
+.stage-range--handles-revealing .stage-range__handle--end {
+  animation-delay: 90ms;
+}
+
+@keyframes stage-range-fill-reveal {
+  0% {
+    left: 0;
+    right: 0;
+    border-radius: var(--bar-radius);
+    background: rgba(120, 170, 255, 0.17);
+  }
+  62% {
+    left: calc(var(--handle-width) * 0.45);
+    right: calc(var(--handle-width) * 0.45);
+    border-radius: 5px;
+    background: rgba(145, 190, 255, 0.3);
+  }
+  100% {
+    left: var(--handle-width);
+    right: var(--handle-width);
+    border-radius: 0;
+    background: var(--selection-bg);
+  }
+}
+
+@keyframes stage-range-handle-reveal {
+  0%,
+  14% {
+    opacity: 0;
+    transform: scaleX(0.08);
+  }
+  48% {
+    opacity: 1;
+    transform: scaleX(1.32);
+  }
+  66% {
+    opacity: 1;
+    transform: scaleX(0.88);
+  }
+  81% {
+    opacity: 1;
+    transform: scaleX(1.1);
+  }
+  91% {
+    opacity: 1;
+    transform: scaleX(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
 }
 
 /* 按钮热区向选区内侧扩展，白色把手的可见尺寸与位置保持不变。 */
@@ -912,6 +1038,7 @@ function barsStyle(stage: StageItem): Record<string, string> {
 .stage-range__handle--start {
   left: calc(-1 * var(--handle-outer-hit, 28px));
   justify-content: flex-end;
+  transform-origin: right center;
 }
 
 .stage-range__handle--start::before {
@@ -922,6 +1049,7 @@ function barsStyle(stage: StageItem): Record<string, string> {
 .stage-range__handle--end {
   right: calc(-1 * var(--handle-outer-hit, 28px));
   justify-content: flex-start;
+  transform-origin: left center;
 }
 
 .stage-range__handle--end::before {
