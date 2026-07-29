@@ -111,6 +111,16 @@ body,
   pointer-events: none;
 }
 
+@media (min-width: 768px) {
+  .test-environment-badge {
+    padding: 8px 16px;
+    border-width: 2px;
+    border-radius: 8px;
+    font-size: 17px;
+    line-height: 24px;
+  }
+}
+
 #app {
   font-family: Noto Sans SC, sans-serif;
   font-style: normal;

@@ -3,10 +3,13 @@ import MatchGraph from '../components/MatchGraph.vue'
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { usePromotionStore } from '../stores/promotion'
+import { useAppStore } from '../stores/app'
 import { resolveZonePart } from '../utils/zone_resolve'
+import { addTestEnvironmentBadge } from '../utils/test_environment_badge'
 
 const route = useRoute()
 const promotionStore = usePromotionStore()
+const appStore = useAppStore()
 
 const seasonRaw = String(route.params.season ?? '')
 const zoneIdRaw = String(route.params.zoneId ?? '')
@@ -48,7 +51,11 @@ if (paramsValid && 'error' in resolved.value) {
 
 async function onReady() {
   try {
-    const dataUrl = await graphRef.value?.exportImage()
+    await appStore.loadGlobalConfig()
+    const exportedDataUrl = await graphRef.value?.exportImage()
+    const dataUrl = exportedDataUrl && appStore.isTestEnvironment
+      ? await addTestEnvironmentBadge(exportedDataUrl)
+      : exportedDataUrl
     if (!dataUrl) {
       setError('exportImage returned empty result')
       return

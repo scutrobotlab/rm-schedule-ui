@@ -10,6 +10,7 @@ import {
 } from '../utils/match_forecast'
 import { StaticCDN } from '../utils/cdn'
 import { forecastAssets } from '@/assets/forecast'
+import { useAppStore } from '../stores/app'
 
 const FORECAST_IMAGE_URL = '/api/match_forecast_image'
 const FORECAST_IMAGE_FILENAME_FALLBACK = 'match-forecast.png'
@@ -45,6 +46,7 @@ const PLACEHOLDER_SIDE: ForecastSide = {
 }
 
 const route = useRoute()
+const appStore = useAppStore()
 const posterRef = ref<HTMLElement | null>(null)
 const status = ref<PosterStatus>('pending')
 const errorMessage = ref('')
@@ -332,7 +334,10 @@ async function waitUntilReady(): Promise<void> {
 
 onMounted(async () => {
   try {
-    const data = await fetchMatchForecast(requestedMatchId.value)
+    const [data] = await Promise.all([
+      fetchMatchForecast(requestedMatchId.value),
+      appStore.loadGlobalConfig(),
+    ])
     forecastResponse.value = data
     await nextTick()
     await waitUntilReady()
