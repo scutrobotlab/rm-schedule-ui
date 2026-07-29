@@ -657,8 +657,12 @@ function getDefaultSelectedGroup(preferStarted: boolean): number {
   return zone.value?.defaultGroup ?? 0
 }
 
-function bracketPath(seasonValue: number, zoneValue: number): string {
-  return `/${seasonValue}/${zoneValue}/bracket`
+// 灰度入口复用普通赛程 URL；只有显式 Bracket 路由内的导航才保留 /bracket。
+const usesExplicitBracketPath = route.path === '/bracket' || route.path.endsWith('/bracket')
+
+function bracketPagePath(seasonValue: number, zoneValue: number): string {
+  const basePath = `/${seasonValue}/${zoneValue}`
+  return usesExplicitBracketPath ? `${basePath}/bracket` : basePath
 }
 
 function updateQuery() {
@@ -666,7 +670,7 @@ function updateQuery() {
     selectedGroup.value = getDefaultSelectedGroup(false)
     return
   }
-  const path = bracketPath(promotionStore.season, zoneId.value)
+  const path = bracketPagePath(promotionStore.season, zoneId.value)
   const group = String(selectedGroup.value)
   if (route.path === path && String(route.query.group ?? '') === group) return
   void router.push({
@@ -686,7 +690,7 @@ function updateHref(newSeason: number) {
   })
   const defaultZone = DefaultZoneMap[newSeason]
   const queryString = query.toString()
-  window.location.href = `${bracketPath(newSeason, defaultZone)}${queryString ? `?${queryString}` : ''}`
+  window.location.href = `${bracketPagePath(newSeason, defaultZone)}${queryString ? `?${queryString}` : ''}`
 }
 
 function toggleLiveMode() {
