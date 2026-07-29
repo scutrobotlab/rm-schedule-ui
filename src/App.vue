@@ -17,16 +17,27 @@ import { useRoute } from "vue-router";
 import { useAppStore } from "./stores/app";
 import AnniversaryAnnouncement from "./components/AnniversaryAnnouncement.vue";
 import UpdateAnnouncement from "./components/UpdateAnnouncement.vue";
+import { isMobileDevice } from "./utils/mobile";
 
 const route = useRoute()
 const appStore = useAppStore()
+const mobileAtStartup = isMobileDevice()
 
 void appStore.loadGlobalConfig()
 
 /** 竞猜海报 / 晋级图 / OBS 嵌套层不挂载全局公告，避免遮罩干扰全屏浏览、截图或录制 */
 const hideGlobalAnnouncements = computed(() => {
   const path = route.path
-  return path === '/forecast' || path === '/obs' || path === '/bracket' || path.endsWith('/bracket')
+  const bracketExperimentActive =
+    appStore.globalConfigLoaded &&
+    appStore.mobileBracketEnabled &&
+    mobileAtStartup &&
+    (path === '/' || /^\/\d+(?:\/\d+)?$/.test(path))
+  return bracketExperimentActive ||
+    path === '/forecast' ||
+    path === '/obs' ||
+    path === '/bracket' ||
+    path.endsWith('/bracket')
 })
 
 /**
