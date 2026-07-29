@@ -1242,7 +1242,7 @@ watch(
                 @click="appStore.searchDialog = true"
               />
 
-              <v-menu>
+              <v-menu content-class="bracket-more-menu">
                 <template #activator="{ props }">
                   <v-btn
                     variant="flat"
@@ -1483,6 +1483,41 @@ watch(
 :global(.bracket-match-menu-overlay) {
   overflow-x: hidden !important;
   max-width: calc(100vw - 16px);
+}
+
+:global(.bracket-more-menu) {
+  overflow: hidden;
+  border: 1px solid rgba(169, 209, 241, 0.2);
+  border-radius: 14px !important;
+  color: #edf5ff;
+  background:
+    linear-gradient(145deg, rgba(155, 205, 242, 0.12), transparent 46%),
+    rgba(7, 22, 40, 0.9) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 18px 48px rgba(0, 4, 14, 0.42) !important;
+  backdrop-filter: blur(24px) saturate(1.3);
+  -webkit-backdrop-filter: blur(24px) saturate(1.3);
+}
+
+:global(.bracket-more-menu .v-list) {
+  padding: 6px;
+  color: inherit;
+  background: transparent !important;
+}
+
+:global(.bracket-more-menu .v-list-item) {
+  min-height: 42px;
+  border-radius: 10px;
+}
+
+:global(.bracket-more-menu .v-list-item:hover),
+:global(.bracket-more-menu .v-list-item--active) {
+  background: rgba(128, 188, 235, 0.13);
+}
+
+:global(.bracket-more-menu .v-list-item--disabled) {
+  opacity: 0.42;
 }
 
 :global(.bracket-menu-transition-enter-active) {
@@ -1885,6 +1920,10 @@ watch(
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .glass-sheet {
     background: rgba(8, 24, 43, 0.92);
+  }
+
+  :global(.bracket-more-menu) {
+    background: rgba(7, 22, 40, 0.98) !important;
   }
 
   .group-selector {
