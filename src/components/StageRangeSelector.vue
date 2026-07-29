@@ -966,10 +966,6 @@ function barsStyle(stage: StageItem): Record<string, string> {
   animation: stage-range-handle-reveal 1.5s cubic-bezier(0.2, 0.9, 0.25, 1) both;
 }
 
-.stage-range--handles-revealing .stage-range__handle--end {
-  animation-delay: 90ms;
-}
-
 @keyframes stage-range-fill-reveal {
   0% {
     left: 0;

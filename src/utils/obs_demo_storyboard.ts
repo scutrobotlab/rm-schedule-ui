@@ -171,8 +171,8 @@ async function searchAndSelectCurrentZoneTeam(
     () => !doc.querySelector('.v-dialog .v-card'),
     signal,
   )
-  // 返回赛程后先完整展示搜索产生的高亮，再进入点击取消演示。
-  await sleep(1400, signal)
+  // 返回赛程后留出弹窗退场时间；长校名完整展示由后续独立分镜控制。
+  await sleep(500, signal)
 }
 
 function matchCardForOrder(doc: Document, order: number): Element | undefined {
@@ -484,20 +484,26 @@ export async function runStoryboardDemo(
   cue(options, '2025 全国赛', '默认两列，清晰查看每场对阵')
   await sleep(4000, signal)
 
-  cue(options, '直接选择华南理工', '限定当前赛区 · 快速定位')
-  await searchAndSelectCurrentZoneTeam(doc, '华南理工大学', signal)
+  const jingchengName = '南京航空航天大学金城学院'
+  cue(options, '直接选择南航金城', '限定当前赛区 · 快速定位')
+  await searchAndSelectCurrentZoneTeam(doc, jingchengName, signal)
 
-  const first = await waitForTeamInMatch(doc, 1, '华南理工大学', signal)
+  const jingcheng = await waitForTeamInMatch(doc, 5, jingchengName, signal)
   await waitForCondition(
-    () => first.row.classList.contains('selected'),
+    () => jingcheng.row.classList.contains('selected'),
     signal,
   )
+  await waitForCondition(
+    () => Boolean(jingcheng.row.querySelector('.selected-name-marquee')),
+    signal,
+  )
+  cue(options, '长校名完整展示', '选中后自动滚动')
+  // 0.5 秒延迟 + 5 秒完整滚动周期，让校名从头到尾清楚出现。
+  await sleep(5500, signal)
 
-  cue(options, '点击队伍，切换高亮', '再次点击即可取消或恢复选中')
+  const first = await waitForTeamInMatch(doc, 1, '华南理工大学', signal)
+  cue(options, '直接点击切换高亮', '南航金城 → 华南理工')
   await pointerTap(first.row, centerOf(first.row), { pointerId: 119, signal })
-  // 明确展示取消选中状态，避免两次点击看起来像双击。
-  await sleep(1100, signal)
-  await pointerTap(first.row, centerOf(first.row), { pointerId: 120, signal })
   await sleep(1200, signal)
 
   cue(options, '高亮路径 · 上下浏览', '第1场 0–2 → 第21场 2–0')
