@@ -407,30 +407,6 @@ async function ensureFirstTwoStages(doc: Document, signal?: AbortSignal) {
   await sleep(500, signal)
 }
 
-/** 胜者组：保持起点 0，拖动结束把手从 0–1 连续展开到全部 5 列。 */
-async function expandWinnerToFiveStages(doc: Document, signal?: AbortSignal) {
-  const track = await waitForSelector(doc, '.stage-range__track', { signal })
-  const handle = await waitForSelector(doc, '.stage-range__handle--end', { signal })
-  const trackRect = track.getBoundingClientRect()
-  const stageCount = track.querySelectorAll('.stage-range__icon-cell').length
-  if (stageCount !== 5) {
-    throw new Error(`Expected 5 winner stages, received ${stageCount}`)
-  }
-  const from = centerOf(handle)
-  await pointerDrag(
-    handle,
-    from,
-    { x: trackRect.right - 2, y: from.y },
-    {
-      durationMs: 2600,
-      pointerId: 124,
-      easing: 'linear',
-      signal,
-    },
-  )
-  await sleep(1800, signal)
-}
-
 async function runStoryboard2026Continuation(
   doc: Document,
   options: StoryboardDemoOptions,
@@ -448,21 +424,8 @@ async function runStoryboard2026Continuation(
   cue(options, '2026 全国赛', '未确定场次 · 对阵来源实时呈现')
   await sleep(2600, signal)
 
-  cue(options, '依次切换 Group', 'A组画面 → B组 → 败者组 → 胜者组')
-  await selectGroup(doc, 'B组', 125, signal)
-  await sleep(650, signal)
-  await selectGroup(doc, '淘汰赛败者组', 126, signal)
-  await sleep(800, signal)
-  await selectGroup(doc, '淘汰赛胜者组', 127, signal)
-  await sleep(1100, signal)
-
-  // Season 切换已重置为默认 0–1；各 Group 沿用两列，胜者组只需最终展开。
-  await ensureFirstTwoStages(doc, signal)
-  cue(options, '胜者组完整对阵', '0–1 两列 → 0–4 五列')
-  await expandWinnerToFiveStages(doc, signal)
-
-  cue(options, 'Bracket · 一图看懂晋级', '从未确定对阵，到完整冠军路径', true)
-  await sleep(3000, signal)
+  cue(options, 'Bracket · 一图看懂晋级', '从一场比赛，到完整晋级之路', true)
+  await sleep(5000, signal)
 }
 
 /**
