@@ -32,6 +32,7 @@ const hideGlobalAnnouncements = computed(() => {
     appStore.globalConfigLoaded &&
     appStore.mobileBracketEnabled &&
     mobileAtStartup &&
+    appStore.mobileBracketConsent === 'accepted' &&
     (path === '/' || /^\/\d+(?:\/\d+)?$/.test(path))
   return bracketExperimentActive ||
     path === '/forecast' ||

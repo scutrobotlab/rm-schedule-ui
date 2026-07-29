@@ -5,6 +5,10 @@ import {
   AnniversaryVersionCode,
   AnniversaryVersionCodeKey
 } from "../constant/common";
+import {
+  readMobileBracketConsent,
+  type MobileBracketConsent,
+} from '../utils/mobile_bracket_consent'
 
 interface GlobalConfigResponse {
   isTestEnvironment: boolean
@@ -25,6 +29,7 @@ export const useAppStore = defineStore('app', {
     isTestEnvironment: false,
     mobileBracketEnabled: false,
     globalConfigLoaded: false,
+    mobileBracketConsent: readMobileBracketConsent() as MobileBracketConsent,
   }),
   actions: {
     async loadGlobalConfig() {
