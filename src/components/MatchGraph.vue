@@ -49,29 +49,42 @@ const staticArchivedZoneMap = new Map<number, Set<number>>([
 const appStore = useAppStore()
 const promotionStore = usePromotionStore();
 const robotDataStore = useRobotDataStore();
-const dataUpdatePromises = [
-  promotionStore.updateSchedule(),
-  promotionStore.updateGroupRank(),
-  robotDataStore.updateRobotData(promotionStore.season)
-]
-Promise.all(dataUpdatePromises).then(async () => {
-  await updateMpMatch()
-  loading.value = false
-  if (!graphRef.value) throw new Error('graph not mounted')
-  await graphRef.value.setJsonData(props.jsonData)
-  await graphRef.value.getInstance().zoomToFit()
-  patchDownloadWithScale()
-  if (props.exportMode) {
-    // 后台 chromedp 导出会在 ready 后立即快照，若此时校徽（走 /api/static 代理 + bg_white
-    // 处理，加载较慢）尚未加载完成，快照会得到 v-avatar 的白色底 → 校徽显示为白色。
-    // 浏览器里人工导出前图片早已加载，故只在无头导出稳定复现。这里显式等待画布内所有图片就绪。
-    await waitForGraphImagesLoaded()
+
+function loadSupplementaryData(): void {
+  // 排名和机器人统计只用于附加信息。等首屏赛程就绪后再预取，避免大响应
+  // 与 schedule 争用带宽和主线程；依赖它们的卡片会通过 Pinia 响应式更新。
+  void promotionStore.updateGroupRank().catch(() => undefined)
+  void robotDataStore.updateRobotData(promotionStore.season).catch(() => undefined)
+}
+
+async function initializeGraph(): Promise<void> {
+  try {
+    // Situation 在缺少 group 参数时可能已经取过赛程，避免再次请求整季数据。
+    if (!promotionStore.schedule.data?.event?.zones?.nodes) {
+      await promotionStore.updateSchedule()
+    }
+
+    await updateMpMatch()
+    loading.value = false
+    if (!graphRef.value) throw new Error('graph not mounted')
+    await graphRef.value.setJsonData(props.jsonData)
+    await graphRef.value.getInstance().zoomToFit()
+    patchDownloadWithScale()
+    if (props.exportMode) {
+      // 后台 chromedp 导出会在 ready 后立即快照，若此时校徽（走 /api/static 代理 + bg_white
+      // 处理，加载较慢）尚未加载完成，快照会得到 v-avatar 的白色底 → 校徽显示为白色。
+      // 浏览器里人工导出前图片早已加载，故只在无头导出稳定复现。这里显式等待画布内所有图片就绪。
+      await waitForGraphImagesLoaded()
+    }
+    emit('ready')
+    loadSupplementaryData()
+  } catch (err: unknown) {
+    loading.value = false
+    emit('error', err instanceof Error ? err.message : String(err))
   }
-  emit('ready')
-}).catch((err) => {
-  loading.value = false
-  emit('error', err?.message ?? String(err))
-})
+}
+
+void initializeGraph()
 
 async function waitForGraphImagesLoaded(timeoutMs = 20000): Promise<void> {
   const instance = graphRef.value?.getInstance?.()
