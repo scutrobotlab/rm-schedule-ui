@@ -43,7 +43,7 @@ axios({
 })
 
 const groupRank = computed(() => {
-  for (const zone of promotionStore.groupRank.zones) {
+  for (const zone of promotionStore.groupRank.zones ?? []) {
     for (const group of zone.groups) {
       for (const players of group.groupPlayers) {
         if (players[1].itemValue['collegeName'] == props.player.team.collegeName) {
@@ -61,7 +61,7 @@ const showRobotDataRadar = computed(() => {
 })
 
 const robotData = computed(() => {
-  return robotDataStore.robotData.zones.find((zone) => {
+  return robotDataStore.robotData.zones?.find((zone) => {
     return Number(zone.zoneId) == props.zoneId
   })?.teams.find((team) => {
     return team.collegeName == props.player.team.collegeName
