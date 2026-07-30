@@ -18,15 +18,7 @@ const routes = [
   // 静态路径必须在 /:season 之前，否则会被当成 season 参数
   { path: '/forecast', component: Forecast },
   { path: '/obs', component: Obs },
-  {
-    path: '/bracket',
-    redirect: () => {
-      const season = latestSeason()
-      return {
-        path: `/${season}/${DefaultZoneMap[season]}/bracket`,
-      }
-    },
-  },
+  { path: '/bracket', component: Bracket },
   { path: '/:season/:zoneId/bracket', component: Bracket },
   { path: '/:season', component: Index },
   { path: '/:season/:zoneId/export', component: ExportGraph },
@@ -44,7 +36,17 @@ router.beforeEach(async (to) => {
 
   const appStore = useAppStore(pinia)
   await appStore.loadGlobalConfig()
-  if (appStore.isTestEnvironment) return true
+  if (appStore.isTestEnvironment) {
+    if (to.path !== '/bracket') return true
+
+    const season = latestSeason()
+    return {
+      path: `/${season}/${DefaultZoneMap[season]}/bracket`,
+      query: to.query,
+      hash: to.hash,
+      replace: true,
+    }
+  }
 
   return {
     path: fallbackPath,
