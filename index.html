@@ -13,7 +13,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
     <title>RoboMaster 赛程分析</title>
     <script type="module">
-        if (import.meta.env.MODE === 'production') {
+        if (import.meta.env.MODE === 'production' && navigator.webdriver !== true) {
             var _hmt = _hmt || [];
             (function () {
                 var hm = document.createElement("script");

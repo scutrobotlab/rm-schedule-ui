@@ -16,10 +16,13 @@ import { createApp } from 'vue'
 import '@/styles/fonts.scss'
 
 import { configure } from "vue-gtag";
+import { shouldEnableAnalytics } from '@/utils/analytics'
 
-configure({
-  tagId: import.meta.env.VITE_APP_GA_ID,
-})
+if (shouldEnableAnalytics()) {
+  configure({
+    tagId: import.meta.env.VITE_APP_GA_ID,
+  })
+}
 
 const app = createApp(App)
 
