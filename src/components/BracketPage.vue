@@ -1031,6 +1031,10 @@ function refresh() {
   void promotionStore.updateMpMatch(mpMatchIds.value).catch(() => undefined)
 }
 
+function refreshWhenVisible() {
+  if (document.visibilityState === 'visible') refresh()
+}
+
 watch(
   mpMatchIds,
   (ids) => {
@@ -1115,11 +1119,13 @@ onMounted(() => {
   scheduleGroupThumbUpdate({ animate: false })
   if (!isStaticArchivedZone(promotionStore.season, zoneId.value)) {
     refreshInterval = setInterval(refresh, SCHEDULE_REFRESH_INTERVAL_MS)
+    document.addEventListener('visibilitychange', refreshWhenVisible)
   }
 })
 
 onBeforeUnmount(() => {
   if (refreshInterval) clearInterval(refreshInterval)
+  document.removeEventListener('visibilitychange', refreshWhenVisible)
   cancelAnimationFrame(groupRenderRaf)
   cancelAnimationFrame(groupThumbRaf)
   groupTrackObserver?.disconnect()

@@ -161,12 +161,18 @@ function refresh() {
   updateMpMatch()
 }
 
+function refreshWhenVisible() {
+  if (document.visibilityState === 'visible') refresh()
+}
+
 let refreshInterval: ReturnType<typeof setInterval> | undefined
 if (!props.exportMode && !isStaticArchivedZone(promotionStore.season, props.zoneId)) {
   refreshInterval = setInterval(refresh, SCHEDULE_REFRESH_INTERVAL_MS)
+  document.addEventListener('visibilitychange', refreshWhenVisible)
 }
 onUnmounted(() => {
   if (refreshInterval) clearInterval(refreshInterval)
+  document.removeEventListener('visibilitychange', refreshWhenVisible)
 })
 
 const graphRef = ref<RelationGraph>()
