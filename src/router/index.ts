@@ -5,6 +5,9 @@ import Forecast from "../pages/Forecast.vue";
 import Bracket from "../pages/Bracket.vue";
 import Obs from "../pages/Obs.vue";
 import { DefaultZoneMap, ZoneMap } from "../constant/zone";
+import pinia from '../stores'
+import { useAppStore } from '../stores/app'
+import { explicitBracketFallbackPath } from '../utils/bracket_route'
 
 function latestSeason(): number {
   return Number(Object.keys(ZoneMap).slice(-1)[0])
@@ -33,6 +36,22 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+})
+
+router.beforeEach(async (to) => {
+  const fallbackPath = explicitBracketFallbackPath(to.path)
+  if (fallbackPath == null) return true
+
+  const appStore = useAppStore(pinia)
+  await appStore.loadGlobalConfig()
+  if (appStore.isTestEnvironment) return true
+
+  return {
+    path: fallbackPath,
+    query: to.query,
+    hash: to.hash,
+    replace: true,
+  }
 })
 
 export default router
