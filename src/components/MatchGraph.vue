@@ -2,7 +2,7 @@
 import RelationGraph, { RGOptions } from 'relation-graph-vue3';
 import { usePromotionStore } from "../stores/promotion";
 import { MatchNode, Player, PlayerWithMatch } from "../types/schedule";
-import { computed, onUnmounted, ref, watch } from "vue";
+import { computed, nextTick, onUnmounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { RoundOrder } from "../types/round_order";
 import { GroupType, ImageData, TitleData, ZoneForecastData, ZoneJsonData, ZoneNodeJsonData, ZoneZoneData } from "../types/zone";
@@ -66,6 +66,9 @@ async function initializeGraph(): Promise<void> {
 
     await updateMpMatch()
     loading.value = false
+    // schedule 已在 Store 中时，上面的流程可能在首次渲染前完成。等待模板挂载，
+    // 确保切换 group 新建的 RelationGraph ref 已可用。
+    await nextTick()
     if (!graphRef.value) throw new Error('graph not mounted')
     await graphRef.value.setJsonData(props.jsonData)
     await graphRef.value.getInstance().zoomToFit()
