@@ -2,7 +2,7 @@
 import RelationGraph, { RGOptions } from 'relation-graph-vue3';
 import { usePromotionStore } from "../stores/promotion";
 import { MatchNode, Player, PlayerWithMatch } from "../types/schedule";
-import { computed, nextTick, onUnmounted, ref, watch } from "vue";
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { RoundOrder } from "../types/round_order";
 import { GroupType, ImageData, TitleData, ZoneForecastData, ZoneJsonData, ZoneNodeJsonData, ZoneZoneData } from "../types/zone";
@@ -87,7 +87,9 @@ async function initializeGraph(): Promise<void> {
   }
 }
 
-void initializeGraph()
+onMounted(() => {
+  void initializeGraph()
+})
 
 async function waitForGraphImagesLoaded(timeoutMs = 20000): Promise<void> {
   const instance = graphRef.value?.getInstance?.()
