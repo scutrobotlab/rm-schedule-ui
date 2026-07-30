@@ -308,10 +308,11 @@ const MenuItems = ref(
             v-model="selectedGroup"
           >
             <v-carousel-item
-              v-for="part in zone.parts"
+              v-for="(part, partIndex) in zone.parts"
               :key="part.name"
             >
               <MatchGraph
+                v-if="selectedGroup === partIndex"
                 :key="`${zoneId}-${part.name}-${liveMode ? 'live' : 'normal'}`"
                 :zone-id="zoneId"
                 :type="part.type"
