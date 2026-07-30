@@ -83,6 +83,7 @@ async function initializeGraph(): Promise<void> {
     loadSupplementaryData()
   } catch (err: unknown) {
     loading.value = false
+    console.error('MatchGraph initialization failed', err)
     emit('error', err instanceof Error ? err.message : String(err))
   }
 }
