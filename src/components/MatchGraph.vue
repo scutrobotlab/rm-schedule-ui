@@ -15,6 +15,10 @@ import { BilibiliReplay } from "../types/bilibili_replay";
 import { TeamInfo } from "../types/team_info";
 import MatchMenu from "./MatchMenu.vue";
 import { StaticCDN } from "../utils/cdn";
+import {
+  isStaticArchivedZone,
+  SCHEDULE_REFRESH_INTERVAL_MS,
+} from "../utils/schedule_refresh";
 
 interface Props {
   zoneId: number,
@@ -41,11 +45,6 @@ const loading = ref(true)
 
 const route = useRoute()
 const liveMode = computed(() => route.query.live == "1")
-const staticArchivedSeasons = new Set([2024, 2025])
-const staticArchivedZoneMap = new Map<number, Set<number>>([
-  [2026, new Set([614, 615, 616])],
-])
-
 const appStore = useAppStore()
 const promotionStore = usePromotionStore();
 const robotDataStore = useRobotDataStore();
@@ -162,13 +161,9 @@ function refresh() {
   updateMpMatch()
 }
 
-function isStaticArchivedZone(season: number, zoneId: number): boolean {
-  return staticArchivedSeasons.has(season) || !!staticArchivedZoneMap.get(season)?.has(zoneId)
-}
-
 let refreshInterval: ReturnType<typeof setInterval> | undefined
 if (!props.exportMode && !isStaticArchivedZone(promotionStore.season, props.zoneId)) {
-  refreshInterval = setInterval(refresh, 30_000)
+  refreshInterval = setInterval(refresh, SCHEDULE_REFRESH_INTERVAL_MS)
 }
 onUnmounted(() => {
   if (refreshInterval) clearInterval(refreshInterval)

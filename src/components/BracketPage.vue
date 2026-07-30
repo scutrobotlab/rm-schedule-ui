@@ -36,6 +36,10 @@ import {
   POINTER_PAN_AXIS_SLOP_PX,
   POINTER_PAN_X_BIAS,
 } from '../utils/pointer_tap'
+import {
+  isStaticArchivedZone,
+  SCHEDULE_REFRESH_INTERVAL_MS,
+} from '../utils/schedule_refresh'
 
 const stageRange = ref<StageRange>({ start: 0, end: 1 })
 /** 视口左右边缘（右开区间，允许小数）；渲染与跟手以此为准 */
@@ -62,6 +66,7 @@ const bracketMatchMenuTarget = ref<[number, number]>([0, 0])
 const bracketMatchMenuMatch = ref<MatchNode | null>(null)
 const bracketMenuVideoLoading = ref(false)
 let bracketMenuRequestVersion = 0
+let refreshInterval: ReturnType<typeof setInterval> | undefined
 
 const stageCount = computed(() => displayStages.value.length)
 /** 退场中的 Board 继续使用旧列数，完全淡出后才提交新 group 的列数 */
@@ -1019,6 +1024,13 @@ const mpMatchIds = computed(() => {
   return [...ids]
 })
 
+function refresh() {
+  void promotionStore.updateSchedule().catch(() => undefined)
+  void promotionStore.updateGroupRank().catch(() => undefined)
+  void robotDataStore.updateRobotData(promotionStore.season).catch(() => undefined)
+  void promotionStore.updateMpMatch(mpMatchIds.value).catch(() => undefined)
+}
+
 watch(
   mpMatchIds,
   (ids) => {
@@ -1101,9 +1113,13 @@ onMounted(() => {
   bracketViewportRef.value?.addEventListener('wheel', onBoardWheel, { passive: false })
   void promotionStore.updateTeamAbbreviations().catch(() => undefined)
   scheduleGroupThumbUpdate({ animate: false })
+  if (!isStaticArchivedZone(promotionStore.season, zoneId.value)) {
+    refreshInterval = setInterval(refresh, SCHEDULE_REFRESH_INTERVAL_MS)
+  }
 })
 
 onBeforeUnmount(() => {
+  if (refreshInterval) clearInterval(refreshInterval)
   cancelAnimationFrame(groupRenderRaf)
   cancelAnimationFrame(groupThumbRaf)
   groupTrackObserver?.disconnect()
