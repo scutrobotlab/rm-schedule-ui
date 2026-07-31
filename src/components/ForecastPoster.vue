@@ -10,6 +10,7 @@ import {
 } from '../utils/match_forecast'
 import { StaticCDN } from '../utils/cdn'
 import { forecastAssets } from '@/assets/forecast'
+import teamLogoUrl from '@/assets/logo.png'
 import { useAppStore } from '../stores/app'
 
 const FORECAST_IMAGE_URL = '/api/match_forecast_image'
@@ -444,6 +445,11 @@ onMounted(async () => {
         </div>
       </div>
 
+      <div class="forecast-poster__credit">
+        <img class="forecast-poster__credit-logo" :src="teamLogoUrl" alt="" draggable="false" />
+        <span>华南理工大学华南虎战队提供呈现技术支持</span>
+      </div>
+
       <div v-if="status === 'error'" class="forecast-poster__error">{{ errorMessage }}</div>
     </div>
   </div>
@@ -627,6 +633,34 @@ onMounted(async () => {
     margin-bottom: -32px;
     width: 100%;
     text-align: center;
+  }
+
+  &__credit {
+    position: absolute;
+    right: 0;
+    bottom: 48px;
+    left: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: rgba(215, 221, 232, 0.6);
+    font-size: 18px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    line-height: 1.4;
+    text-align: center;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  &__credit-logo {
+    display: block;
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    opacity: 0.6;
   }
 
   &__error {
