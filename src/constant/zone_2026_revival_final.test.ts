@@ -9,6 +9,7 @@ import {
 import { buildBracketViewModel } from '../utils/bracket_adapter'
 import { usePromotionStore } from '../stores/promotion'
 import type { ZoneJsonData, ZoneZoneData } from '../types/zone'
+import { knockoutResultBadge } from '../utils/result_badge'
 
 function collectMatchOrders(json: ZoneJsonData, groupIndex?: number): number[] {
   const orders = new Set<number>()
@@ -184,6 +185,16 @@ describe('2026 复活赛 617 名额争夺 group 23–32', () => {
 
     const eliminate = knockoutZone('#6')
     expect(eliminate.losers).toEqual([27, 28, 31, 32])
+  })
+
+  it('淘汰赛结果用晋级/淘汰标签替代原小组排名', () => {
+    const promote = RevivalZone2026KnockoutJsonData.nodes.find((n) => n.id === '#5')!
+    const eliminate = RevivalZone2026KnockoutJsonData.nodes.find((n) => n.id === '#6')!
+
+    expect(knockoutResultBadge('Knockout', promote.data.type)).toBe('晋级')
+    expect(knockoutResultBadge('Knockout', eliminate.data.type)).toBe('淘汰')
+    expect(knockoutResultBadge('A', promote.data.type)).toBeNull()
+    expect(knockoutResultBadge('B', eliminate.data.type)).toBeNull()
   })
 
   it('组节点之间的连线覆盖胜者组、败者组与全国赛出口', () => {

@@ -19,6 +19,7 @@ import {
   isStaticArchivedZone,
   SCHEDULE_REFRESH_INTERVAL_MS,
 } from "../utils/schedule_refresh";
+import { knockoutResultBadge } from "../utils/result_badge";
 
 interface Props {
   zoneId: number,
@@ -1031,14 +1032,21 @@ const round = computed(() => {
                         <div class="school-image-container">
                           <img src="@/assets/school_bg.png" style="width: 345px" alt="Image"/>
                           <div class="overlay ml-4">
-                            <div v-if="v.match.status == 'DONE'"
-                                 :style="{background: node.data.rankColor}">
+                            <template v-if="props.group !== 'Knockout'">
+                              <div v-if="v.match.status == 'DONE'"
+                                   :style="{background: node.data.rankColor}">
+                                <h4 class="px-1" style="width: 2.5rem; color: white">
+                                  {{ convertToOrdinal(matchRank(v.player)) }}
+                                </h4>
+                              </div>
+                              <div v-else style="background: #616161">
+                                <h4 class="px-1" style="width: 2.5rem; color: white"> 待定 </h4>
+                              </div>
+                            </template>
+                            <div v-else :style="{background: node.data.rankColor}">
                               <h4 class="px-1" style="width: 2.5rem; color: white">
-                                {{ convertToOrdinal(matchRank(v.player)) }}
+                                {{ knockoutResultBadge(props.group, node.data.type) }}
                               </h4>
-                            </div>
-                            <div v-else style="background: #616161">
-                              <h4 class="px-1" style="width: 2.5rem; color: white"> 待定 </h4>
                             </div>
                             <v-avatar class="mx-1 avatar-center bg-white" color="white" size="x-small">
                               <v-img :eager="exportMode" :src="logoCDN(v.player.team.collegeLogo)"/>
