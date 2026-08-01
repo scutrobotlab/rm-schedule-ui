@@ -34,6 +34,9 @@ router.beforeEach(async (to) => {
   const fallbackPath = explicitBracketFallbackPath(to.path)
   if (fallbackPath == null) return true
 
+  // /obs 会为 iframe 目标注入 capture=1；录制画面始终允许使用显式 bracket 路由。
+  if (to.query.capture === '1') return true
+
   const appStore = useAppStore(pinia)
   await appStore.loadGlobalConfig()
   if (appStore.isTestEnvironment) {
