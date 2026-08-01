@@ -423,7 +423,7 @@ async function runStoryboard2026Continuation(
   await waitForText(doc, '.v-select', '2026', signal, 20_000)
   await waitForText(doc, '.v-select', '复活赛', signal, 20_000)
 
-  const seasonVoiceover = '来到 2026，从复活赛再到全国赛，新的晋级之路，就此展开。'
+  const seasonVoiceover = '来到 2026，新的晋级之路，就此展开。'
   cue(options, '2026 复活赛', '切换赛季 · 进入默认赛区', seasonVoiceover)
   await sleep(900, signal)
   cue(options, '复活赛 → 全国赛', '切换 Zone · 进入2026全国赛', seasonVoiceover)
@@ -433,7 +433,7 @@ async function runStoryboard2026Continuation(
     options,
     '2026 全国赛',
     '未确定场次 · 对阵来源实时呈现',
-    '对阵尚未揭晓，晋级的方向依然清晰可见。',
+    '对阵尚未揭晓，但晋级的方向依然清晰可见。',
   )
   await sleep(2600, signal)
 
@@ -441,7 +441,7 @@ async function runStoryboard2026Continuation(
     options,
     'Bracket · 一图看懂晋级',
     '从一场比赛，到完整晋级之路',
-    '从一场比赛，到完整晋级之路。这，就是 Bracket。',
+    '',
     true,
   )
   await sleep(5000, signal)
@@ -472,7 +472,7 @@ export async function runStoryboardDemo(
   await sleep(4000, signal)
 
   const jingchengName = '南京航空航天大学金城学院'
-  const searchVoiceover = '搜索并选中队伍，就能高亮全部赛程。再长的校名，也能滚动完整呈现。'
+  const searchVoiceover = '搜索并选中队伍，即可高亮全部赛程。再长的校名，也能滚动完整呈现。'
   cue(options, '直接选择南航金城', '限定当前赛区 · 快速定位', searchVoiceover)
   await searchAndSelectCurrentZoneTeam(doc, jingchengName, signal)
 
@@ -490,7 +490,7 @@ export async function runStoryboardDemo(
   await sleep(5500, signal)
 
   const first = await waitForTeamInMatch(doc, 1, '华南理工大学', signal)
-  const highlightVoiceover = '点击你关注的队伍，高亮随之切换。沿着路径，找到晋级的每一步。'
+  const highlightVoiceover = '点击你关注的队伍，高亮随之切换。沿着路径，跟踪晋级的每一步。'
   cue(options, '直接点击切换高亮', '南航金城 → 华南理工', highlightVoiceover)
   await pointerTap(first.row, centerOf(first.row), { pointerId: 119, signal })
   await sleep(1200, signal)
@@ -505,7 +505,7 @@ export async function runStoryboardDemo(
     options,
     '第21场 · 长按查看更多',
     '回放 · 比赛分析 · 队伍分析',
-    '长按队伍，展开菜单选项。B站回放与数据分析，都在这里。',
+    '长按队伍，展开菜单选项。快速跳转B站回放或数据分析。',
   )
   await pointerLongPress(twentyFirst.row, centerOf(twentyFirst.row), {
     pointerId: 109,
@@ -532,7 +532,7 @@ export async function runStoryboardDemo(
     options,
     '阶段范围选择器',
     '平移浏览 → 自由缩放',
-    '回到顶部。两列，当然不是视野的边界——让我们，把全局展开。',
+    '回到顶部。两列，不是视野的边界——让我们展开全局视角。',
   )
   await sleep(350, signal)
   await returnBoardToTop(doc, signal)
@@ -546,7 +546,7 @@ export async function runStoryboardDemo(
     options,
     '华南理工 · 3胜1负晋级',
     '比赛比分 0–2 · 2–0 · 2–0 · 2–0',
-    '看清全局，才能逆转开局。',
+    '开局失利，更要看清全局。',
   )
   await sleep(2500, signal)
 
@@ -559,7 +559,7 @@ export async function runStoryboardDemo(
   await collapseToFirstStage(doc, signal)
   await sleep(2500, signal)
 
-  const knockoutVoiceover = '从瑞士轮，到淘汰赛，再到金色之雨——每一步，都算数。'
+  const knockoutVoiceover = '从瑞士轮，到淘汰赛，再到金色之雨——每走一步，都算数。'
   cue(options, '2025 全国赛淘汰赛', 'A组 → 败者组 → 胜者组', knockoutVoiceover)
   await selectGroup(doc, '淘汰赛败者组', 111, signal)
   await sleep(650, signal)
@@ -580,7 +580,7 @@ export async function runStoryboardDemo(
     options,
     '2025 → 2026',
     '切换赛季 · 默认进入复活赛',
-    '来到 2026，从复活赛再到全国赛，新的晋级之路，就此展开。',
+    '来到 2026，新的晋级之路，就此展开。',
   )
   await sleep(900, signal)
   await selectSeason(doc, '2026', signal)
