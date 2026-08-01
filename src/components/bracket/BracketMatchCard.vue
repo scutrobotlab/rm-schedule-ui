@@ -47,10 +47,11 @@ const props = withDefaults(
 const promotionStore = usePromotionStore()
 
 const statusLabel: Record<string, string> = {
+  WAITING: '未开始',
   STARTED: '进行中',
   DONE: '已结束',
-  PENDING: '未开始',
-  UNKNOWN: '待确认',
+  PENDING: '待确认',
+  UNKNOWN: '待定',
 }
 
 /** 2→3 列缩放期间保持挂载，由 --bracket-normal-progress 连续收起。 */

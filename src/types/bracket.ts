@@ -3,7 +3,7 @@ import type { GroupType } from './zone'
 /** 双败 / 季军等泳道标记 */
 export type BracketLane = 'main' | 'gold'
 
-export type BracketMatchStatus = 'UNKNOWN' | 'PENDING' | 'STARTED' | 'DONE'
+export type BracketMatchStatus = 'UNKNOWN' | 'WAITING' | 'PENDING' | 'STARTED' | 'DONE'
 
 /** 槽位内容来源 */
 export type BracketSourceKind = 'team' | 'source' | 'rank' | 'empty'

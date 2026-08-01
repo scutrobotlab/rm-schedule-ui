@@ -54,10 +54,11 @@ const nodeTypeLabel: Record<string, string> = {
 }
 
 const statusLabel: Record<string, string> = {
+  WAITING: '未开始',
   STARTED: '进行中',
   DONE: '已结束',
-  PENDING: '未开始',
-  UNKNOWN: '待确认',
+  PENDING: '待确认',
+  UNKNOWN: '待定',
 }
 
 /** 多场对阵按场次完整展示；纵向席位/场次一律不截断 */

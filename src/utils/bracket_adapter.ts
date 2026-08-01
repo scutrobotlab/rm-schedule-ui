@@ -609,10 +609,11 @@ function sourceSlot(sourceText: string | undefined, groupRank?: number): Bracket
 }
 
 function toMatchStatus(match: MatchNode | undefined): BracketMatchStatus {
-  if (!match) return 'PENDING'
+  if (!match) return 'UNKNOWN'
   if (match.status === 'DONE') return 'DONE'
   if (match.status === 'STARTED') return 'STARTED'
   if (match.status === 'PENDING') return 'PENDING'
+  if (match.status === 'WAITING') return 'WAITING'
   return 'UNKNOWN'
 }
 
