@@ -5,7 +5,7 @@ import { MatchNode, Player, PlayerWithMatch } from "../types/schedule";
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { RoundOrder } from "../types/round_order";
-import { GroupType, ImageData, TitleData, ZoneForecastData, ZoneJsonData, ZoneNodeJsonData, ZoneZoneData } from "../types/zone";
+import { GroupType, ImageData, TitleData, ZoneJsonData, ZoneNodeJsonData, ZoneZoneData } from "../types/zone";
 import moment from "moment";
 import { CompleteForm } from "../constant/complete_form";
 import { useRobotDataStore } from "../stores/robot_data";
@@ -20,6 +20,11 @@ import {
   SCHEDULE_REFRESH_INTERVAL_MS,
 } from "../utils/schedule_refresh";
 import { knockoutResultBadge } from "../utils/result_badge";
+import {
+  buildForecastRows,
+  parseSeedSlots,
+  resolveForecastGuidePairs,
+} from "../utils/forecast_rank";
 
 interface Props {
   zoneId: number,
@@ -347,31 +352,37 @@ function convertToOrdinal(number: number): string {
   }
 }
 
-function rankFromForecastText(text?: string): number | null {
-  const match = text?.match(/第(\d+)名/)
-  return match ? Number(match[1]) : null
-}
-
 function forecastDisplayText(zone: ZoneZoneData): string[] {
   return zone.forecastText ?? zone.text
 }
 
-function forecastOrdinal(zone: ZoneZoneData, index: number, player: Player): string {
-  return convertToOrdinal(rankFromForecastText(forecastDisplayText(zone)[index]) ?? matchRank(player))
+type ForecastDeterminedRow = {
+  id: string
+  apiRank: number
+  player: Player
+  match: MatchNode
+}
+
+/** 预测列按 text 固定行序占位，徽章用映射后的结构席位 seed */
+function forecastRows(zone: ZoneZoneData) {
+  const determined: ForecastDeterminedRow[] = rankList(zone).map((item) => ({
+    id: item.player.id,
+    apiRank: matchRank(item.player) ?? 0,
+    player: item.player,
+    match: item.match,
+  }))
+  return buildForecastRows(forecastDisplayText(zone), determined)
+}
+
+function forecastOrdinal(seed: number): string {
+  return convertToOrdinal(seed)
 }
 
 function forecastGuidePairs(zone: ZoneZoneData): { from: number, to: number }[] {
-  const rankIndexMap = new Map<number, number>()
-  forecastDisplayText(zone).forEach((text, index) => {
-    const rank = rankFromForecastText(text)
-    if (rank) rankIndexMap.set(rank, index)
-  })
-  return (zone.forecasts ?? [])
-    .map((forecast: ZoneForecastData) => ({
-      from: rankIndexMap.get(forecast.red),
-      to: rankIndexMap.get(forecast.blue),
-    }))
-    .filter((pair): pair is { from: number, to: number } => pair.from != null && pair.to != null)
+  return resolveForecastGuidePairs(
+    zone.forecasts ?? [],
+    parseSeedSlots(forecastDisplayText(zone)),
+  )
 }
 
 function forecastGuideVisible(zone: ZoneZoneData): boolean {
@@ -379,7 +390,7 @@ function forecastGuideVisible(zone: ZoneZoneData): boolean {
 }
 
 function forecastGuideHeight(zone: ZoneZoneData): number {
-  return Math.max(forecastDisplayText(zone).length, rankList(zone).length) * 52
+  return forecastDisplayText(zone).length * 52
 }
 
 function forecastGuidePath(pair: { from: number, to: number }): string {
@@ -709,47 +720,40 @@ const round = computed(() => {
                       :d="forecastGuidePath(pair)"
                     />
                   </svg>
-                  <div class="mx-2"
-                       v-for="(v, i) in rankList(node.data.zones[groupIndex])" :key="i">
+                  <div
+                    class="mx-2"
+                    v-for="(row, i) in forecastRows(node.data.zones[groupIndex])"
+                    :key="i"
+                  >
                     <div class="container ml-2">
                       <div class="right-column">
                         <div
-                          v-if="v"
+                          v-if="row.determined"
                           class="top-row row-content mt-1"
                           :class="{
-                            'selected-player': playerSelected(v.player),
+                            'selected-player': playerSelected(row.determined.player),
                           }"
-                          @click="selectPlayer(v.player)"
+                          @click="selectPlayer(row.determined.player)"
                         >
                           <div class="school-image-container">
                             <img src="@/assets/school_bg.png" style="width: 320px" alt="Image"/>
                             <div class="overlay ml-4">
-                              <div v-if="v.match.status == 'DONE'" style="background: #FFA500">
+                              <div style="background: #FFA500">
                                 <h4 class="px-1" style="width: 2.5rem">
-                                  {{ forecastOrdinal(node.data.zones[groupIndex], i, v.player) }}
+                                  {{ forecastOrdinal(row.seed!) }}
                                 </h4>
                               </div>
-                              <div v-else style="background: #616161">
-                                <h4 class="px-1" style="width: 2.5rem"> 待定 </h4>
-                              </div>
                               <v-avatar class="mx-1 avatar-center bg-white" color="white" size="x-small">
-                                <v-img :eager="exportMode" :src="logoCDN(v.player.team.collegeLogo)"/>
+                                <v-img :eager="exportMode" :src="logoCDN(row.determined.player.team.collegeLogo)"/>
                               </v-avatar>
-                              <span class="one-line-text" :style="schoolNameStyle(v.player.team.collegeName)">{{ schoolNameText(v.player.team.collegeName) }}</span>
+                              <span
+                                class="one-line-text"
+                                :style="schoolNameStyle(row.determined.player.team.collegeName)"
+                              >{{ schoolNameText(row.determined.player.team.collegeName) }}</span>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div
-                    class="mx-2"
-                    v-for="(v, i) in forecastDisplayText(node.data.zones[groupIndex]).slice(rankList(node.data.zones[groupIndex]).length)"
-                    :key="i">
-                    <div class="container ml-2">
-                      <div class="right-column">
-                        <div class="top-row row-content mt-2">
+                        <div v-else class="top-row row-content mt-2">
                           <div class="school-image-container">
                             <img src="@/assets/school_bg.png" style="width: 320px" alt="Image"/>
                             <div class="overlay ml-4">
@@ -759,7 +763,10 @@ const round = computed(() => {
                               <v-avatar class="mx-1 avatar-center" color="white" size="x-small">
                                 <v-img :eager="exportMode" src="@/assets/school_grey.png"/>
                               </v-avatar>
-                              <span class="one-line-text" :style="schoolNameStyle(v)">{{ schoolNameText(v) }}</span>
+                              <span
+                                class="one-line-text"
+                                :style="schoolNameStyle(row.placeholderText)"
+                              >{{ schoolNameText(row.placeholderText) }}</span>
                             </div>
                           </div>
                         </div>
