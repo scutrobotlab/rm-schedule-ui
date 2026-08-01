@@ -385,8 +385,10 @@ function forecastGuidePairs(zone: ZoneZoneData): { from: number, to: number }[] 
   )
 }
 
-function forecastGuideVisible(zone: ZoneZoneData): boolean {
-  return forecastGuidePairs(zone).some((pair) => Math.abs(pair.from - pair.to) > 1)
+function forecastGuideVisible(_zone: ZoneZoneData): boolean {
+  // 结构席位按 text 行序占位后，对阵多为相邻行，弧线不再需要。
+  // TODO(2027): 区域赛后段第五轮若仍用升序 forecastText（6v11/10v7 不相邻），检查是否恢复弧线。
+  return false
 }
 
 function forecastGuideHeight(zone: ZoneZoneData): number {
