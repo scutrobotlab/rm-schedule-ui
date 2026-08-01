@@ -62,6 +62,9 @@ const showWifi = computed(() => readFlag('wifi', false))
 const reserveSafe = computed(() => readFlag('safe', true))
 /** 录制时默认显示半透明指尖与点击涟漪；touch=0 关闭 */
 const showTouch = computed(() => readFlag('touch', true))
+/** caption=0 隐藏旁白字幕；scene=0 隐藏底部分镜序号。 */
+const showCaption = computed(() => readFlag('caption', true))
+const showSceneNumber = computed(() => readFlag('scene', true))
 /** demo=stage：自动演示阶段选择器拖拽/缩放 */
 const demoKind = computed(() => queryValue('demo') ?? '')
 const charging = computed(() => readFlag('charging', false))
@@ -218,17 +221,20 @@ onUnmounted(() => {
 
       <Transition name="storyboard-caption">
         <div
-          v-if="storyboardCue"
+          v-if="storyboardCue && ((showCaption && storyboardCue.voiceover) || showSceneNumber)"
           class="storyboard-caption"
           :class="{ 'storyboard-caption--brand': storyboardCue.brand }"
         >
           <div
-            v-if="storyboardCue.voiceover"
+            v-if="showCaption && storyboardCue.voiceover"
             class="storyboard-caption__voiceover"
           >
             {{ storyboardCue.voiceover }}
           </div>
-          <div class="storyboard-caption__scene">
+          <div
+            v-if="showSceneNumber"
+            class="storyboard-caption__scene"
+          >
             分镜 {{ storyboardCue.scene }}
           </div>
         </div>
