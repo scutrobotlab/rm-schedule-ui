@@ -526,6 +526,41 @@ describe('buildBracketViewModel — 瑞士轮 / 分组', () => {
       expect(round1.matches[1].planStartedAt).toBe('2026-07-01T10:00:00Z')
     }
   })
+
+  it('后续席位优先使用小组榜实时排名，并在缺失时回退比赛快照', () => {
+    const snapshotWinner = { ...player('p1', '华中科技大学'), rank: 6, score: 3 }
+    const liveWinner = { ...snapshotWinner, rank: 4, score: 6 }
+    const finished = match({
+      orderNumber: 1,
+      status: 'DONE',
+      red: snapshotWinner,
+      blue: player('p2', '对手大学'),
+      redWins: 2,
+      blueWins: 0,
+    })
+    const options = {
+      zoneId: 1,
+      part: partOf(swissJson, { type: 'group' as const, group: 'A', name: 'A组' }),
+      getMatchByOrder: (_z: number, order: number) => order === 1 ? finished : undefined,
+    }
+
+    const liveModel = buildBracketViewModel({
+      ...options,
+      getPlayerById: (playerId) => playerId === liveWinner.id ? liveWinner : null,
+    })
+    const livePromote = liveModel.columns[1].items[0]
+    expect(livePromote.kind).toBe('info')
+    if (livePromote.kind === 'info') {
+      expect(livePromote.slots[0].groupRank).toBe(4)
+    }
+
+    const fallbackModel = buildBracketViewModel(options)
+    const fallbackPromote = fallbackModel.columns[1].items[0]
+    expect(fallbackPromote.kind).toBe('info')
+    if (fallbackPromote.kind === 'info') {
+      expect(fallbackPromote.slots[0].groupRank).toBe(6)
+    }
+  })
 })
 
 describe('buildBracketViewModel — 双败败者组', () => {

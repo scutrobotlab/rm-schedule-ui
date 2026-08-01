@@ -29,11 +29,15 @@ export type GetGroupPlayerByRank = (
   rank: number,
 ) => Player | null | undefined
 
+/** 按选手 ID 取小组榜中的实时选手数据，避免使用比赛内的旧排名快照。 */
+export type GetPlayerById = (playerId: string) => Player | null | undefined
+
 export interface BuildBracketOptions {
   zoneId: number
   part: Part
   getMatchByOrder: GetMatchByOrder
   getGroupPlayerByRank?: GetGroupPlayerByRank
+  getPlayerById?: GetPlayerById
   /** 闭区间；省略则返回全部列 */
   stageRange?: BracketStageRange
 }
@@ -43,7 +47,7 @@ export interface BuildBracketOptions {
  * 列按节点固定 x 坐标分组，与 stages 从左到右对齐。
  */
 export function buildBracketViewModel(options: BuildBracketOptions): BracketViewModel {
-  const { zoneId, part, getMatchByOrder, getGroupPlayerByRank, stageRange } = options
+  const { zoneId, part, getMatchByOrder, getGroupPlayerByRank, getPlayerById, stageRange } = options
   const jsonData = part.jsonData
   const stages = jsonData.stages ?? []
   const planGameCount = part.group === 'QW' ? 2 : 3
@@ -68,6 +72,7 @@ export function buildBracketViewModel(options: BuildBracketOptions): BracketView
           planGameCount,
           getMatchByOrder,
           getGroupPlayerByRank,
+          getPlayerById,
           suppressGroupRank,
         })
         if (item) items.push(item)
@@ -253,6 +258,7 @@ function toBracketItem(args: {
   planGameCount: number
   getMatchByOrder: GetMatchByOrder
   getGroupPlayerByRank?: GetGroupPlayerByRank
+  getPlayerById?: GetPlayerById
   suppressGroupRank?: boolean
 }): BracketItem | null {
   const {
@@ -263,6 +269,7 @@ function toBracketItem(args: {
     planGameCount,
     getMatchByOrder,
     getGroupPlayerByRank,
+    getPlayerById,
     suppressGroupRank,
   } = args
   const lane = detectLane(node)
@@ -292,6 +299,7 @@ function toBracketItem(args: {
     planGameCount,
     getMatchByOrder,
     getGroupPlayerByRank,
+    getPlayerById,
     suppressGroupRank,
   })
 }
@@ -338,6 +346,7 @@ function buildInfoCard(args: {
   planGameCount: number
   getMatchByOrder: GetMatchByOrder
   getGroupPlayerByRank?: GetGroupPlayerByRank
+  getPlayerById?: GetPlayerById
   suppressGroupRank?: boolean
 }): BracketInfoCard {
   const {
@@ -349,6 +358,7 @@ function buildInfoCard(args: {
     planGameCount,
     getMatchByOrder,
     getGroupPlayerByRank,
+    getPlayerById,
     suppressGroupRank,
   } = args
   const nodeType = resolveInfoNodeType(node, zone)
@@ -371,6 +381,7 @@ function buildInfoCard(args: {
   const slots = buildInfoSlots(zone, zoneId, planGameCount, getMatchByOrder, {
     suppressGroupRank,
     getGroupPlayerByRank,
+    getPlayerById,
   })
   if (!suppressGroupRank && (nodeType === 'promote' || nodeType === 'eliminate')) {
     applyGroupRanks(slots, zone)
@@ -415,15 +426,18 @@ function buildInfoSlots(
   options: {
     suppressGroupRank?: boolean
     getGroupPlayerByRank?: GetGroupPlayerByRank
+    getPlayerById?: GetPlayerById
   } = {},
 ): BracketTeamSlot[] {
   const slots: BracketTeamSlot[] = []
   const suppressGroupRank = Boolean(options.suppressGroupRank)
   const getGroupPlayerByRank = options.getGroupPlayerByRank
+  const getPlayerById = options.getPlayerById
 
   for (let i = 0; i < zone.winners.length; i++) {
     const match = getMatchByOrder(zoneId, zone.winners[i], planGameCount)
-    const player = resolveWinner(match)
+    const snapshotPlayer = resolveWinner(match)
+    const player = resolveLivePlayer(snapshotPlayer, getPlayerById)
     const fallback = zone.text[slots.length]
     const structural = suppressGroupRank ? undefined : zone.groupRank?.[slots.length]
     slots.push(
@@ -436,7 +450,8 @@ function buildInfoSlots(
 
   for (let i = 0; i < zone.losers.length; i++) {
     const match = getMatchByOrder(zoneId, zone.losers[i], planGameCount)
-    const player = resolveLoser(match)
+    const snapshotPlayer = resolveLoser(match)
+    const player = resolveLivePlayer(snapshotPlayer, getPlayerById)
     const fallback = zone.text[slots.length]
     const structural = suppressGroupRank ? undefined : zone.groupRank?.[slots.length]
     slots.push(
@@ -484,6 +499,14 @@ function buildInfoSlots(
   }
 
   return slots
+}
+
+function resolveLivePlayer(
+  player: Player | null | undefined,
+  getPlayerById?: GetPlayerById,
+): Player | null | undefined {
+  if (!player?.id || !getPlayerById) return player
+  return getPlayerById(player.id) ?? player
 }
 
 /**

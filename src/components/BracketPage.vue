@@ -1072,6 +1072,9 @@ const bracketModel = computed((): BracketViewModel | null => {
       if (!ready) return undefined
       return groupPlayerLookup.value.get(`${groupName}:${rank}`) ?? null
     },
+    getPlayerById: part.type === 'group' && part.group !== 'Knockout'
+      ? (playerId) => promotionStore.findPlayerById(playerId) ?? null
+      : undefined,
   })
 })
 
