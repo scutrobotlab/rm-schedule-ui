@@ -17,6 +17,7 @@ import {
 export const STORYBOARD_DEMO_DEFAULT_SRC = '/2025/572/bracket?group=0&stage=0-1'
 
 export interface StoryboardCue {
+  scene: number
   main: string
   sub: string
   voiceover?: string
@@ -72,12 +73,13 @@ async function waitForCondition(
 
 function cue(
   options: StoryboardDemoOptions,
+  scene: number,
   main: string,
   sub: string,
   voiceover = '',
   brand = false,
 ) {
-  options.onCue?.({ main, sub, voiceover, brand })
+  options.onCue?.({ scene, main, sub, voiceover, brand })
 }
 
 async function tapText(
@@ -318,8 +320,8 @@ async function revealStageHandles(doc: Document, signal?: AbortSignal) {
     ),
     signal,
   )
-  // 1.5 秒完整播放滑块/把手生长，再留 1 秒让观众看清最终状态。
-  await sleep(2500, signal)
+  // 1.5 秒完整播放滑块/把手生长，再留 3 秒让观众看清最终状态。
+  await sleep(4500, signal)
 }
 
 async function stageGeometry(doc: Document, signal?: AbortSignal) {
@@ -414,6 +416,25 @@ async function ensureFirstTwoStages(doc: Document, signal?: AbortSignal) {
   await sleep(500, signal)
 }
 
+/** 将当前 Group 从默认两列展开到完整阶段范围。 */
+async function expandStageRangeToAllStages(doc: Document, signal?: AbortSignal) {
+  const track = await waitForSelector(doc, '.stage-range__track', { signal })
+  const selection = await waitForSelector(doc, '.stage-range__selection', { signal })
+  const trackRect = track.getBoundingClientRect()
+  const selectionRect = selection.getBoundingClientRect()
+  if (Math.abs(selectionRect.right - trackRect.right) < 3) return
+
+  const handle = await waitForSelector(doc, '.stage-range__handle--end', { signal })
+  const from = centerOf(handle)
+  await pointerDrag(
+    handle,
+    from,
+    { x: trackRect.right - 2, y: from.y },
+    { durationMs: 1500, pointerId: 124, easing: 'linear', signal },
+  )
+  await sleep(1200, signal)
+}
+
 async function runStoryboard2026Continuation(
   doc: Document,
   options: StoryboardDemoOptions,
@@ -424,21 +445,25 @@ async function runStoryboard2026Continuation(
   await waitForText(doc, '.v-select', '复活赛', signal, 20_000)
 
   const seasonVoiceover = '来到 2026，新的晋级之路，就此展开。'
-  cue(options, '2026 复活赛', '切换赛季 · 进入默认赛区', seasonVoiceover)
+  cue(options, 11, '2026 复活赛', '切换赛季 · 进入默认赛区', seasonVoiceover)
   await sleep(900, signal)
-  cue(options, '复活赛 → 全国赛', '切换 Zone · 进入2026全国赛', seasonVoiceover)
+  cue(options, 11, '复活赛 → 全国赛', '切换 Zone · 进入2026全国赛', seasonVoiceover)
   await selectZone(doc, '全国赛', signal)
   await sleep(900, signal)
   cue(
     options,
-    '2026 全国赛',
-    '未确定场次 · 对阵来源实时呈现',
+    12,
+    '2026 全国赛 · 淘汰赛胜者组',
+    '第0–4阶段 · 完整晋级路径',
     '对阵尚未揭晓，但晋级的方向依然清晰可见。',
   )
-  await sleep(2600, signal)
+  await selectGroup(doc, '淘汰赛胜者组', 124, signal)
+  await expandStageRangeToAllStages(doc, signal)
+  await sleep(5000, signal)
 
   cue(
     options,
+    13,
     'Bracket · 一图看懂晋级',
     '从一场比赛，到完整晋级之路',
     '',
@@ -448,7 +473,7 @@ async function runStoryboard2026Continuation(
 }
 
 /**
- * 分镜总长约 60 秒。初始数据等待不计入动作节奏；录制时建议在 iframe 稳定后开始。
+ * 分镜总长约 100 秒。初始数据等待不计入动作节奏；录制时建议在 iframe 稳定后开始。
  */
 export async function runStoryboardDemo(
   doc: Document,
@@ -465,15 +490,16 @@ export async function runStoryboardDemo(
 
   cue(
     options,
+    1,
     '2025 全国赛',
     '默认两列，清晰查看每场对阵',
     '这，是全新的 RM Schedule 移动端。两列，看清晋级之路。',
   )
-  await sleep(4000, signal)
+  await sleep(8000, signal)
 
   const jingchengName = '南京航空航天大学金城学院'
   const searchVoiceover = '搜索并选中队伍，即可高亮全部赛程。再长的校名，也能滚动完整呈现。'
-  cue(options, '直接选择南航金城', '限定当前赛区 · 快速定位', searchVoiceover)
+  cue(options, 2, '直接选择南航金城', '限定当前赛区 · 快速定位', searchVoiceover)
   await searchAndSelectCurrentZoneTeam(doc, jingchengName, signal)
 
   const jingcheng = await waitForTeamInMatch(doc, 5, jingchengName, signal)
@@ -485,24 +511,25 @@ export async function runStoryboardDemo(
     () => Boolean(jingcheng.row.querySelector('.selected-name-marquee')),
     signal,
   )
-  cue(options, '长校名完整展示', '选中后自动滚动', searchVoiceover)
+  cue(options, 2, '长校名完整展示', '选中后自动滚动', searchVoiceover)
   // 0.5 秒延迟 + 5 秒完整滚动周期，让校名从头到尾清楚出现。
   await sleep(5500, signal)
 
   const first = await waitForTeamInMatch(doc, 1, '华南理工大学', signal)
   const highlightVoiceover = '点击你关注的队伍，高亮随之切换。沿着路径，跟踪晋级的每一步。'
-  cue(options, '直接点击切换高亮', '南航金城 → 华南理工', highlightVoiceover)
+  cue(options, 3, '直接点击切换高亮', '南航金城 → 华南理工', highlightVoiceover)
   await pointerTap(first.row, centerOf(first.row), { pointerId: 119, signal })
   await sleep(1200, signal)
 
-  cue(options, '高亮路径 · 上下浏览', '第1场 0–2 → 第21场 2–0', highlightVoiceover)
+  cue(options, 3, '高亮路径 · 上下浏览', '第1场 0–2 → 第21场 2–0', highlightVoiceover)
   await sleep(450, signal)
   const twentyFirst = await waitForTeamInMatch(doc, 21, '华南理工大学', signal)
   await scrollCardIntoView(doc, twentyFirst.card, 2400, signal)
-  await sleep(2000, signal)
+  await sleep(4000, signal)
 
   cue(
     options,
+    4,
     '第21场 · 长按查看更多',
     '回放 · 比赛分析 · 队伍分析',
     '长按队伍，展开菜单选项。快速跳转B站回放或数据分析。',
@@ -514,22 +541,24 @@ export async function runStoryboardDemo(
   })
   await waitForSelector(doc, '.bracket-menu-close', { signal })
   // 给回放 iframe 留出加载和播放时间，菜单内容至少完整展示数秒。
-  await sleep(5200, signal)
+  await sleep(7200, signal)
   const close = await waitForSelector(doc, '.bracket-menu-close', { signal })
   await pointerTap(close, centerOf(close), { pointerId: 110, signal })
   await sleep(1350, signal)
 
   cue(
     options,
+    5,
     '赛程区向左滑动',
     '第0–1阶段 → 第4–5阶段',
     '向左滑动，沿着赛程，回顾晋级之路的每一步。',
   )
   await boardPanToLastStages(doc, signal)
-  await sleep(150, signal)
+  await sleep(2150, signal)
 
   cue(
     options,
+    6,
     '阶段范围选择器',
     '平移浏览 → 自由缩放',
     '回到顶部。两列，不是视野的边界——让我们展开全局视角。',
@@ -538,20 +567,22 @@ export async function runStoryboardDemo(
   await returnBoardToTop(doc, signal)
   await revealStageHandles(doc, signal)
 
-  cue(options, '快速展开完整赛程', '2列 → 6列 · 英雄镜头')
+  cue(options, 7, '快速展开完整赛程', '2列 → 6列 · 英雄镜头')
   await expandFastHero(doc, signal)
-  await sleep(300, signal)
+  await sleep(1300, signal)
 
   cue(
     options,
+    8,
     '华南理工 · 3胜1负晋级',
     '比赛比分 0–2 · 2–0 · 2–0 · 2–0',
     '开局失利，更要看清全局。',
   )
-  await sleep(2500, signal)
+  await sleep(3500, signal)
 
   cue(
     options,
+    9,
     '聚焦单一阶段，展开完整数据',
     '状态 · 场次 · 时间 · 支持率 · 胜场 · 对手分',
     '从六列到一列，每一级缩放，都呈现恰到好处的信息密度。',
@@ -560,7 +591,7 @@ export async function runStoryboardDemo(
   await sleep(2500, signal)
 
   const knockoutVoiceover = '从瑞士轮，到淘汰赛，再到金色之雨——每走一步，都算数。'
-  cue(options, '2025 全国赛淘汰赛', 'A组 → 败者组 → 胜者组', knockoutVoiceover)
+  cue(options, 10, '2025 全国赛淘汰赛', 'A组 → 败者组 → 胜者组', knockoutVoiceover)
   await selectGroup(doc, '淘汰赛败者组', 111, signal)
   await sleep(650, signal)
   await selectGroup(doc, '淘汰赛胜者组', 112, signal)
@@ -569,6 +600,7 @@ export async function runStoryboardDemo(
 
   cue(
     options,
+    10,
     '2025 最终对决',
     '拖拽定位半决赛与决赛 · 冠军高光',
     knockoutVoiceover,
@@ -578,6 +610,7 @@ export async function runStoryboardDemo(
 
   cue(
     options,
+    11,
     '2025 → 2026',
     '切换赛季 · 默认进入复活赛',
     '来到 2026，新的晋级之路，就此展开。',

@@ -222,13 +222,14 @@ onUnmounted(() => {
           class="storyboard-caption"
           :class="{ 'storyboard-caption--brand': storyboardCue.brand }"
         >
-          <div class="storyboard-caption__main">{{ storyboardCue.main }}</div>
-          <div class="storyboard-caption__sub">{{ storyboardCue.sub }}</div>
           <div
             v-if="storyboardCue.voiceover"
             class="storyboard-caption__voiceover"
           >
             {{ storyboardCue.voiceover }}
+          </div>
+          <div class="storyboard-caption__scene">
+            分镜 {{ storyboardCue.scene }}
           </div>
         </div>
       </Transition>
@@ -310,29 +311,21 @@ html.obs-capture .v-main__wrap {
   backdrop-filter: blur(16px) saturate(1.35);
   pointer-events: none;
 
-  &__main {
-    font-size: 18px;
-    font-weight: 800;
-    line-height: 1.35;
-  }
-
-  &__sub {
-    margin-top: 4px;
-    color: rgba(222, 235, 247, 0.82);
-    font-size: 12px;
-    line-height: 1.4;
-  }
-
   &__voiceover {
-    margin-top: 9px;
-    padding-top: 8px;
-    border-top: 1px solid rgba(205, 228, 247, 0.16);
     color: rgba(255, 255, 255, 0.96);
     font-size: 13px;
     font-weight: 500;
     line-height: 1.55;
     text-wrap: balance;
     text-shadow: 0 1px 4px rgba(0, 5, 18, 0.8);
+  }
+
+  &__scene {
+    margin-top: 9px;
+    color: rgba(205, 228, 247, 0.68);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
   }
 
   &--brand {
@@ -345,21 +338,16 @@ html.obs-capture .v-main__wrap {
     border-radius: 0;
     background: rgba(1, 8, 18, 0.72);
 
-    .storyboard-caption__main {
-      font-size: 32px;
-      letter-spacing: 0.02em;
-    }
-
-    .storyboard-caption__sub {
-      margin-top: 10px;
-      font-size: 16px;
-    }
-
     .storyboard-caption__voiceover {
-      margin-top: 18px;
-      padding-top: 0;
-      border-top: 0;
       font-size: 15px;
+    }
+
+    .storyboard-caption__scene {
+      position: absolute;
+      right: 0;
+      bottom: 28px;
+      left: 0;
+      margin-top: 0;
     }
   }
 }
