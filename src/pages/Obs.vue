@@ -5,6 +5,7 @@ import DeviceChrome from '../components/obs/DeviceChrome.vue'
 import TouchPointerOverlay from '../components/obs/TouchPointerOverlay.vue'
 import { runStageSelectorDemo, STAGE_DEMO_DEFAULT_SRC } from '../utils/obs_demo_stage'
 import {
+  runHeroDemo,
   runStoryboardDemo,
   STORYBOARD_DEMO_DEFAULT_SRC,
   type StoryboardCue,
@@ -112,8 +113,8 @@ const embedSrc = computed(() => {
   ) {
     target.searchParams.set('stage', '0-0')
   }
-  // 完整分镜前 5 镜只展示平移；第 6 镜再由脚本触发缩放把手入场。
-  if (demoKind.value === 'storyboard') {
+  // 完整分镜和独立英雄镜头均由脚本在蓄力段结束后触发缩放把手入场。
+  if (demoKind.value === 'storyboard' || demoKind.value === 'hero') {
     target.searchParams.set('stage_handles', 'intro')
   }
   // 默认只预留安全区，不绘制状态栏；iframe 内用 query 注入模拟 inset
@@ -149,7 +150,11 @@ function stopDemo() {
 
 async function startDemoIfNeeded() {
   stopDemo()
-  if (demoKind.value !== 'stage' && demoKind.value !== 'storyboard') return
+  if (
+    demoKind.value !== 'stage' &&
+    demoKind.value !== 'storyboard' &&
+    demoKind.value !== 'hero'
+  ) return
   const doc = frameRef.value?.contentDocument
   if (!doc || doc.URL === 'about:blank') return
 
@@ -163,6 +168,8 @@ async function startDemoIfNeeded() {
           storyboardCue.value = cue
         },
       })
+    } else if (demoKind.value === 'hero') {
+      await runHeroDemo(doc, { signal: controller.signal })
     } else {
       await runStageSelectorDemo(doc, { signal: controller.signal })
     }

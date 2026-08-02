@@ -332,16 +332,46 @@ async function stageGeometry(doc: Document, signal?: AbortSignal) {
 }
 
 /** 第一遍：快速直达六列，作为干净有力的英雄镜头。 */
-async function expandFastHero(doc: Document, signal?: AbortSignal) {
+async function expandFastHero(
+  doc: Document,
+  signal?: AbortSignal,
+  durationMs = 1000,
+) {
   const { trackRect, handle } = await stageGeometry(doc, signal)
   const from = centerOf(handle)
   await pointerDrag(
     handle,
     from,
     { x: trackRect.left + 2, y: from.y },
-    { durationMs: 1000, pointerId: 106, signal },
+    { durationMs, pointerId: 106, signal },
   )
   await sleep(1400, signal)
+}
+
+/**
+ * 独立英雄镜头：保留主分镜第 6–8 镜的前奏、展开和全景停留。
+ * 拖动复用主分镜的轨迹与缓动，但独立素材适当放慢，方便后期剪辑。
+ */
+export async function runHeroDemo(
+  doc: Document,
+  options: StoryboardDemoOptions = {},
+): Promise<void> {
+  const { signal } = options
+  await waitForSelector(doc, '.stage-range__handle--start', {
+    timeoutMs: 20_000,
+    signal,
+  })
+
+  // 第 6 镜前半：无把手状态下静止蓄力；随后播放相同的把手入场与停顿。
+  await sleep(4500, signal)
+  await revealStageHandles(doc, signal)
+
+  // 第 7 镜：独立素材将展开延长至 1.5 秒，其余节奏保持不变。
+  await expandFastHero(doc, signal, 1500)
+  await sleep(1300, signal)
+
+  // 第 8 镜：保持完整全景，给后期留下与主视频一致的收束素材。
+  await sleep(3500, signal)
 }
 
 async function collapseToFirstStage(doc: Document, signal?: AbortSignal) {
