@@ -28,13 +28,10 @@ void appStore.loadGlobalConfig()
 /** 竞猜海报 / 晋级图 / OBS 嵌套层不挂载全局公告，避免遮罩干扰全屏浏览、截图或录制 */
 const hideGlobalAnnouncements = computed(() => {
   const path = route.path
-  const bracketExperimentActive =
-    appStore.globalConfigLoaded &&
-    appStore.mobileBracketEnabled &&
+  const mobileBracketActive =
     mobileAtStartup &&
-    appStore.mobileBracketConsent === 'accepted' &&
     (path === '/' || /^\/\d+(?:\/\d+)?$/.test(path))
-  return bracketExperimentActive ||
+  return mobileBracketActive ||
     path === '/forecast' ||
     path === '/obs' ||
     path === '/bracket' ||
