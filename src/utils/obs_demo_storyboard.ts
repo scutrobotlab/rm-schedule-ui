@@ -498,7 +498,7 @@ export async function runStoryboardDemo(
   await sleep(8000, signal)
 
   const jingchengName = '南京航空航天大学金城学院'
-  const searchVoiceover = '搜索并选中队伍，即可高亮全部赛程。再长的校名，也能滚动完整呈现。'
+  const searchVoiceover = '搜索并选中队伍，即可高亮全部赛程。再长的校名，也能完整呈现。'
   cue(options, 2, '直接选择南航金城', '限定当前赛区 · 快速定位', searchVoiceover)
   await searchAndSelectCurrentZoneTeam(doc, jingchengName, signal)
 
