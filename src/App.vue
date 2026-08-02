@@ -12,7 +12,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, ref, watchEffect } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref, watchEffect } from "vue";
 import { useRoute } from "vue-router";
 import { useAppStore } from "./stores/app";
 import AnniversaryAnnouncement from "./components/AnniversaryAnnouncement.vue";
@@ -21,11 +21,23 @@ import { isMobileDevice } from "./utils/mobile";
 
 const route = useRoute()
 const appStore = useAppStore()
-/** 与 index 一致：移动端粘滞为 true，挂载后再确认一次，避免首屏误判仍弹全局公告 */
+/** 与 index 一致：移动端粘滞为 true，并在首屏延迟窗口内持续重判 */
 const mobileAtStartup = ref(isMobileDevice())
+const mobilePromoteTimers: ReturnType<typeof setTimeout>[] = []
+
+function promoteMobileBracket() {
+  if (isMobileDevice()) mobileAtStartup.value = true
+}
 
 onMounted(() => {
-  if (isMobileDevice()) mobileAtStartup.value = true
+  promoteMobileBracket()
+  for (const ms of [0, 50, 100, 250, 500, 1000]) {
+    mobilePromoteTimers.push(setTimeout(promoteMobileBracket, ms))
+  }
+})
+
+onBeforeUnmount(() => {
+  for (const timer of mobilePromoteTimers) clearTimeout(timer)
 })
 
 void appStore.loadGlobalConfig()

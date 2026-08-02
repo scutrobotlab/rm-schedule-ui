@@ -8,31 +8,48 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import About from '../components/About.vue'
 import Situation from '../components/Situation.vue'
 import Bracket from './Bracket.vue'
-import { useAppStore } from '../stores/app'
 import { isMobileDevice } from '../utils/mobile'
 
-const appStore = useAppStore()
-
-/** 移动端一律进 Bracket，无视灰度 / consent；一旦判定为移动端则粘滞，不随旋转回退。 */
+/** 移动端一律进 Bracket，无视灰度 / consent；一旦为 true 则粘滞。 */
 const useBracket = ref(isMobileDevice())
-const mobileRecheckDone = ref(false)
+const allowLegacy = ref(false)
+const timers: ReturnType<typeof setTimeout>[] = []
+let mediaQuery: MediaQueryList | null = null
+
+function promoteBracket() {
+  if (isMobileDevice()) useBracket.value = true
+}
 
 onMounted(() => {
-  // 部分移动浏览器首屏 matchMedia 未就绪；若此时误挂 Situation，
-  // 会先 redirect 到 /:season/:zoneId，且路由复用后不会重跑 setup。
-  if (isMobileDevice()) useBracket.value = true
-  mobileRecheckDone.value = true
+  promoteBracket()
+
+  // 首屏 matchMedia / viewport 可能滞后数帧甚至数百毫秒。
+  // 即使 Situation 已挂载并完成 redirect，后续仍可升级到 Bracket，无需整页刷新。
+  for (const ms of [0, 50, 100, 250, 500, 1000]) {
+    timers.push(setTimeout(promoteBracket, ms))
+  }
+
+  // 宽限后再挂旧版，降低误进 Situation 抢跑 redirect 的概率。
+  timers.push(setTimeout(() => {
+    allowLegacy.value = true
+  }, 300))
+
+  if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
+    mediaQuery = window.matchMedia('(max-width: 767px)')
+    mediaQuery.addEventListener('change', promoteBracket)
+  }
 })
 
-const readyForLegacy = computed(() =>
-  !useBracket.value &&
-  mobileRecheckDone.value &&
-  appStore.globalConfigLoaded,
-)
+onBeforeUnmount(() => {
+  for (const timer of timers) clearTimeout(timer)
+  mediaQuery?.removeEventListener('change', promoteBracket)
+})
+
+const readyForLegacy = computed(() => !useBracket.value && allowLegacy.value)
 </script>
 
 <style scoped>

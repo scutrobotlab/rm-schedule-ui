@@ -1,15 +1,44 @@
-/** 启动时判断是否采用移动端布局；页面生命周期内不随旋转或缩放切换。 */
+const MOBILE_UA_RE =
+  /Android.+Mobile|iPhone|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i
+
+export function isMobileUserAgent(
+  userAgent = typeof navigator !== 'undefined' ? navigator.userAgent : '',
+): boolean {
+  return MOBILE_UA_RE.test(userAgent)
+}
+
+function hasTouchSignal(): boolean {
+  if (typeof globalThis.matchMedia === 'function') {
+    if (
+      globalThis.matchMedia('(pointer: coarse)').matches ||
+      globalThis.matchMedia('(any-pointer: coarse)').matches ||
+      globalThis.matchMedia('(hover: none)').matches
+    ) {
+      return true
+    }
+  }
+  return typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0
+}
+
+/**
+ * 启动时判断是否采用移动端布局。
+ * 一旦上层将其粘滞为 true，不应再随旋转/缩放切回旧版。
+ */
 export function isMobileDevice(): boolean {
+  const uaMobile = isMobileUserAgent()
+  const touch = hasTouchSignal()
+
   if (typeof globalThis.matchMedia !== 'function') {
-    return false
+    return uaMobile || touch
   }
 
   const narrow = globalThis.matchMedia('(max-width: 767px)').matches
-  if (!narrow) return false
 
-  // 部分 WebView / 外接键鼠场景下 pointer:coarse 首屏不可靠，放宽触控信号。
-  return globalThis.matchMedia('(pointer: coarse)').matches ||
-    globalThis.matchMedia('(any-pointer: coarse)').matches ||
-    globalThis.matchMedia('(hover: none)').matches ||
-    (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0)
+  // 常见路径：窄屏 + 触控
+  if (narrow && touch) return true
+  // 部分 WebView 首屏 viewport 未生效，宽度仍约 980；用手机 UA + 触控兜底
+  if (uaMobile && touch) return true
+  if (uaMobile && narrow) return true
+
+  return false
 }

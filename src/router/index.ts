@@ -13,6 +13,10 @@ function latestSeason(): number {
   return Number(Object.keys(ZoneMap).slice(-1)[0])
 }
 
+function defaultSeasonZonePath(season = latestSeason()): string {
+  return `/${season}/${DefaultZoneMap[season]}`
+}
+
 const routes = [
   { path: '/', component: Index },
   // 静态路径必须在 /:season 之前，否则会被当成 season 参数
@@ -32,28 +36,54 @@ const router = createRouter({
 
 router.beforeEach(async (to) => {
   const fallbackPath = explicitBracketFallbackPath(to.path)
-  if (fallbackPath == null) return true
+  if (fallbackPath != null) {
+    const appStore = useAppStore(pinia)
+    await appStore.loadGlobalConfig()
+    if (appStore.isTestEnvironment) {
+      if (to.path !== '/bracket') return true
 
-  const appStore = useAppStore(pinia)
-  await appStore.loadGlobalConfig()
-  if (appStore.isTestEnvironment) {
-    if (to.path !== '/bracket') return true
+      return {
+        path: `${defaultSeasonZonePath()}/bracket`,
+        query: to.query,
+        hash: to.hash,
+        replace: true,
+      }
+    }
 
-    const season = latestSeason()
     return {
-      path: `/${season}/${DefaultZoneMap[season]}/bracket`,
+      path: fallbackPath,
       query: to.query,
       hash: to.hash,
       replace: true,
     }
   }
 
-  return {
-    path: fallbackPath,
-    query: to.query,
-    hash: to.hash,
-    replace: true,
+  // 规范化入口，避免 Index 先在 `/` 挂载再被子组件 redirect，导致移动端判定只跑一次。
+  if (to.path === '/') {
+    return {
+      path: defaultSeasonZonePath(),
+      query: to.query,
+      hash: to.hash,
+      replace: true,
+    }
   }
+
+  const seasonParam = Array.isArray(to.params.season) ? to.params.season[0] : to.params.season
+  if (
+    typeof seasonParam === 'string' &&
+    /^\d+$/.test(seasonParam) &&
+    to.params.zoneId == null &&
+    ZoneMap[Number(seasonParam)]
+  ) {
+    return {
+      path: defaultSeasonZonePath(Number(seasonParam)),
+      query: to.query,
+      hash: to.hash,
+      replace: true,
+    }
+  }
+
+  return true
 })
 
 export default router
