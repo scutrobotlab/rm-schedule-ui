@@ -12,7 +12,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, watchEffect } from "vue";
+import { computed, onMounted, ref, watchEffect } from "vue";
 import { useRoute } from "vue-router";
 import { useAppStore } from "./stores/app";
 import AnniversaryAnnouncement from "./components/AnniversaryAnnouncement.vue";
@@ -21,7 +21,12 @@ import { isMobileDevice } from "./utils/mobile";
 
 const route = useRoute()
 const appStore = useAppStore()
-const mobileAtStartup = isMobileDevice()
+/** 与 index 一致：移动端粘滞为 true，挂载后再确认一次，避免首屏误判仍弹全局公告 */
+const mobileAtStartup = ref(isMobileDevice())
+
+onMounted(() => {
+  if (isMobileDevice()) mobileAtStartup.value = true
+})
 
 void appStore.loadGlobalConfig()
 
@@ -29,7 +34,7 @@ void appStore.loadGlobalConfig()
 const hideGlobalAnnouncements = computed(() => {
   const path = route.path
   const mobileBracketActive =
-    mobileAtStartup &&
+    mobileAtStartup.value &&
     (path === '/' || /^\/\d+(?:\/\d+)?$/.test(path))
   return mobileBracketActive ||
     path === '/forecast' ||
