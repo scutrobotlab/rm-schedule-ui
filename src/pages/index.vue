@@ -46,6 +46,7 @@
 
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import About from '../components/About.vue'
 import Situation from '../components/Situation.vue'
 import Bracket from './Bracket.vue'
@@ -56,9 +57,12 @@ import {
 } from '../utils/mobile_bracket_consent'
 
 const appStore = useAppStore()
+const route = useRoute()
 const mobileAtStartup = isMobileDevice()
+const forceLegacy = computed(() => route.query.legacy === '1')
 
 const eligibleForExperiment = computed(() =>
+  !forceLegacy.value &&
   appStore.globalConfigLoaded &&
   mobileAtStartup &&
   appStore.mobileBracketEnabled,
