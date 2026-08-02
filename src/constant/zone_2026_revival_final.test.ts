@@ -37,10 +37,10 @@ function knockoutZone(nodeId: string): ZoneZoneData {
 }
 
 describe('2026 ZoneMap 注册与默认赛区', () => {
-  it('注册 617/618，默认进入复活赛 A 组，全国赛也默认进入 A 组', () => {
+  it('注册 617/618，默认进入全国赛 A 组', () => {
     const zones = ZoneMap[2026]
     expect(zones.map((z) => z.id)).toEqual([614, 615, 616, 617, 618])
-    expect(DefaultZoneMap[2026]).toBe(617)
+    expect(DefaultZoneMap[2026]).toBe(618)
 
     const revival = zones.find((z) => z.id === 617)!
     expect(revival.name).toBe('复活赛')

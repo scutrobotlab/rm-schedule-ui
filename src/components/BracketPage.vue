@@ -653,6 +653,10 @@ async function initSelectedGroup() {
 }
 
 function getDefaultSelectedGroup(preferStarted: boolean): number {
+  // 2026 默认入口固定落在全国赛 A 组，不随当前开赛分组漂移。
+  if (season.value === 2026 && zoneId.value === DefaultZoneMap[2026]) {
+    return zone.value?.defaultGroup ?? 0
+  }
   if (preferStarted) {
     const startedGroup = zone.value?.parts.findIndex(partHasStartedMatch) ?? -1
     if (startedGroup >= 0) return startedGroup
