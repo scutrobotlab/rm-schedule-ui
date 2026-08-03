@@ -83,11 +83,15 @@ function closeDialog() {
         />
       </div>
 
-      <img
-        class="anniversary-image"
-        src="@/assets/three_years_same_frequency.jpg"
-        alt="三年同行热爱同频"
-      />
+      <div class="anniversary-video">
+        <iframe
+          src="https://player.bilibili.com/player.html?isOutside=true&aid=117026836186095&bvid=BV1rH3d6REpF&cid=40538080003&p=1"
+          title="RM Schedule 三周年宣传视频"
+          scrolling="no"
+          frameborder="0"
+          allowfullscreen
+        ></iframe>
+      </div>
 
       <v-card-text class="anniversary-content text-center">
         <h3>
@@ -155,10 +159,17 @@ function closeDialog() {
   display: none;
 }
 
-.anniversary-image {
-  display: block;
+.anniversary-video {
   width: 100%;
-  height: auto;
+  aspect-ratio: 16 / 9;
+  background: #000;
+
+  iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
 }
 
 .anniversary-content {
