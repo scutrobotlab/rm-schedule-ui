@@ -851,6 +851,21 @@ function bracketPartHasStartedMatch(bp: BracketPart): boolean {
 
 const MenuItems = ref([
   {
+    title: '切换到旧版',
+    icon: 'mdi-swap-horizontal',
+    disabled: () => false,
+    action: () => {
+      appStore.setMobileBracketConsent('declined')
+      if (usesExplicitBracketPath) {
+        void router.replace({
+          path: `/${promotionStore.season}/${zoneId.value}`,
+          query: route.query,
+          hash: route.hash,
+        })
+      }
+    },
+  },
+  {
     title: '分析队伍',
     icon: 'mdi-google-analytics',
     disabled: () => !promotionStore.selectedPlayer,

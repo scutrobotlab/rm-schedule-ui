@@ -8,6 +8,8 @@ import { DefaultZoneMap, ZoneMap } from "../constant/zone";
 import pinia from '../stores'
 import { useAppStore } from '../stores/app'
 import { explicitBracketFallbackPath } from '../utils/bracket_route'
+import { isMobileDevice } from '../utils/mobile'
+import { shouldUseMobileBracket } from '../utils/mobile_bracket_consent'
 
 function latestSeason(): number {
   return Number(Object.keys(ZoneMap).slice(-1)[0])
@@ -37,7 +39,21 @@ const router = createRouter({
 router.beforeEach(async (to) => {
   const fallbackPath = explicitBracketFallbackPath(to.path)
   if (fallbackPath != null) {
-    // TEMP debug: allow explicit bracket routes locally
+    const appStore = useAppStore(pinia)
+    const allowBracket = shouldUseMobileBracket(
+      isMobileDevice(),
+      appStore.mobileBracketConsent,
+    )
+
+    if (!allowBracket) {
+      return {
+        path: fallbackPath === '/' ? defaultSeasonZonePath() : fallbackPath,
+        query: to.query,
+        hash: to.hash,
+        replace: true,
+      }
+    }
+
     if (to.path !== '/bracket') return true
 
     return {

@@ -7,6 +7,7 @@ import {
 } from "../constant/common";
 import {
   readMobileBracketConsent,
+  writeMobileBracketConsent,
   type MobileBracketConsent,
 } from '../utils/mobile_bracket_consent'
 
@@ -32,6 +33,10 @@ export const useAppStore = defineStore('app', {
     mobileBracketConsent: readMobileBracketConsent() as MobileBracketConsent,
   }),
   actions: {
+    setMobileBracketConsent(consent: Exclude<MobileBracketConsent, null>) {
+      this.mobileBracketConsent = consent
+      writeMobileBracketConsent(consent)
+    },
     async loadGlobalConfig() {
       const existingRequest = globalConfigRequests.get(this)
       if (existingRequest) {

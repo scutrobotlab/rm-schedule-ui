@@ -1,7 +1,7 @@
 <template>
   <Bracket v-if="useBracket"/>
   <template v-else-if="readyForLegacy">
-    <Situation/>
+    <Situation :mobile-ui-switch-available="mobileDetected"/>
     <About/>
   </template>
   <div v-else class="page-loading" aria-hidden="true"/>
@@ -13,15 +13,18 @@ import About from '../components/About.vue'
 import Situation from '../components/Situation.vue'
 import Bracket from './Bracket.vue'
 import { isMobileDevice } from '../utils/mobile'
+import { useAppStore } from '../stores/app'
+import { shouldUseMobileBracket } from '../utils/mobile_bracket_consent'
 
-/** 移动端一律进 Bracket，无视灰度 / consent；一旦为 true 则粘滞。 */
-const useBracket = ref(isMobileDevice())
+const appStore = useAppStore()
+/** 移动端识别一旦为 true 则粘滞；用户偏好仍可实时切换 UI。 */
+const mobileDetected = ref(isMobileDevice())
 const allowLegacy = ref(false)
 const timers: ReturnType<typeof setTimeout>[] = []
 let mediaQuery: MediaQueryList | null = null
 
 function promoteBracket() {
-  if (isMobileDevice()) useBracket.value = true
+  if (isMobileDevice()) mobileDetected.value = true
 }
 
 onMounted(() => {
@@ -49,7 +52,14 @@ onBeforeUnmount(() => {
   mediaQuery?.removeEventListener('change', promoteBracket)
 })
 
-const readyForLegacy = computed(() => !useBracket.value && allowLegacy.value)
+const useBracket = computed(() => shouldUseMobileBracket(
+  mobileDetected.value,
+  appStore.mobileBracketConsent,
+))
+const readyForLegacy = computed(() =>
+  !useBracket.value &&
+  (allowLegacy.value || appStore.mobileBracketConsent === 'declined'),
+)
 </script>
 
 <style scoped>

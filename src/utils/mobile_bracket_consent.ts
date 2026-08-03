@@ -2,6 +2,13 @@ export const MobileBracketConsentKey = 'mobile_bracket_consent_v1'
 
 export type MobileBracketConsent = 'accepted' | 'declined' | null
 
+export function shouldUseMobileBracket(
+  isMobile: boolean,
+  consent: MobileBracketConsent,
+): boolean {
+  return isMobile && consent !== 'declined'
+}
+
 export function readMobileBracketConsent(): MobileBracketConsent {
   try {
     const value = localStorage.getItem(MobileBracketConsentKey)

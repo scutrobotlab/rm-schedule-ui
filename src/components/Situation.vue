@@ -8,6 +8,12 @@ import { useRoute, useRouter } from "vue-router";
 import { DefaultZoneMap, Part, SeasonList, ZoneMap } from "../constant/zone";
 import AnalyzeMatch from "./AnalyzeMatch.vue";
 
+const props = withDefaults(defineProps<{
+  mobileUiSwitchAvailable?: boolean
+}>(), {
+  mobileUiSwitchAvailable: false,
+})
+
 const route = useRoute()
 const router = useRouter()
 
@@ -122,8 +128,16 @@ const width = computed(() => {
   return window.innerWidth
 })
 
-const MenuItems = ref(
+const MenuItems = computed(() =>
   [
+    ...(props.mobileUiSwitchAvailable ? [{
+      title: '切换到新版',
+      icon: 'mdi-swap-horizontal',
+      disabled: () => false,
+      action: () => {
+        appStore.setMobileBracketConsent('accepted')
+      },
+    }] : []),
     {
       title: '分析队伍',
       icon: 'mdi-google-analytics',

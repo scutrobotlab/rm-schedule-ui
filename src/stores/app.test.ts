@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
 import axios from 'axios'
 import { useAppStore } from './app'
+import { MobileBracketConsentKey } from '../utils/mobile_bracket_consent'
 
 vi.mock('axios', () => ({
   default: {
@@ -10,7 +11,14 @@ vi.mock('axios', () => ({
 }))
 
 describe('app store global config', () => {
+  const storage = new Map<string, string>()
+
   beforeEach(() => {
+    storage.clear()
+    vi.stubGlobal('localStorage', {
+      getItem: vi.fn((key: string) => storage.get(key) ?? null),
+      setItem: vi.fn((key: string, value: string) => storage.set(key, value)),
+    })
     setActivePinia(createPinia())
     vi.mocked(axios.get).mockReset()
   })
@@ -39,5 +47,17 @@ describe('app store global config', () => {
     expect(store.isTestEnvironment).toBe(false)
     expect(store.mobileBracketEnabled).toBe(false)
     expect(store.globalConfigLoaded).toBe(true)
+  })
+
+  it('updates and persists the mobile UI preference together', () => {
+    const store = useAppStore()
+
+    store.setMobileBracketConsent('declined')
+    expect(store.mobileBracketConsent).toBe('declined')
+    expect(storage.get(MobileBracketConsentKey)).toBe('declined')
+
+    store.setMobileBracketConsent('accepted')
+    expect(store.mobileBracketConsent).toBe('accepted')
+    expect(storage.get(MobileBracketConsentKey)).toBe('accepted')
   })
 })
