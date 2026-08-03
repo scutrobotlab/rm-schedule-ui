@@ -36,7 +36,7 @@ onMounted(() => {
     timers.push(setTimeout(promoteBracket, ms))
   }
 
-  // 宽限后再挂旧版，降低误进 Situation 抢跑 redirect 的概率。
+  // 宽限后再挂经典版，降低误进 Situation 抢跑 redirect 的概率。
   timers.push(setTimeout(() => {
     allowLegacy.value = true
   }, 300))

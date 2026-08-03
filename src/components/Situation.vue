@@ -131,7 +131,7 @@ const width = computed(() => {
 const MenuItems = computed(() =>
   [
     ...(props.mobileUiSwitchAvailable ? [{
-      title: '切换到新版',
+      title: '切换至焕新版',
       icon: 'mdi-swap-horizontal',
       disabled: () => false,
       action: () => {

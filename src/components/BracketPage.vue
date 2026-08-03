@@ -851,7 +851,7 @@ function bracketPartHasStartedMatch(bp: BracketPart): boolean {
 
 const MenuItems = ref([
   {
-    title: '切换到旧版',
+    title: '切换至经典版',
     icon: 'mdi-swap-horizontal',
     disabled: () => false,
     action: () => {

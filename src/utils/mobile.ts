@@ -32,7 +32,7 @@ function hasTouchSignal(): boolean {
 
 /**
  * 启动时判断是否采用移动端布局。
- * 一旦上层将其粘滞为 true，不应再随旋转/缩放切回旧版。
+ * 一旦上层将其粘滞为 true，不应再随旋转/缩放切回经典版。
  */
 export function isMobileDevice(): boolean {
   const uaMobile = isMobileUserAgent()
