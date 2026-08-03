@@ -69,28 +69,32 @@ function closeDialog() {
     @update:model-value="onDialogModelUpdate"
   >
     <v-card class="anniversary-card">
-      <div class="anniversary-mobile-actions">
-        <span class="anniversary-mobile-title">
-          RM Schedule 三周年
-        </span>
-        <v-btn
-          class="anniversary-close-button"
-          prepend-icon="mdi-close"
-          aria-label="关闭周年公告"
-          text="关闭"
-          variant="text"
-          @click="closeDialog"
-        />
-      </div>
-
-      <div class="anniversary-video">
-        <iframe
-          src="https://player.bilibili.com/player.html?isOutside=true&aid=117026836186095&bvid=BV1rH3d6REpF&cid=40538080003&p=1"
-          title="RM Schedule 三周年宣传视频"
-          scrolling="no"
-          frameborder="0"
-          allowfullscreen
-        ></iframe>
+      <div class="anniversary-video-section">
+        <div class="anniversary-video-hint">
+          <div class="anniversary-video-hint-copy">
+            <v-icon icon="mdi-play-circle-outline" size="20" />
+            <strong>使用说明</strong>
+            <span>观看视频，快速了解 RM Schedule 的使用方法</span>
+          </div>
+          <v-btn
+            class="anniversary-banner-close"
+            prepend-icon="mdi-close"
+            aria-label="跳过周年公告"
+            size="small"
+            text="跳过"
+            variant="text"
+            @click="closeDialog"
+          />
+        </div>
+        <div class="anniversary-video">
+          <iframe
+            src="https://player.bilibili.com/player.html?isOutside=true&aid=117026836186095&bvid=BV1rH3d6REpF&cid=40538080003&p=1"
+            title="RM Schedule 使用说明视频"
+            scrolling="no"
+            frameborder="0"
+            allowfullscreen
+          ></iframe>
+        </div>
       </div>
 
       <v-card-text class="anniversary-content text-center">
@@ -138,7 +142,7 @@ function closeDialog() {
         </span>
         <v-spacer></v-spacer>
         <v-btn
-          text="关闭"
+          text="跳过"
           variant="outlined"
           @click="closeDialog"
         ></v-btn>
@@ -155,14 +159,42 @@ function closeDialog() {
   overflow-y: auto;
 }
 
-.anniversary-mobile-actions {
+.anniversary-video-section {
+  width: 100%;
+  background: #000;
+}
+
+.anniversary-video-hint {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  color: rgba(255, 255, 255, 0.76);
+  background: linear-gradient(90deg, #222b3d, #171b25);
+}
+
+.anniversary-video-hint-copy {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  strong {
+    flex: 0 0 auto;
+    color: #fff;
+    font-size: 0.95rem;
+  }
+
+  span {
+    font-size: 0.85rem;
+  }
+}
+
+.anniversary-banner-close {
   display: none;
 }
 
 .anniversary-video {
-  width: 100%;
   aspect-ratio: 16 / 9;
-  background: #000;
 
   iframe {
     display: block;
@@ -239,25 +271,25 @@ function closeDialog() {
 }
 
 @media (max-width: 720px) {
-  .anniversary-mobile-actions {
-    display: flex;
+  .anniversary-video-hint {
+    gap: 8px;
+    padding: 8px 8px 8px 12px;
+  }
+
+  .anniversary-video-hint-copy {
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+
+    span {
+      flex-basis: 100%;
+      padding-left: 28px;
+    }
+  }
+
+  .anniversary-banner-close {
+    display: inline-flex;
     flex: 0 0 auto;
-    align-items: center;
-    justify-content: space-between;
-    padding: 6px 8px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  }
-
-  .anniversary-mobile-title {
-    padding-left: 8px;
-    font-size: 0.95rem;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    opacity: 0.82;
-  }
-
-  .anniversary-close-button {
-    font-weight: 600;
   }
 
   .product-grid {
