@@ -74,7 +74,7 @@ function closeDialog() {
           <div class="anniversary-video-hint-copy">
             <v-icon icon="mdi-play-circle-outline" size="20" />
             <strong>使用说明</strong>
-            <span>观看视频，快速了解 RM Schedule 的使用方法</span>
+            <span>观看视频，2 分钟快速了解 RM Schedule</span>
           </div>
           <v-btn
             class="anniversary-banner-close"
