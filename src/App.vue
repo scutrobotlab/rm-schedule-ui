@@ -18,6 +18,7 @@ import { useAppStore } from "./stores/app";
 import AnniversaryAnnouncement from "./components/AnniversaryAnnouncement.vue";
 import UpdateAnnouncement from "./components/UpdateAnnouncement.vue";
 import { isIOSDevice, isMobileDevice } from "./utils/mobile";
+import { shouldUseMobileBracket } from "./utils/mobile_bracket_consent";
 
 const route = useRoute()
 const appStore = useAppStore()
@@ -47,6 +48,7 @@ const hideGlobalAnnouncements = computed(() => {
   const path = route.path
   const mobileBracketActive =
     mobileAtStartup.value &&
+    shouldUseMobileBracket(mobileAtStartup.value, appStore.mobileBracketConsent) &&
     (path === '/' || /^\/\d+(?:\/\d+)?$/.test(path))
   return mobileBracketActive ||
     path === '/forecast' ||
