@@ -465,10 +465,10 @@ onMounted(async () => {
   align-items: center;
   justify-content: flex-start;
   padding:
-    max(24px, env(safe-area-inset-top, 0px))
-    max(16px, env(safe-area-inset-right, 0px))
-    max(48px, env(safe-area-inset-bottom, 0px))
-    max(16px, env(safe-area-inset-left, 0px));
+    max(24px, var(--app-safe-top, 0px))
+    max(16px, var(--app-safe-right, 0px))
+    max(48px, var(--app-safe-bottom, 0px))
+    max(16px, var(--app-safe-left, 0px));
   gap: 16px;
 
   &.is-render {
