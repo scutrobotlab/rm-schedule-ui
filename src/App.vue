@@ -17,7 +17,7 @@ import { useRoute } from "vue-router";
 import { useAppStore } from "./stores/app";
 import AnniversaryAnnouncement from "./components/AnniversaryAnnouncement.vue";
 import UpdateAnnouncement from "./components/UpdateAnnouncement.vue";
-import { isMobileDevice } from "./utils/mobile";
+import { isIOSDevice, isMobileDevice } from "./utils/mobile";
 
 const route = useRoute()
 const appStore = useAppStore()
@@ -70,6 +70,11 @@ watchEffect(() => {
   if (typeof document === 'undefined') return
   const root = document.documentElement
 
+  // Android 浏览器的布局视口通常已避开状态栏；部分 QQ WebView 仍返回非零
+  // safe-area-inset-top，再应用一次会在 Bracket 顶栏上方形成重复留白。
+  // iOS 的 viewport-fit=cover 会让页面延伸到状态栏下，仍需保留顶部安全区。
+  root.classList.toggle('app-ios-safe-area', isIOSDevice())
+
   for (const [key, cssVar] of Object.entries(SAFE_AREA_QUERY_VARS)) {
     const raw = Array.isArray(route.query[key]) ? route.query[key][0] : route.query[key]
     const value = Number(raw)
@@ -95,11 +100,15 @@ if (!isCaptureEmbed) {
 
 <style lang="scss">
 :root {
-  --app-safe-top: env(safe-area-inset-top, 0px);
+  --app-safe-top: 0px;
   --app-safe-right: env(safe-area-inset-right, 0px);
   --app-safe-bottom: env(safe-area-inset-bottom, 0px);
   --app-safe-left: env(safe-area-inset-left, 0px);
   --app-canvas: #061321;
+}
+
+:root.app-ios-safe-area {
+  --app-safe-top: env(safe-area-inset-top, 0px);
 }
 
 html,

@@ -7,6 +7,16 @@ export function isMobileUserAgent(
   return MOBILE_UA_RE.test(userAgent)
 }
 
+export function isIOSDevice(
+  userAgent = typeof navigator !== 'undefined' ? navigator.userAgent : '',
+  platform = typeof navigator !== 'undefined' ? navigator.platform : '',
+  maxTouchPoints = typeof navigator !== 'undefined' ? navigator.maxTouchPoints : 0,
+): boolean {
+  // iPadOS 13+ 默认使用 Macintosh 桌面 UA，只能结合触控点识别。
+  return /iPad|iPhone|iPod/i.test(userAgent) ||
+    (platform === 'MacIntel' && maxTouchPoints > 1)
+}
+
 function hasTouchSignal(): boolean {
   if (typeof globalThis.matchMedia === 'function') {
     if (

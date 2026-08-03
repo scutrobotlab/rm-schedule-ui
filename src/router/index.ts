@@ -37,21 +37,11 @@ const router = createRouter({
 router.beforeEach(async (to) => {
   const fallbackPath = explicitBracketFallbackPath(to.path)
   if (fallbackPath != null) {
-    const appStore = useAppStore(pinia)
-    await appStore.loadGlobalConfig()
-    if (appStore.isTestEnvironment) {
-      if (to.path !== '/bracket') return true
-
-      return {
-        path: `${defaultSeasonZonePath()}/bracket`,
-        query: to.query,
-        hash: to.hash,
-        replace: true,
-      }
-    }
+    // TEMP debug: allow explicit bracket routes locally
+    if (to.path !== '/bracket') return true
 
     return {
-      path: fallbackPath,
+      path: `${defaultSeasonZonePath()}/bracket`,
       query: to.query,
       hash: to.hash,
       replace: true,

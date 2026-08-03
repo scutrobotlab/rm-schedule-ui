@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { isMobileDevice, isMobileUserAgent } from './mobile'
+import { isIOSDevice, isMobileDevice, isMobileUserAgent } from './mobile'
 
 afterEach(() => {
   vi.unstubAllGlobals()
@@ -24,6 +24,41 @@ describe('isMobileUserAgent', () => {
   it('rejects desktop user agents', () => {
     expect(isMobileUserAgent(
       'Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/537.36 Chrome/120.0.0.0',
+    )).toBe(false)
+  })
+})
+
+describe('isIOSDevice', () => {
+  it('detects iPhone and iPad user agents', () => {
+    expect(isIOSDevice(
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)',
+    )).toBe(true)
+    expect(isIOSDevice(
+      'Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X)',
+    )).toBe(true)
+  })
+
+  it('detects iPadOS desktop mode from platform and touch points', () => {
+    expect(isIOSDevice(
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15)',
+      'MacIntel',
+      5,
+    )).toBe(true)
+  })
+
+  it('does not enable the top safe area on Android QQ Browser', () => {
+    expect(isIOSDevice(
+      'Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 MQQBrowser/14.9',
+      'Linux armv8l',
+      5,
+    )).toBe(false)
+  })
+
+  it('does not mistake a Mac for an iPad without touch input', () => {
+    expect(isIOSDevice(
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0)',
+      'MacIntel',
+      0,
     )).toBe(false)
   })
 })
