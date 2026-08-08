@@ -317,12 +317,38 @@ describe('2026 全国赛 618 复用布局', () => {
     expect(offsets['#11->#13']).toBe(-5)
     expect(offsets['#12->#14']).toBe(-5)
 
-    // 2025 全国赛仍保持原布局。
-    const zone2025 = ZoneMap[2025].find((z) => z.id === 572)!
-    const winner2025 = zone2025.parts.find((p) => p.name === '淘汰赛胜者组')!
-    expect(winner2025.jsonData.lines.find(
-      (line) => line.from === '#9' && line.to === '#13',
-    )?.className).toBeUndefined()
+  })
+})
+
+describe('2024/2025 全国赛交叉连线', () => {
+  it.each([
+    [2024, 526],
+    [2025, 572],
+  ])('%i zone %i 的胜者组与败者组均左右错开', (season, zoneId) => {
+    const zone = ZoneMap[season].find((z) => z.id === zoneId)!
+    const offsetsFor = (partName: string) => {
+      const part = zone.parts.find((p) => p.name === partName)!
+      const model = buildBracketViewModel({
+        zoneId,
+        part,
+        getMatchByOrder: () => undefined,
+      })
+      return Object.fromEntries(
+        model.connections.map((line) => [`${line.fromNodeId}->${line.toNodeId}`, line.offsetX]),
+      )
+    }
+
+    const loser = offsetsFor('淘汰赛败者组')
+    expect(loser['#5->#9']).toBe(5)
+    expect(loser['#6->#10']).toBe(5)
+    expect(loser['#7->#9']).toBe(-5)
+    expect(loser['#8->#10']).toBe(-5)
+
+    const winner = offsetsFor('淘汰赛胜者组')
+    expect(winner['#9->#13']).toBe(5)
+    expect(winner['#10->#14']).toBe(5)
+    expect(winner['#11->#13']).toBe(-5)
+    expect(winner['#12->#14']).toBe(-5)
   })
 })
 
