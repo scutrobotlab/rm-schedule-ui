@@ -625,7 +625,7 @@ export const ZoneMap: { [key: number]: Zone[] } = {
     },
     {
       id: 617, name: '复活赛', disabled: false,
-      defaultGroup: 0,
+      defaultGroup: 2,
       parts: [
         {
           name: 'A组',
@@ -653,7 +653,7 @@ export const ZoneMap: { [key: number]: Zone[] } = {
     },
     {
       id: 618, name: '全国赛', disabled: false,
-      defaultGroup: 0,
+      defaultGroup: 5,
       parts: [
         {
           name: 'A组前段',
