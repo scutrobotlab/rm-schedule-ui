@@ -299,6 +299,31 @@ describe('2026 全国赛 618 复用布局', () => {
     expect(offsets['#7->#9']).toBe(-5)
     expect(offsets['#8->#10']).toBe(-5)
   })
+
+  it('79–82 到 87–88 的交叉连线左右错开', () => {
+    const zone = ZoneMap[2026].find((z) => z.id === 618)!
+    const winnerPart = zone.parts.find((p) => p.name === '淘汰赛胜者组')!
+    const model = buildBracketViewModel({
+      zoneId: 618,
+      part: winnerPart,
+      getMatchByOrder: () => undefined,
+    })
+    const offsets = Object.fromEntries(
+      model.connections.map((line) => [`${line.fromNodeId}->${line.toNodeId}`, line.offsetX]),
+    )
+
+    expect(offsets['#9->#13']).toBe(5)
+    expect(offsets['#10->#14']).toBe(5)
+    expect(offsets['#11->#13']).toBe(-5)
+    expect(offsets['#12->#14']).toBe(-5)
+
+    // 2025 全国赛仍保持原布局。
+    const zone2025 = ZoneMap[2025].find((z) => z.id === 572)!
+    const winner2025 = zone2025.parts.find((p) => p.name === '淘汰赛胜者组')!
+    expect(winner2025.jsonData.lines.find(
+      (line) => line.from === '#9' && line.to === '#13',
+    )?.className).toBeUndefined()
+  })
 })
 
 describe('2026 主题背景', () => {

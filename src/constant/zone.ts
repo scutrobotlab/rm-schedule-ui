@@ -30,7 +30,7 @@ import {
   FinalZoneGroup2RoundOrder, FinalZoneGroup2RoundOrder2025
 } from "./final_zone_group";
 import {
-  FinalZoneKnockoutJsonData, FinalZoneKnockoutJsonData2025,
+  FinalZoneKnockoutJsonData, FinalZoneKnockoutJsonData2025, FinalZoneKnockoutJsonData2026,
   FinalZoneKnockoutLoserJsonData, FinalZoneKnockoutLoserJsonData2025,
   FinalZoneKnockoutLoserJsonData2026,
   FinalZoneKnockoutLoserTitleData, FinalZoneKnockoutLoserTitleData2025,
@@ -695,7 +695,7 @@ export const ZoneMap: { [key: number]: Zone[] } = {
           name: '淘汰赛胜者组',
           type: 'knockout',
           group: 'Knockout',
-          jsonData: FinalZoneKnockoutJsonData2025,
+          jsonData: FinalZoneKnockoutJsonData2026,
           extraTitleData: FinalZoneKnockoutTitleData2025,
         },
       ]

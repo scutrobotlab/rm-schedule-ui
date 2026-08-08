@@ -1153,6 +1153,26 @@ export const FinalZoneKnockoutJsonData2025: ZoneJsonData = {
   ],
 }
 
+/** 2026 全国赛胜者组：79–82 汇入 87–88 时将交叉连线左右错开。 */
+export const FinalZoneKnockoutJsonData2026: ZoneJsonData = {
+  ...FinalZoneKnockoutJsonData2025,
+  lines: FinalZoneKnockoutJsonData2025.lines.map((line) => {
+    if (line.from === '#9' && line.to === '#13') {
+      return { ...line, className: 'knockout-cross-line-right' }
+    }
+    if (line.from === '#10' && line.to === '#14') {
+      return { ...line, className: 'knockout-cross-line-right' }
+    }
+    if (line.from === '#11' && line.to === '#13') {
+      return { ...line, className: 'knockout-cross-line-left', isHideArrow: true }
+    }
+    if (line.from === '#12' && line.to === '#14') {
+      return { ...line, className: 'knockout-cross-line-left', isHideArrow: true }
+    }
+    return line
+  }),
+}
+
 export const FinalZoneKnockoutTitleData2025: TitleData[] = [
   {
     left: rx - KnockoutXOffset * 4 + 20,
