@@ -28,8 +28,8 @@ function laneOfNode(el: HTMLElement): BracketLane {
   return 'main'
 }
 
-function buildPathD(x1: number, y1: number, x2: number, y2: number): string {
-  const midX = (x1 + x2) / 2
+function buildPathD(x1: number, y1: number, x2: number, y2: number, offsetX = 0): string {
+  const midX = (x1 + x2) / 2 + offsetX
   return x2 > x1 + 2
     ? `M ${x1} ${y1} H ${midX} V ${y2} H ${x2}`
     : `M ${x1} ${y1} C ${x1 + 24} ${y1}, ${x2 - 24} ${y2}, ${x2} ${y2}`
@@ -76,7 +76,7 @@ function measure() {
     const lane = laneOfNode(fromEl) !== 'main' ? laneOfNode(fromEl) : laneOfNode(toEl)
     next.push({
       key: `${conn.fromNodeId}->${conn.toNodeId}`,
-      d: buildPathD(x1, y1, x2, y2),
+      d: buildPathD(x1, y1, x2, y2, conn.offsetX),
       lane,
     })
   }

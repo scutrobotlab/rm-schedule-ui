@@ -281,6 +281,24 @@ describe('2026 全国赛 618 复用布局', () => {
     expect(byId2025['#11'].data.zones[0].losers).toEqual([87])
     expect(byId2025['#12'].data.zones[0].losers).toEqual([88])
   })
+
+  it('83–86 到 89–90 的交叉连线左右错开', () => {
+    const zone = ZoneMap[2026].find((z) => z.id === 618)!
+    const loserPart = zone.parts.find((p) => p.name === '淘汰赛败者组')!
+    const model = buildBracketViewModel({
+      zoneId: 618,
+      part: loserPart,
+      getMatchByOrder: () => undefined,
+    })
+    const offsets = Object.fromEntries(
+      model.connections.map((line) => [`${line.fromNodeId}->${line.toNodeId}`, line.offsetX]),
+    )
+
+    expect(offsets['#5->#9']).toBe(5)
+    expect(offsets['#6->#10']).toBe(5)
+    expect(offsets['#7->#9']).toBe(-5)
+    expect(offsets['#8->#10']).toBe(-5)
+  })
 })
 
 describe('2026 主题背景', () => {

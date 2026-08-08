@@ -127,13 +127,18 @@ export function filterBracketByStageRange(
 
 /** 仅保留两端节点均落在可见列中的连线 */
 export function connectionsForColumns(
-  lines: { from: string; to: string }[],
+  lines: { from: string; to: string; className?: string }[],
   columns: BracketColumn[],
 ): BracketConnection[] {
   const visibleNodeIds = new Set(columns.flatMap((c) => c.items.map((i) => i.nodeId)))
   return lines
     .filter((l) => visibleNodeIds.has(l.from) && visibleNodeIds.has(l.to))
-    .map((l) => ({ fromNodeId: l.from, toNodeId: l.to }))
+    .map((l) => ({
+      fromNodeId: l.from,
+      toNodeId: l.to,
+      ...(l.className === 'knockout-cross-line-right' ? { offsetX: 5 } : {}),
+      ...(l.className === 'knockout-cross-line-left' ? { offsetX: -5 } : {}),
+    }))
 }
 
 /** 与 MatchGraph / stage_teams 一致：小组按 A/B 取对应 zones 槽 */

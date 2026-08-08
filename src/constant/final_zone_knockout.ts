@@ -1492,6 +1492,21 @@ export const FinalZoneKnockoutLoserTitleData2025: TitleData[] = [
  */
 export const FinalZoneKnockoutLoserJsonData2026: ZoneJsonData = {
   ...FinalZoneKnockoutLoserJsonData2025,
+  lines: FinalZoneKnockoutLoserJsonData2025.lines.map((line) => {
+    if (line.from === '#5' && line.to === '#9') {
+      return { ...line, className: 'knockout-cross-line-right' }
+    }
+    if (line.from === '#6' && line.to === '#10') {
+      return { ...line, className: 'knockout-cross-line-right' }
+    }
+    if (line.from === '#7' && line.to === '#9') {
+      return { ...line, className: 'knockout-cross-line-left', isHideArrow: true }
+    }
+    if (line.from === '#8' && line.to === '#10') {
+      return { ...line, className: 'knockout-cross-line-left', isHideArrow: true }
+    }
+    return line
+  }),
   nodes: FinalZoneKnockoutLoserJsonData2025.nodes.map((node) => {
     if (node.id === '#11') {
       return {

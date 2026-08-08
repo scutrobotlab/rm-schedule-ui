@@ -89,6 +89,8 @@ export interface BracketColumn {
 export interface BracketConnection {
   fromNodeId: string
   toNodeId: string
+  /** 正交连线中间竖段的水平错位（px） */
+  offsetX?: number
 }
 
 export interface BracketViewModel {
